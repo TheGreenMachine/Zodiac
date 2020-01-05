@@ -1,0 +1,84 @@
+subsystems:
+    drivetrain:
+        implemented: true
+        talons:
+            leftMain: 1
+            leftSlaveOne: 2
+            rightMain: 14
+            rightSlaveOne: 13
+        invertMotor:
+            - 14
+        victors:
+            rightSlaveTwo: 15
+            leftSlaveTwo: 0
+        constants:
+            pigeonId: 3
+            pigeonOnTalon: 1
+            kP: 1.8
+            kI: .05
+            kD: 18
+            kF: 0.91
+            iZone: 0
+            encPPR: 1015.3333333333
+            currentFloorCheck: .4
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 500
+            rpmEpsilonCheck: 60
+    canifier:
+        implemented: true
+        constants:
+            canId: 18
+    climber:
+        implemented: true
+        talons:
+            climbMaster: 3
+            climbSlave: 12
+        doublesolenoids:
+            habPiston:
+                forward: 5
+                reverse: 6
+    cargocollector:
+        implemented: true
+        talons:
+            intake: 11
+        solenoids:
+            arm: 2
+    birdbeak:
+        implemented: true
+        solenoids:
+            beak: 1
+            puncher: 3
+    cargoshooter:
+        implemented: true
+        talons:
+            arm: 5
+            intake: 10
+        constants:
+            kP: 2.5
+            kI: 0
+            kD: 1.0
+            kF: 0
+            maxPos: 4027
+            midPos: 3230
+            minPos: 3015
+    ledmanager:
+        implemented: true
+        canifier: 18
+    cameramount:
+        implemented: true
+        doublesolenoids:
+            shifter:
+                forward: 4
+                reverse: 7
+pcm: 17
+constants:
+    wheelDiameter: 5.389459
+    trackWidth: 25
+    maxVel: 40 #inch/s
+    maxAccel: 30 #inch/s^2
+    sensorPhase: 0
+    kLooperDt: .030
+    kTrackScrubFactor: 1.0
+    kPCMId: 0
+    pathKs: 2
+    verbose: 0
