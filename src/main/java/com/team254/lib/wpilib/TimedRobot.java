@@ -83,6 +83,9 @@ public class TimedRobot extends IterativeRobotBase {
         }
     }
 
+    @Override
+    public void endCompetition() { }
+
     /**
      * Get time period between calls to Periodic() functions.
      */
