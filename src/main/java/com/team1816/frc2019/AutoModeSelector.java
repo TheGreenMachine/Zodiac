@@ -25,7 +25,8 @@ public class AutoModeSelector {
         LIVING_ROOM,
         SHOP,
         PID,
-        DRIVE_STRAIGHT
+        DRIVE_STRAIGHT,
+        AUTO_TRENCH
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -58,6 +59,7 @@ public class AutoModeSelector {
 //        mModeChooser.addOption("Shop", DesiredMode.SHOP);
 //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
+        mModeChooser.addOption("Auto Trench", DesiredMode.AUTO_TRENCH);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
 
@@ -100,6 +102,8 @@ public class AutoModeSelector {
                 return (Optional.of(new DriveStraightMode()));
             case LIVING_ROOM:
                 return (Optional.of(new LivingRoomMode()));
+            case AUTO_TRENCH:
+                return (Optional.of(new AutoTrenchMode()));
             default:
                 break;
         }
