@@ -15,7 +15,7 @@ import org.junit.runners.JUnit4;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(JUnit4.class)
+// @RunWith(JUnit4.class)
 public class TrajectoryTest {
 
     public static final double kTestEpsilon = 1e-5;
