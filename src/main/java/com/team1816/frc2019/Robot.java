@@ -6,6 +6,7 @@ import com.team1816.frc2019.controlboard.ControlBoard;
 import com.team1816.frc2019.paths.TrajectorySet;
 import com.team1816.frc2019.subsystems.CarriageCanifier;
 import com.team1816.frc2019.subsystems.Drive;
+import com.team1816.frc2019.subsystems.LedManager;
 import com.team1816.frc2019.subsystems.Superstructure;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.modes.AutoModeBase;
@@ -44,6 +45,7 @@ public class Robot extends TimedRobot {
     private final RobotState mRobotState = RobotState.getInstance();
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
     private final Drive mDrive = Drive.getInstance();
+    private final LedManager ledManager = LedManager.getInstance();
 
     private TimeDelayedBoolean mHangModeEnablePressed = new TimeDelayedBoolean();
     private TimeDelayedBoolean mHangModeLowEnablePressed = new TimeDelayedBoolean();

@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 public class LedManager extends Subsystem {
     public static final String NAME = "ledmanager";
 
+    private static LedManager INSTANCE;
+
     private CANifier canifier;
 
     private boolean blinkMode;
@@ -22,12 +24,20 @@ public class LedManager extends Subsystem {
     private int ledBlinkG;
     private int ledBlinkB;
 
-    public LedManager() {
+    private double time = System.currentTimeMillis();
+    private double period;
+    private LedManager() {
         super(NAME);
         this.canifier = Robot.getFactory().getCanifier(NAME);
         this.ledR = 0;
         this.ledG = 0;
         this.ledB = 0;
+    }
+     public static LedManager getInstance(){
+        if(INSTANCE==null){
+            INSTANCE=new LedManager();
+        }
+        return INSTANCE;
     }
 
     public void setLedColor(int r, int g, int b) {
@@ -39,12 +49,14 @@ public class LedManager extends Subsystem {
         }
     }
 
-    public void setLedColorBlink(int r, int g, int b) {
+    public void setLedColorBlink(int r, int g, int b, double period) {
         blinkMode = true;
         this.ledBlinkR = r;
         this.ledBlinkG = g;
         this.ledBlinkB = b;
+        this.period = period;
     }
+
 
     public void indicateStatus(RobotStatus status) {
         blinkMode = false;
@@ -57,6 +69,7 @@ public class LedManager extends Subsystem {
         this.ledBlinkG = status.getGreen();
         this.ledBlinkB = status.getBlue();
     }
+
 
     public int[] getLedRgbBlink() {
         return new int[]{ledBlinkR, ledBlinkG, ledBlinkB};
@@ -73,6 +86,14 @@ public class LedManager extends Subsystem {
             canifier.setLEDOutput((double) (ledR / 255.0), CANifier.LEDChannel.LEDChannelB);
             canifier.setLEDOutput((double) (ledB / 255.0), CANifier.LEDChannel.LEDChannelC);
             outputsChanged = false;
+            if (blinkMode) {
+                if (System.currentTimeMillis() - time > period) {
+                    time=System.currentTimeMillis();
+                    setLedColor(ledR,ledG,ledB);
+                }else if(System.currentTimeMillis()-time>period/2){
+                    setLedColor(0,0,0);
+                }
+            }
         }
     }
 
