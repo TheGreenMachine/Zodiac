@@ -9,17 +9,17 @@ subsystems:
         invertMotor:
             - 14
         victors:
-            rightSlaveTwo: 15
-            leftSlaveTwo: 0
+            rightSlaveTwo: -1
+            leftSlaveTwo: -1
         constants:
             pigeonId: 3
             pigeonOnTalon: 1
-            kP: 1.8
-            kI: .05
-            kD: 18
-            kF: 0.91
+            kP: 0
+            kI: .048
+            kD: 0
+            kF: 0
             iZone: 0
-            encPPR: 1015.3333333333
+            encPPR: 16440
             currentFloorCheck: .4
             currentEpsilonCheck: .2
             rpmFloorCheck: 500
