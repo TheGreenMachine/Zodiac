@@ -491,6 +491,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
         return ErrorCode.OK;
     }
 
+
     @Override
     public ErrorCode configPeakCurrentLimit(int amps, int timeoutMs) {
         return ErrorCode.OK;
