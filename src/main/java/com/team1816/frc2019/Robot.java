@@ -253,7 +253,7 @@ public class Robot extends TimedRobot {
                 if (System.currentTimeMillis() - blinkTime > ledManager.getPeriod()) {
                     blinkTime = System.currentTimeMillis();
                     canifier.setLEDOutput((double) (255.0 / 255.0), CANifier.LEDChannel.LEDChannelA);
-                    canifier.setLEDOutput((double) (255.0 / 255.0), CANifier.LEDChannel.LEDChannelB);
+                    canifier.setLEDOutput((double) (103.0 / 255.0), CANifier.LEDChannel.LEDChannelB);
                     canifier.setLEDOutput((double) (0 / 255.0), CANifier.LEDChannel.LEDChannelC);
                  //   ledManager.setLedColor(ledManager.getLedRgbBlink()[0], ledManager.getLedRgbBlink()[1], ledManager.getLedRgbBlink()[2]);
                 } else if (System.currentTimeMillis() - blinkTime > ledManager.getPeriod() / 2) {
