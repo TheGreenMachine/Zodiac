@@ -1,7 +1,6 @@
 package com.team1816.frc2019;
 
 import badlog.lib.BadLog;
-import com.ctre.phoenix.CANifier;
 import com.team1816.frc2019.controlboard.ActionManager;
 import com.team1816.frc2019.controlboard.ControlBoard;
 import com.team1816.frc2019.paths.TrajectorySet;
@@ -240,27 +239,22 @@ public class Robot extends TimedRobot {
         }
     }
 
-    private CANifier canifier = Robot.getFactory().getCanifier("ledmanager");
-
     @Override
     public void testInit() {
         try {
             double initTime = System.currentTimeMillis();
             double blinkTime = System.currentTimeMillis();
 
+
+            //TODO: This should be done all in the Drivetrain class
+            // LedManager should also be rewritten so there are no conflicts in loops
             ledManager.setLedColorBlink(255, 255, 0, 1000);
             while(System.currentTimeMillis() - initTime <= 3000) {
                 if (System.currentTimeMillis() - blinkTime > ledManager.getPeriod()) {
                     blinkTime = System.currentTimeMillis();
-                    canifier.setLEDOutput((double) (255.0 / 255.0), CANifier.LEDChannel.LEDChannelA);
-                    canifier.setLEDOutput((double) (103.0 / 255.0), CANifier.LEDChannel.LEDChannelB);
-                    canifier.setLEDOutput((double) (0 / 255.0), CANifier.LEDChannel.LEDChannelC);
-                 //   ledManager.setLedColor(ledManager.getLedRgbBlink()[0], ledManager.getLedRgbBlink()[1], ledManager.getLedRgbBlink()[2]);
+                    ledManager.forceSetLedColor(255, 103, 0);
                 } else if (System.currentTimeMillis() - blinkTime > ledManager.getPeriod() / 2) {
-                    canifier.setLEDOutput((double) (0 / 255.0), CANifier.LEDChannel.LEDChannelA);
-                    canifier.setLEDOutput((double) (0 / 255.0), CANifier.LEDChannel.LEDChannelB);
-                    canifier.setLEDOutput((double) (0 / 255.0), CANifier.LEDChannel.LEDChannelC);
-                  //  ledManager.setLedColor(0, 0, 0);
+                    ledManager.forceSetLedColor(0, 0, 0);
                 }
             }
 

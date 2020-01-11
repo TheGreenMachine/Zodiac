@@ -32,11 +32,20 @@ public class LedManager extends Subsystem {
         this.ledG = 0;
         this.ledB = 0;
     }
-     public static LedManager getInstance(){
+
+    public static LedManager getInstance(){
         if(INSTANCE==null){
             INSTANCE=new LedManager();
         }
         return INSTANCE;
+    }
+
+    public void forceSetLedColor(int r, int g, int b) {
+        if (this.ledR != r || this.ledG != g || this.ledB != b) {
+            canifier.setLEDOutput((ledG / 255.0), CANifier.LEDChannel.LEDChannelA);
+            canifier.setLEDOutput((ledR / 255.0), CANifier.LEDChannel.LEDChannelB);
+            canifier.setLEDOutput((ledB / 255.0), CANifier.LEDChannel.LEDChannelC);
+        }
     }
 
     public void setLedColor(int r, int g, int b) {
@@ -59,7 +68,7 @@ public class LedManager extends Subsystem {
 
     public void indicateStatus(RobotStatus status) {
         blinkMode = false;
-        outputsChanged=true;
+        outputsChanged = true;
         setLedColor(status.getRed(), status.getGreen(), status.getBlue());
     }
 
