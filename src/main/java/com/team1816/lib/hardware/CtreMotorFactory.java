@@ -89,7 +89,8 @@ public class CtreMotorFactory {
                 config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS, kTimeoutMs);
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth,
                 config.PULSE_WIDTH_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 20);
+        talon.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 20);
+        //TODO Add
 
         return talon;
     }
