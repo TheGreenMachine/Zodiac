@@ -16,7 +16,7 @@ subsystems:
             pigeonOnTalon: 1
             kP: 0.18
             kI: 0.018
-            kD: 2
+            kD: 3.6
             kF: 0.053
             iZone: 0
             encPPR: 16440
