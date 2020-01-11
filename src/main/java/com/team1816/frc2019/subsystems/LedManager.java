@@ -24,7 +24,6 @@ public class LedManager extends Subsystem {
     private int ledBlinkG;
     private int ledBlinkB;
 
-    private double time = System.currentTimeMillis();
     private double period;
     private LedManager() {
         super(NAME);
@@ -60,6 +59,7 @@ public class LedManager extends Subsystem {
 
     public void indicateStatus(RobotStatus status) {
         blinkMode = false;
+        outputsChanged=true;
         setLedColor(status.getRed(), status.getGreen(), status.getBlue());
     }
 
@@ -79,6 +79,8 @@ public class LedManager extends Subsystem {
         return blinkMode;
     }
 
+    public double getPeriod(){return period;}
+
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged && canifier != null) {
@@ -86,16 +88,11 @@ public class LedManager extends Subsystem {
             canifier.setLEDOutput((double) (ledR / 255.0), CANifier.LEDChannel.LEDChannelB);
             canifier.setLEDOutput((double) (ledB / 255.0), CANifier.LEDChannel.LEDChannelC);
             outputsChanged = false;
-            if (blinkMode) {
-                if (System.currentTimeMillis() - time > period) {
-                    time=System.currentTimeMillis();
-                    setLedColor(ledR,ledG,ledB);
-                }else if(System.currentTimeMillis()-time>period/2){
-                    setLedColor(0,0,0);
-                }
-            }
         }
-    }
+
+        System.out.println("blink value: " + blinkMode);
+        }
+
 
     @Override
     public void stop() {
@@ -157,5 +154,8 @@ public class LedManager extends Subsystem {
         public int getBlue() {
             return blue;
         }
+
+
     }
+
 }

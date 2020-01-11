@@ -619,12 +619,11 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
 
     @Override
     public boolean checkSystem() {
-        ledManager.setLedColorBlink(255,255,0,1000);
 
         setBrakeMode(false);
         setHighGear(true);
 
-        Timer.delay(3);
+//        Timer.delay(3);
 
         boolean leftSide = TalonSRXChecker.checkMotors(this,
             new ArrayList<>() {
@@ -638,12 +637,12 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
                     add(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster));
                 }
             }, getTalonCheckerConfig(mRightMaster));
-        if(leftSide&&rightSide){
-            ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
-
+        System.out.println(leftSide && rightSide);
+        if(leftSide && rightSide){
+            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
         }
         else{
-            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
+            ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
         }
         return leftSide && rightSide;
     }
