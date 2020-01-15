@@ -163,6 +163,8 @@ public class Robot extends TimedRobot {
             CrashTracker.logDisabledInit();
             mEnabledLooper.stop();
 
+            ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
+
             // Reset all auto mode state.
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
@@ -188,6 +190,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logAutoInit();
             mDisabledLooper.stop();
+            ledManager.indicateStatus(LedManager.RobotStatus.AUTONOMOUS);
 
             // Robot starts forwards.
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
@@ -219,6 +222,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
+            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
