@@ -157,7 +157,7 @@ public class LedManager extends Subsystem {
         ENDGAME(0, 0, 255), // blue
         SEEN_TARGET(255, 0, 255), // magenta
         ON_TARGET(255, 0, 20), // deep magenta
-        DRIVETRAIN_FLIPPED(223, 255, 0), // gross yellowgreen
+        DRIVETRAIN_FLIPPED(255, 255, 0), // yellow
         OFF(0, 0, 0); // off
 
         int red;
