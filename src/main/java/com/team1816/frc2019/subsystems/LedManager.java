@@ -57,6 +57,12 @@ public class LedManager extends Subsystem {
         }
     }
 
+    /**
+     * @param r LED color red value (0-255)
+     * @param g LED color green value (0-255)
+     * @param b LED color blue value (0-255)
+     * @param period milliseconds
+     */
     public void setLedColorBlink(int r, int g, int b, int period) {
         // Period is in milliseconds
         setLedColor(r, g, b);
@@ -126,21 +132,16 @@ public class LedManager extends Subsystem {
 
     @Override
     public boolean checkSystem() {
-        // TODO: Refactor checkSystem() to not directly call writePeriodicOutputs()
         System.out.println("Warning: checking LED systems");
         Timer.delay(3);
 
-        setLedColor(255, 0, 0);
-        writePeriodicOutputs();
+        writeLedHardware(255, 0, 0);
         Timer.delay(0.4);
-        setLedColor(0, 255, 0);
-        writePeriodicOutputs();
+        writeLedHardware(0, 255, 0);
         Timer.delay(0.4);
-        setLedColor(0, 0, 255);
-        writePeriodicOutputs();
+        writeLedHardware(0, 0, 255);
         Timer.delay(0.4);
-        setLedColor(0, 0, 0);
-        writePeriodicOutputs();
+        writeLedHardware(0, 0, 0);
 
         return true;
     }
