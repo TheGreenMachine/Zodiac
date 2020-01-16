@@ -2,6 +2,8 @@ package com.team1816.frc2019.subsystems;
 
 import com.ctre.phoenix.CANifier;
 import com.team1816.frc2019.Robot;
+import com.team1816.lib.loops.ILooper;
+import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -99,35 +101,56 @@ public class LedManager extends Subsystem {
     }
 
     private void writeLedHardware(int r, int g, int b) {
-        canifier.setLEDOutput(r / 255.0, CANifier.LEDChannel.LEDChannelA);
-        canifier.setLEDOutput(g / 255.0, CANifier.LEDChannel.LEDChannelB);
+        canifier.setLEDOutput(r / 255.0, CANifier.LEDChannel.LEDChannelB);
+        canifier.setLEDOutput(g / 255.0, CANifier.LEDChannel.LEDChannelA);
         canifier.setLEDOutput(b / 255.0, CANifier.LEDChannel.LEDChannelC);
     }
 
     @Override
     public void writePeriodicOutputs() {
-        if (blinkMode) {
-            if (System.currentTimeMillis() >= lastWriteTime + period) {
-                if (blinkLedOn) {
-                    writeLedHardware(0, 0, 0);
-                    blinkLedOn = false;
-                } else {
-                    writeLedHardware(ledR, ledG, ledB);
-                    blinkLedOn = true;
+        if (canifier != null) {
+            if (blinkMode) {
+                if (System.currentTimeMillis() >= lastWriteTime + period) {
+                    if (blinkLedOn) {
+                        writeLedHardware(0, 0, 0);
+                        blinkLedOn = false;
+                    } else {
+                        writeLedHardware(ledR, ledG, ledB);
+                        blinkLedOn = true;
+                    }
                 }
+            } else if (outputsChanged) {
+                System.out.printf("R: %d, G: %d, B: %d%n", ledR, ledG, ledB);
+                writeLedHardware(ledR, ledG, ledB);
+                outputsChanged = false;
             }
-        } else if (outputsChanged && canifier != null) {
-            writeLedHardware(ledR, ledG, ledB);
-            outputsChanged = false;
         }
-
-        System.out.println("blink value: " + blinkMode);
     }
-
 
     @Override
     public void stop() {
 
+    }
+
+    @Override
+    public void registerEnabledLoops(ILooper mEnabledLooper) {
+        super.registerEnabledLoops(mEnabledLooper);
+        mEnabledLooper.register(new Loop() {
+            @Override
+            public void onStart(double timestamp) {
+
+            }
+
+            @Override
+            public void onLoop(double timestamp) {
+                LedManager.this.writePeriodicOutputs();
+            }
+
+            @Override
+            public void onStop(double timestamp) {
+
+            }
+        });
     }
 
     @Override

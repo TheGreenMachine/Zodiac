@@ -135,6 +135,9 @@ public class Robot extends TimedRobot {
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
             mSubsystemManager.registerDisabledLoops(mDisabledLooper);
 
+            ledManager.registerEnabledLoops(mEnabledLooper);
+            ledManager.registerEnabledLoops(mDisabledLooper);
+
             mInHangMode = false;
 
             // Robot starts forwards.
@@ -150,7 +153,6 @@ public class Robot extends TimedRobot {
                 //TODO: Setting cargoshooter down or up needs a parallel action that stops intake for both and shooter and collector
                    //      Also needs to raise the collector arm
             );
-
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;

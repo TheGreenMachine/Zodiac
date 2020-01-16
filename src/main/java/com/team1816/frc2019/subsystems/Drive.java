@@ -39,7 +39,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
     private static final String NAME = "drivetrain";
     private static double DRIVE_ENCODER_PPR;
 
-    private LedManager ledManager=LedManager.getInstance();
+    private LedManager ledManager = LedManager.getInstance();
 
     // hardware
     private IMotorControllerEnhanced mLeftMaster, mRightMaster;
