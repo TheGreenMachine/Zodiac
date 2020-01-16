@@ -20,7 +20,6 @@ import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.*;
-import com.team254.lib.vision.AimingParameters;
 import com.team254.lib.wpilib.TimedRobot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
@@ -82,6 +81,7 @@ public class Robot extends TimedRobot {
     private double loopStart;
 
     private ActionManager mActionManager;
+    private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
 
     Robot() {
         CrashTracker.logRobotConstruction();
@@ -153,6 +153,8 @@ public class Robot extends TimedRobot {
                 //TODO: Setting cargoshooter down or up needs a parallel action that stops intake for both and shooter and collector
                    //      Also needs to raise the collector arm
             );
+
+
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
@@ -322,7 +324,7 @@ public class Robot extends TimedRobot {
         }
 
         if (mDriveByCameraInAuto || mAutoModeExecutor.isInterrupted()) {
-            manualControl(/*sandstorm=*/true);
+            manualControl();
         }
     }
 
@@ -330,91 +332,20 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         loopStart = Timer.getFPGATimestamp();
         try {
-            manualControl(/*sandstorm=*/false);
+            manualControl();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
 
-    public void manualControl(boolean sandstorm) {
-        double timestamp = Timer.getFPGATimestamp();
-        boolean rumble = false;
+    public void manualControl() {
         double throttle = mControlBoard.getThrottle();
+        double turn = mControlBoard.getTurn();
 
-        Optional<AimingParameters> drive_aim_params = mSuperstructure.getLatestAimingParameters();
-
-        boolean wantShoot = mControlBoard.getShoot();
-        boolean shotJustPushed = mShootPressed.update(wantShoot);
-        if (shotJustPushed) {
-            mLastShootPressedTime = Timer.getFPGATimestamp();
-        }
 
         mActionManager.update();
-
-        boolean wantsLowGear = mControlBoard.getWantsLowGear() && !sandstorm;
-
-        boolean hangModePressed =
-            mHangModeEnablePressed.update(mControlBoard.getToggleHangMode(), 0.250);
-        boolean hangModeLowPressed =
-            mHangModeLowEnablePressed.update(mControlBoard.getToggleHangModeLow(), 0.250);
-
-        if ((hangModeLowPressed && hangModePressed) && !mInHangMode && mHangModeReleased) {
-            System.out.println("Entering hang mode for low: " + hangModeLowPressed + " high: " + hangModePressed);
-            mInHangMode = true;
-            mHangModeReleased = false;
-        } else if ((hangModeLowPressed && hangModePressed) && mInHangMode && mHangModeReleased) {
-            System.out.println("Exiting hang mode!");
-            mInHangMode = false;
-            mHangModeReleased = false;
-        }
-
-        if (!hangModeLowPressed && !hangModePressed) {
-            mHangModeReleased = true;
-        }
-
-        // commands
-        mDiskIntakeTrigger.update(mControlBoard.getPickupDiskWall());
-        mBallIntakeTrigger.update(mControlBoard.getPickupBallGround());
-        boolean wants_auto_steer = mControlBoard.getThrust() && mDiskIntakeTrigger.isPressed();
-        boolean auto_steer_pressed = mAutoSteerPressed.update(wants_auto_steer);
-
-        if (mInHangMode) {
-            mDrive.setHighGear(!wantsLowGear);
-        } else {
-            // End Effector Jog
-            boolean wants_thrust = mControlBoard.getThrust() && !wants_auto_steer;
-
-            boolean thrust_just_pressed = mThrustPressed.update(wants_thrust);
-
-            if (thrust_just_pressed) {
-                mLastThrustPressedTime = timestamp;
-            }
-
-            if (wants_thrust) {
-
-                if (mStickyShoot) {
-                    wantShoot = true;
-                    mLastThrustShotTime = timestamp;
-                }
-            } else {
-                mStickyShoot = false;
-                final double kLatchShootingTime = 0.75;
-                if (!Double.isNaN(mLastThrustShotTime) && timestamp - mLastThrustShotTime < kLatchShootingTime) {
-                    wantShoot = true;
-                }
-            }
-
-            // drive
-            mDrive.setHighGear(!wantsLowGear);
-            mControlBoard.setRumble(rumble);
-        }
-
-        if (wants_auto_steer && !drive_aim_params.isEmpty() && Util.epsilonEquals(drive_aim_params.get().getFieldToVisionTargetNormal().getDegrees(), 0.0, 10.0)) {
-            mDrive.autoSteer(Util.limit(throttle, 0.3), drive_aim_params.get());
-        } else {
-            mDrive.setCheesyishDrive(throttle, -mControlBoard.getTurn(), mControlBoard.getQuickTurn());
-        }
+        mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, mControlBoard.getQuickTurn()));
 
     }
 

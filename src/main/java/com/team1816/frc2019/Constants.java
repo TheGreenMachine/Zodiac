@@ -11,6 +11,7 @@ public class Constants {
     public static final int kLongCANTimeoutMs = 100; // use for constructors
 
     public static final double kDriveWheelRadiusInches = kDriveWheelDiameterInches / 2.0;
+    public static final double kOpenLoopRampRate = Robot.getFactory().getConstant("drivetrain", "openLoopRampRate").intValue();
 
     // reset button
     public static final int kResetButtonChannel = 4;

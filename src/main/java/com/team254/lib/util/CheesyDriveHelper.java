@@ -31,10 +31,14 @@ public class CheesyDriveHelper {
     private static final double kQuickStopDeadband = 0.5;
     private static final double kQuickStopWeight = 0.125;
     private static final double kQuickStopScalar = 2.8;
+    private static final double SET_SPEED_DIFF_MAX = 0.056;
 
     private double mOldWheel = 0.0;
     private double mQuickStopAccumlator = 0.0;
     private double mNegInertiaAccumlator = 0.0;
+
+    private double leftPrevPwm = 0;
+    private double rightPrevPwm = 0;
 
     public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn,
                                    boolean isHighGear) {
@@ -97,7 +101,7 @@ public class CheesyDriveHelper {
         } else {
             mNegInertiaAccumlator = 0;
         }
-        linearPower = throttle;
+        linearPower = Math.signum(throttle) * (throttle * throttle);
 
         // Quickturn!
         if (isQuickTurn) {
@@ -137,6 +141,7 @@ public class CheesyDriveHelper {
             leftPwm += overPower * (-1.0 - rightPwm);
             rightPwm = -1.0;
         }
+
         return new DriveSignal(leftPwm, rightPwm);
     }
 

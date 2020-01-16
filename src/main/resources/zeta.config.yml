@@ -24,6 +24,7 @@ subsystems:
             currentEpsilonCheck: .2
             rpmFloorCheck: 500
             rpmEpsilonCheck: 60
+            openLoopRampRate: 1
     canifier:
         implemented: true
         constants:
