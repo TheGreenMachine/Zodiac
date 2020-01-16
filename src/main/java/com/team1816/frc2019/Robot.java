@@ -92,7 +92,10 @@ public class Robot extends TimedRobot {
     public static RobotFactory getFactory() {
         if (factory == null) {
             var robotName = System.getenv("ROBOT_NAME");
-            if (robotName == null) robotName = "default";
+            if (robotName == null) {
+                robotName = "default";
+                System.out.println("ROBOT_NAME environment variable not defined, falling back to default.config.yml!");
+            }
             factory = new RobotFactory(robotName);
         }
         return factory;
@@ -132,6 +135,9 @@ public class Robot extends TimedRobot {
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
             mSubsystemManager.registerDisabledLoops(mDisabledLooper);
 
+            ledManager.registerEnabledLoops(mEnabledLooper);
+            ledManager.registerEnabledLoops(mDisabledLooper);
+
             mInHangMode = false;
 
             // Robot starts forwards.
@@ -147,7 +153,6 @@ public class Robot extends TimedRobot {
                 //TODO: Setting cargoshooter down or up needs a parallel action that stops intake for both and shooter and collector
                    //      Also needs to raise the collector arm
             );
-
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
@@ -159,6 +164,8 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logDisabledInit();
             mEnabledLooper.stop();
+
+            ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
 
             // Reset all auto mode state.
             if (mAutoModeExecutor != null) {
@@ -185,6 +192,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logAutoInit();
             mDisabledLooper.stop();
+            ledManager.indicateStatus(LedManager.RobotStatus.AUTONOMOUS);
 
             // Robot starts forwards.
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
@@ -216,6 +224,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
+            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
@@ -239,8 +248,9 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         try {
+            ledManager.blinkStatus(LedManager.RobotStatus.DISABLED);
+
             CrashTracker.logTestInit();
-            System.out.println("Starting check systems.");
 
             mDisabledLooper.stop();
             mEnabledLooper.stop();
@@ -410,6 +420,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
+        ledManager.writePeriodicOutputs();
     }
 }
 

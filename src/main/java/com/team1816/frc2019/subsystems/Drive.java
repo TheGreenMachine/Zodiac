@@ -39,7 +39,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
     private static final String NAME = "drivetrain";
     private static double DRIVE_ENCODER_PPR;
 
-    private LedManager ledManager=LedManager.getInstance();
+    private LedManager ledManager = LedManager.getInstance();
 
     // hardware
     private IMotorControllerEnhanced mLeftMaster, mRightMaster;
@@ -619,12 +619,11 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
 
     @Override
     public boolean checkSystem() {
-        ledManager.setLedColorBlink(255,255,0,1000);
 
         setBrakeMode(false);
         setHighGear(true);
 
-        Timer.delay(3);
+//        Timer.delay(3);
 
         boolean leftSide = TalonSRXChecker.checkMotors(this,
             new ArrayList<>() {
@@ -638,12 +637,14 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
                     add(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster));
                 }
             }, getTalonCheckerConfig(mRightMaster));
-        if(leftSide&&rightSide){
-            ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
+        boolean checkPigeon = mPigeon == null;
 
-        }
-        else{
+        System.out.println(leftSide && rightSide && checkPigeon);
+        if (leftSide && rightSide && checkPigeon){
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
+        }
+        else {
+            ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
         }
         return leftSide && rightSide;
     }
