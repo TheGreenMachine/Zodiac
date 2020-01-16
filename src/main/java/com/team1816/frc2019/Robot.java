@@ -135,6 +135,9 @@ public class Robot extends TimedRobot {
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
             mSubsystemManager.registerDisabledLoops(mDisabledLooper);
 
+            ledManager.registerEnabledLoops(mEnabledLooper);
+            ledManager.registerEnabledLoops(mDisabledLooper);
+
             mInHangMode = false;
 
             // Robot starts forwards.
@@ -150,7 +153,6 @@ public class Robot extends TimedRobot {
                 //TODO: Setting cargoshooter down or up needs a parallel action that stops intake for both and shooter and collector
                    //      Also needs to raise the collector arm
             );
-
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
@@ -162,6 +164,8 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logDisabledInit();
             mEnabledLooper.stop();
+
+            ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
 
             // Reset all auto mode state.
             if (mAutoModeExecutor != null) {
@@ -188,6 +192,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logAutoInit();
             mDisabledLooper.stop();
+            ledManager.indicateStatus(LedManager.RobotStatus.AUTONOMOUS);
 
             // Robot starts forwards.
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
@@ -219,6 +224,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
+            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
@@ -242,21 +248,7 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         try {
-            double initTime = System.currentTimeMillis();
-            double blinkTime = System.currentTimeMillis();
-
-
-            //TODO: This should be done all in the Drivetrain class
-            // LedManager should also be rewritten so there are no conflicts in loops
-            ledManager.setLedColorBlink(255, 255, 0, 1000);
-            while(System.currentTimeMillis() - initTime <= 3000) {
-                if (System.currentTimeMillis() - blinkTime > ledManager.getPeriod()) {
-                    blinkTime = System.currentTimeMillis();
-                    ledManager.forceSetLedColor(255, 103, 0);
-                } else if (System.currentTimeMillis() - blinkTime > ledManager.getPeriod() / 2) {
-                    ledManager.forceSetLedColor(0, 0, 0);
-                }
-            }
+            ledManager.blinkStatus(LedManager.RobotStatus.DISABLED);
 
             CrashTracker.logTestInit();
 

@@ -2,6 +2,8 @@ package com.team1816.frc2019.subsystems;
 
 import com.ctre.phoenix.CANifier;
 import com.team1816.frc2019.Robot;
+import com.team1816.lib.loops.ILooper;
+import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -14,17 +16,16 @@ public class LedManager extends Subsystem {
     private CANifier canifier;
 
     private boolean blinkMode;
+    private boolean blinkLedOn = false;
     private boolean outputsChanged = true;
 
     private int ledR;
     private int ledG;
     private int ledB;
 
-    private int ledBlinkR;
-    private int ledBlinkG;
-    private int ledBlinkB;
+    private int period; // ms
+    private long lastWriteTime = System.currentTimeMillis();
 
-    private double period;
     private LedManager() {
         super(NAME);
         this.canifier = Robot.getFactory().getCanifier(NAME);
@@ -33,13 +34,14 @@ public class LedManager extends Subsystem {
         this.ledB = 0;
     }
 
-    public static LedManager getInstance(){
-        if(INSTANCE==null){
-            INSTANCE=new LedManager();
+    public static LedManager getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new LedManager();
         }
         return INSTANCE;
     }
 
+    @Deprecated
     public void forceSetLedColor(int r, int g, int b) {
         if (this.ledR != r || this.ledG != g || this.ledB != b) {
             canifier.setLEDOutput((ledG / 255.0), CANifier.LEDChannel.LEDChannelA);
@@ -57,51 +59,73 @@ public class LedManager extends Subsystem {
         }
     }
 
-    public void setLedColorBlink(int r, int g, int b, double period) {
+    /**
+     * @param r LED color red value (0-255)
+     * @param g LED color green value (0-255)
+     * @param b LED color blue value (0-255)
+     * @param period milliseconds
+     */
+    public void setLedColorBlink(int r, int g, int b, int period) {
+        // Period is in milliseconds
+        setLedColor(r, g, b);
         blinkMode = true;
-        this.ledBlinkR = r;
-        this.ledBlinkG = g;
-        this.ledBlinkB = b;
         this.period = period;
+        outputsChanged = true;
     }
 
+    public void setLedColorBlink(int r, int g, int b) {
+        // Default period of 1 second
+        setLedColorBlink(r, g, b, 1000);
+    }
 
     public void indicateStatus(RobotStatus status) {
         blinkMode = false;
-        outputsChanged = true;
         setLedColor(status.getRed(), status.getGreen(), status.getBlue());
     }
 
     public void blinkStatus(RobotStatus status) {
-        blinkMode = true;
-        this.ledBlinkR = status.getRed();
-        this.ledBlinkG = status.getGreen();
-        this.ledBlinkB = status.getBlue();
+        setLedColorBlink(status.getRed(), status.getGreen(), status.getBlue());
     }
 
 
-    public int[] getLedRgbBlink() {
-        return new int[]{ledBlinkR, ledBlinkG, ledBlinkB};
+    public int[] getLedColor() {
+        return new int[] { ledR, ledG, ledB };
     }
 
-    public boolean getBlinkMode() {
+    public boolean isBlinkMode() {
         return blinkMode;
     }
 
-    public double getPeriod(){return period;}
+    public double getPeriod() {
+        return period;
+    }
+
+    private void writeLedHardware(int r, int g, int b) {
+        canifier.setLEDOutput(r / 255.0, CANifier.LEDChannel.LEDChannelB);
+        canifier.setLEDOutput(g / 255.0, CANifier.LEDChannel.LEDChannelA);
+        canifier.setLEDOutput(b / 255.0, CANifier.LEDChannel.LEDChannelC);
+    }
 
     @Override
     public void writePeriodicOutputs() {
-        if (outputsChanged && canifier != null) {
-            canifier.setLEDOutput((double) (ledG / 255.0), CANifier.LEDChannel.LEDChannelA);
-            canifier.setLEDOutput((double) (ledR / 255.0), CANifier.LEDChannel.LEDChannelB);
-            canifier.setLEDOutput((double) (ledB / 255.0), CANifier.LEDChannel.LEDChannelC);
-            outputsChanged = false;
+        if (canifier != null) {
+            if (blinkMode) {
+                if (System.currentTimeMillis() >= lastWriteTime + period) {
+                    if (blinkLedOn) {
+                        writeLedHardware(0, 0, 0);
+                        blinkLedOn = false;
+                    } else {
+                        writeLedHardware(ledR, ledG, ledB);
+                        blinkLedOn = true;
+                    }
+                }
+            } else if (outputsChanged) {
+                System.out.printf("R: %d, G: %d, B: %d%n", ledR, ledG, ledB);
+                writeLedHardware(ledR, ledG, ledB);
+                outputsChanged = false;
+            }
         }
-
-        System.out.println("blink value: " + blinkMode);
-        }
-
+    }
 
     @Override
     public void stop() {
@@ -109,38 +133,56 @@ public class LedManager extends Subsystem {
     }
 
     @Override
+    public void registerEnabledLoops(ILooper mEnabledLooper) {
+        super.registerEnabledLoops(mEnabledLooper);
+        mEnabledLooper.register(new Loop() {
+            @Override
+            public void onStart(double timestamp) {
+
+            }
+
+            @Override
+            public void onLoop(double timestamp) {
+                LedManager.this.writePeriodicOutputs();
+            }
+
+            @Override
+            public void onStop(double timestamp) {
+
+            }
+        });
+    }
+
+    @Override
     public boolean checkSystem() {
         System.out.println("Warning: checking LED systems");
         Timer.delay(3);
 
-        setLedColor(255, 0, 0);
-        writePeriodicOutputs();
+        writeLedHardware(255, 0, 0);
         Timer.delay(0.4);
-        setLedColor(0, 255, 0);
-        writePeriodicOutputs();
+        writeLedHardware(0, 255, 0);
         Timer.delay(0.4);
-        setLedColor(0, 0, 255);
-        writePeriodicOutputs();
+        writeLedHardware(0, 0, 255);
         Timer.delay(0.4);
-        setLedColor(0, 0, 0);
-        writePeriodicOutputs();
+        writeLedHardware(0, 0, 0);
 
         return true;
     }
 
     @Override
-    public void initSendable(SendableBuilder builder) { }
+    public void initSendable(SendableBuilder builder) {
+    }
 
     public enum RobotStatus {
-        ENABLED(223, 255, 0), // gross yellowgreen
+        ENABLED(0, 255, 0), // green
         DISABLED(255, 103, 0), // orange
         ERROR(255, 0, 0), // red
+        AUTONOMOUS(0, 255, 255), // cyan (we can also try 42, 161, 152)
         ENDGAME(0, 0, 255), // blue
         SEEN_TARGET(255, 0, 255), // magenta
         ON_TARGET(255, 0, 20), // deep magenta
-        DRIVETRAIN_FLIPPED(0, 255, 0), // green
+        DRIVETRAIN_FLIPPED(255, 255, 0), // yellow
         OFF(0, 0, 0); // off
-
 
         int red;
         int green;
@@ -163,8 +205,5 @@ public class LedManager extends Subsystem {
         public int getBlue() {
             return blue;
         }
-
-
     }
-
 }
