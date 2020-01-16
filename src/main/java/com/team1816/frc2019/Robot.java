@@ -12,6 +12,7 @@ import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.loops.AsyncTimer;
 import com.team1816.lib.loops.Looper;
 import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
@@ -82,6 +83,7 @@ public class Robot extends TimedRobot {
 
     private ActionManager mActionManager;
     private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
+    private AsyncTimer blinkTimer;
 
     Robot() {
         CrashTracker.logRobotConstruction();
@@ -154,6 +156,11 @@ public class Robot extends TimedRobot {
                    //      Also needs to raise the collector arm
             );
 
+            blinkTimer = new AsyncTimer(
+                3000, // ms (3 s)
+                () -> ledManager.blinkStatus(LedManager.RobotStatus.ERROR),
+                () -> ledManager.indicateStatus(LedManager.RobotStatus.OFF)
+            );
 
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
@@ -250,17 +257,20 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         try {
-            ledManager.blinkStatus(LedManager.RobotStatus.DISABLED);
-
             CrashTracker.logTestInit();
 
-            mDisabledLooper.stop();
+            // mDisabledLooper.stop();
             mEnabledLooper.stop();
+            mDisabledLooper.start();
+
+            blinkTimer.reset();
+
+            ledManager.blinkStatus(LedManager.RobotStatus.DISABLED);
 
             if (mSubsystemManager.checkSubsystems()) {
                 System.out.println("ALL SYSTEMS PASSED");
             } else {
-                System.out.println("CHECK ABOVE OUTPUT SOME SYSTEMS FAILED!!!");
+                System.err.println("CHECK ABOVE OUTPUT SOME SYSTEMS FAILED!!!");
             }
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
