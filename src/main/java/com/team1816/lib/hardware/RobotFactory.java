@@ -33,6 +33,12 @@ public class RobotFactory {
           motor.setInverted(true);
         }
         return motor;
+      } else if (isHardwareValid(subsystem.falcons.get(name))) { var motor = CtreMotorFactory.createDefaultFalcon(subsystem.falcons.get(name));
+        if (subsystem.invertMotor.contains(motor.getDeviceID())) {
+          System.out.println("Inverting" + name);
+          motor.setInverted(true);
+        }
+        return motor;
       } // Never make the victor a master
     }
     return CtreMotorFactory.createGhostTalon();

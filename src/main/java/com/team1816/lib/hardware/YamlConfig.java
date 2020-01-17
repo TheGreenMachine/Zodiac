@@ -31,6 +31,7 @@ public class YamlConfig {
     public static class SubsystemConfig {
         boolean implemented = false;
         Map<String, Integer> talons = new HashMap<>();
+        Map<String, Integer> falcons = new HashMap<>();
         Map<String, Integer> victors = new HashMap<>();
         Map<String, Integer> solenoids = new HashMap<>();
         Map<String, DoubleSolenoidConfig> doublesolenoids = new HashMap<>();
@@ -43,6 +44,7 @@ public class YamlConfig {
             return "SubsystemConfig {\n" +
                     "  implemented = " + implemented + ",\n" +
                     "  talons = " + talons.toString() + ",\n" +
+                    "  falcons = " + falcons.toString() + ", \n" +
                     "  victors = " + victors.toString() + ",\n" +
                     "  invertMotor = " + invertMotor + ",\n" +
                     "  solenoids = " + solenoids.toString() + ",\n" +
