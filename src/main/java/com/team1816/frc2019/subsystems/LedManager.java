@@ -75,7 +75,7 @@ public class LedManager extends Subsystem {
 
     public void setLedColorBlink(int r, int g, int b) {
         // Default period of 1 second
-        setLedColorBlink(r, g, b, 1000);
+        setLedColorBlink(r, g, b, 500);
     }
 
     public void indicateStatus(RobotStatus status) {
@@ -114,8 +114,10 @@ public class LedManager extends Subsystem {
                     if (blinkLedOn) {
                         writeLedHardware(0, 0, 0);
                         blinkLedOn = false;
-                    } else {
+                        lastWriteTime=System.currentTimeMillis();
+                    } else if(System.currentTimeMillis() >= lastWriteTime + period/2){
                         writeLedHardware(ledR, ledG, ledB);
+                        lastWriteTime=System.currentTimeMillis();
                         blinkLedOn = true;
                     }
                 }
