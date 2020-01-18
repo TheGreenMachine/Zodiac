@@ -73,7 +73,7 @@ public class Superstructure extends Subsystem {
     return false;
   }
 
-    @Override
-    public void initSendable(SendableBuilder builder) {
-    }
+  @Override
+   public void initSendable(SendableBuilder builder) {
+   }
 }
