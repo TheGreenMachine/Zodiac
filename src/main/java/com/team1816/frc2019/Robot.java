@@ -62,7 +62,7 @@ public class Robot extends TimedRobot {
     private boolean mDriveByCameraInAuto = false;
     private double loopStart;
 
-    private ActionManager mActionManager;
+    private ActionManager actionManager;
     private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
     private AsyncTimer blinkTimer;
 
@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
 
             mAutoModeSelector.updateModeCreator();
 
-            mActionManager = new ActionManager(
+            actionManager = new ActionManager(
 
             );
 
@@ -326,7 +326,7 @@ public class Robot extends TimedRobot {
         double turn = mControlBoard.getTurn();
 
 
-        mActionManager.update();
+        actionManager.update();
         mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, mControlBoard.getQuickTurn()));
 
     }
