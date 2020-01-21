@@ -4,8 +4,17 @@ import com.team1816.lib.subsystems.Subsystem;
 
 public class Hopper extends Subsystem {
     private static final String NAME = "hopper";
+    private static Hopper INSTANCE;
 
-    public Hopper(){
+    public static Hopper getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Hopper();
+        }
+
+        return INSTANCE;
+    }
+
+    private Hopper(){
         super(NAME);
     }
 

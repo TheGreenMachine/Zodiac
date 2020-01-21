@@ -4,6 +4,15 @@ import com.team1816.lib.subsystems.Subsystem;
 
 public class Turret extends Subsystem {
     private static final String NAME = "turret";
+    private static Turret INSTANCE;
+
+    public static Turret getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Turret();
+        }
+
+        return INSTANCE;
+    }
 
     public Turret(){
         super(NAME);

@@ -47,33 +47,14 @@ public class Robot extends TimedRobot {
     private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
 
-    private TimeDelayedBoolean mHangModeEnablePressed = new TimeDelayedBoolean();
-    private TimeDelayedBoolean mHangModeLowEnablePressed = new TimeDelayedBoolean();
-    private boolean mInHangMode;
-    private boolean mIntakeButtonPressed = false;
-    private boolean mHangModeReleased = true;
-
-    private MultiTrigger mDiskIntakeTrigger = new MultiTrigger(.4);
-    private MultiTrigger mBallIntakeTrigger = new MultiTrigger(.4);
-
     // button placed on the robot to allow the drive team to zero the robot right
     // before the start of a match
     DigitalInput resetRobotButton = new DigitalInput(Constants.kResetButtonChannel);
 
     private boolean mHasBeenEnabled = false;
-    private double mLastThrustPressedTime = -1.0;
-    private double mLastThrustShotTime = Double.NaN;
-    private double mLastShootPressedTime = -1.0;
-    private double mOffsetOverride = -1.0;
 
-    private LatchedBoolean mShootPressed = new LatchedBoolean();
-    private LatchedBoolean mThrustReleased = new LatchedBoolean();
-    private LatchedBoolean mThrustPressed = new LatchedBoolean();
     private LatchedBoolean mWantsAutoExecution = new LatchedBoolean();
     private LatchedBoolean mWantsAutoInterrupt = new LatchedBoolean();
-    private LatchedBoolean mAutoSteerPressed = new LatchedBoolean();
-
-    private boolean mStickyShoot;
 
     private AutoModeSelector mAutoModeSelector = AutoModeSelector.getInstance();
     private AutoModeExecutor mAutoModeExecutor;
@@ -140,8 +121,6 @@ public class Robot extends TimedRobot {
             ledManager.registerEnabledLoops(mEnabledLooper);
             ledManager.registerEnabledLoops(mDisabledLooper);
 
-            mInHangMode = false;
-
             // Robot starts forwards.
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
             mDrive.setHeading(Rotation2d.identity());
@@ -151,9 +130,7 @@ public class Robot extends TimedRobot {
             mAutoModeSelector.updateModeCreator();
 
             mActionManager = new ActionManager(
-                // Driver Gamepad
-                //TODO: Setting cargoshooter down or up needs a parallel action that stops intake for both and shooter and collector
-                   //      Also needs to raise the collector arm
+
             );
 
             blinkTimer = new AsyncTimer(
@@ -189,7 +166,6 @@ public class Robot extends TimedRobot {
             mDisabledLooper.start();
 
             mDrive.setBrakeMode(false);
-            mThrustReleased.update(true);
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
@@ -210,8 +186,6 @@ public class Robot extends TimedRobot {
             mHasBeenEnabled = true;
 
             mInfrastructure.setIsManualControl(true); // turn on compressor when superstructure is not moving
-
-            mInHangMode = false;
 
             mDrive.zeroSensors();
 
@@ -242,12 +216,10 @@ public class Robot extends TimedRobot {
             mHasBeenEnabled = true;
 
             mEnabledLooper.start();
-            mInHangMode = false;
 
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
 
-            mOffsetOverride = -2.0;
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;

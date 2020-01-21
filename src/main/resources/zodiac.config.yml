@@ -24,7 +24,7 @@ subsystems:
     climber:
         implemented:
         talons:
-            climbMaster: 0
+            elevator: 0
     collector:
         implemented: false
         talons:
@@ -41,9 +41,9 @@ subsystems:
         implemented: false
         talons:
             shootMaster: -1
-            shootSlave1: -1
-            shootSlave2: -1
-            shootSlave3: -1
+            shootSlaveA: -1
+            shootSlaveB: -1
+            shootSlaveC: -1
         solenoids:
             hood: -1
         constants: #TODO: need tuning

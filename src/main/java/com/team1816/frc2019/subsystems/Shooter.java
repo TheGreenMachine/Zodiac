@@ -4,8 +4,18 @@ import com.team1816.lib.subsystems.Subsystem;
 
 public class Shooter extends Subsystem {
     private static final String NAME = "shooter";
+    private static Shooter INSTANCE;
 
-    public Shooter(){
+    public static Shooter getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Shooter();
+        }
+
+        return INSTANCE;
+    }
+
+
+    private Shooter(){
         super(NAME);
     }
 

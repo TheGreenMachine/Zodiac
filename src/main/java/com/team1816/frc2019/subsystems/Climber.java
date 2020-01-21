@@ -4,6 +4,15 @@ import com.team1816.lib.subsystems.Subsystem;
 
 public class Climber extends Subsystem {
     private static final String NAME = "climber";
+    private static Climber INSTANCE;
+
+    public static Climber getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Climber();
+        }
+
+        return INSTANCE;
+    }
 
     public Climber(){
         super(NAME);
