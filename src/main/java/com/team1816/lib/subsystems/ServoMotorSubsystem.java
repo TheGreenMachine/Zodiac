@@ -2,7 +2,7 @@ package com.team1816.lib.subsystems;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.team1816.frc2019.Constants;
+import com.team1816.frc2020.Constants;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team254.lib.drivers.TalonSRXFactory;

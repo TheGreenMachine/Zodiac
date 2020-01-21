@@ -1,7 +1,7 @@
 package com.team1816.lib.subsystems;
 
-import com.team1816.frc2019.Constants;
-import com.team1816.frc2019.subsystems.Superstructure;
+import com.team1816.frc2020.Constants;
+import com.team1816.frc2020.subsystems.Superstructure;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import edu.wpi.first.wpilibj.Compressor;

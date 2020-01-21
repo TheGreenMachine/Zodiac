@@ -1,7 +1,7 @@
 package com.team1816.lib.paths;
 
-import com.team1816.frc2019.Robot;
-import com.team1816.frc2019.planners.DriveMotionPlanner;
+import com.team1816.frc2020.Robot;
+import com.team1816.frc2020.planners.DriveMotionPlanner;
 import com.team254.lib.control.Path;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
