@@ -1,16 +1,60 @@
 subsystems:
     drivetrain:
         implemented: false
+        falcons:
+            leftMain: -1
+            leftSlave: -1
+            rightMain: -1
+            rightSlave: -1
+        invertMotor:
+            -
+        constants:
+            pigeonId: -1
+            pigeonOnTalon: -1
+            kP: 0
+            kI: 0
+            kD: 0
+            kF: 0
+            encPPR: 0
+            currentFloorCheck: .12
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 2000
+            rpmEpsilonCheck: 60
+            openLoopRampRate: 1
     climber:
-        implemented: false
+        implemented:
+        talons:
+            climbMaster: 0
     collector:
         implemented: false
+        talons:
+            intake: -1
+        solenoids:
+            arm: -1
     hopper:
         implemented: false
+        talon:
+            spindexer: -1
+        solenoids:
+            arm: -1 # should find a better name - not really an "arm"
     shooter:
         implemented: false
+        talons:
+            shootMaster: -1
+            shootSlave1: -1
+            shootSlave2: -1
+            shootSlave3: -1
+        solenoids:
+            hood: -1
+        constants: #TODO: need tuning
+            kP: 0
+            kI: 0
+            kD: 0
+            kF: 0
     turret:
         implemented: false
+        talons:
+            turret: -1
     canifier:
         implemented: false
         constants:
@@ -18,4 +62,15 @@ subsystems:
     ledmanager:
         implemented: false
         canifier: 0
-constants:
+pcm:
+constants: #TODO: update constants for new robot
+    wheelDiameter: -1
+    trackWidth: -1
+    maxVel: 40 #inch/s
+    maxAccel: 80 #inch/s^2
+    sensorPhase: 0
+    kLooperDt: .030
+    kTrackScrubFactor: 1.0
+    kPCMId: 0
+    pathKs: 2
+    verbose: 0
