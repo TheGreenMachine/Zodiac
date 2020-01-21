@@ -1,0 +1,21 @@
+subsystems:
+    drivetrain:
+        implemented: false
+    climber:
+        implemented: false
+    collector:
+        implemented: false
+    hopper:
+        implemented: false
+    shooter:
+        implemented: false
+    turret:
+        implemented: false
+    canifier:
+        implemented: false
+        constants:
+            canId: 0
+    ledmanager:
+        implemented: false
+        canifier: 0
+constants:
