@@ -1,5 +1,7 @@
 package com.team1816.frc2020.subsystems;
 
+import badlog.lib.BadLog;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.frc2020.Robot;
@@ -23,6 +25,10 @@ public class Shooter extends Subsystem {
     private final IMotorController shootSlaveB;
     private final IMotorController shootSlaveC;
 
+    // States
+    private double shooterVelocity;
+    private boolean outputsChanged;
+
     private Shooter() {
         super(NAME);
         this.shootMain = Robot.getFactory().getMotor(NAME, "shootMain");
@@ -31,9 +37,36 @@ public class Shooter extends Subsystem {
         this.shootSlaveC = Robot.getFactory().getMotor(NAME, "shootSlaveC", shootMain);
     }
 
+    public void setVelocity(double velocity) {
+        this.shooterVelocity = velocity;
+        outputsChanged = true;
+    }
+
+    public double getActualVelocity() {
+        return shootMain.getSelectedSensorVelocity(0);
+    }
+
+    public double getTargetVelocity() {
+        return shooterVelocity;
+    }
+
+    public double getError() {
+        return shootMain.getClosedLoopError(0);
+    }
+
+    public void initLogger() {
+        BadLog.createTopic("Shooter/ActVel", "Native Units", INSTANCE::getActualVelocity, "hide",
+            "join:Shooter/Velocities");
+        BadLog.createTopic("Shooter/TargetVel", "Native Units", INSTANCE::getTargetVelocity, "hide",
+            "join:Shooter/Velocities");
+        BadLog.createTopic("Shooter/Error", "Native Units", INSTANCE::getError, "hide",
+            "join:Shooter/Velocities");
+    }
     @Override
     public void writePeriodicOutputs() {
-
+        if (outputsChanged) {
+            this.shootMain.set(ControlMode.Velocity, shooterVelocity);
+        }
     }
 
     @Override
