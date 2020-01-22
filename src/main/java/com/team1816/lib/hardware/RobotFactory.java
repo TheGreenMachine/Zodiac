@@ -27,14 +27,14 @@ public class RobotFactory {
         if (isImplemented(subsystemName)) {
             YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
             if (isHardwareValid(subsystem.talons.get(name))) {
-                var motor = CtreMotorFactory.createDefaultTalon(subsystem.talons.get(name));
+                var motor = CtreMotorFactory.createDefaultTalon(subsystem.talons.get(name), false);
                 if (subsystem.invertMotor.contains(motor.getDeviceID())) {
                     System.out.println("Inverting " + name);
                     motor.setInverted(true);
                 }
                 return motor;
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
-                var motor = CtreMotorFactory.createDefaultFalcon(subsystem.falcons.get(name));
+                var motor = CtreMotorFactory.createDefaultTalon(subsystem.falcons.get(name), true);
                 if (subsystem.invertMotor.contains(motor.getDeviceID())) {
                     System.out.println("Inverting" + name);
                     motor.setInverted(true);
@@ -50,11 +50,11 @@ public class RobotFactory {
             YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
             if (isHardwareValid(subsystem.talons.get(name))) {
                 // Talons must be following another Talon, cannot follow a Victor.
-                var talon = CtreMotorFactory.createPermanentSlaveTalon(subsystem.talons.get(name), master);
+                var talon = CtreMotorFactory.createPermanentSlaveTalon(subsystem.talons.get(name), false, master);
                 talon.setInverted(master.getInverted());
                 return talon;
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
-                var falcon = CtreMotorFactory.createDefaultFalcon(subsystem.falcons.get(name));
+                var falcon = CtreMotorFactory.createPermanentSlaveTalon(subsystem.falcons.get(name), true, master);
                 falcon.setInverted(master.getInverted());
                 return falcon;
             } else if (isHardwareValid(subsystem.victors.get(name))) {
