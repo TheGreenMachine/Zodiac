@@ -23,7 +23,7 @@ public class RobotFactory {
         return (getSubsystem(subsystem) != null) && (getSubsystem(subsystem).implemented);
     }
 
-    public IMotorControllerEnhanced getMotor(String subsystemName, String name) {
+    public IMotorControllerEnhanced getMotor(String subsystemName, String name) { // TODO: optimize this method
         if (isImplemented(subsystemName)) {
             YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
             if (isHardwareValid(subsystem.talons.get(name))) {
@@ -45,7 +45,7 @@ public class RobotFactory {
         return CtreMotorFactory.createGhostTalon();
     }
 
-    public IMotorController getMotor(String subsystemName, String name, IMotorController master) {
+    public IMotorController getMotor(String subsystemName, String name, IMotorController master) { // TODO: optimize this method
         if (isImplemented(subsystemName) && master != null) {
             YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
             if (isHardwareValid(subsystem.talons.get(name))) {
@@ -53,6 +53,10 @@ public class RobotFactory {
                 var talon = CtreMotorFactory.createPermanentSlaveTalon(subsystem.talons.get(name), master);
                 talon.setInverted(master.getInverted());
                 return talon;
+            } else if (isHardwareValid(subsystem.falcons.get(name))) {
+                var falcon = CtreMotorFactory.createDefaultFalcon(subsystem.falcons.get(name));
+                falcon.setInverted(master.getInverted());
+                return falcon;
             } else if (isHardwareValid(subsystem.victors.get(name))) {
                 // Victors can follow Talons or another Victor.
                 var victor = CtreMotorFactory.createPermanentSlaveVictor(subsystem.victors.get(name), master);
