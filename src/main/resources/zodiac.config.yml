@@ -40,10 +40,10 @@ subsystems:
     shooter:
         implemented: false
         talons:
-            shootMaster: -1
-            shootSlaveA: -1
-            shootSlaveB: -1
-            shootSlaveC: -1
+            shootMaster: 2
+            shootSlaveA: 4
+            shootSlaveB: 10
+            shootSlaveC: 11
         solenoids:
             hood: -1
         constants: #TODO: need tuning
