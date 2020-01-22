@@ -1,5 +1,8 @@
 package com.team1816.frc2020.subsystems;
 
+import com.ctre.phoenix.motorcontrol.IMotorController;
+import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.team1816.frc2020.Robot;
 import com.team1816.lib.subsystems.Subsystem;
 
 public class Shooter extends Subsystem {
@@ -14,9 +17,18 @@ public class Shooter extends Subsystem {
         return INSTANCE;
     }
 
+    // Components
+    private final IMotorControllerEnhanced shootMain;
+    private final IMotorController shootSlaveA;
+    private final IMotorController shootSlaveB;
+    private final IMotorController shootSlaveC;
 
-    private Shooter(){
+    private Shooter() {
         super(NAME);
+        this.shootMain = Robot.getFactory().getMotor(NAME, "shootMain");
+        this.shootSlaveA = Robot.getFactory().getMotor(NAME, "shootSlaveA", shootMain);
+        this.shootSlaveB = Robot.getFactory().getMotor(NAME, "shootSlaveB", shootMain);
+        this.shootSlaveC = Robot.getFactory().getMotor(NAME, "shootSlaveC", shootMain);
     }
 
     @Override
