@@ -38,10 +38,10 @@ subsystems:
     shooter:
         implemented: false
         talons:
-            shootMaster: 2
-            shootFollowerA: 4
-            shootFollowerB: 10
-            shootFollowerC: 11
+            shooterMaster: 2
+            shooterFollowerA: 4
+            shooterFollowerB: 10
+            shooterFollowerC: 11
         solenoids:
             hood: -1
         constants: #TODO: need tuning

@@ -21,42 +21,58 @@ public class Shooter extends Subsystem {
     }
 
     // Components
-    private final IMotorControllerEnhanced shootMain;
-    private final IMotorController shootFollowerA;
-    private final IMotorController shootFollowerB;
-    private final IMotorController shootFollowerC;
+    private final IMotorControllerEnhanced shooterMain;
+    private final IMotorController shooterFollowerA;
+    private final IMotorController shooterFollowerB;
+    private final IMotorController shooterFollowerC;
 
     private final Solenoid hood;
 
     // States
-    private double shooterVelocity;
+    private double shootererVelocity;
+    private boolean hoodDown;
     private boolean outputsChanged;
 
+    // Constants
+    private double kP;
+    private double kI;
+    private double kD;
+    private double kF;
 
     private Shooter() {
         super(NAME);
-        this.shootMain = Robot.getFactory().getMotor(NAME, "shootMain");
-        this.shootFollowerA = Robot.getFactory().getMotor(NAME, "shootFollowerA", shootMain);
-        this.shootFollowerB = Robot.getFactory().getMotor(NAME, "shootFollowerB", shootMain);
-        this.shootFollowerC = Robot.getFactory().getMotor(NAME, "shootFollowerC", shootMain);
+        this.shooterMain = Robot.getFactory().getMotor(NAME, "shooterMain");
+        this.shooterFollowerA = Robot.getFactory().getMotor(NAME, "shooterFollowerA", shooterMain);
+        this.shooterFollowerB = Robot.getFactory().getMotor(NAME, "shooterFollowerB", shooterMain);
+        this.shooterFollowerC = Robot.getFactory().getMotor(NAME, "shooterFollowerC", shooterMain);
         this.hood = Robot.getFactory().getSolenoid(NAME, "hood");
+
+        this.kP = Robot.getFactory().getConstant("kP");
+        this.kI = Robot.getFactory().getConstant("kP");
+        this.kD = Robot.getFactory().getConstant("kP");
+        this.kF = Robot.getFactory().getConstant("kP");
     }
 
     public void setVelocity(double velocity) {
-        this.shooterVelocity = velocity;
+        this.shootererVelocity = velocity;
+        outputsChanged = true;
+    }
+
+    public void setHoodDown(boolean hoodDown) {
+        this.hoodDown = hoodDown;
         outputsChanged = true;
     }
 
     public double getActualVelocity() {
-        return shootMain.getSelectedSensorVelocity(0);
+        return shooterMain.getSelectedSensorVelocity(0);
     }
 
     public double getTargetVelocity() {
-        return shooterVelocity;
+        return shootererVelocity;
     }
 
     public double getError() {
-        return shootMain.getClosedLoopError(0);
+        return shooterMain.getClosedLoopError(0);
     }
 
     public void initLogger() {
@@ -70,7 +86,8 @@ public class Shooter extends Subsystem {
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
-            this.shootMain.set(ControlMode.Velocity, shooterVelocity);
+            this.shooterMain.set(ControlMode.Velocity, shootererVelocity);
+            this.hood.set(hoodDown);
             outputsChanged = false;
         }
     }
