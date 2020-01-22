@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Shooter extends Subsystem {
     private static final String NAME = "shooter";
@@ -21,20 +22,24 @@ public class Shooter extends Subsystem {
 
     // Components
     private final IMotorControllerEnhanced shootMain;
-    private final IMotorController shootSlaveA;
-    private final IMotorController shootSlaveB;
-    private final IMotorController shootSlaveC;
+    private final IMotorController shootFollowerA;
+    private final IMotorController shootFollowerB;
+    private final IMotorController shootFollowerC;
+
+    private final Solenoid hood;
 
     // States
     private double shooterVelocity;
     private boolean outputsChanged;
 
+
     private Shooter() {
         super(NAME);
         this.shootMain = Robot.getFactory().getMotor(NAME, "shootMain");
-        this.shootSlaveA = Robot.getFactory().getMotor(NAME, "shootSlaveA", shootMain);
-        this.shootSlaveB = Robot.getFactory().getMotor(NAME, "shootSlaveB", shootMain);
-        this.shootSlaveC = Robot.getFactory().getMotor(NAME, "shootSlaveC", shootMain);
+        this.shootFollowerA = Robot.getFactory().getMotor(NAME, "shootFollowerA", shootMain);
+        this.shootFollowerB = Robot.getFactory().getMotor(NAME, "shootFollowerB", shootMain);
+        this.shootFollowerC = Robot.getFactory().getMotor(NAME, "shootFollowerC", shootMain);
+        this.hood = Robot.getFactory().getSolenoid(NAME, "hood");
     }
 
     public void setVelocity(double velocity) {
@@ -66,6 +71,7 @@ public class Shooter extends Subsystem {
     public void writePeriodicOutputs() {
         if (outputsChanged) {
             this.shootMain.set(ControlMode.Velocity, shooterVelocity);
+            outputsChanged = false;
         }
     }
 

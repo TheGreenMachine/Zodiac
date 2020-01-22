@@ -3,9 +3,9 @@ subsystems:
         implemented: false
         falcons:
             leftMain: -1
-            leftSlave: -1
+            leftFollower: -1
             rightMain: -1
-            rightSlave: -1
+            rightFollower: -1
         constants:
             pigeonId: -1
             pigeonOnTalon: -1
@@ -39,9 +39,9 @@ subsystems:
         implemented: false
         talons:
             shootMaster: 2
-            shootSlaveA: 4
-            shootSlaveB: 10
-            shootSlaveC: 11
+            shootFollowerA: 4
+            shootFollowerB: 10
+            shootFollowerC: 11
         solenoids:
             hood: -1
         constants: #TODO: need tuning
