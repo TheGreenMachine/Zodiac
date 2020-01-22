@@ -6,8 +6,6 @@ subsystems:
             leftSlave: -1
             rightMain: -1
             rightSlave: -1
-        invertMotor:
-            -
         constants:
             pigeonId: -1
             pigeonOnTalon: -1
@@ -22,7 +20,7 @@ subsystems:
             rpmEpsilonCheck: 60
             openLoopRampRate: 1
     climber:
-        implemented:
+        implemented: false
         talons:
             elevator: 0
     collector:
@@ -62,7 +60,7 @@ subsystems:
     ledmanager:
         implemented: false
         canifier: 0
-pcm:
+pcm: 0
 constants: #TODO: update constants for new robot
     wheelDiameter: 6.25 #inches
     trackWidth: 25 #inches
