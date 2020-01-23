@@ -39,16 +39,17 @@ public class Turret extends Subsystem {
         this.turret=factory.getMotor(NAME,"turret");
     }
 
-    public void setArmSpeed(double speed){
+    public void setTurretSpeed(double speed){
         turretSpeed=speed;
         isPercentOutput=true;
         outputChanged=true;
     }
 
-    public void setArmPos(double position){
+    public void setTurretPos(double position){
         turretPos=position;
         isPercentOutput=false;
         outputChanged=true;
+
         turret.configForwardSoftLimitThreshold(FORWARD_SENSOR_LIMIT,kTimeoutMs);
         turret.configReverseSoftLimitThreshold(REVERSE_SENSOR_LIMIT,kTimeoutMs);
         turret.configForwardSoftLimitEnable(true,kTimeoutMs);
