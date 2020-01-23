@@ -12,13 +12,14 @@ public class Collector extends Subsystem {
     private static final String NAME = "collector";
     private static Collector INSTANCE;
 
-    private Solenoid armPiston;
-    private IMotorControllerEnhanced intake;
+    // Components
+    private final Solenoid armPiston;
+    private final IMotorControllerEnhanced intake;
 
+    // State
     private double intakePow;
-
     private boolean armDown;
-    private boolean outputsChanged=false;
+    private boolean outputsChanged = false;
 
 
     public static Collector getInstance() {
@@ -29,32 +30,36 @@ public class Collector extends Subsystem {
         return INSTANCE;
     }
 
-    private Collector(){
+    private Collector() {
         super(NAME);
-        RobotFactory factory= Robot.getFactory();
-        this.armPiston=factory.getSolenoid(NAME,"arm");
-        this.intake=factory.getMotor(NAME,"intake");
+        RobotFactory factory = Robot.getFactory();
+        this.armPiston = factory.getSolenoid(NAME, "arm");
+        this.intake = factory.getMotor(NAME, "intake");
     }
-    public void setArm(boolean down){
-        armDown=down;
-        outputsChanged=true;
 
+    public void setArm(boolean down) {
+        armDown = down;
+        outputsChanged = true;
     }
-    public void setIntakePow(double intakePower){
-        intakePow=intakePower;
+
+    public void setIntakePow(double intakePower) {
+        intakePow = intakePower;
     }
-    public boolean isArmDown(){
+
+    public boolean isArmDown() {
         return armDown;
     }
-    public double getIntakePow(){
+
+    public double getIntakePow() {
         return intakePow;
     }
+
     @Override
     public void writePeriodicOutputs() {
-        if(outputsChanged){
+        if (outputsChanged) {
             armPiston.set(armDown);
-            intake.set(ControlMode.PercentOutput,intakePow);
-            outputsChanged=false;
+            intake.set(ControlMode.PercentOutput, intakePow);
+            outputsChanged = false;
         }
     }
 

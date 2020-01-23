@@ -1,5 +1,6 @@
 package com.team1816.frc2020.subsystems;
 
+import badlog.lib.BadLog;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
@@ -28,7 +29,7 @@ public class Shooter extends Subsystem {
 
 //    private final Solenoid hood;
 
-    // States
+    // State
     private double shooterVelocity;
     private boolean hoodDown;
     private boolean outputsChanged;
@@ -70,14 +71,14 @@ public class Shooter extends Subsystem {
         outputsChanged = true;
     }
 
-//    public void initLogger() {
-//        BadLog.createTopic("Shooter/ActVel", "Native Units", INSTANCE::getActualVelocity, "hide",
-//            "join:Shooter/Velocities");
-//        BadLog.createTopic("Shooter/TargetVel", "Native Units", INSTANCE::getTargetVelocity, "hide",
-//            "join:Shooter/Velocities");
-//        BadLog.createTopic("Shooter/Error", "Native Units", INSTANCE::getError, "hide",
-//            "join:Shooter/Velocities");
-//    }
+   public void initLogger() {
+       BadLog.createTopic("Shooter/ActVel", "Native Units", this::getActualVelocity,
+           "hide", "join:Shooter/Velocities");
+       BadLog.createTopic("Shooter/TargetVel", "Native Units", this::getTargetVelocity,
+           "hide", "join:Shooter/Velocities");
+       BadLog.createTopic("Shooter/Error", "Native Units", this::getError,
+           "hide", "join:Shooter/Velocities");
+   }
 
     public double getActualVelocity() {
         return shooterMain.getSelectedSensorVelocity(0);

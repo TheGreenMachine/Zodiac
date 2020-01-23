@@ -10,14 +10,6 @@ public class Climber extends Subsystem {
     private static final String NAME = "climber";
     private static Climber INSTANCE;
 
-    private IMotorControllerEnhanced climberMotor;
-
-    private double climberPow;
-
-    private boolean outputsChanged=false;
-
-
-
     public static Climber getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new Climber();
@@ -26,23 +18,29 @@ public class Climber extends Subsystem {
         return INSTANCE;
     }
 
-    public Climber(){
-        super(NAME);
-        RobotFactory factory= Robot.getFactory();
-        climberMotor=factory.getMotor(NAME,"elevator");
+    // Components
+    private final IMotorControllerEnhanced climberMotor;
 
+    // State
+    private double climberPow;
+    private boolean outputsChanged = false;
+
+    public Climber() {
+        super(NAME);
+        RobotFactory factory = Robot.getFactory();
+        climberMotor = factory.getMotor(NAME, "elevator");
     }
 
-    public void setClimberPower(double power){
-        climberPow=power;
-        outputsChanged=true;
+    public void setClimberPower(double power) {
+        climberPow = power;
+        outputsChanged = true;
     }
 
     @Override
     public void writePeriodicOutputs() {
-        if(outputsChanged){
-            climberMotor.set(ControlMode.PercentOutput,climberPow);
-            outputsChanged=false;
+        if (outputsChanged) {
+            climberMotor.set(ControlMode.PercentOutput, climberPow);
+            outputsChanged = false;
         }
     }
 
