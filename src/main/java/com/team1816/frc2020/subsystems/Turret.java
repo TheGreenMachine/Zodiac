@@ -32,6 +32,8 @@ public class Turret extends Subsystem {
     private static final int kPIDLoopIDx = 0;
     private static final int kTimeoutMs = 10;
 
+    private static double TURRET_ENCODER_PPR;
+
     public Turret() {
         super(NAME);
         RobotFactory factory = Robot.getFactory();
