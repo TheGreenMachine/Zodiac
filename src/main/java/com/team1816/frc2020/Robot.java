@@ -215,7 +215,7 @@ public class Robot extends TimedRobot {
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
 
             // shooter
-            shooter.setVelocity(4200);
+            // shooter.setVelocity(4200);
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
