@@ -2,7 +2,7 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.team1816.frc2020.Constants;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
@@ -29,14 +29,16 @@ public class Turret extends Subsystem {
     private boolean isPercentOutput;
 
     // Constants
-    // TODO: change forward and reverse sensor limit to actual values
-    public static final int FORWARD_SENSOR_LIMIT = -1;
-    public static final int REVERSE_SENSOR_LIMIT = -1;
+    private static final int kPIDLoopIDx = 0;
+    private static final int kTimeoutMs = 10;
 
     public Turret() {
         super(NAME);
         RobotFactory factory = Robot.getFactory();
         this.turret = factory.getMotor(NAME, "turret");
+
+        int absolutePosition = getTurretPosAbsolute();
+        turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, kTimeoutMs);
     }
 
     public void setTurretSpeed(double speed) {
@@ -49,20 +51,21 @@ public class Turret extends Subsystem {
         turretPos = position;
         isPercentOutput = false;
         outputsChanged = true;
-
-        turret.configForwardSoftLimitThreshold(FORWARD_SENSOR_LIMIT, Constants.kCANTimeoutMs);
-        turret.configReverseSoftLimitThreshold(REVERSE_SENSOR_LIMIT, Constants.kCANTimeoutMs);
-        turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
-        turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
-
     }
 
     public boolean isPercentOutput() {
         return isPercentOutput;
     }
 
-    public double getTurretPosSetPoint() {
-        return turretPos;
+    public int getTurretPosAbsolute() {
+        if (turret != null) {
+            return ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & 0xFFF;
+        }
+        return 0;
+    }
+
+    public int getTurretPos() {
+        return turret.getSelectedSensorPosition(kPIDLoopIDx);
     }
 
     public double getTurretSpeed() {
