@@ -59,7 +59,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
     private Rotation2d mGyroOffset = Rotation2d.identity();
     private double mLastDriveCurrentSwitchTime = -1;
     private final RobotFactory mFactory = Robot.getFactory();
-    private Double kTalonKd;
     private BadLog mLogger;
 
     private PeriodicIO mPeriodicIO;
@@ -139,10 +138,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
     }
 
     private void reloadTalonGains(IMotorControllerEnhanced talon) {
-        kTalonKd = mFactory.getConstant(NAME, "kD");
         talon.config_kP(0, mFactory.getConstant(NAME, "kP"), Constants.kLongCANTimeoutMs);
         talon.config_kI(0, mFactory.getConstant(NAME, "kI"), Constants.kLongCANTimeoutMs);
-        talon.config_kD(0, kTalonKd, Constants.kLongCANTimeoutMs);
+        talon.config_kD(0, mFactory.getConstant(NAME, "kD"), Constants.kLongCANTimeoutMs);
         talon.config_kF(0, mFactory.getConstant(NAME, "kF"), Constants.kLongCANTimeoutMs);
         talon.config_IntegralZone(0, mFactory.getConstant(NAME, "iZone").intValue(), Constants.kLongCANTimeoutMs);
     }
