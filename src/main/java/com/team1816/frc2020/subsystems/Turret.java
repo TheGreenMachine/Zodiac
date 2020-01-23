@@ -29,9 +29,6 @@ public class Turret extends Subsystem {
     private boolean isPercentOutput;
 
     // Constants
-    // TODO: change forward and reverse sensor limit to actual values
-    public static final int FORWARD_SENSOR_LIMIT = -1;
-    public static final int REVERSE_SENSOR_LIMIT = -1;
 
     public Turret() {
         super(NAME);
@@ -50,10 +47,6 @@ public class Turret extends Subsystem {
         isPercentOutput = false;
         outputsChanged = true;
 
-        turret.configForwardSoftLimitThreshold(FORWARD_SENSOR_LIMIT, Constants.kCANTimeoutMs);
-        turret.configReverseSoftLimitThreshold(REVERSE_SENSOR_LIMIT, Constants.kCANTimeoutMs);
-        turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
-        turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
 
     }
 
