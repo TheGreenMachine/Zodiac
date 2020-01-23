@@ -1,10 +1,22 @@
 package com.team1816.frc2020.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.team1816.frc2020.Robot;
+import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
 
 public class Climber extends Subsystem {
     private static final String NAME = "climber";
     private static Climber INSTANCE;
+
+    private IMotorControllerEnhanced climberMotor;
+
+    private double climberPow;
+
+    private boolean outputsChanged=false;
+
+
 
     public static Climber getInstance() {
         if (INSTANCE == null) {
@@ -16,11 +28,22 @@ public class Climber extends Subsystem {
 
     public Climber(){
         super(NAME);
+        RobotFactory factory= Robot.getFactory();
+        climberMotor=factory.getMotor(NAME,"elevator");
+
+    }
+
+    public void setClimberPower(double power){
+        climberPow=power;
+        outputsChanged=true;
     }
 
     @Override
     public void writePeriodicOutputs() {
-
+        if(outputsChanged){
+            climberMotor.set(ControlMode.PercentOutput,climberPow);
+            outputsChanged=false;
+        }
     }
 
     @Override

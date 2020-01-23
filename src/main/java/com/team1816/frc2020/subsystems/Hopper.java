@@ -48,6 +48,7 @@ public class Hopper extends Subsystem {
         if (outputsChanged) {
             this.spindexer.set(ControlMode.PercentOutput, spindexerVelocity);
             this.hopperSolenoid.set(hopperOut);
+            outputsChanged=false;
         }
     }
 
