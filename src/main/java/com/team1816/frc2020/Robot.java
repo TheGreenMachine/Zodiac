@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
             BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
             logger.finishInitialization();
             mDrive.setLogger(logger);
-           // shooter.initLogger();
+            shooter.initLogger();
 
             CrashTracker.logRobotInit();
 
