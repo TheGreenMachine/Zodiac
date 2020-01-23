@@ -4,10 +4,7 @@ import badlog.lib.BadLog;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
 import com.team1816.frc2020.paths.TrajectorySet;
-import com.team1816.frc2020.subsystems.CarriageCanifier;
-import com.team1816.frc2020.subsystems.Drive;
-import com.team1816.frc2020.subsystems.LedManager;
-import com.team1816.frc2020.subsystems.Superstructure;
+import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IControlBoard;
@@ -20,7 +17,9 @@ import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.*;
+import com.team254.lib.util.CheesyDriveHelper;
+import com.team254.lib.util.CrashTracker;
+import com.team254.lib.util.LatchedBoolean;
 import com.team254.lib.wpilib.TimedRobot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
@@ -46,6 +45,7 @@ public class Robot extends TimedRobot {
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
     private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
+    private final Shooter shooter = Shooter.getInstance();
 
     // button placed on the robot to allow the drive team to zero the robot right
     // before the start of a match
@@ -101,6 +101,7 @@ public class Robot extends TimedRobot {
             BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
             logger.finishInitialization();
             mDrive.setLogger(logger);
+           // shooter.initLogger();
 
             CrashTracker.logRobotInit();
 
@@ -109,7 +110,8 @@ public class Robot extends TimedRobot {
                 mDrive,
                 mSuperstructure,
                 mCarriageCanifer,
-                mInfrastructure
+                mInfrastructure,
+                shooter
             );
 
             mCarriageCanifer.zeroSensors();
@@ -152,6 +154,9 @@ public class Robot extends TimedRobot {
             mEnabledLooper.stop();
 
             ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
+
+            // shooter
+            shooter.setVelocity(0);
 
             // Reset all auto mode state.
             if (mAutoModeExecutor != null) {
@@ -208,6 +213,9 @@ public class Robot extends TimedRobot {
             CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
+
+            // shooter
+            shooter.setVelocity(4200);
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
@@ -281,7 +289,7 @@ public class Robot extends TimedRobot {
             Optional<AutoModeBase> autoMode = mAutoModeSelector.getAutoMode();
             mDriveByCameraInAuto = mAutoModeSelector.isDriveByCamera();
             if (autoMode.isPresent() && autoMode.get() != mAutoModeExecutor.getAutoMode()) {
-                System.out.println("Set auto mode to: " + autoMode.get().getClass().toString());
+//                System.out.println("Set auto mode to: " + autoMode.get().getClass().toString());
                 mAutoModeExecutor.setAutoMode(autoMode.get());
             }
         } catch (Throwable t) {
@@ -313,6 +321,9 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         loopStart = Timer.getFPGATimestamp();
+
+        shooter.setVelocity(4200);
+
         try {
             manualControl();
         } catch (Throwable t) {

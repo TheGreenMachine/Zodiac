@@ -1,12 +1,12 @@
 package com.team1816.frc2020.subsystems;
 
-import badlog.lib.BadLog;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.subsystems.Subsystem;
-import edu.wpi.first.wpilibj.Solenoid;
 
 public class Shooter extends Subsystem {
     private static final String NAME = "shooter";
@@ -26,18 +26,18 @@ public class Shooter extends Subsystem {
     private final IMotorController shooterFollowerB;
     private final IMotorController shooterFollowerC;
 
-    private final Solenoid hood;
+//    private final Solenoid hood;
 
     // States
-    private double shootererVelocity;
+    private double shooterVelocity;
     private boolean hoodDown;
     private boolean outputsChanged;
 
     // Constants
-    private double kP;
-    private double kI;
-    private double kD;
-    private double kF;
+    private final double kP;
+    private final double kI;
+    private final double kD;
+    private final double kF;
 
     private Shooter() {
         super(NAME);
@@ -45,16 +45,23 @@ public class Shooter extends Subsystem {
         this.shooterFollowerA = Robot.getFactory().getMotor(NAME, "shooterFollowerA", shooterMain);
         this.shooterFollowerB = Robot.getFactory().getMotor(NAME, "shooterFollowerB", shooterMain);
         this.shooterFollowerC = Robot.getFactory().getMotor(NAME, "shooterFollowerC", shooterMain);
-        this.hood = Robot.getFactory().getSolenoid(NAME, "hood");
+     //   this.hood = Robot.getFactory().getSolenoid(NAME, "hood");
 
-        this.kP = Robot.getFactory().getConstant("kP");
-        this.kI = Robot.getFactory().getConstant("kP");
-        this.kD = Robot.getFactory().getConstant("kP");
-        this.kF = Robot.getFactory().getConstant("kP");
+        this.kP = Robot.getFactory().getConstant(NAME, "kP");
+        this.kI = Robot.getFactory().getConstant(NAME, "kI");
+        this.kD = Robot.getFactory().getConstant(NAME, "kD");
+        this.kF = Robot.getFactory().getConstant(NAME, "kF");
+
+        shooterMain.setNeutralMode(NeutralMode.Coast);
+        shooterFollowerA.setNeutralMode(NeutralMode.Coast);
+        shooterFollowerB.setNeutralMode(NeutralMode.Coast);
+        shooterFollowerC.setNeutralMode(NeutralMode.Coast);
+
+        shooterMain.configClosedloopRamp(2, Constants.kCANTimeoutMs);
     }
 
     public void setVelocity(double velocity) {
-        this.shootererVelocity = velocity;
+        this.shooterVelocity = velocity;
         outputsChanged = true;
     }
 
@@ -63,31 +70,33 @@ public class Shooter extends Subsystem {
         outputsChanged = true;
     }
 
+//    public void initLogger() {
+//        BadLog.createTopic("Shooter/ActVel", "Native Units", INSTANCE::getActualVelocity, "hide",
+//            "join:Shooter/Velocities");
+//        BadLog.createTopic("Shooter/TargetVel", "Native Units", INSTANCE::getTargetVelocity, "hide",
+//            "join:Shooter/Velocities");
+//        BadLog.createTopic("Shooter/Error", "Native Units", INSTANCE::getError, "hide",
+//            "join:Shooter/Velocities");
+//    }
+
     public double getActualVelocity() {
         return shooterMain.getSelectedSensorVelocity(0);
     }
 
     public double getTargetVelocity() {
-        return shootererVelocity;
+        return shooterVelocity;
     }
 
     public double getError() {
         return shooterMain.getClosedLoopError(0);
     }
 
-    public void initLogger() {
-        BadLog.createTopic("Shooter/ActVel", "Native Units", INSTANCE::getActualVelocity, "hide",
-            "join:Shooter/Velocities");
-        BadLog.createTopic("Shooter/TargetVel", "Native Units", INSTANCE::getTargetVelocity, "hide",
-            "join:Shooter/Velocities");
-        BadLog.createTopic("Shooter/Error", "Native Units", INSTANCE::getError, "hide",
-            "join:Shooter/Velocities");
-    }
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
-            this.shooterMain.set(ControlMode.Velocity, shootererVelocity);
-            this.hood.set(hoodDown);
+            System.out.println("Shooter velocity: " + shooterVelocity);
+            this.shooterMain.set(ControlMode.Velocity, shooterVelocity);
+        //    this.hood.set(hoodDown);
             outputsChanged = false;
         }
     }

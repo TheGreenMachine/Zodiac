@@ -13,6 +13,7 @@ subsystems:
             kI: 0
             kD: 0
             kF: 0
+            iZone: 0
             encPPR: 0
             currentFloorCheck: .12
             currentEpsilonCheck: .2
@@ -36,7 +37,7 @@ subsystems:
         solenoids:
             arm: -1 # should find a better name - not really an "arm"
     shooter:
-        implemented: false
+        implemented: true
         talons:
             shooterMaster: 2
             shooterFollowerA: 4
@@ -48,7 +49,7 @@ subsystems:
             kP: 0
             kI: 0
             kD: 0
-            kF: 0
+            kF: 0.0426
     turret:
         implemented: false
         talons:
