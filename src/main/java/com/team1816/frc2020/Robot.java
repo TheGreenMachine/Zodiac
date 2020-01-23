@@ -99,9 +99,9 @@ public class Robot extends TimedRobot {
             BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
+            shooter.initLogger();
             logger.finishInitialization();
             mDrive.setLogger(logger);
-            shooter.initLogger();
 
             CrashTracker.logRobotInit();
 

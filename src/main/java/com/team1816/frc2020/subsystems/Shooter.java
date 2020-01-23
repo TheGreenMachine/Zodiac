@@ -72,12 +72,12 @@ public class Shooter extends Subsystem {
     }
 
    public void initLogger() {
-//      BadLog.createTopic("Shooter/ActVel", "Native Units", this::getActualVelocity,
-//           "hide", "join:Shooter/Velocities");
-//       BadLog.createTopic("Shooter/TargetVel", "Native Units", this::getTargetVelocity,
-//           "hide", "join:Shooter/Velocities");
-//       BadLog.createTopic("Shooter/Error", "Native Units", this::getError,
-//           "hide", "join:Shooter/Velocities");
+      BadLog.createTopic("Shooter/ActVel", "Native Units", this::getActualVelocity,
+           "hide", "join:Shooter/Velocities");
+       BadLog.createTopic("Shooter/TargetVel", "Native Units", this::getTargetVelocity,
+           "hide", "join:Shooter/Velocities");
+       BadLog.createTopic("Shooter/Error", "Native Units", this::getError,
+           "hide", "join:Shooter/Velocities");
    }
 
     public double getActualVelocity() {
