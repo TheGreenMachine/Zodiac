@@ -13,8 +13,10 @@ public class LedManager extends Subsystem {
 
     private static LedManager INSTANCE;
 
-    private CANifier canifier;
+    // Components
+    private final CANifier canifier;
 
+    // State
     private boolean blinkMode;
     private boolean blinkLedOn = false;
     private boolean outputsChanged = true;

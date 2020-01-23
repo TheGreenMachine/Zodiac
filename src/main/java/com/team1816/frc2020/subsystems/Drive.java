@@ -42,14 +42,14 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
     private LedManager ledManager = LedManager.getInstance();
 
     // hardware
-    private IMotorControllerEnhanced mLeftMaster, mRightMaster;
-    private IMotorController mLeftSlaveA, mRightSlaveA, mLeftSlaveB, mRightSlaveB;
+    private final IMotorControllerEnhanced mLeftMaster, mRightMaster;
+    private final IMotorController mLeftSlaveA, mRightSlaveA, mLeftSlaveB, mRightSlaveB;
+    private final Solenoid mShifter;
 
     // Controllers
     private PathFollower mPathFollower;
     private Path mCurrentPath = null;
 
-    private final Solenoid mShifter;
     // control states
     private DriveControlState mDriveControlState;
     private PigeonIMU mPigeon;
