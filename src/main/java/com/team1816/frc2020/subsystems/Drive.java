@@ -55,7 +55,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
     private PigeonIMU mPigeon;
 
     // hardware states
-    private boolean mIsHighGear;
     private boolean mIsBrakeMode;
     private Rotation2d mGyroOffset = Rotation2d.identity();
     private double mLastDriveCurrentSwitchTime = -1;
@@ -124,9 +123,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
             System.out.println("Defaulting to drive straight mode");
             AutoModeSelector.getInstance().setHardwareFailure(true);
         }
-        // force a solenoid message
-        mIsHighGear = false;
-        setHighGear(true);
 
         setOpenLoop(DriveSignal.NEUTRAL);
 
@@ -381,18 +377,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
         mPeriodicIO.right_feedforward = feedforward.getRight();
     }
 
-    public boolean isHighGear() {
-        return mIsHighGear;
-    }
-
-    public synchronized void setHighGear(boolean wantsHighGear) {
-        if (wantsHighGear != mIsHighGear) {
-            mIsHighGear = wantsHighGear;
-            // Plumbed default high.
-            if( mShifter != null ) mShifter.set(!wantsHighGear);
-        }
-    }
-
     public boolean isBrakeMode() {
         return mIsBrakeMode;
     }
@@ -624,7 +608,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
     public boolean checkSystem() {
 
         setBrakeMode(false);
-        setHighGear(true);
 
 //        Timer.delay(3);
 
