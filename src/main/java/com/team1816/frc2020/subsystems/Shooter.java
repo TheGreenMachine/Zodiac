@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Robot;
+import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
 
 public class Shooter extends Subsystem {
@@ -34,6 +35,8 @@ public class Shooter extends Subsystem {
     private boolean hoodDown;
     private boolean outputsChanged;
 
+    private final RobotFactory factory = Robot.getFactory();
+
     // Constants
     private final double kP;
     private final double kI;
@@ -42,16 +45,16 @@ public class Shooter extends Subsystem {
 
     private Shooter() {
         super(NAME);
-        this.shooterMain = Robot.getFactory().getMotor(NAME, "shooterMain");
-        this.shooterFollowerA = Robot.getFactory().getMotor(NAME, "shooterFollowerA", shooterMain);
-        this.shooterFollowerB = Robot.getFactory().getMotor(NAME, "shooterFollowerB", shooterMain);
-        this.shooterFollowerC = Robot.getFactory().getMotor(NAME, "shooterFollowerC", shooterMain);
-     //   this.hood = Robot.getFactory().getSolenoid(NAME, "hood");
+        this.shooterMain = factory.getMotor(NAME, "shooterMain");
+        this.shooterFollowerA = factory.getMotor(NAME, "shooterFollowerA", shooterMain);
+        this.shooterFollowerB = factory.getMotor(NAME, "shooterFollowerB", shooterMain);
+        this.shooterFollowerC = factory.getMotor(NAME, "shooterFollowerC", shooterMain);
+     //   this.hood = factory.getSolenoid(NAME, "hood");
 
-        this.kP = Robot.getFactory().getConstant(NAME, "kP");
-        this.kI = Robot.getFactory().getConstant(NAME, "kI");
-        this.kD = Robot.getFactory().getConstant(NAME, "kD");
-        this.kF = Robot.getFactory().getConstant(NAME, "kF");
+        this.kP = factory.getConstant(NAME, "kP");
+        this.kI = factory.getConstant(NAME, "kI");
+        this.kD = factory.getConstant(NAME, "kD");
+        this.kF = factory.getConstant(NAME, "kF");
 
         shooterMain.setNeutralMode(NeutralMode.Coast);
         shooterFollowerA.setNeutralMode(NeutralMode.Coast);

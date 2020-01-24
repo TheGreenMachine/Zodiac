@@ -25,9 +25,10 @@ public class Climber extends Subsystem {
     private double climberPow;
     private boolean outputsChanged = false;
 
+    private final RobotFactory factory = Robot.getFactory();
+
     public Climber() {
         super(NAME);
-        RobotFactory factory = Robot.getFactory();
         climberMotor = factory.getMotor(NAME, "elevator");
     }
 
