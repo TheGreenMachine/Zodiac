@@ -32,7 +32,7 @@ public class Turret extends Subsystem {
     private static final int kPIDLoopIDx = 0;
     private static final int kTimeoutMs = 10;
 
-    private static double TURRET_ENCODER_PPR;
+    private static double TURRET_ENCODER_PPR = Robot.getFactory().getConstant("turret", "encPPR");
 
     public Turret() {
         super(NAME);
@@ -50,23 +50,28 @@ public class Turret extends Subsystem {
     }
 
     public void setTurretPos(double position) {
-        turretPos = position;
+        turretPos = convertTurretDegreesToTicks(position);
         isPercentOutput = false;
         outputsChanged = true;
     }
 
-    public boolean isPercentOutput() {
-        return isPercentOutput;
+    public double convertTurretDegreesToTicks(double degrees) {
+        return (degrees / 360) * TURRET_ENCODER_PPR;
+    }
+
+    public double getTurretTicksToDegrees() {
+        return (getTurretPosAbsolute() / TURRET_ENCODER_PPR) * 360;
     }
 
     public int getTurretPosAbsolute() {
         if (turret != null) {
             return ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & 0xFFF;
         }
+
         return 0;
     }
 
-    public int getTurretPos() {
+    public int getTurretPosTicks() {
         return turret.getSelectedSensorPosition(kPIDLoopIDx);
     }
 
@@ -83,6 +88,7 @@ public class Turret extends Subsystem {
             } else {
                 turret.set(ControlMode.Position, turretPos);
             }
+
             outputsChanged = false;
         }
     }

@@ -1,5 +1,5 @@
 subsystems:
-    drivetrain:
+    drivetrain: #TODO: tuning and measure encPPR
         implemented: false
         falcons:
             leftMain: -1
@@ -45,15 +45,17 @@ subsystems:
             shooterFollowerC: 11
         solenoids:
             hood: -1
-        constants: #TODO: need tuning
+        constants: #TODO: need tuning [P, I, D]
             kP: 0.1
             kI: 0
             kD: 0
             kF: 0.016
-    turret:
+    turret: #TODO: need to measure encPPR
         implemented: false
         talons:
             turret: -1
+        constants:
+            encPPR: 0
     canifier:
         implemented: false
         constants:
