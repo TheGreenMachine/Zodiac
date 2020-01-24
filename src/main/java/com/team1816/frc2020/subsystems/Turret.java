@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class Turret extends Subsystem {
     private static final String NAME = "turret";
@@ -71,7 +72,7 @@ public class Turret extends Subsystem {
         return 0;
     }
 
-    public int getTurretPosTicks() {
+    public int getTurretRelativeTicks() {
         return turret.getSelectedSensorPosition(kPIDLoopIDx);
     }
 
@@ -101,5 +102,12 @@ public class Turret extends Subsystem {
     @Override
     public boolean checkSystem() {
         return true;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("Turret Degrees", this::getTurretTicksToDegrees, null);
+        builder.addDoubleProperty("Turret Absolute Ticks", this::getTurretPosAbsolute, null);
+        builder.addDoubleProperty("Turret Relative Ticks", this::getTurretRelativeTicks, null);
     }
 }
