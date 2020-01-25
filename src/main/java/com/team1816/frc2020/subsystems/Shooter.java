@@ -45,7 +45,7 @@ public class Shooter extends Subsystem {
 
     private Shooter() {
         super(NAME);
-        this.shooterMain = factory.getMotor(NAME, "shooterMain");
+        this.shooterMain = factory.getMotor(NAME, "shooterMaster");
         this.shooterFollowerA = factory.getMotor(NAME, "shooterFollowerA", shooterMain);
         this.shooterFollowerB = factory.getMotor(NAME, "shooterFollowerB", shooterMain);
         this.shooterFollowerC = factory.getMotor(NAME, "shooterFollowerC", shooterMain);
