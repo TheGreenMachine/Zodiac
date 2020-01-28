@@ -100,7 +100,15 @@ public class Robot extends TimedRobot {
             BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
-            shooter.initLogger();
+
+            BadLog.createTopic("Shooter/ActVel", "Native Units", shooter::getActualVelocity,
+                "hide", "join:Shooter/Velocities");
+            BadLog.createTopic("Shooter/TargetVel", "Native Units", shooter::getTargetVelocity,
+                "hide", "join:Shooter/Velocities");
+            BadLog.createTopic("Shooter/Error", "Native Units", shooter::getError,
+                "hide", "join:Shooter/Velocities");
+            BadLog.createValue("Shooter PID", String.format("kP = %f, kI = %f, kD = %f, kF = %f", shooter.getKP(), shooter.getKI(), shooter.getKD(), shooter.getKF()));
+
             logger.finishInitialization();
             mDrive.setLogger(logger);
 

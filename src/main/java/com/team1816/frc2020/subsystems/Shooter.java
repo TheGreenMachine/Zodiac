@@ -1,6 +1,5 @@
 package com.team1816.frc2020.subsystems;
 
-import badlog.lib.BadLog;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
@@ -43,6 +42,22 @@ public class Shooter extends Subsystem {
     private final double kD;
     private final double kF;
 
+    public double getKP() {
+        return kP;
+    }
+
+    public double getKI() {
+        return kI;
+    }
+
+    public double getKD() {
+        return kD;
+    }
+
+    public double getKF() {
+        return kF;
+    }
+
     private Shooter() {
         super(NAME);
         this.shooterMain = factory.getMotor(NAME, "shooterMaster");
@@ -61,7 +76,8 @@ public class Shooter extends Subsystem {
         shooterFollowerB.setNeutralMode(NeutralMode.Coast);
         shooterFollowerC.setNeutralMode(NeutralMode.Coast);
 
-        shooterMain.configClosedloopRamp(2, Constants.kCANTimeoutMs);
+        shooterMain.configClosedloopRamp(1, Constants.kCANTimeoutMs);
+        shooterMain.setSensorPhase(true);
     }
 
     public void setVelocity(double velocity) {
@@ -73,15 +89,6 @@ public class Shooter extends Subsystem {
         this.hoodDown = hoodDown;
         outputsChanged = true;
     }
-
-   public void initLogger() {
-      BadLog.createTopic("Shooter/ActVel", "Native Units", this::getActualVelocity,
-           "hide", "join:Shooter/Velocities");
-       BadLog.createTopic("Shooter/TargetVel", "Native Units", this::getTargetVelocity,
-           "hide", "join:Shooter/Velocities");
-       BadLog.createTopic("Shooter/Error", "Native Units", this::getError,
-           "hide", "join:Shooter/Velocities");
-   }
 
     public double getActualVelocity() {
         return shooterMain.getSelectedSensorVelocity(0);
