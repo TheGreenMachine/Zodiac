@@ -46,10 +46,10 @@ subsystems:
         solenoids:
             hood: -1
         constants: #TODO: need tuning [P, I, D]
-            kP: 0.1
+            kP: 0.025
             kI: 0
-            kD: 0
-            kF: 0.016
+            kD: 0.5
+            kF: 0.00953253
     turret: #TODO: need to measure encPPR
         implemented: false
         talons:
