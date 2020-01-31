@@ -1,13 +1,11 @@
 package com.team1816.frc2019;
 
 import badlog.lib.BadLog;
+import com.ctre.phoenix.CANifier;
 import com.team1816.frc2019.controlboard.ActionManager;
 import com.team1816.frc2019.controlboard.ControlBoard;
 import com.team1816.frc2019.paths.TrajectorySet;
-import com.team1816.frc2019.subsystems.CarriageCanifier;
-import com.team1816.frc2019.subsystems.Drive;
-import com.team1816.frc2019.subsystems.LedManager;
-import com.team1816.frc2019.subsystems.Superstructure;
+import com.team1816.frc2019.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IControlBoard;
@@ -24,6 +22,14 @@ import com.team254.lib.util.*;
 import com.team254.lib.wpilib.TimedRobot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
+
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+
+import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorMatchResult;
+import com.revrobotics.ColorMatch;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,6 +52,7 @@ public class Robot extends TimedRobot {
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
     private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
+    private final Spinner mSpinner=Spinner.getINSTANCE();
 
     private TimeDelayedBoolean mHangModeEnablePressed = new TimeDelayedBoolean();
     private TimeDelayedBoolean mHangModeLowEnablePressed = new TimeDelayedBoolean();
@@ -128,7 +135,9 @@ public class Robot extends TimedRobot {
                 mDrive,
                 mSuperstructure,
                 mCarriageCanifer,
-                mInfrastructure
+                mInfrastructure,
+                mSpinner
+
             );
 
             mCarriageCanifer.zeroSensors();
@@ -248,15 +257,37 @@ public class Robot extends TimedRobot {
             mControlBoard.reset();
 
             mOffsetOverride = -2.0;
+            mSpinner.initialize();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
 
+    private CANifier canifier = Robot.getFactory().getCanifier("ledmanager");
+
     @Override
     public void testInit() {
         try {
+            double initTime = System.currentTimeMillis();
+            double blinkTime = System.currentTimeMillis();
+
+            ledManager.setLedColorBlink(255, 255, 0, 1000);
+            while(System.currentTimeMillis() - initTime <= 3000) {
+                if (System.currentTimeMillis() - blinkTime > ledManager.getPeriod()) {
+                    blinkTime = System.currentTimeMillis();
+                    canifier.setLEDOutput((double) (255.0 / 255.0), CANifier.LEDChannel.LEDChannelA);
+                    canifier.setLEDOutput((double) (103.0 / 255.0), CANifier.LEDChannel.LEDChannelB);
+                    canifier.setLEDOutput((double) (0 / 255.0), CANifier.LEDChannel.LEDChannelC);
+                 //   ledManager.setLedColor(ledManager.getLedRgbBlink()[0], ledManager.getLedRgbBlink()[1], ledManager.getLedRgbBlink()[2]);
+                } else if (System.currentTimeMillis() - blinkTime > ledManager.getPeriod() / 2) {
+                    canifier.setLEDOutput((double) (0 / 255.0), CANifier.LEDChannel.LEDChannelA);
+                    canifier.setLEDOutput((double) (0 / 255.0), CANifier.LEDChannel.LEDChannelB);
+                    canifier.setLEDOutput((double) (0 / 255.0), CANifier.LEDChannel.LEDChannelC);
+                  //  ledManager.setLedColor(0, 0, 0);
+                }
+            }
+
             CrashTracker.logTestInit();
 
             // mDisabledLooper.stop();
@@ -342,8 +373,12 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         loopStart = Timer.getFPGATimestamp();
         try {
-            manualControl();
+
+            manualControl(/*sandstorm=*/false);
+            mSpinner.writePeriodicOutputs();
+
         } catch (Throwable t) {
+
             CrashTracker.logThrowableCrash(t);
             throw t;
         }
