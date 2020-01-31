@@ -5,10 +5,7 @@ import com.ctre.phoenix.CANifier;
 import com.team1816.frc2019.controlboard.ActionManager;
 import com.team1816.frc2019.controlboard.ControlBoard;
 import com.team1816.frc2019.paths.TrajectorySet;
-import com.team1816.frc2019.subsystems.CarriageCanifier;
-import com.team1816.frc2019.subsystems.Drive;
-import com.team1816.frc2019.subsystems.LedManager;
-import com.team1816.frc2019.subsystems.Superstructure;
+import com.team1816.frc2019.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IControlBoard;
@@ -55,15 +52,7 @@ public class Robot extends TimedRobot {
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
     private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
-    private final I2C.Port i2cPort = I2C.Port.kOnboard;
-    private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
-
-    private final double[] Blue={138,290,627};
-    private final double[] Green={201,396,350};
-    private final double[] Red={702,220,155};
-    private final double[] Yellow={403,390,144};
-    private final double[][]colors={Blue,Green,Red,Yellow};
-
+    private final Spinner mSpinner=Spinner.getINSTANCE();
 
     private TimeDelayedBoolean mHangModeEnablePressed = new TimeDelayedBoolean();
     private TimeDelayedBoolean mHangModeLowEnablePressed = new TimeDelayedBoolean();
@@ -144,7 +133,9 @@ public class Robot extends TimedRobot {
                 mDrive,
                 mSuperstructure,
                 mCarriageCanifer,
-                mInfrastructure
+                mInfrastructure,
+                mSpinner
+
             );
 
             mCarriageCanifer.zeroSensors();
@@ -251,6 +242,7 @@ public class Robot extends TimedRobot {
             mControlBoard.reset();
 
             mOffsetOverride = -2.0;
+            mSpinner.initialize();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
@@ -362,37 +354,7 @@ public class Robot extends TimedRobot {
         loopStart = Timer.getFPGATimestamp();
         try {
             manualControl(/*sandstorm=*/false);
-            Color detectedColor = m_colorSensor.getColor();
-            double IR = m_colorSensor.getIR();
-            double redOut=detectedColor.red*1247;
-            double greenOut=detectedColor.green*685;
-            double blueOut=detectedColor.blue*1354;
-            int colorDetected=0;
-            double error= Integer.MAX_VALUE;
-            for(int i=0;i<4;i++){
-                double[] color=colors[i];
-                double errorTemp=Math.abs(redOut-color[0])/color[0]+Math.abs(greenOut-color[1])/color[1]+Math.abs(blueOut-color[2])/color[2];
-                if(error>errorTemp){
-                    error=errorTemp;
-                    colorDetected=i;
-                }
-            }
-            if(colorDetected==0){
-                System.out.println("Blue");
-            }
-            else if(colorDetected==1){
-                System.out.println("Green");
-            }
-            else if(colorDetected==2){
-                System.out.println("Red");
-            }
-            else if(colorDetected==3){
-                System.out.println("Yellow");
-            }
-            System.out.print("R: "+detectedColor.red*1.247);
-            System.out.print("G: "+detectedColor.green*0.685);
-            System.out.println("B: "+detectedColor.blue*1.354);
-            //System.out.println("D: "+IR);
+            mSpinner.writePeriodicOutputs();
 
         } catch (Throwable t) {
 

@@ -70,6 +70,12 @@ subsystems:
             shifter:
                 forward: 4
                 reverse: 7
+    spinner:
+        implemented: true;
+        talons:
+            spinner: 5
+
+
 pcm: 17
 constants:
     wheelDiameter: 5.389459
