@@ -42,22 +42,6 @@ public class Shooter extends Subsystem {
     private final double kD;
     private final double kF;
 
-    public double getKP() {
-        return kP;
-    }
-
-    public double getKI() {
-        return kI;
-    }
-
-    public double getKD() {
-        return kD;
-    }
-
-    public double getKF() {
-        return kF;
-    }
-
     private Shooter() {
         super(NAME);
         this.shooterMain = factory.getMotor(NAME, "shooterMaster");
@@ -78,6 +62,30 @@ public class Shooter extends Subsystem {
 
         shooterMain.configClosedloopRamp(1, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(true);
+    }
+
+    private void setShooterGains(IMotorControllerEnhanced talon) {
+        talon.config_kP(0, factory.getConstant(NAME, "kP"), Constants.kLongCANTimeoutMs);
+        talon.config_kI(0, factory.getConstant(NAME, "kI"), Constants.kLongCANTimeoutMs);
+        talon.config_kD(0, factory.getConstant(NAME, "kD"), Constants.kLongCANTimeoutMs);
+        talon.config_kF(0, factory.getConstant(NAME, "kF"), Constants.kLongCANTimeoutMs);
+        talon.config_IntegralZone(0, factory.getConstant(NAME, "iZone").intValue(), Constants.kLongCANTimeoutMs);
+    }
+
+    public double getKP() {
+        return kP;
+    }
+
+    public double getKI() {
+        return kI;
+    }
+
+    public double getKD() {
+        return kD;
+    }
+
+    public double getKF() {
+        return kF;
     }
 
     public void setVelocity(double velocity) {

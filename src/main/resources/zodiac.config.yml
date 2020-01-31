@@ -69,7 +69,6 @@ constants: #TODO: update constants for new robot
     trackWidth: 25 #inches
     maxVel: 40 #inch/s
     maxAccel: 80 #inch/s^2
-    sensorPhase: 0
     kLooperDt: .030
     kTrackScrubFactor: 1.0
     kPCMId: 0
