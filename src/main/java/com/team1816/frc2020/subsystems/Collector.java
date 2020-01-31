@@ -21,8 +21,6 @@ public class Collector extends Subsystem {
     private boolean armDown;
     private boolean outputsChanged = false;
 
-    private final RobotFactory factory = Robot.getFactory();
-
 
     public static Collector getInstance() {
         if (INSTANCE == null) {
@@ -34,6 +32,8 @@ public class Collector extends Subsystem {
 
     private Collector() {
         super(NAME);
+        RobotFactory factory = Robot.getFactory();
+
         this.armPiston = factory.getSolenoid(NAME, "arm");
         this.intake = factory.getMotor(NAME, "intake");
     }

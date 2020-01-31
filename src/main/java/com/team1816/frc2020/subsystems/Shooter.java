@@ -34,8 +34,6 @@ public class Shooter extends Subsystem {
     private boolean hoodDown;
     private boolean outputsChanged;
 
-    private final RobotFactory factory = Robot.getFactory();
-
     // Constants
     private final double kP;
     private final double kI;
@@ -44,6 +42,8 @@ public class Shooter extends Subsystem {
 
     private Shooter() {
         super(NAME);
+        RobotFactory factory = Robot.getFactory();
+
         this.shooterMain = factory.getMotor(NAME, "shooterMaster");
         this.shooterFollowerA = factory.getMotor(NAME, "shooterFollowerA", shooterMain);
         this.shooterFollowerB = factory.getMotor(NAME, "shooterFollowerB", shooterMain);

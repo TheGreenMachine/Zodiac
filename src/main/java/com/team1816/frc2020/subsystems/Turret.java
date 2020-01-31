@@ -29,8 +29,6 @@ public class Turret extends Subsystem {
     private boolean outputsChanged;
     private boolean isPercentOutput;
 
-    private final RobotFactory factory = Robot.getFactory();
-
     // Constants
     private static final int kPIDLoopIDx = 0;
     private static final int kTimeoutMs = 10;
@@ -39,6 +37,7 @@ public class Turret extends Subsystem {
 
     public Turret() {
         super(NAME);
+        RobotFactory factory = Robot.getFactory();
 
         this.turret = factory.getMotor(NAME, "turret");
 

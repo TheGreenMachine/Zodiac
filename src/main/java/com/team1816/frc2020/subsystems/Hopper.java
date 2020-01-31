@@ -3,6 +3,7 @@ package com.team1816.frc2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.frc2020.Robot;
+import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Solenoid;
 
@@ -29,8 +30,10 @@ public class Hopper extends Subsystem {
 
     private Hopper() {
         super(NAME);
-        this.hopperSolenoid = Robot.getFactory().getSolenoid(NAME, "hopper");
-        this.spindexer = Robot.getFactory().getMotor(NAME, "solenoid");
+        RobotFactory factory = Robot.getFactory();
+
+        this.hopperSolenoid = factory.getSolenoid(NAME, "hopper");
+        this.spindexer = factory.getMotor(NAME, "solenoid");
     }
 
     public void setHopperPivot(boolean hopperOut) {
