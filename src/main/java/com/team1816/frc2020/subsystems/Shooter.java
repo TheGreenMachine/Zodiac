@@ -62,14 +62,15 @@ public class Shooter extends Subsystem {
 
         shooterMain.configClosedloopRamp(1, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(true);
+
+        setShooterGains();
     }
 
-    private void setShooterGains(IMotorControllerEnhanced talon) {
-        talon.config_kP(0, factory.getConstant(NAME, "kP"), Constants.kLongCANTimeoutMs);
-        talon.config_kI(0, factory.getConstant(NAME, "kI"), Constants.kLongCANTimeoutMs);
-        talon.config_kD(0, factory.getConstant(NAME, "kD"), Constants.kLongCANTimeoutMs);
-        talon.config_kF(0, factory.getConstant(NAME, "kF"), Constants.kLongCANTimeoutMs);
-        talon.config_IntegralZone(0, factory.getConstant(NAME, "iZone").intValue(), Constants.kLongCANTimeoutMs);
+    private void setShooterGains() {
+        shooterMain.config_kP(0, kP, Constants.kLongCANTimeoutMs);
+        shooterMain.config_kI(0, kI, Constants.kLongCANTimeoutMs);
+        shooterMain.config_kD(0, kD, Constants.kLongCANTimeoutMs);
+        shooterMain.config_kF(0, kF, Constants.kLongCANTimeoutMs);
     }
 
     public double getKP() {
