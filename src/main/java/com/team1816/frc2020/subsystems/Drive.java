@@ -24,9 +24,6 @@ import com.team254.lib.geometry.*;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
-import com.team254.lib.util.ReflectingCSVWriter;
-import com.team254.lib.util.Util;
-import com.team254.lib.vision.AimingParameters;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
@@ -130,8 +127,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
         mMotionPlanner = new DriveMotionPlanner();
     }
 
-    private ReflectingCSVWriter<PeriodicIO> mCSVWriter = null;
-
     public double getHeadingDegrees() {
         return mPeriodicIO.gyro_heading.getDegrees();
     }
@@ -162,8 +157,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
     public static class PeriodicIO {
         // INPUTS
         public double timestamp;
-        public double left_voltage;
-        public double right_voltage;
         public int left_position_ticks;
         public int right_position_ticks;
         public int left_velocity_ticks_per_100ms;
@@ -195,10 +188,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
         mPeriodicIO.gyro_heading = Rotation2d.fromDegrees(mPigeon.getFusedHeading()).rotateBy(mGyroOffset);
         mPeriodicIO.left_error = mLeftMaster.getClosedLoopError(0);
         mPeriodicIO.right_error = mRightMaster.getClosedLoopError(0);
-
-        if (mCSVWriter != null) {
-            mCSVWriter.add(mPeriodicIO);
-        }
 
         // System.out.println("control state: " + mDriveControlState + ", left: " + mPeriodicIO.left_demand + ", right: " + mPeriodicIO.right_demand);
     }
@@ -253,7 +242,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
             @Override
             public void onStop(double timestamp) {
                 stop();
-                stopLogging();
             }
         });
     }
@@ -293,52 +281,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
         mPeriodicIO.right_demand = signal.getRight();
         mPeriodicIO.left_feedforward = 0.0;
         mPeriodicIO.right_feedforward = 0.0;
-    }
-
-    public synchronized void setCheesyishDrive(double throttle, double wheel, boolean quickTurn) {
-        if (Util.epsilonEquals(throttle, 0.0, 0.04)) {
-            throttle = 0.0;
-        }
-
-        if (Util.epsilonEquals(wheel, 0.0, 0.035)) {
-            wheel = 0.0;
-        }
-
-        final double kWheelGain = 0.05;
-        final double kWheelNonlinearity = 0.05;
-        final double denominator = Math.sin(Math.PI / 2.0 * kWheelNonlinearity);
-        // Apply a sin function that's scaled to make it feel better.
-        if (!quickTurn) {
-            wheel = Math.sin(Math.PI / 2.0 * kWheelNonlinearity * wheel);
-            wheel = Math.sin(Math.PI / 2.0 * kWheelNonlinearity * wheel);
-            wheel = wheel / (denominator * denominator) * Math.abs(throttle);
-        }
-
-        wheel *= kWheelGain;
-        DriveSignal signal = Kinematics.inverseKinematics(new Twist2d(throttle, 0.0, wheel));
-        double scaling_factor = Math.max(1.0, Math.max(Math.abs(signal.getLeft()), Math.abs(signal.getRight())));
-        setOpenLoop(new DriveSignal(signal.getLeft() / scaling_factor, signal.getRight() / scaling_factor));
-    }
-
-    public synchronized void autoSteer(double throttle, AimingParameters aim_params) {
-        double timestamp = Timer.getFPGATimestamp();
-        final double kAutosteerAlignmentPointOffset = 15.0;  // Distance from wall
-        boolean reverse = throttle < 0.0;
-        boolean towards_goal = reverse == (Math.abs(aim_params.getRobotToGoalRotation().getDegrees()) > 90.0);
-        Pose2d field_to_vision_target = aim_params.getFieldToGoal();
-        final Pose2d vision_target_to_alignment_point = Pose2d.fromTranslation(new Translation2d(Math.min(kAutosteerAlignmentPointOffset, aim_params.getRange() - kAutosteerAlignmentPointOffset), 0.0));
-        Pose2d field_to_alignment_point = field_to_vision_target.transformBy(vision_target_to_alignment_point);
-        Pose2d vehicle_to_alignment_point = RobotState.getInstance().getFieldToVehicle(timestamp).inverse().transformBy(field_to_alignment_point);
-        Rotation2d vehicle_to_alignment_point_bearing = vehicle_to_alignment_point.getTranslation().direction();
-        if (reverse) {
-            vehicle_to_alignment_point_bearing = vehicle_to_alignment_point_bearing.rotateBy(Rotation2d.fromDegrees(180.0));
-        }
-        double heading_error_rad = vehicle_to_alignment_point_bearing.getRadians();
-
-        final double kAutosteerKp = 0.05;
-        double curvature = (towards_goal ? 1.0 : 0.0) * heading_error_rad * kAutosteerKp;
-        setOpenLoop(Kinematics.inverseKinematics(new Twist2d(throttle, 0.0, curvature * throttle * (reverse ? -1.0 : 1.0))));
-        setBrakeMode(true);
     }
 
     /**
@@ -524,8 +466,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
         } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             DriveMotionPlanner.Output output = mMotionPlanner.update(timestamp, RobotState.getInstance().getFieldToVehicle(timestamp));
 
-            // DriveSignal signal = new DriveSignal(demand.left_feedforward_voltage / 12.0, demand.right_feedforward_voltage / 12.0);
-
             mPeriodicIO.error = mMotionPlanner.error();
             mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
 
@@ -553,27 +493,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
         }
     }
 
-    public synchronized void startLogging() {
-        if (mCSVWriter == null) {
-            mCSVWriter = new ReflectingCSVWriter<>("/home/lvuser/DRIVE-LOGS.csv", PeriodicIO.class);
-        }
-    }
-
-    public synchronized void stopLogging() {
-        if (mCSVWriter != null) {
-            mCSVWriter.flush();
-            mCSVWriter = null;
-        }
-    }
-
     public enum DriveControlState {
         OPEN_LOOP, // open loop voltage control
         PATH_FOLLOWING, // velocity PID control
         TRAJECTORY_FOLLOWING
-    }
-
-    public enum ShifterState {
-        FORCE_LOW_GEAR, FORCE_HIGH_GEAR
     }
 
     @Override
@@ -680,10 +603,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
 
         if (getHeading() != null) {
             builder.addDoubleProperty("Gyro Heading", this::getHeadingDegrees, null);
-        }
-
-        if (mCSVWriter != null) {
-            mCSVWriter.write();
         }
     }
 

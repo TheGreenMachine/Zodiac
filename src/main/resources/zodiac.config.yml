@@ -50,6 +50,10 @@ subsystems:
             kI: 0
             kD: 1
             kF: 0.00953253
+            currentFloorCheck: .12
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 2000
+            rpmEpsilonCheck: 60
     turret: #TODO: need to measure encPPR
         implemented: false
         talons:

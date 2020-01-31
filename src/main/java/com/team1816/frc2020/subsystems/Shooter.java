@@ -7,11 +7,16 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.subsystems.Subsystem;
+
+import java.util.ArrayList;
 
 public class Shooter extends Subsystem {
     private static final String NAME = "shooter";
     private static Shooter INSTANCE;
+
+    private LedManager ledManager = LedManager.getInstance();
 
     public static Shooter getInstance() {
         if (INSTANCE == null) {
@@ -117,8 +122,34 @@ public class Shooter extends Subsystem {
 
     }
 
+    private TalonSRXChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
+        return new TalonSRXChecker.CheckerConfig() {
+            {
+                mCurrentFloor = Robot.getFactory().getConstant(NAME,"currentFloorCheck");
+                mRPMFloor = Robot.getFactory().getConstant(NAME,"rpmFloorCheck");
+                mCurrentEpsilon = Robot.getFactory().getConstant(NAME,"currentEpsilonCheck");
+                mRPMEpsilon = Robot.getFactory().getConstant(NAME,"rpmEpsilonCheck");
+                mRPMSupplier = () -> talon.getSelectedSensorVelocity(0);
+            }
+        };
+    }
+
     @Override
     public boolean checkSystem() {
-        return true;
+        boolean checkShooter = TalonSRXChecker.checkMotors(this,
+            new ArrayList<>() {
+                {
+                    add(new TalonSRXChecker.TalonSRXConfig("left_master", shooterMain));
+                }
+            }, getTalonCheckerConfig(shooterMain));
+
+        System.out.println(checkShooter);
+        if (checkShooter){
+            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
+        }
+        else {
+            ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
+        }
+        return checkShooter;
     }
 }
