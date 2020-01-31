@@ -96,18 +96,18 @@ public class Robot extends TimedRobot {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger = BadLog.init("/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag");
             DrivetrainLogger.init(mDrive);
-            BadLog.createValue("PID", String.format("kP = %f, kI = %f, kD = %f, kF = %f", mDrive.getKP(), mDrive.getKI(), mDrive.getKD(), mDrive.getKF()));
+            BadLog.createValue("Drivetrain PID", String.format("kP = %f, kI = %f, kD = %f, kF = %f", mDrive.getKP(), mDrive.getKI(), mDrive.getKD(), mDrive.getKF()));
+            BadLog.createValue("Shooter PID", String.format("kP = %f, kI = %f, kD = %f, kF = %f", shooter.getKP(), shooter.getKI(), shooter.getKD(), shooter.getKF()));
             BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
 
-            BadLog.createTopic("Shooter/ActVel", "Native Units", shooter::getActualVelocity,
+            BadLog.createTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
                 "hide", "join:Shooter/Velocities");
-            BadLog.createTopic("Shooter/TargetVel", "Native Units", shooter::getTargetVelocity,
+            BadLog.createTopic("Shooter/TargetVel", "NativeUnits", shooter::getTargetVelocity,
                 "hide", "join:Shooter/Velocities");
-            BadLog.createTopic("Shooter/Error", "Native Units", shooter::getError,
+            BadLog.createTopic("Shooter/Error", "NativeUnits", shooter::getError,
                 "hide", "join:Shooter/Velocities");
-            BadLog.createValue("Shooter PID", String.format("kP = %f, kI = %f, kD = %f, kF = %f", shooter.getKP(), shooter.getKI(), shooter.getKD(), shooter.getKF()));
 
             logger.finishInitialization();
             mDrive.setLogger(logger);
@@ -345,6 +345,9 @@ public class Robot extends TimedRobot {
             CrashTracker.logThrowableCrash(t);
             throw t;
         }
+
+        logger.updateTopics();
+        logger.log();
     }
 
     public void manualControl() {

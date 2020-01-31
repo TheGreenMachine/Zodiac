@@ -60,7 +60,7 @@ public class Shooter extends Subsystem {
         shooterFollowerB.setNeutralMode(NeutralMode.Coast);
         shooterFollowerC.setNeutralMode(NeutralMode.Coast);
 
-        shooterMain.configClosedloopRamp(1, Constants.kCANTimeoutMs);
+        //shooterMain.configClosedloopRamp(1, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(true);
 
         setShooterGains();
