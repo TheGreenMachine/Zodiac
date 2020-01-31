@@ -4,6 +4,7 @@ import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 
+import com.team1816.frc2020.Constants;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -32,6 +33,10 @@ public class RobotFactory {
                     System.out.println("Inverting " + name);
                     motor.setInverted(true);
                 }
+                motor.config_kP(0, getConstant(subsystemName, "kP"), Constants.kLongCANTimeoutMs);
+                motor.config_kI(0, getConstant(subsystemName, "kI"), Constants.kLongCANTimeoutMs);
+                motor.config_kD(0, getConstant(subsystemName, "kD"), Constants.kLongCANTimeoutMs);
+                motor.config_kF(0, getConstant(subsystemName, "kF"), Constants.kLongCANTimeoutMs);
                 return motor;
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
                 var motor = CtreMotorFactory.createDefaultTalon(subsystem.falcons.get(name), true);
@@ -39,6 +44,10 @@ public class RobotFactory {
                     System.out.println("Inverting" + name);
                     motor.setInverted(true);
                 }
+                motor.config_kP(0, getConstant(subsystemName, "kP"), Constants.kLongCANTimeoutMs);
+                motor.config_kI(0, getConstant(subsystemName, "kI"), Constants.kLongCANTimeoutMs);
+                motor.config_kD(0, getConstant(subsystemName, "kD"), Constants.kLongCANTimeoutMs);
+                motor.config_kF(0, getConstant(subsystemName, "kF"), Constants.kLongCANTimeoutMs);
                 return motor;
             } // Never make the victor a master
         }

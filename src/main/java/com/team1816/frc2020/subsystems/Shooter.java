@@ -62,15 +62,6 @@ public class Shooter extends Subsystem {
 
         //shooterMain.configClosedloopRamp(1, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(true);
-
-        setShooterGains();
-    }
-
-    private void setShooterGains() {
-        shooterMain.config_kP(0, kP, Constants.kLongCANTimeoutMs);
-        shooterMain.config_kI(0, kI, Constants.kLongCANTimeoutMs);
-        shooterMain.config_kD(0, kD, Constants.kLongCANTimeoutMs);
-        shooterMain.config_kF(0, kF, Constants.kLongCANTimeoutMs);
     }
 
     public double getKP() {
