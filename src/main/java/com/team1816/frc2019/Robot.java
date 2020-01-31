@@ -10,6 +10,7 @@ import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.loops.AsyncTimer;
 import com.team1816.lib.loops.Looper;
 import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
@@ -18,7 +19,6 @@ import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.*;
-import com.team254.lib.vision.AimingParameters;
 import com.team254.lib.wpilib.TimedRobot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
@@ -89,6 +89,8 @@ public class Robot extends TimedRobot {
     private double loopStart;
 
     private ActionManager mActionManager;
+    private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
+    private AsyncTimer blinkTimer;
 
     Robot() {
         CrashTracker.logRobotConstruction();
@@ -144,6 +146,9 @@ public class Robot extends TimedRobot {
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
             mSubsystemManager.registerDisabledLoops(mDisabledLooper);
 
+            ledManager.registerEnabledLoops(mEnabledLooper);
+            ledManager.registerEnabledLoops(mDisabledLooper);
+
             mInHangMode = false;
 
             // Robot starts forwards.
@@ -160,6 +165,12 @@ public class Robot extends TimedRobot {
                    //      Also needs to raise the collector arm
             );
 
+            blinkTimer = new AsyncTimer(
+                3000, // ms (3 s)
+                () -> ledManager.blinkStatus(LedManager.RobotStatus.ERROR),
+                () -> ledManager.indicateStatus(LedManager.RobotStatus.OFF)
+            );
+
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
@@ -171,6 +182,8 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logDisabledInit();
             mEnabledLooper.stop();
+
+            ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
 
             // Reset all auto mode state.
             if (mAutoModeExecutor != null) {
@@ -197,6 +210,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logAutoInit();
             mDisabledLooper.stop();
+            ledManager.indicateStatus(LedManager.RobotStatus.AUTONOMOUS);
 
             // Robot starts forwards.
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
@@ -228,6 +242,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
+            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
@@ -275,13 +290,18 @@ public class Robot extends TimedRobot {
 
             CrashTracker.logTestInit();
 
-            mDisabledLooper.stop();
+            // mDisabledLooper.stop();
             mEnabledLooper.stop();
+            mDisabledLooper.start();
+
+            blinkTimer.reset();
+
+            ledManager.blinkStatus(LedManager.RobotStatus.DISABLED);
 
             if (mSubsystemManager.checkSubsystems()) {
                 System.out.println("ALL SYSTEMS PASSED");
             } else {
-                System.out.println("CHECK ABOVE OUTPUT SOME SYSTEMS FAILED!!!");
+                System.err.println("CHECK ABOVE OUTPUT SOME SYSTEMS FAILED!!!");
             }
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
@@ -345,7 +365,7 @@ public class Robot extends TimedRobot {
         }
 
         if (mDriveByCameraInAuto || mAutoModeExecutor.isInterrupted()) {
-            manualControl(/*sandstorm=*/true);
+            manualControl();
         }
     }
 
@@ -353,6 +373,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         loopStart = Timer.getFPGATimestamp();
         try {
+
             manualControl(/*sandstorm=*/false);
             mSpinner.writePeriodicOutputs();
 
@@ -363,84 +384,13 @@ public class Robot extends TimedRobot {
         }
     }
 
-    public void manualControl(boolean sandstorm) {
-        double timestamp = Timer.getFPGATimestamp();
-        boolean rumble = false;
+    public void manualControl() {
         double throttle = mControlBoard.getThrottle();
+        double turn = mControlBoard.getTurn();
 
-        Optional<AimingParameters> drive_aim_params = mSuperstructure.getLatestAimingParameters();
-
-        boolean wantShoot = mControlBoard.getShoot();
-        boolean shotJustPushed = mShootPressed.update(wantShoot);
-        if (shotJustPushed) {
-            mLastShootPressedTime = Timer.getFPGATimestamp();
-        }
 
         mActionManager.update();
-
-        boolean wantsLowGear = mControlBoard.getWantsLowGear() && !sandstorm;
-
-        boolean hangModePressed =
-            mHangModeEnablePressed.update(mControlBoard.getToggleHangMode(), 0.250);
-        boolean hangModeLowPressed =
-            mHangModeLowEnablePressed.update(mControlBoard.getToggleHangModeLow(), 0.250);
-
-        if ((hangModeLowPressed && hangModePressed) && !mInHangMode && mHangModeReleased) {
-            System.out.println("Entering hang mode for low: " + hangModeLowPressed + " high: " + hangModePressed);
-            mInHangMode = true;
-            mHangModeReleased = false;
-        } else if ((hangModeLowPressed && hangModePressed) && mInHangMode && mHangModeReleased) {
-            System.out.println("Exiting hang mode!");
-            mInHangMode = false;
-            mHangModeReleased = false;
-        }
-
-        if (!hangModeLowPressed && !hangModePressed) {
-            mHangModeReleased = true;
-        }
-
-        // commands
-        mDiskIntakeTrigger.update(mControlBoard.getPickupDiskWall());
-        mBallIntakeTrigger.update(mControlBoard.getPickupBallGround());
-        boolean wants_auto_steer = mControlBoard.getThrust() && mDiskIntakeTrigger.isPressed();
-        boolean auto_steer_pressed = mAutoSteerPressed.update(wants_auto_steer);
-
-        if (mInHangMode) {
-            mDrive.setHighGear(!wantsLowGear);
-        } else {
-            // End Effector Jog
-            boolean wants_thrust = mControlBoard.getThrust() && !wants_auto_steer;
-
-            boolean thrust_just_pressed = mThrustPressed.update(wants_thrust);
-
-            if (thrust_just_pressed) {
-                mLastThrustPressedTime = timestamp;
-            }
-
-            if (wants_thrust) {
-
-                if (mStickyShoot) {
-                    wantShoot = true;
-                    mLastThrustShotTime = timestamp;
-                }
-            } else {
-                mStickyShoot = false;
-                final double kLatchShootingTime = 0.75;
-                if (!Double.isNaN(mLastThrustShotTime) && timestamp - mLastThrustShotTime < kLatchShootingTime) {
-                    wantShoot = true;
-                }
-            }
-
-            // drive
-            mDrive.setHighGear(!wantsLowGear);
-            mControlBoard.setRumble(rumble);
-        }
-
-        if (wants_auto_steer && !drive_aim_params.isEmpty() && Util.epsilonEquals(drive_aim_params.get().getFieldToVisionTargetNormal().getDegrees(), 0.0, 10.0)) {
-            mDrive.autoSteer(Util.limit(throttle, 0.3), drive_aim_params.get());
-        } else {
-            mDrive.setCheesyishDrive(throttle, -mControlBoard.getTurn(), mControlBoard.getQuickTurn());
-        }
+        mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, mControlBoard.getQuickTurn()));
 
     }
 

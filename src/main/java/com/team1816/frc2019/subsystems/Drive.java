@@ -39,7 +39,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
     private static final String NAME = "drivetrain";
     private static double DRIVE_ENCODER_PPR;
 
-    private LedManager ledManager=LedManager.getInstance();
+    private LedManager ledManager = LedManager.getInstance();
 
     // hardware
     private IMotorControllerEnhanced mLeftMaster, mRightMaster;
@@ -90,19 +90,22 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
 
         reloadGains();
 
+        mLeftMaster.configOpenloopRamp(Constants.kOpenLoopRampRate, Constants.kCANTimeoutMs);
+        mRightMaster.configOpenloopRamp(Constants.kOpenLoopRampRate, Constants.kCANTimeoutMs);
+
         mShifter = mFactory.getSolenoid("drivetrain", "kShifterSolenoidId");
 
         if (mFactory.getConstant(NAME, "pigeonOnTalon").intValue() == 1) {
             var pigeonId = mFactory.getConstant(NAME, "pigeonId").intValue();
             System.out.println("Pigeon on Talon " + pigeonId);
             IMotorController master = null;
-            if (mLeftSlaveA.getDeviceID() == pigeonId) {
+            if (pigeonId == mLeftSlaveA.getDeviceID()) {
                 master = mLeftSlaveA;
-            } else if (mLeftSlaveB.getDeviceID() == pigeonId) {
+            } else if (pigeonId == mLeftSlaveB.getDeviceID()) {
                 master = mLeftSlaveB;
-            } else if (mRightSlaveA.getDeviceID() == pigeonId) {
+            } else if (pigeonId == mRightSlaveA.getDeviceID()) {
                 master = mRightSlaveA;
-            } else if (mRightSlaveB.getDeviceID() == pigeonId) {
+            } else if (pigeonId == mRightSlaveB.getDeviceID()) {
                 master = mRightSlaveB;
             }
             if(master != null) {
@@ -637,11 +640,15 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
                     add(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster));
                 }
             }, getTalonCheckerConfig(mRightMaster));
-        System.out.println(leftSide && rightSide);
-        if(leftSide && rightSide){
+
+        boolean checkPigeon = mPigeon == null;
+
+        System.out.println(leftSide && rightSide && checkPigeon);
+        if (leftSide && rightSide && checkPigeon){
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
+
         }
-        else{
+        else {
             ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
         }
         return leftSide && rightSide;

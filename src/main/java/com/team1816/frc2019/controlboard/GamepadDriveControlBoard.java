@@ -74,7 +74,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public boolean getQuickTurn() {
-        return false;
+        return mController.getButton(LogitechController.Button.R_JOYSTICK);
     }
 
     @Override

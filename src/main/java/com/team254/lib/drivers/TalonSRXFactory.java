@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  * Creates CANTalon objects and configures all the parameters we care about to factory defaults. Closed-loop and sensor
  * parameters are not set, as these are expected to be set by the application.
  */
+@Deprecated
 public class TalonSRXFactory {
 
     private final static int kTimeoutMs = 100;

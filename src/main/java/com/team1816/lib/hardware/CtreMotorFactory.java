@@ -8,7 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 /**
- * A class to create TalonSRX, VictorSPX, and GhostTalonSRX objects.
+ * A class to create Falcon (TalonFX), TalonSRX, VictorSPX, and GhostTalonSRX objects.
  * Based on FRC Team 254 The Cheesy Poof's 2018 TalonSRXFactory
  */
 public class CtreMotorFactory {
@@ -41,14 +41,19 @@ public class CtreMotorFactory {
 
         public double OPEN_LOOP_RAMP_RATE = 0.0;
         public double CLOSED_LOOP_RAMP_RATE = 0.0;
+
+        public FeedbackDevice ENCODER_TYPE = FeedbackDevice.CTRE_MagEncoder_Relative;
     }
 
     private static final Configuration kDefaultConfiguration = new Configuration();
+    private static final Configuration kFalconConfiguration = new Configuration();
     private static final Configuration kSlaveConfiguration = new Configuration();
 
     static {
         // This control frame value seems to need to be something reasonable to avoid the Talon's
         // LEDs behaving erratically.  Potentially try to increase as much as possible.
+
+        // Slave Config edits
         kSlaveConfiguration.CONTROL_FRAME_PERIOD_MS = 100;
         kSlaveConfiguration.MOTION_CONTROL_FRAME_PERIOD_MS = 1000;
         kSlaveConfiguration.GENERAL_STATUS_FRAME_RATE_MS = 1000;
@@ -56,11 +61,18 @@ public class CtreMotorFactory {
         kSlaveConfiguration.QUAD_ENCODER_STATUS_FRAME_RATE_MS = 1000;
         kSlaveConfiguration.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS = 1000;
         kSlaveConfiguration.PULSE_WIDTH_STATUS_FRAME_RATE_MS = 1000;
+
+        // TalonFX Config edits
+        kFalconConfiguration.ENCODER_TYPE = FeedbackDevice.IntegratedSensor;
     }
 
     // Create a CANTalon with the default (out of the box) configuration.
     public static IMotorControllerEnhanced createDefaultTalon(int id) {
         return createTalon(id, kDefaultConfiguration);
+    }
+
+    public static IMotorControllerEnhanced createDefaultFalcon(int id) {
+        return createTalon(id, kFalconConfiguration);
     }
 
     public static IMotorControllerEnhanced createPermanentSlaveTalon(int id, IMotorController master) {
@@ -89,7 +101,7 @@ public class CtreMotorFactory {
                 config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS, kTimeoutMs);
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth,
                 config.PULSE_WIDTH_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 20);
+        talon.configSelectedFeedbackSensor(config.ENCODER_TYPE, 0, 20);
 
         return talon;
     }

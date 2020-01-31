@@ -2,6 +2,11 @@ subsystems:
     drivetrain:
         implemented: true
         talons:
+            leftMain: -1
+            leftSlaveOne: -1
+            rightMain: -1
+            rightSlaveOne: -1
+        falcons:
             leftMain: 1
             leftSlaveOne: 2
             rightMain: 14
@@ -14,16 +19,17 @@ subsystems:
         constants:
             pigeonId: 3
             pigeonOnTalon: 1
-            kP: 0
-            kI: .048
-            kD: 0
-            kF: 0
+            kP: 0.18
+            kI: 0.018
+            kD: 3.6
+            kF: 0.053
             iZone: 0
             encPPR: 16440
-            currentFloorCheck: .4
+            currentFloorCheck: .12
             currentEpsilonCheck: .2
-            rpmFloorCheck: 500
+            rpmFloorCheck: 2000
             rpmEpsilonCheck: 60
+            openLoopRampRate: 1
     canifier:
         implemented: true
         constants:
@@ -81,10 +87,11 @@ constants:
     wheelDiameter: 5.389459
     trackWidth: 25
     maxVel: 40 #inch/s
-    maxAccel: 30 #inch/s^2
+    maxAccel: 80 #inch/s^2
     sensorPhase: 0
     kLooperDt: .030
     kTrackScrubFactor: 1.0
     kPCMId: 0
     pathKs: 2
     verbose: 0
+

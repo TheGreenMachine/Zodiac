@@ -22,7 +22,7 @@ public class TalonSRXChecker {
 
     public double mRunTimeSec = 4.0;
     public double mWaitTimeSec = 2.0;
-    public double mRunOutputPercentage = 0.5;
+    public double mRunOutputPercentage = 0.2;
   }
 
   public static class TalonSRXConfig {
