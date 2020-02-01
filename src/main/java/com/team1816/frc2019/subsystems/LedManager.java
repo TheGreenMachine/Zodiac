@@ -80,7 +80,6 @@ public class LedManager extends Subsystem {
 
     public void indicateStatus(RobotStatus status) {
         blinkMode = false;
-        outputsChanged=true;
         setLedColor(status.getRed(), status.getGreen(), status.getBlue());
     }
 
@@ -96,7 +95,6 @@ public class LedManager extends Subsystem {
     public boolean isBlinkMode() {
         return blinkMode;
     }
-
 
     public double getPeriod() {
         return period;
@@ -127,13 +125,8 @@ public class LedManager extends Subsystem {
                 writeLedHardware(ledR, ledG, ledB);
                 outputsChanged = false;
             }
-
-          >>>>>>> master
         }
-
-        System.out.println("blink value: " + blinkMode);
-        }
-
+    }
 
     @Override
     public void stop() {
@@ -213,8 +206,5 @@ public class LedManager extends Subsystem {
         public int getBlue() {
             return blue;
         }
-
-
     }
-
 }
