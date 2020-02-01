@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 
 import com.team1816.frc2020.Constants;
+import com.team1816.frc2020.subsystems.Drive;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -115,14 +116,13 @@ public class RobotFactory {
 
     public Double getConstant(String subsystem, String name) {
         return getConstant(subsystem, name, -1);
-//        if (!getSubsystem(subsystem).constants.containsKey(name)) {
-//            DriverStation.reportError("Yaml " + subsystem + " constants:" + name + " missing", false);
-//            return null;
-//        }
-//        return getSubsystem(subsystem).constants.get(name);
     }
 
     public Double getConstant(String subsystem, String name, double defaultVal) {
+        if (getSubsystem(subsystem) == null) {
+            DriverStation.reportError("Subsystem " + subsystem + " does not exist", false);
+            return defaultVal;
+        }
         if (!getSubsystem(subsystem).constants.containsKey(name)) {
             DriverStation.reportError("Yaml " + subsystem + " constants:" + name + " missing", false);
             return defaultVal;

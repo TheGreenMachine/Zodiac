@@ -8,16 +8,16 @@ import com.team1816.lib.auto.modes.AutoModeBase;
 
 public class TuneDrivetrainMode extends AutoModeBase {
 
-  private DrivePathAction mPath;
+    private DrivePathAction mPath;
 
-  public TuneDrivetrainMode() {
-    mPath = new DrivePathAction(new DriveStraight(), true);
-  }
+    public TuneDrivetrainMode() {
+        mPath = new DrivePathAction(new DriveStraight(), true);
+    }
 
-  @Override
-  protected void routine() throws AutoModeEndedException {
-    System.out.println("Tune Drivetrain path");
-    runAction(new WaitAction(1));
-    runAction(mPath);
-  }
+    @Override
+    protected void routine() throws AutoModeEndedException {
+      System.out.println("Tune Drivetrain path");
+      runAction(new WaitAction(1));
+      runAction(mPath);
+    }
 }

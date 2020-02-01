@@ -81,7 +81,6 @@ public class Turret extends Subsystem {
         return turretSpeed;
     }
 
-
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
@@ -96,9 +95,7 @@ public class Turret extends Subsystem {
     }
 
     @Override
-    public void stop() {
-
-    }
+    public void stop() {}
 
     @Override
     public boolean checkSystem() {
