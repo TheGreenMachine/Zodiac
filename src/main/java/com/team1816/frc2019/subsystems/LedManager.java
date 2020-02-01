@@ -60,9 +60,9 @@ public class LedManager extends Subsystem {
     }
 
     /**
-     * @param r LED color red value (0-255)
-     * @param g LED color green value (0-255)
-     * @param b LED color blue value (0-255)
+     * @param r      LED color red value (0-255)
+     * @param g      LED color green value (0-255)
+     * @param b      LED color blue value (0-255)
      * @param period milliseconds
      */
     public void setLedColorBlink(int r, int g, int b, int period) {
@@ -80,7 +80,7 @@ public class LedManager extends Subsystem {
 
     public void indicateStatus(RobotStatus status) {
         blinkMode = false;
-        outputsChanged=true;
+        outputsChanged = true;
         setLedColor(status.getRed(), status.getGreen(), status.getBlue());
     }
 
@@ -90,13 +90,12 @@ public class LedManager extends Subsystem {
 
 
     public int[] getLedColor() {
-        return new int[] { ledR, ledG, ledB };
+        return new int[]{ledR, ledG, ledB};
     }
 
     public boolean isBlinkMode() {
         return blinkMode;
     }
-
 
     public double getPeriod() {
         return period;
@@ -127,13 +126,10 @@ public class LedManager extends Subsystem {
                 writeLedHardware(ledR, ledG, ledB);
                 outputsChanged = false;
             }
-
-          >>>>>>> master
         }
 
         System.out.println("blink value: " + blinkMode);
-        }
-
+    }
 
     @Override
     public void stop() {

@@ -1,8 +1,8 @@
 package com.team1816.frc2019.subsystems;
 
 import com.ctre.phoenix.CANifier;
-import com.ctre.phoenix.CANifierStatusFrame;
 import com.ctre.phoenix.CANifier.PinValues;
+import com.ctre.phoenix.CANifierStatusFrame;
 import com.team1816.frc2019.Constants;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
