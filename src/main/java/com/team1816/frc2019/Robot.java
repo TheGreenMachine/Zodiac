@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
     private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
-    private final Spinner mSpinner = Spinner.getInstance();
+    private final Spinner spinner = Spinner.getInstance();
 
     private TimeDelayedBoolean mHangModeEnablePressed = new TimeDelayedBoolean();
     private TimeDelayedBoolean mHangModeLowEnablePressed = new TimeDelayedBoolean();
@@ -128,7 +128,7 @@ public class Robot extends TimedRobot {
                 mSuperstructure,
                 mCarriageCanifer,
                 mInfrastructure,
-                mSpinner
+                spinner
 
             );
 
@@ -249,7 +249,7 @@ public class Robot extends TimedRobot {
             mControlBoard.reset();
 
             mOffsetOverride = -2.0;
-            mSpinner.initialize();
+            spinner.initialize();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
