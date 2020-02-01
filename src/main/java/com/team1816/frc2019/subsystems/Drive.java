@@ -640,13 +640,11 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
                     add(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster));
                 }
             }, getTalonCheckerConfig(mRightMaster));
-
         boolean checkPigeon = mPigeon == null;
 
         System.out.println(leftSide && rightSide && checkPigeon);
         if (leftSide && rightSide && checkPigeon){
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
-
         }
         else {
             ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
