@@ -33,10 +33,10 @@ public class RobotFactory {
                     System.out.println("Inverting " + name);
                     motor.setInverted(true);
                 }
-                motor.config_kP(0, getConstant(subsystemName, "kP"), Constants.kLongCANTimeoutMs);
-                motor.config_kI(0, getConstant(subsystemName, "kI"), Constants.kLongCANTimeoutMs);
-                motor.config_kD(0, getConstant(subsystemName, "kD"), Constants.kLongCANTimeoutMs);
-                motor.config_kF(0, getConstant(subsystemName, "kF"), Constants.kLongCANTimeoutMs);
+                motor.config_kP(0, getConstant(subsystemName, "kP", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kI(0, getConstant(subsystemName, "kI", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kD(0, getConstant(subsystemName, "kD", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kF(0, getConstant(subsystemName, "kF", 0), Constants.kLongCANTimeoutMs);
                 return motor;
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
                 var motor = CtreMotorFactory.createDefaultTalon(subsystem.falcons.get(name), true);
@@ -44,10 +44,10 @@ public class RobotFactory {
                     System.out.println("Inverting" + name);
                     motor.setInverted(true);
                 }
-                motor.config_kP(0, getConstant(subsystemName, "kP"), Constants.kLongCANTimeoutMs);
-                motor.config_kI(0, getConstant(subsystemName, "kI"), Constants.kLongCANTimeoutMs);
-                motor.config_kD(0, getConstant(subsystemName, "kD"), Constants.kLongCANTimeoutMs);
-                motor.config_kF(0, getConstant(subsystemName, "kF"), Constants.kLongCANTimeoutMs);
+                motor.config_kP(0, getConstant(subsystemName, "kP", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kI(0, getConstant(subsystemName, "kI", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kD(0, getConstant(subsystemName, "kD", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kF(0, getConstant(subsystemName, "kF", 0), Constants.kLongCANTimeoutMs);
                 return motor;
             } // Never make the victor a master
         }
@@ -114,9 +114,18 @@ public class RobotFactory {
     }
 
     public Double getConstant(String subsystem, String name) {
+        return getConstant(subsystem, name, -1);
+//        if (!getSubsystem(subsystem).constants.containsKey(name)) {
+//            DriverStation.reportError("Yaml " + subsystem + " constants:" + name + " missing", false);
+//            return null;
+//        }
+//        return getSubsystem(subsystem).constants.get(name);
+    }
+
+    public Double getConstant(String subsystem, String name, double defaultVal) {
         if (!getSubsystem(subsystem).constants.containsKey(name)) {
             DriverStation.reportError("Yaml " + subsystem + " constants:" + name + " missing", false);
-            return null;
+            return defaultVal;
         }
         return getSubsystem(subsystem).constants.get(name);
     }

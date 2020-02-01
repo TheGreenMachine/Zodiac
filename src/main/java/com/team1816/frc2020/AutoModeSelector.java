@@ -93,9 +93,6 @@ public class AutoModeSelector {
                 return Optional.of(new DoNothingMode());
             case DRIVE_BY_CAMERA:
                 return Optional.of(new DriveByCameraMode());
-            case FRONT_THEN_SIDE_CARGO_SHIP:
-                return Optional.of(new FrontThenSideCargoShipMode(
-                    startingLeft(position), startingHab1(position)));
             case TUNE_DRIVETRAIN:
                 return Optional.of(new TuneDrivetrainMode());
             case DRIVE_STRAIGHT:
