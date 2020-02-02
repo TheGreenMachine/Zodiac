@@ -44,6 +44,7 @@ public class Shooter extends Subsystem {
     private final double kI;
     private final double kD;
     private final double kF;
+    public static final int MAX_VELOCITY = 65000;
 
     private Shooter() {
         super(NAME);
@@ -88,6 +89,14 @@ public class Shooter extends Subsystem {
     public void setVelocity(double velocity) {
         this.shooterVelocity = velocity;
         outputsChanged = true;
+    }
+
+    public void startShooter() {
+        setVelocity(MAX_VELOCITY);
+    }
+
+    public void stopShooter() {
+        setVelocity(0);
     }
 
     public void setHoodDown(boolean hoodDown) {

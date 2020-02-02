@@ -38,6 +38,10 @@ public class AsyncTimer {
         }
     }
 
+    public boolean isCompleted() {
+        return completed;
+    }
+
     public void reset() {
         completed = false;
         hasStarted = false;

@@ -33,7 +33,7 @@ public class Hopper extends Subsystem {
         RobotFactory factory = Robot.getFactory();
 
         this.hopperSolenoid = factory.getSolenoid(NAME, "hopper");
-        this.spindexer = factory.getMotor(NAME, "solenoid");
+        this.spindexer = factory.getMotor(NAME, "spindexer");
     }
 
     public void setHopperPivot(boolean hopperOut) {
