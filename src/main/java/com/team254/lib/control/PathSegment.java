@@ -114,7 +114,7 @@ public class PathSegment {
                 Constants.kPathFollowingMaxAccel);
         MotionProfileGoal goal_state = new MotionProfileGoal(getLength(), end_speed);
         speedController = MotionProfileGenerator.generateProfile(motionConstraints, goal_state, start_state);
-        if(RobotFactory.Verbose())  System.out.println(speedController);
+        if(RobotFactory.isVerbose())  System.out.println(speedController);
     }
 
     /**

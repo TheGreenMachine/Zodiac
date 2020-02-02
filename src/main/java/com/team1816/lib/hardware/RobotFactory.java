@@ -138,7 +138,7 @@ public class RobotFactory {
         return config.subsystems.get(subsystem);
     }
 
-    public static boolean Verbose() {
+    public static boolean isVerbose() {
         return verbose;
     }
 }

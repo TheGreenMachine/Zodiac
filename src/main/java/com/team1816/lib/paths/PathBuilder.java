@@ -35,7 +35,7 @@ public class PathBuilder {
         new Line(w.get(w.size() - 2), w.get(w.size() - 1)).addToPath(p, 0);
         p.extrapolateLast();
         p.verifySpeeds();
-        if(RobotFactory.Verbose()) System.out.println(p);
+        if(RobotFactory.isVerbose()) System.out.println(p);
         return p;
     }
 
