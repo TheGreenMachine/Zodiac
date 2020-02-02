@@ -172,4 +172,9 @@ public class ControlBoard implements IControlBoard {
     public boolean getShooterPositionRocket() {
         return mButtonControlBoard.getShooterPositionRocket();
     }
+
+    @Override
+    public boolean getSpinnerReset() {
+        return mButtonControlBoard.getSpinnerReset();
+    }
 }

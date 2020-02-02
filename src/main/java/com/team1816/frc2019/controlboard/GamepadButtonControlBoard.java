@@ -119,4 +119,9 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     public boolean getShooterPositionRocket() {
         return mController.getButton(LogitechController.Button.X);
     }
+
+    @Override
+    public boolean getSpinnerReset() {
+        return false;
+    }
 }

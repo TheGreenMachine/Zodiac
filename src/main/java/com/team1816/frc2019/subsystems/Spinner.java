@@ -60,6 +60,7 @@ public class Spinner extends Subsystem {
 
     public void initialize() {
         currentColor = determineColor();
+        colorsPassed = 0;
     }
 
     public void setSpinnerPower(double power) {

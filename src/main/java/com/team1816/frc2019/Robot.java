@@ -27,6 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.team1816.frc2019.controlboard.ControlUtils.createAction;
+
 public class Robot extends TimedRobot {
     private BadLog logger;
     private final Looper mEnabledLooper = new Looper();
@@ -155,6 +157,7 @@ public class Robot extends TimedRobot {
                 // Driver Gamepad
                 //TODO: Setting cargoshooter down or up needs a parallel action that stops intake for both and shooter and collector
                 //      Also needs to raise the collector arm
+                createAction(mControlBoard::getSpinnerReset, spinner::initialize) // TODO: implement button for spinner reset
             );
 
             blinkTimer = new AsyncTimer(
@@ -249,7 +252,6 @@ public class Robot extends TimedRobot {
             mControlBoard.reset();
 
             mOffsetOverride = -2.0;
-            spinner.initialize();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;

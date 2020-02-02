@@ -29,5 +29,5 @@ public interface IButtonControlBoard {
     boolean getShooterPositionUp();
     boolean getShooterPositionRocket();
 
-
+    boolean getSpinnerReset();
 }
