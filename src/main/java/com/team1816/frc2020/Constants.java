@@ -11,7 +11,7 @@ public class Constants {
     public static final int kLongCANTimeoutMs = 100; // use for constructors
 
     public static final double kDriveWheelRadiusInches = kDriveWheelDiameterInches / 2.0;
-    public static final double kOpenLoopRampRate = Robot.getFactory().getConstant("drivetrain", "openLoopRampRate").intValue();
+    public static final double kOpenLoopRampRate = Robot.getFactory().getConstant("drivetrain", "openLoopRampRate");
 
     // reset button
     public static final int kResetButtonChannel = 4;
@@ -25,7 +25,7 @@ public class Constants {
     public static final double kJoystickThreshold = 0.2;
 
     // Canifier
-    public static int kCanifierWristId = Robot.getFactory().getConstant("canifier", "canId").intValue();
+    public static int kCanifierWristId = (int) Robot.getFactory().getConstant("canifier", "canId");
 
     public static final double kMaxTrackerDistance = 9.0;
     public static final double kMaxGoalTrackAge = 2.5;

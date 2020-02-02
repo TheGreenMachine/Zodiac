@@ -26,7 +26,6 @@ import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import java.util.ArrayList;
@@ -88,8 +87,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
 
         mShifter = mFactory.getSolenoid("drivetrain", "kShifterSolenoidId");
 
-        if (mFactory.getConstant(NAME, "pigeonOnTalon").intValue() == 1) {
-            var pigeonId = mFactory.getConstant(NAME, "pigeonId").intValue();
+        if (((int) mFactory.getConstant(NAME, "pigeonOnTalon")) == 1) {
+            var pigeonId = ((int) mFactory.getConstant(NAME, "pigeonId"));
             System.out.println("Pigeon on Talon " + pigeonId);
             IMotorController master = null;
             if (pigeonId == mLeftSlaveA.getDeviceID()) {
@@ -104,10 +103,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
             if(master != null) {
                 mPigeon = new PigeonIMU((TalonSRX) master);
             } else {
-                mPigeon = new PigeonIMU(new TalonSRX(mFactory.getConstant(NAME, "pigeonId").intValue()));
+                mPigeon = new PigeonIMU(new TalonSRX((int) mFactory.getConstant(NAME, "pigeonId")));
             }
         } else {
-            mPigeon = new PigeonIMU(mFactory.getConstant(NAME, "pigeonId").intValue());
+            mPigeon = new PigeonIMU((int) mFactory.getConstant(NAME, "pigeonId"));
         }
         mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 10, 10);
 
