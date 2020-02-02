@@ -33,16 +33,6 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     }
 
     @Override
-    public boolean getWantsLowGear() {
-        return false;
-    }
-
-    @Override
-    public boolean getThrust() {
-        return false;
-    }
-
-    @Override
     public boolean getSlowMode() {
         return mController.getButton(LogitechController.Button.RB);
     }
@@ -53,32 +43,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     }
 
     @Override
-    public boolean getEjectBeak() {
-        return mController.getButton(LogitechController.Button.LB);
-    }
-
-    @Override
-    public boolean getReleaseBeak() {
-        return mController.getTrigger(Controller.Side.LEFT);
-    }
-
-    @Override
-    public double getCargoIntake() {
-        return -1 * mController.getTriggerScalar(Controller.Side.RIGHT);
-    }
-
-    @Override
-    public boolean getClimberAndCameraPiston() {
-        return mController.getButton(LogitechController.Button.B);
-    }
-
-    @Override
     public boolean getQuickTurn() {
         return mController.getButton(LogitechController.Button.R_JOYSTICK);
-    }
-
-    @Override
-    public boolean getShoot() {
-        return false;
     }
 }

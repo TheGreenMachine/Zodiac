@@ -310,8 +310,8 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         loopStart = Timer.getFPGATimestamp();
-        boolean signalToResume = !mControlBoard.getWantsLowGear();
-        boolean signalToStop = mControlBoard.getWantsLowGear();
+        boolean signalToResume = !mControlBoard.getDrivetrainFlipped(); // TODO: select auto interrupt button
+        boolean signalToStop = mControlBoard.getDrivetrainFlipped();
         // Resume if switch flipped up
         if (mWantsAutoExecution.update(signalToResume)) {
             mAutoModeExecutor.resume();
