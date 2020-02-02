@@ -51,7 +51,7 @@ public class RobotFactory {
                 return motor;
             } // Never make the victor a master
         }
-        System.out.println("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName);
+        DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
         return CtreMotorFactory.createGhostTalon();
     }
 
@@ -74,7 +74,7 @@ public class RobotFactory {
                 return victor;
             }
         }
-        System.out.println("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName);
+        DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
         return CtreMotorFactory.createGhostTalon();
     }
 

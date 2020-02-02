@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
             var robotName = System.getenv("ROBOT_NAME");
             if (robotName == null) {
                 robotName = "default";
-                System.out.println("ROBOT_NAME environment variable not defined, falling back to default.config.yml!");
+                DriverStation.reportWarning("ROBOT_NAME environment variable not defined, falling back to default.config.yml!", false);
             }
             factory = new RobotFactory(robotName);
         }
