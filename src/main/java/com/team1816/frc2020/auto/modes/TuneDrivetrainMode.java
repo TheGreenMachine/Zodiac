@@ -16,8 +16,8 @@ public class TuneDrivetrainMode extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-      System.out.println("Tune Drivetrain path");
-      runAction(new WaitAction(1));
-      runAction(mPath);
+        System.out.println("Tune Drivetrain path");
+        runAction(new WaitAction(1));
+        runAction(mPath);
     }
 }
