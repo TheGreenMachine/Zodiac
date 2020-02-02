@@ -12,8 +12,14 @@ public class HopperFeedAction implements Action {
     public HopperFeedAction(int duration) {
         this.hopper = Hopper.getInstance();
         this.hopperTimer = new AsyncTimer(duration,
-            () -> hopper.setSpindexer(1),
-            () -> hopper.setSpindexer(0)
+            () -> {
+                hopper.setSpindexer(1);
+                hopper.setElevator(1);
+            },
+            () -> {
+                hopper.setSpindexer(0);
+                hopper.setElevator(0);
+            }
         );
     }
 

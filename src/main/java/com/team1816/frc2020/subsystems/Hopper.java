@@ -22,18 +22,21 @@ public class Hopper extends Subsystem {
     // Components
     private final Solenoid hopperSolenoid;
     private final IMotorControllerEnhanced spindexer;
+    private final IMotorControllerEnhanced elevator;
 
     // State
     private boolean hopperOut;
     private double spindexerVelocity;
+    private double elevatorVelocity;
     private boolean outputsChanged;
 
     private Hopper() {
         super(NAME);
         RobotFactory factory = Robot.getFactory();
 
-        this.hopperSolenoid = factory.getSolenoid(NAME, "hopper");
+        this.hopperSolenoid = factory.getSolenoid(NAME, "arm");
         this.spindexer = factory.getMotor(NAME, "spindexer");
+        this.elevator = factory.getMotor(NAME, "elevator");
     }
 
     public void setHopperPivot(boolean hopperOut) {
@@ -46,10 +49,16 @@ public class Hopper extends Subsystem {
         outputsChanged = true;
     }
 
+    public void setElevator(double elevatorOutput) {
+        this.elevatorVelocity = elevatorOutput;
+        outputsChanged = true;
+    }
+
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
             this.spindexer.set(ControlMode.PercentOutput, spindexerVelocity);
+            this.elevator.set(ControlMode.PercentOutput, elevatorVelocity);
             this.hopperSolenoid.set(hopperOut);
             outputsChanged = false;
         }

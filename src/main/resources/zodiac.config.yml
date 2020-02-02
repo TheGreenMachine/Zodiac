@@ -34,6 +34,7 @@ subsystems:
         implemented: false
         talon:
             spindexer: -1
+            elevator: -1
         solenoids:
             arm: -1 # should find a better name - not really an "arm"
     shooter:
