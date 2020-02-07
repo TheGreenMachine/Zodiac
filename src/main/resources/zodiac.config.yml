@@ -1,11 +1,11 @@
 subsystems:
     drivetrain: #TODO: tuning and measure encPPR
-        implemented: false
+        implemented: true
         falcons:
-            leftMain: -1
-            leftFollower: -1
-            rightMain: -1
-            rightFollower: -1
+            leftMain: 14
+            leftFollower: 15
+            rightMain: 1
+            rightFollower: 0
         constants:
             pigeonId: -1
             pigeonOnTalon: -1
@@ -38,12 +38,14 @@ subsystems:
         solenoids:
             arm: -1 # should find a better name - not really an "arm"
     shooter:
-        implemented: true
+        implemented: false
         talons:
             shooterMaster: 2
             shooterFollowerA: 4
             shooterFollowerB: 10
             shooterFollowerC: 11
+        invertMotor:
+            - 2
         solenoids:
             hood: -1
         constants: #TODO: need tuning [P, I, D]
