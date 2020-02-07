@@ -33,6 +33,11 @@ deploy {
             targets << "roborio"
             directory = '/home/lvuser/deploy'
         }
+        fileTreeArtifact('visionDeploy') {
+            files = fileTree(dir: 'ZodiacVision')
+            targets << 'roborio'
+            directory = '/home/lvuser/ZodiacVision'
+        }
     }
 }
 
@@ -76,11 +81,11 @@ apply plugin: 'java'
 sourceCompatibility = 11
 targetCompatibility = 11
 
-tasks.create('deployVision') {
-    println "Deploying ZodiacVision..."
-    // TODO: Develop deployVision task
-}
-
-tasks.named('deploy').configure {
-    dependsOn tasks.named('deployVision')
-}
+//tasks.create('deployVision') {
+//    println "Deploying ZodiacVision..."
+//    // TODO: Develop deployVision task
+//}
+//
+//tasks.named('deploy').configure {
+//    dependsOn tasks.named('deployVision')
+//}
