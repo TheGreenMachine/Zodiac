@@ -1,5 +1,4 @@
 import cv2
-import pyzed.sl as sl
 import math
 import numpy as np
 
@@ -68,7 +67,20 @@ def postProcess(image, target):
 
 
 if __name__ == '__main__':
-    cap = cv2.VideoCapture("Left_Frame.avi")
+    fps = 30.
+    frame_width = 640
+    frame_height = 480
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
+    cap.set(cv2.CAP_PROP_FPS, fps)
+
+    gst_str_rtp = "appsrc ! videoconvert ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! rtph264pay ! udpsink host=127.0.0.1 port=5000"
+
+    # Check if cap is open
+    # Create videowriter as a SHM sink
+    out = cv2.VideoWriter(gst_str_rtp, 0, fps, (frame_width, frame_height), True)
+
     hexes = make_half_hex_shape()
     while 1:
         _, frame = cap.read()
@@ -78,3 +90,5 @@ if __name__ == '__main__':
         postProcessImage = postProcess(frame, target)
         cv2.imshow("PostProcessed Image", postProcessImage)
         cv2.waitKey(1)
+        # Write to SHM
+        out.write(frame)
