@@ -11,12 +11,12 @@ subsystems:
         constants:
             pigeonId: 10
             pigeonOnTalon: -1
-            kP: 0.18 # Temporary PID values from Zeta
+            kP: 0.09 # Temporary PID values from Zeta
             kI: 0.018
             kD: 3.6
             kF: 0.0475813
             iZone: 0
-            encPPR: 0
+            encPPR: 22000
             currentFloorCheck: .12
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000
@@ -78,6 +78,7 @@ constants: #TODO: update constants for new robot
     trackWidth: 25 #inches
     maxVel: 40 #inch/s
     maxAccel: 80 #inch/s^2
+    sensorPhase: 0
     kLooperDt: .030
     kTrackScrubFactor: 1.0
     pathKs: 2
