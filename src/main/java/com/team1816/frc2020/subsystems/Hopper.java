@@ -54,6 +54,11 @@ public class Hopper extends Subsystem {
         outputsChanged = true;
     }
 
+    public void setIntake(double intakeOutput) {
+        setElevator(intakeOutput);
+        setSpindexer(intakeOutput);
+    }
+
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
