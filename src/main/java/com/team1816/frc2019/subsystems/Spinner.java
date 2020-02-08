@@ -33,6 +33,7 @@ public class Spinner extends Subsystem {
     private SpinnerColor currentColor;
     private int colorsPassed = 0;
     private boolean colorMode=false;
+    private boolean spinMode=false;
 
 
     // Constants
@@ -92,6 +93,29 @@ public class Spinner extends Subsystem {
             colorMode=false;
         }
     }
+    public void spin3Times(boolean held){
+        if(held){
+            initialize();
+            if (colorsPassed<=28) {
+                System.out.println("Reached this level");
+                spinnerPow = 0.05;
+                outputsChanged = true;
+                spinMode=true;
+            }
+            else {
+
+                System.out.println("ENDED SPINNER SPIN");
+                spinnerPow = 0.0;
+                outputsChanged=true;
+                spinMode=false;
+            }
+        }
+        else{
+            spinnerPow=0.0;
+            outputsChanged=true;
+            spinMode=false;
+        }
+    }
     public void stopSpin(Boolean released){
         while(released){
             spinnerPow=0.0;
@@ -116,7 +140,13 @@ public class Spinner extends Subsystem {
         if(colorMode&&inPos){
             spinnerPow=0.0;
             outputsChanged=true;
+            colorMode=false;
 
+        }
+        if(spinMode&&colorsPassed>=28){
+            spinnerPow=0.0;
+            outputsChanged=true;
+            spinMode=false;
         }
 
     }
@@ -156,7 +186,7 @@ public class Spinner extends Subsystem {
 
     public boolean atColor(int color){
         if (currentColor.index == color){
-            System.out.println("Color reached");
+
             return true;
 
         }

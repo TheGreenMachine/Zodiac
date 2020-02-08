@@ -158,8 +158,8 @@ public class Robot extends TimedRobot {
                 //TODO: Setting cargoshooter down or up needs a parallel action that stops intake for both and shooter and collector
                 //      Also needs to raise the collector arm
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize), // TODO: implement button for spinner reset
-                createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor)//,
-                //createHoldAction(mControlBoard)
+                createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
+                createHoldAction(mControlBoard::getSpinner3Times,spinner::spin3Times)
 
             );
 
