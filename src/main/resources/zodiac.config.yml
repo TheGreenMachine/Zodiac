@@ -9,7 +9,7 @@ subsystems:
         invertMotor:
             - 14
         constants:
-            pigeonId: -1
+            pigeonId: 10
             pigeonOnTalon: -1
             kP: 0
             kI: 0
@@ -72,7 +72,7 @@ subsystems:
     ledmanager:
         implemented: false
         canifier: 0
-pcm: 0
+pcm: 8
 constants: #TODO: update constants for new robot
     wheelDiameter: 6.25 #inches
     trackWidth: 25 #inches
@@ -80,6 +80,5 @@ constants: #TODO: update constants for new robot
     maxAccel: 80 #inch/s^2
     kLooperDt: .030
     kTrackScrubFactor: 1.0
-    kPCMId: 0
     pathKs: 2
     verbose: 0

@@ -6,7 +6,7 @@ public class Constants {
     public static final double kDriveWheelDiameterInches = Robot.getFactory().getConstant("wheelDiameter");
 
     public static double kTrackScrubFactor = Robot.getFactory().getConstant("kTrackScrubFactor");
-    public static int kPCMId = Robot.getFactory().getConstant("kPCMId").intValue();
+    public static int kPCMId = Robot.getFactory().getPcmId();
     public static final int kCANTimeoutMs = 10; // use for important on the fly updates
     public static final int kLongCANTimeoutMs = 100; // use for constructors
 

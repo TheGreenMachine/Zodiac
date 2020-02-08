@@ -133,6 +133,10 @@ public class RobotFactory {
         return config;
     }
 
+    public int getPcmId() {
+        return config.pcm;
+    }
+
     public YamlConfig.SubsystemConfig getSubsystem(String subsystem) {
         return config.subsystems.get(subsystem);
     }
