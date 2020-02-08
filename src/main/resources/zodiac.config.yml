@@ -11,9 +11,9 @@ subsystems:
         constants:
             pigeonId: 10
             pigeonOnTalon: -1
-            kP: 0
-            kI: 0
-            kD: 0
+            kP: 0.18 # Temporary PID values from Zeta
+            kI: 0.018
+            kD: 3.6
             kF: 0.0475813
             iZone: 0
             encPPR: 0
