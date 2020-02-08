@@ -3,6 +3,7 @@ package com.team1816.frc2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
@@ -31,7 +32,6 @@ public class Turret extends Subsystem {
 
     // Constants
     private static final int kPIDLoopIDx = 0;
-    private static final int kTimeoutMs = 10;
 
     private static double TURRET_ENCODER_PPR = Robot.getFactory().getConstant("turret", "encPPR");
 
@@ -42,7 +42,7 @@ public class Turret extends Subsystem {
         this.turret = factory.getMotor(NAME, "turret");
 
         int absolutePosition = getTurretPosAbsolute();
-        turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, kTimeoutMs);
+        turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kCANTimeoutMs);
     }
 
     public void setTurretSpeed(double speed) {
