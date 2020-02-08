@@ -85,4 +85,14 @@ public class MainDriveControlBoard implements IDriveControlBoard {
     public boolean getClimberAndCameraPiston() {
         return false;
     }
+
+    @Override
+    public boolean getSpinnerColor() {
+        return false;
+    }
+
+    @Override
+    public boolean getSpinner3Times() {
+        return false;
+    }
 }

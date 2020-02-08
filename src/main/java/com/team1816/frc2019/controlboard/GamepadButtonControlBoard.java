@@ -121,7 +121,5 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
-    public boolean getSpinnerReset() {
-        return false;
-    }
+    public boolean getSpinnerReset() { return mController.getDPad()==1; }
 }

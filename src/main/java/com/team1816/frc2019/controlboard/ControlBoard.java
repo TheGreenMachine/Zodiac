@@ -89,6 +89,13 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
+    public boolean getSpinnerColor() {return mDriveControlBoard.getSpinnerColor();
+         }
+
+    @Override
+    public boolean getSpinner3Times(){return mDriveControlBoard.getSpinner3Times();}
+
+    @Override
     public boolean getScorePresetLow() {
         return mButtonControlBoard.getScorePresetLow();
     }
@@ -177,4 +184,5 @@ public class ControlBoard implements IControlBoard {
     public boolean getSpinnerReset() {
         return mButtonControlBoard.getSpinnerReset();
     }
+
 }

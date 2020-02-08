@@ -24,4 +24,8 @@ public interface IDriveControlBoard {
     double getCargoIntake();
 
     boolean getClimberAndCameraPiston();
+
+    boolean getSpinnerColor();
+
+    boolean getSpinner3Times();
 }

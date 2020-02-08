@@ -81,4 +81,14 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     public boolean getShoot() {
         return false;
     }
+
+    @Override
+    public boolean getSpinnerColor() {
+        return mController.getButton(LogitechController.Button.A);
+    }
+    public boolean getSpinner3Times(){
+        return mController.getButton(LogitechController.Button.X);
+    }
+
+
 }

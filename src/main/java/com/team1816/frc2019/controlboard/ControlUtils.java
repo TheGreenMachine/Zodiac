@@ -15,6 +15,9 @@ public class ControlUtils {
     public static HoldAction createHoldAction(BooleanSupplier input, Consumer<Boolean> action) {
         return new HoldAction(input, action);
     }
+//    public static HoldReleaseAction createHoldReleaseAction(BooleanSupplier input, Consumer<Boolean> actionHold,Consumer<Boolean> actionRelease) {
+//        return new HoldReleaseAction(input, actionHold,actionRelease);
+//    }
 
     public static ScalarAction createScalar(DoubleSupplier input, DoubleConsumer output) {
         return new ScalarAction(input, output);
@@ -73,6 +76,33 @@ public class ControlUtils {
         }
 
     }
+//    public static class HoldReleaseAction implements ButtonAction {
+//        private BooleanSupplier input;
+//        private Consumer<Boolean> holdAction;
+//        private Consumer<Boolean> releaseAction;
+//        private LatchedBoolean pressedState = new LatchedBoolean();
+//        private LatchedBoolean releasedState = new LatchedBoolean();
+//
+//        private HoldReleaseAction(BooleanSupplier input, Consumer<Boolean> holdAction,Consumer<Boolean> releaseAction) {
+//            this.input = input;
+//            this.holdAction = holdAction;
+//            this.releaseAction=releaseAction;
+//        }
+//
+//        @Override
+//        public void update() {
+//            boolean inputPressed = input.getAsBoolean();
+//            boolean inputJustPressed = pressedState.update(inputPressed);
+//            boolean inputJustReleased = releasedState.update(!inputPressed);
+//
+//            if (inputJustPressed) {
+//                holdAction.accept(true);
+//            } else if (inputJustReleased) {
+//                releaseAction.accept(true);
+//            }
+//        }
+//
+//    }
 
     public static class ScalarAction implements ButtonAction {
         private DoubleSupplier input;

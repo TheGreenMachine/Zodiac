@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.team1816.frc2019.controlboard.ControlUtils.createAction;
+import static com.team1816.frc2019.controlboard.ControlUtils.createHoldAction;
 
 public class Robot extends TimedRobot {
     private BadLog logger;
@@ -131,7 +132,6 @@ public class Robot extends TimedRobot {
                 mCarriageCanifer,
                 mInfrastructure,
                 spinner
-
             );
 
             mCarriageCanifer.zeroSensors();
@@ -157,7 +157,10 @@ public class Robot extends TimedRobot {
                 // Driver Gamepad
                 //TODO: Setting cargoshooter down or up needs a parallel action that stops intake for both and shooter and collector
                 //      Also needs to raise the collector arm
-                createAction(mControlBoard::getSpinnerReset, spinner::initialize) // TODO: implement button for spinner reset
+                createAction(mControlBoard::getSpinnerReset, spinner::initialize), // TODO: implement button for spinner reset
+                createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor)//,
+                //createHoldAction(mControlBoard)
+
             );
 
             blinkTimer = new AsyncTimer(
@@ -238,7 +241,7 @@ public class Robot extends TimedRobot {
             CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
-
+            spinner.initialize();
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
             }
@@ -295,6 +298,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         try {
+
             mSubsystemManager.outputToSmartDashboard();
             mRobotState.outputToSmartDashboard();
             mAutoModeSelector.outputToSmartDashboard();
