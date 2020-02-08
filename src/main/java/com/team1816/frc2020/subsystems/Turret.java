@@ -66,10 +66,9 @@ public class Turret extends Subsystem {
     }
 
     public int getTurretPosAbsolute() {
-        if (turret != null) {
+        if (turret instanceof TalonSRX) {
             return ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & 0xFFF;
         }
-
         return 0;
     }
 
