@@ -4,15 +4,17 @@ subsystems:
         falcons:
             leftMain: 14
             leftFollower: 15
-            rightMain: 1
-            rightFollower: 0
+            rightMain: 0
+            rightFollower: 1
+        invertMotor:
+            - 14
         constants:
             pigeonId: -1
             pigeonOnTalon: -1
             kP: 0
             kI: 0
             kD: 0
-            kF: 0
+            kF: 0.475813
             iZone: 0
             encPPR: 0
             currentFloorCheck: .12
