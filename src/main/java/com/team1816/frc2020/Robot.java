@@ -298,7 +298,7 @@ public class Robot extends TimedRobot {
             Optional<AutoModeBase> autoMode = mAutoModeSelector.getAutoMode();
             mDriveByCameraInAuto = mAutoModeSelector.isDriveByCamera();
             if (autoMode.isPresent() && autoMode.get() != mAutoModeExecutor.getAutoMode()) {
-//                System.out.println("Set auto mode to: " + autoMode.get().getClass().toString());
+                System.out.println("Set auto mode to: " + autoMode.get().getClass().toString());
                 mAutoModeExecutor.setAutoMode(autoMode.get());
             }
         } catch (Throwable t) {

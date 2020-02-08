@@ -88,6 +88,9 @@ public class AutoModeSelector {
     }
 
     private Optional<AutoModeBase> getAutoModeForParams(DesiredMode mode, StartingPosition position) {
+        if (hardwareFailure) {
+            return Optional.of(new DriveStraightMode());
+        }
         switch (mode) {
             case DO_NOTHING:
                 return Optional.of(new DoNothingMode());
@@ -120,9 +123,6 @@ public class AutoModeSelector {
     }
 
     public Optional<AutoModeBase> getAutoMode() {
-        if (hardwareFailure) {
-            return Optional.of(new DriveStraightMode());
-        }
         return mAutoMode;
     }
 
