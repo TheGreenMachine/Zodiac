@@ -40,7 +40,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
     // hardware
     private final IMotorControllerEnhanced mLeftMaster, mRightMaster;
     private final IMotorController mLeftSlaveA, mRightSlaveA, mLeftSlaveB, mRightSlaveB;
-    private final Solenoid mShifter;
 
     // Controllers
     private PathFollower mPathFollower;
@@ -84,8 +83,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
 
         mLeftMaster.configOpenloopRamp(Constants.kOpenLoopRampRate, Constants.kCANTimeoutMs);
         mRightMaster.configOpenloopRamp(Constants.kOpenLoopRampRate, Constants.kCANTimeoutMs);
-
-        mShifter = mFactory.getSolenoid("drivetrain", "kShifterSolenoidId");
 
         if (((int) mFactory.getConstant(NAME, "pigeonOnTalon")) == 1) {
             var pigeonId = ((int) mFactory.getConstant(NAME, "pigeonId"));
