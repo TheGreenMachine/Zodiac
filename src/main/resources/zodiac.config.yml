@@ -7,7 +7,7 @@ subsystems:
             rightMain: 0
             rightFollower: 1
         invertMotor:
-            - 14
+            - 0
         constants:
             pigeonId: 10
             pigeonOnTalon: -1
@@ -16,7 +16,7 @@ subsystems:
             kD: 3.6
             kF: 0.0475813
             iZone: 0
-            encPPR: 22000
+            encPPR: 22220.8
             currentFloorCheck: .12
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000
