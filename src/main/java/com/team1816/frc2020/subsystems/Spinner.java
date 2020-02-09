@@ -32,8 +32,8 @@ public class Spinner extends Subsystem {
     private boolean inPos = false;
     private SpinnerColor currentColor;
     private int colorsPassed = 0;
-    private boolean colorMode=false;
-    private boolean spinMode=false;
+    private boolean colorMode = false;
+    private boolean spinMode = false;
 
 
     // Constants
@@ -78,48 +78,45 @@ public class Spinner extends Subsystem {
                 System.out.println("Reached this level");
                 spinnerPow = 0.05;
                 outputsChanged = true;
-                colorMode=true;
-            }
-            else {
-
+                colorMode = true;
+            } else {
                 System.out.println("ENDED SPINNER SPIN");
                 spinnerPow = 0.0;
-                outputsChanged=true;
-                colorMode=false;
+                outputsChanged = true;
+                colorMode = false;
             }
         } else {
             spinnerPow = 0.0;
-            outputsChanged=true;
-            colorMode=false;
+            outputsChanged = true;
+            colorMode = false;
         }
     }
-    public void spin3Times(boolean held){
-        if(held){
+
+    public void spin3Times(boolean held) {
+        if (held) {
             initialize();
-            if (colorsPassed<=28) {
+            if (colorsPassed <= 28) {
                 System.out.println("Reached this level");
                 spinnerPow = 0.05;
                 outputsChanged = true;
-                spinMode=true;
-            }
-            else {
-
+                spinMode = true;
+            } else {
                 System.out.println("ENDED SPINNER SPIN");
                 spinnerPow = 0.0;
-                outputsChanged=true;
-                spinMode=false;
+                outputsChanged = true;
+                spinMode = false;
             }
-        }
-        else{
-            spinnerPow=0.0;
-            outputsChanged=true;
-            spinMode=false;
+        } else {
+            spinnerPow = 0.0;
+            outputsChanged = true;
+            spinMode = false;
         }
     }
-    public void stopSpin(Boolean released){
-        while(released){
-            spinnerPow=0.0;
-            outputsChanged=false;
+
+    public void stopSpin(boolean released) {
+        if (released) {
+            spinnerPow = 0.0;
+            outputsChanged = false;
         }
     }
 
@@ -132,28 +129,25 @@ public class Spinner extends Subsystem {
             if (detectedColor.index - currentColor.index == 1 || currentColor.index - detectedColor.index == 3) {
                 colorsPassed++;
                 currentColor = detectedColor;
-
             }
         }
         System.out.println(colorsPassed);
-        inPos = atColor(1);
-        if(colorMode&&inPos){
-            spinnerPow=0.0;
-            outputsChanged=true;
-            colorMode=false;
-
+        inPos = atColor(SpinnerColor.GREEN);
+        if (colorMode && inPos) {
+            spinnerPow = 0.0;
+            outputsChanged = true;
+            colorMode = false;
         }
-        if(spinMode&&colorsPassed>=28){
-            spinnerPow=0.0;
-            outputsChanged=true;
-            spinMode=false;
+        if (spinMode && colorsPassed >= 28) {
+            spinnerPow = 0.0;
+            outputsChanged = true;
+            spinMode = false;
         }
-
     }
 
     @Override
     public void writePeriodicOutputs() {
-        if (outputsChanged ) {
+        if (outputsChanged) {
             spinnerMotor.set(ControlMode.PercentOutput, spinnerPow);
             outputsChanged = false;
         }
@@ -184,13 +178,8 @@ public class Spinner extends Subsystem {
         return colorDetected;
     }
 
-    public boolean atColor(int color){
-        if (currentColor.index == color){
-
-            return true;
-
-        }
-        return false;
+    public boolean atColor(SpinnerColor color) {
+        return currentColor == color;
     }
 
     @Override
