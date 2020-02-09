@@ -2,10 +2,10 @@ package com.team1816.lib.subsystems;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.team1816.frc2019.Constants;
+import com.team1816.frc2020.Constants;
+import com.team1816.lib.hardware.CtreMotorFactory;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
-import com.team254.lib.drivers.TalonSRXFactory;
 import com.team254.lib.drivers.TalonSRXUtil;
 import com.team254.lib.motion.MotionProfileConstraints;
 import com.team254.lib.motion.MotionProfileGoal;
@@ -83,7 +83,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
     protected ServoMotorSubsystem(final ServoMotorSubsystemConstants constants) {
         super("ServoMotorSubsystem");
         mConstants = constants;
-        mMaster = TalonSRXFactory.createDefaultTalon(mConstants.kMasterConstants.id);
+        mMaster = (TalonSRX) CtreMotorFactory.createDefaultTalon(mConstants.kMasterConstants.id, false);
         mSlaves = new TalonSRX[mConstants.kSlaveConstants.length];
 
         TalonSRXUtil.checkError(mMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0,
@@ -197,8 +197,8 @@ public abstract class ServoMotorSubsystem extends Subsystem {
         mMaster.selectProfileSlot(kMotionProfileSlot, 0);
 
         for (int i = 0; i < mSlaves.length; ++i) {
-            mSlaves[i] = TalonSRXFactory.createPermanentSlaveTalon(mConstants.kSlaveConstants[i].id,
-                    mConstants.kMasterConstants.id);
+            mSlaves[i] = (TalonSRX) CtreMotorFactory.createPermanentSlaveTalon(mConstants.kSlaveConstants[i].id, false,
+                    mMaster);
             mSlaves[i].setInverted(mConstants.kSlaveConstants[i].invert_motor);
             mSlaves[i].setNeutralMode(NeutralMode.Brake);
             mSlaves[i].follow(mMaster);

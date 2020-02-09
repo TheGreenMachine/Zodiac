@@ -66,7 +66,7 @@ public class SetpointGenerator {
             mConstraints = constraints;
             mGoal = goal;
             mProfile = MotionProfileGenerator.generateProfile(constraints, goal, prev_state);
-            if(RobotFactory.Verbose()) System.out.println("Regenerating profile: " + mProfile);
+            if(RobotFactory.isVerbose()) System.out.println("Regenerating profile: " + mProfile);
         }
 
         // Sample the profile at time t.

@@ -1,6 +1,6 @@
 package com.team254.lib.util;
 
-import com.team1816.frc2019.subsystems.Drive;
+import com.team1816.frc2020.subsystems.Drive;
 
 /**
  * Helper class to implement "Cheesy Drive". "Cheesy Drive" simply means that the "turning" stick controls the curvature
@@ -146,7 +146,7 @@ public class CheesyDriveHelper {
     }
 
     public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn) {
-        return cheesyDrive(throttle, wheel, isQuickTurn, Drive.getInstance().isHighGear());
+        return cheesyDrive(throttle, wheel, isQuickTurn, false); // TODO: no gearshift, isHighGear = true?
     }
 
     public double handleDeadband(double val, double deadband) {

@@ -1,6 +1,5 @@
 package com.team1816.lib.paths;
 
-import com.team1816.frc2019.Robot;
 import com.team1816.lib.auto.actions.WaitForPathMarkerAction;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team254.lib.control.Path;
@@ -36,7 +35,7 @@ public class PathBuilder {
         new Line(w.get(w.size() - 2), w.get(w.size() - 1)).addToPath(p, 0);
         p.extrapolateLast();
         p.verifySpeeds();
-        if(RobotFactory.Verbose()) System.out.println(p);
+        if(RobotFactory.isVerbose()) System.out.println(p);
         return p;
     }
 

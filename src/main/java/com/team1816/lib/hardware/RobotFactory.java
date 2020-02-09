@@ -4,6 +4,7 @@ import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 
+import com.team1816.frc2020.Constants;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -23,36 +24,49 @@ public class RobotFactory {
         return (getSubsystem(subsystem) != null) && (getSubsystem(subsystem).implemented);
     }
 
-    public IMotorControllerEnhanced getMotor(String subsystemName, String name) {
+    public IMotorControllerEnhanced getMotor(String subsystemName, String name) { // TODO: optimize this method
         if (isImplemented(subsystemName)) {
             YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
             if (isHardwareValid(subsystem.talons.get(name))) {
-                var motor = CtreMotorFactory.createDefaultTalon(subsystem.talons.get(name));
+                var motor = CtreMotorFactory.createDefaultTalon(subsystem.talons.get(name), false);
                 if (subsystem.invertMotor.contains(motor.getDeviceID())) {
                     System.out.println("Inverting " + name);
                     motor.setInverted(true);
                 }
+                motor.config_kP(0, getConstant(subsystemName, "kP", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kI(0, getConstant(subsystemName, "kI", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kD(0, getConstant(subsystemName, "kD", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kF(0, getConstant(subsystemName, "kF", 0), Constants.kLongCANTimeoutMs);
                 return motor;
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
-                var motor = CtreMotorFactory.createDefaultFalcon(subsystem.falcons.get(name));
+                var motor = CtreMotorFactory.createDefaultTalon(subsystem.falcons.get(name), true);
                 if (subsystem.invertMotor.contains(motor.getDeviceID())) {
                     System.out.println("Inverting" + name);
                     motor.setInverted(true);
                 }
+                motor.config_kP(0, getConstant(subsystemName, "kP", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kI(0, getConstant(subsystemName, "kI", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kD(0, getConstant(subsystemName, "kD", 0), Constants.kLongCANTimeoutMs);
+                motor.config_kF(0, getConstant(subsystemName, "kF", 0), Constants.kLongCANTimeoutMs);
                 return motor;
             } // Never make the victor a master
         }
+        DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
         return CtreMotorFactory.createGhostTalon();
     }
 
-    public IMotorController getMotor(String subsystemName, String name, IMotorController master) {
+    public IMotorController getMotor(String subsystemName, String name, IMotorController master) { // TODO: optimize this method
         if (isImplemented(subsystemName) && master != null) {
             YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
             if (isHardwareValid(subsystem.talons.get(name))) {
                 // Talons must be following another Talon, cannot follow a Victor.
-                var talon = CtreMotorFactory.createPermanentSlaveTalon(subsystem.talons.get(name), master);
+                var talon = CtreMotorFactory.createPermanentSlaveTalon(subsystem.talons.get(name), false, master);
                 talon.setInverted(master.getInverted());
                 return talon;
+            } else if (isHardwareValid(subsystem.falcons.get(name))) {
+                var falcon = CtreMotorFactory.createPermanentSlaveTalon(subsystem.falcons.get(name), true, master);
+                falcon.setInverted(master.getInverted());
+                return falcon;
             } else if (isHardwareValid(subsystem.victors.get(name))) {
                 // Victors can follow Talons or another Victor.
                 var victor = CtreMotorFactory.createPermanentSlaveVictor(subsystem.victors.get(name), master);
@@ -60,6 +74,7 @@ public class RobotFactory {
                 return victor;
             }
         }
+        DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
         return CtreMotorFactory.createGhostTalon();
     }
 
@@ -98,10 +113,18 @@ public class RobotFactory {
         return config.constants.get(name);
     }
 
-    public Double getConstant(String subsystem, String name) {
+    public double getConstant(String subsystem, String name) {
+        return getConstant(subsystem, name, -1);
+    }
+
+    public double getConstant(String subsystem, String name, double defaultVal) {
+        if (getSubsystem(subsystem) == null) {
+            DriverStation.reportError("Subsystem " + subsystem + " does not exist", false);
+            return defaultVal;
+        }
         if (!getSubsystem(subsystem).constants.containsKey(name)) {
             DriverStation.reportError("Yaml " + subsystem + " constants:" + name + " missing", false);
-            return null;
+            return defaultVal;
         }
         return getSubsystem(subsystem).constants.get(name);
     }
@@ -110,11 +133,15 @@ public class RobotFactory {
         return config;
     }
 
+    public int getPcmId() {
+        return config.pcm;
+    }
+
     public YamlConfig.SubsystemConfig getSubsystem(String subsystem) {
         return config.subsystems.get(subsystem);
     }
 
-    public static boolean Verbose() {
+    public static boolean isVerbose() {
         return verbose;
     }
 }
