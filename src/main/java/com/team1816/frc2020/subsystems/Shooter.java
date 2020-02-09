@@ -8,11 +8,12 @@ import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.hardware.TalonSRXChecker;
+import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 
 import java.util.ArrayList;
 
-public class Shooter extends Subsystem {
+public class Shooter extends Subsystem implements PidProvider {
     private static final String NAME = "shooter";
     private static Shooter INSTANCE;
 
@@ -70,18 +71,22 @@ public class Shooter extends Subsystem {
         shooterMain.setSensorPhase(true);
     }
 
+    @Override
     public double getKP() {
         return kP;
     }
 
+    @Override
     public double getKI() {
         return kI;
     }
 
+    @Override
     public double getKD() {
         return kD;
     }
 
+    @Override
     public double getKF() {
         return kF;
     }
