@@ -137,15 +137,7 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     private TalonSRXChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
-        return new TalonSRXChecker.CheckerConfig() {
-            {
-                mCurrentFloor = Robot.getFactory().getConstant(NAME,"currentFloorCheck");
-                mRPMFloor = Robot.getFactory().getConstant(NAME,"rpmFloorCheck");
-                mCurrentEpsilon = Robot.getFactory().getConstant(NAME,"currentEpsilonCheck");
-                mRPMEpsilon = Robot.getFactory().getConstant(NAME,"rpmEpsilonCheck");
-                mRPMSupplier = () -> talon.getSelectedSensorVelocity(0);
-            }
-        };
+        return TalonSRXChecker.CheckerConfig.getForSubsystemMotor(this, talon);
     }
 
     @Override
