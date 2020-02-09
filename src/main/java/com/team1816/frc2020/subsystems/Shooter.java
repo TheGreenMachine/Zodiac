@@ -33,11 +33,8 @@ public class Shooter extends Subsystem implements PidProvider {
     private final IMotorController shooterFollowerB;
     private final IMotorController shooterFollowerC;
 
-//    private final Solenoid hood;
-
     // State
     private double shooterVelocity;
-    private boolean hoodDown;
     private boolean outputsChanged;
 
     // Constants
@@ -104,11 +101,6 @@ public class Shooter extends Subsystem implements PidProvider {
         setVelocity(0);
     }
 
-    public void setHoodDown(boolean hoodDown) {
-        this.hoodDown = hoodDown;
-        outputsChanged = true;
-    }
-
     public double getActualVelocity() {
         return shooterMain.getSelectedSensorVelocity(0);
     }
@@ -126,7 +118,6 @@ public class Shooter extends Subsystem implements PidProvider {
         if (outputsChanged) {
             System.out.println("Shooter velocity: " + shooterVelocity);
             this.shooterMain.set(ControlMode.Velocity, shooterVelocity);
-        //    this.hood.set(hoodDown);
             outputsChanged = false;
         }
     }

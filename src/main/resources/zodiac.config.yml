@@ -48,8 +48,6 @@ subsystems:
             shooterFollowerC: 11
         invertMotor:
             - 2
-        solenoids:
-            hood: -1
         constants: #TODO: need tuning [P, I, D]
             kP: 0.025
             kI: 0
