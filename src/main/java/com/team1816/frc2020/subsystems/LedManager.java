@@ -129,8 +129,6 @@ public class LedManager extends Subsystem {
                 outputsChanged = false;
             }
         }
-
-        System.out.println("blink value: " + blinkMode);
     }
 
     @Override
@@ -211,8 +209,5 @@ public class LedManager extends Subsystem {
         public int getBlue() {
             return blue;
         }
-
-
     }
-
 }
