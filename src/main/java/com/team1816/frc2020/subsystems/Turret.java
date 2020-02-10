@@ -57,22 +57,22 @@ public class Turret extends Subsystem implements PidProvider {
 
     @Override
     public double getKP() {
-        return 0;
+        return kP;
     }
 
     @Override
     public double getKI() {
-        return 0;
+        return kI;
     }
 
     @Override
     public double getKD() {
-        return 0;
+        return kD;
     }
 
     @Override
     public double getKF() {
-        return 0;
+        return kF;
     }
 
     public void setTurretSpeed(double speed) {
