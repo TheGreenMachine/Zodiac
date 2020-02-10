@@ -40,7 +40,6 @@ public class Robot extends TimedRobot {
 
     // subsystems
     private final Superstructure mSuperstructure = Superstructure.getInstance();
-    private final CarriageCanifier mCarriageCanifier = CarriageCanifier.getInstance();
     private final Infrastructure mInfrastructure = Infrastructure.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
@@ -118,12 +117,10 @@ public class Robot extends TimedRobot {
                 mRobotStateEstimator,
                 mDrive,
                 mSuperstructure,
-                mCarriageCanifier,
                 mInfrastructure,
                 shooter
             );
 
-            mCarriageCanifier.zeroSensors();
             mDrive.zeroSensors();
 
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
@@ -286,14 +283,11 @@ public class Robot extends TimedRobot {
         try {
             if (!resetRobotButton.get() && !mHasBeenEnabled) {
                 System.out.println("Zeroing Robot!");
-                mCarriageCanifier.zeroSensors();
                 mDrive.zeroSensors();
             }
 
             // Update auto modes
             mAutoModeSelector.updateModeCreator();
-
-            mCarriageCanifier.writePeriodicOutputs();
 
             Optional<AutoModeBase> autoMode = mAutoModeSelector.getAutoMode();
             mDriveByCameraInAuto = mAutoModeSelector.isDriveByCamera();
