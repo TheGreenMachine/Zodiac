@@ -48,9 +48,11 @@ public class Robot extends TimedRobot {
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
     private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
+    private final Collector collector = Collector.getInstance();
     private final Shooter shooter = Shooter.getInstance();
     private final Turret turret = Turret.getInstance();
     private final Spinner spinner = Spinner.getInstance();
+    private final Hopper hopper = Hopper.getInstance();
 
     // button placed on the robot to allow the drive team to zero the robot right
     // before the start of a match
@@ -125,7 +127,9 @@ public class Robot extends TimedRobot {
                 mSuperstructure,
                 mInfrastructure,
                 shooter,
-                spinner
+                spinner,
+                collector,
+                hopper
             );
 
             mDrive.zeroSensors();
@@ -147,11 +151,16 @@ public class Robot extends TimedRobot {
             actionManager = new ActionManager(
                 // TODO: Controls for Zodiac
                 // Driver Gamepad
+                createAction(mControlBoard::getCollectorDown, () -> collector.setDeployed(true)),
+                createAction(mControlBoard::getCollectorUp, () -> collector.setDeployed(false)),
 
                 // Operator Gamepad
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize), // TODO: implement button for spinner reset
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
-                createHoldAction(mControlBoard::getSpinnerThreeTimes,spinner::spinThreeTimes)
+                createHoldAction(mControlBoard::getSpinnerThreeTimes,spinner::spinThreeTimes),
+
+                createAction(mControlBoard::getFeederFlapperOut, () -> hopper.setFeederFlap(true)),
+                createAction(mControlBoard::getFeederFlapperIn, () -> hopper.setFeederFlap(false))
             );
 
             blinkTimer = new AsyncTimer(

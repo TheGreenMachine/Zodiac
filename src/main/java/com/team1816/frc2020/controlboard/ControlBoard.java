@@ -26,6 +26,7 @@ public class ControlBoard implements IControlBoard {
     @Override
     public void reset() {}
 
+    // Drive Control Board
     @Override
     public double getThrottle() {
         return mDriveControlBoard.getThrottle();
@@ -52,8 +53,19 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public void setRumble(boolean on) {
-        mButtonControlBoard.setRumble(on);
+    public boolean getSpinnerColor() {
+        return mDriveControlBoard.getSpinnerColor();
+    }
+
+
+    @Override
+    public boolean getCollectorDown() {
+        return mDriveControlBoard.getCollectorDown();
+    }
+
+    @Override
+    public boolean getCollectorUp() {
+        return mDriveControlBoard.getCollectorUp();
     }
 
     @Override
@@ -61,13 +73,25 @@ public class ControlBoard implements IControlBoard {
         return mDriveControlBoard.getSpinnerThreeTimes();
     }
 
+
+    // Button Control Board
     @Override
-    public boolean getSpinnerColor() {
-        return mDriveControlBoard.getSpinnerColor();
+    public void setRumble(boolean on) {
+        mButtonControlBoard.setRumble(on);
     }
 
     @Override
     public boolean getSpinnerReset() {
         return mButtonControlBoard.getSpinnerReset();
+    }
+
+    @Override
+    public boolean getFeederFlapperOut() {
+        return mButtonControlBoard.getFeederFlapperOut();
+    }
+
+    @Override
+    public boolean getFeederFlapperIn() {
+        return mButtonControlBoard.getFeederFlapperIn();
     }
 }

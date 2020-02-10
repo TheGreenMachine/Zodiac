@@ -6,4 +6,8 @@ public interface IButtonControlBoard {
     void setRumble(boolean on);
 
     boolean getSpinnerReset();
+
+    boolean getFeederFlapperOut();
+
+    boolean getFeederFlapperIn();
 }

@@ -38,6 +38,14 @@ public class Collector extends Subsystem {
         this.intake = factory.getMotor(NAME, "intake");
     }
 
+    public boolean isArmDown() {
+        return armDown;
+    }
+
+    public double getIntakePow() {
+        return intakePow;
+    }
+
     public void setArm(boolean down) {
         armDown = down;
         outputsChanged = true;
@@ -47,12 +55,14 @@ public class Collector extends Subsystem {
         intakePow = intakePower;
     }
 
-    public boolean isArmDown() {
-        return armDown;
-    }
-
-    public double getIntakePow() {
-        return intakePow;
+    public void setDeployed(boolean down) {
+        if (down) {
+            setArm(true);
+            setIntakePow(1);
+        } else {
+            setIntakePow(0);
+            setArm(false);
+        }
     }
 
     @Override

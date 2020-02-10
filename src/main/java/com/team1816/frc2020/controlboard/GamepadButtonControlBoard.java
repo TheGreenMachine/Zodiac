@@ -42,6 +42,16 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     @Override
     public boolean getSpinnerReset() {
-        return mController.getDPad() == 1;
+        return mController.getDPad() == 0;
+    }
+
+    @Override
+    public boolean getFeederFlapperOut() {
+        return mController.getButton(LogitechController.Button.Y);
+    }
+
+    @Override
+    public boolean getFeederFlapperIn() {
+        return mController.getButton(LogitechController.Button.A);
     }
 }
