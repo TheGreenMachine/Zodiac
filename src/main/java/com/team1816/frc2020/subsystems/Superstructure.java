@@ -1,10 +1,10 @@
 package com.team1816.frc2020.subsystems;
 
+import com.team1816.frc2020.Robot;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.vision.AimingParameters;
-import com.team1816.frc2020.Robot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import java.util.Optional;

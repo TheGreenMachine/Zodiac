@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.util.Util;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 

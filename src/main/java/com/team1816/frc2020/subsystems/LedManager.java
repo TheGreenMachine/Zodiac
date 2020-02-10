@@ -90,7 +90,6 @@ public class LedManager extends Subsystem {
         setLedColorBlink(status.getRed(), status.getGreen(), status.getBlue());
     }
 
-
     public int[] getLedColor() {
         return new int[]{ledR, ledG, ledB};
     }

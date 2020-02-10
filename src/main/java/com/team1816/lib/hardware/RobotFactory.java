@@ -3,7 +3,6 @@ package com.team1816.lib.hardware;
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-
 import com.team1816.frc2020.Constants;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;

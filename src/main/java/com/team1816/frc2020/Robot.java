@@ -296,7 +296,6 @@ public class Robot extends TimedRobot {
         }
     }
 
-
     @Override
     public void disabledPeriodic() {
         loopStart = Timer.getFPGATimestamp();
@@ -367,7 +366,6 @@ public class Robot extends TimedRobot {
     public void manualControl() {
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
-
 
         actionManager.update();
         mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, mControlBoard.getQuickTurn()));
