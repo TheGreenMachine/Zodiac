@@ -6,6 +6,7 @@ import com.team254.lib.control.Path;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 
@@ -36,8 +37,8 @@ public interface PathContainer {
             kMaxVelocity, kMaxAccel, kMaxVoltage);
     }
 
-    default Trajectory.Mirrored generateMirroredTrajectory() {
-        return new Trajectory.Mirrored(generateTrajectory());
+    default Trajectory<TimedState<Pose2dWithCurvature>> generateMirroredTrajectory() {
+        return TrajectoryUtil.mirrorTimed(generateTrajectory());
     }
 
 

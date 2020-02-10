@@ -21,7 +21,7 @@ public class AutoTrenchMode extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        System.out.println("Running Drive Straight Mode");
+        System.out.println("Running Auto Trench Mode");
         runAction(
             new SeriesAction(
                 new ParallelAction(
