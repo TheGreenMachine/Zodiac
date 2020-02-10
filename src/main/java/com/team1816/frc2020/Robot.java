@@ -29,6 +29,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.team1816.frc2020.controlboard.ControlUtils.createAction;
+import static com.team1816.frc2020.controlboard.ControlUtils.createHoldAction;
+
 public class Robot extends TimedRobot {
     private BadLog logger;
     private final Looper mEnabledLooper = new Looper();
@@ -46,6 +49,8 @@ public class Robot extends TimedRobot {
     private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
     private final Shooter shooter = Shooter.getInstance();
+    private final Turret turret = Turret.getInstance();
+    private final Spinner spinner = Spinner.getInstance();
 
     // button placed on the robot to allow the drive team to zero the robot right
     // before the start of a match
@@ -95,8 +100,9 @@ public class Robot extends TimedRobot {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger = BadLog.init("/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag");
             DrivetrainLogger.init(mDrive);
-            BadLog.createValue("Drivetrain PID", String.format("kP = %f, kI = %f, kD = %f, kF = %f", mDrive.getKP(), mDrive.getKI(), mDrive.getKD(), mDrive.getKF()));
-            BadLog.createValue("Shooter PID", String.format("kP = %f, kI = %f, kD = %f, kF = %f", shooter.getKP(), shooter.getKI(), shooter.getKD(), shooter.getKF()));
+            BadLog.createValue("Drivetrain PID", mDrive.pidToString());
+            BadLog.createValue("Shooter PID", shooter.pidToString());
+            BadLog.createValue("Turret PID", turret.pidToString());
             BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
@@ -118,7 +124,8 @@ public class Robot extends TimedRobot {
                 mDrive,
                 mSuperstructure,
                 mInfrastructure,
-                shooter
+                shooter,
+                spinner
             );
 
             mDrive.zeroSensors();
@@ -138,7 +145,13 @@ public class Robot extends TimedRobot {
             mAutoModeSelector.updateModeCreator();
 
             actionManager = new ActionManager(
+                // TODO: Controls for Zodiac
+                // Driver Gamepad
 
+                // Operator Gamepad
+                createAction(mControlBoard::getSpinnerReset, spinner::initialize), // TODO: implement button for spinner reset
+                createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
+                createHoldAction(mControlBoard::getSpinnerThreeTimes,spinner::spinThreeTimes)
             );
 
             blinkTimer = new AsyncTimer(
@@ -245,7 +258,14 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logTestInit();
 
-            // mDisabledLooper.stop();
+            double initTime = System.currentTimeMillis();
+
+            ledManager.setLedColorBlink(255, 255, 0, 1000);
+            // Warning - blocks thread - intended behavior?
+            while (System.currentTimeMillis() - initTime <= 3000) {
+                ledManager.writePeriodicOutputs();
+            }
+
             mEnabledLooper.stop();
             mDisabledLooper.start();
 
@@ -351,12 +371,10 @@ public class Robot extends TimedRobot {
 
         actionManager.update();
         mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, mControlBoard.getQuickTurn()));
-
     }
 
     @Override
     public void testPeriodic() {
-        ledManager.writePeriodicOutputs();
     }
 }
 
