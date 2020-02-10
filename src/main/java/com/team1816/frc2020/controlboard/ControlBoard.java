@@ -1,6 +1,5 @@
 package com.team1816.frc2020.controlboard;
 
-import com.team1816.frc2020.Constants;
 import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.controlboard.IDriveControlBoard;
@@ -20,8 +19,7 @@ public class ControlBoard implements IControlBoard {
     private final IButtonControlBoard mButtonControlBoard;
 
     private ControlBoard() {
-        mDriveControlBoard = Constants.kUseDriveGamepad ? GamepadDriveControlBoard.getInstance()
-                : MainDriveControlBoard.getInstance();
+        mDriveControlBoard =  GamepadDriveControlBoard.getInstance();
         mButtonControlBoard = GamepadButtonControlBoard.getInstance();
     }
 
