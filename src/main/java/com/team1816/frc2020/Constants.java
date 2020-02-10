@@ -24,9 +24,6 @@ public class Constants {
     public static final int kMainTurnJoystickPort = 0;
     public static final double kJoystickThreshold = 0.2;
 
-    // Canifier
-    public static int kCanifierWristId = (int) Robot.getFactory().getConstant("canifier", "canId");
-
     public static final double kMaxTrackerDistance = 9.0;
     public static final double kMaxGoalTrackAge = 2.5;
     public static final double kMaxGoalTrackAgeNotTracking = 0.1;
@@ -71,9 +68,6 @@ public class Constants {
     public static final double kPathFollowingProfileKffv = 1.0;  // % throttle per inch/s
     public static final double kPathFollowingProfileKffa = 0;  // % throttle per inch/s^2
     public static final double kPathFollowingProfileKs = Robot.getFactory().getConstant("pathKs");;  // % throttle required to break static friction
-
-    public static final double kDriveVoltageRampRate = 0.0;
-
 
 
     // Do not change anything after this line unless you rewire the robot and
