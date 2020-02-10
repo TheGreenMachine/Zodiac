@@ -4,4 +4,6 @@ public interface IButtonControlBoard {
     void reset();
 
     void setRumble(boolean on);
+
+    boolean getSpinnerReset();
 }

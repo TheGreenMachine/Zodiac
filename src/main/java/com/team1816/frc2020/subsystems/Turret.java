@@ -3,12 +3,14 @@ package com.team1816.frc2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
-public class Turret extends Subsystem {
+public class Turret extends Subsystem implements PidProvider {
     private static final String NAME = "turret";
     private static Turret INSTANCE;
 
@@ -31,7 +33,10 @@ public class Turret extends Subsystem {
 
     // Constants
     private static final int kPIDLoopIDx = 0;
-    private static final int kTimeoutMs = 10;
+    private final double kP;
+    private final double kI;
+    private final double kD;
+    private final double kF;
 
     private static double TURRET_ENCODER_PPR = Robot.getFactory().getConstant("turret", "encPPR");
 
@@ -41,8 +46,33 @@ public class Turret extends Subsystem {
 
         this.turret = factory.getMotor(NAME, "turret");
 
+        this.kP = factory.getConstant(NAME, "kP");
+        this.kI = factory.getConstant(NAME, "kI");
+        this.kD = factory.getConstant(NAME, "kD");
+        this.kF = factory.getConstant(NAME, "kF");
+
         int absolutePosition = getTurretPosAbsolute();
-        turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, kTimeoutMs);
+        turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kCANTimeoutMs);
+    }
+
+    @Override
+    public double getKP() {
+        return 0;
+    }
+
+    @Override
+    public double getKI() {
+        return 0;
+    }
+
+    @Override
+    public double getKD() {
+        return 0;
+    }
+
+    @Override
+    public double getKF() {
+        return 0;
     }
 
     public void setTurretSpeed(double speed) {
@@ -66,10 +96,9 @@ public class Turret extends Subsystem {
     }
 
     public int getTurretPosAbsolute() {
-        if (turret != null) {
+        if (turret instanceof TalonSRX) {
             return ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & 0xFFF;
         }
-
         return 0;
     }
 

@@ -57,4 +57,19 @@ public class ControlBoard implements IControlBoard {
     public void setRumble(boolean on) {
         mButtonControlBoard.setRumble(on);
     }
+
+    @Override
+    public boolean getSpinner3Times() {
+        return mDriveControlBoard.getSpinner3Times();
+    }
+
+    @Override
+    public boolean getSpinnerColor() {
+        return mDriveControlBoard.getSpinnerColor();
+    }
+
+    @Override
+    public boolean getSpinnerReset() {
+        return mButtonControlBoard.getSpinnerReset();
+    }
 }

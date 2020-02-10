@@ -1,5 +1,5 @@
 subsystems:
-    drivetrain: #TODO: tuning and measure encPPR
+    drivetrain:
         implemented: true
         falcons:
             leftMain: 14
@@ -11,7 +11,7 @@ subsystems:
         constants:
             pigeonId: 10
             pigeonOnTalon: -1
-            kP: 0.09 # Temporary PID values from Zeta
+            kP: 0.09 # TODO: tune PID, these are temporary PID values from Zeta
             kI: 0.018
             kD: 3.6
             kF: 0.0475813
@@ -48,8 +48,6 @@ subsystems:
             shooterFollowerC: 11
         invertMotor:
             - 2
-        solenoids:
-            hood: -1
         constants: #TODO: need tuning [P, I, D]
             kP: 0.025
             kI: 0
@@ -59,12 +57,16 @@ subsystems:
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000
             rpmEpsilonCheck: 60
-    turret: #TODO: need to measure encPPR
+    turret:
         implemented: false
         talons:
             turret: -1
-        constants:
-            encPPR: 0
+        constants: # TODO: tune [P, I, D]
+            kP: 0
+            kI: 0
+            kD: 0
+            kF: 0 # Should be 0 for position control
+            encPPR: 2062.3
     canifier:
         implemented: false
         constants:

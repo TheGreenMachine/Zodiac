@@ -10,4 +10,8 @@ public interface IDriveControlBoard {
     boolean getSlowMode();
 
     boolean getDrivetrainFlipped();
+
+    boolean getSpinnerColor();
+
+    boolean getSpinner3Times();
 }

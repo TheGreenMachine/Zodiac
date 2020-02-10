@@ -8,11 +8,12 @@ import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.hardware.TalonSRXChecker;
+import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 
 import java.util.ArrayList;
 
-public class Shooter extends Subsystem {
+public class Shooter extends Subsystem implements PidProvider {
     private static final String NAME = "shooter";
     private static Shooter INSTANCE;
 
@@ -32,11 +33,8 @@ public class Shooter extends Subsystem {
     private final IMotorController shooterFollowerB;
     private final IMotorController shooterFollowerC;
 
-//    private final Solenoid hood;
-
     // State
     private double shooterVelocity;
-    private boolean hoodDown;
     private boolean outputsChanged;
 
     // Constants
@@ -70,18 +68,22 @@ public class Shooter extends Subsystem {
         shooterMain.setSensorPhase(true);
     }
 
+    @Override
     public double getKP() {
         return kP;
     }
 
+    @Override
     public double getKI() {
         return kI;
     }
 
+    @Override
     public double getKD() {
         return kD;
     }
 
+    @Override
     public double getKF() {
         return kF;
     }
@@ -97,11 +99,6 @@ public class Shooter extends Subsystem {
 
     public void stopShooter() {
         setVelocity(0);
-    }
-
-    public void setHoodDown(boolean hoodDown) {
-        this.hoodDown = hoodDown;
-        outputsChanged = true;
     }
 
     public double getActualVelocity() {
@@ -121,7 +118,6 @@ public class Shooter extends Subsystem {
         if (outputsChanged) {
             System.out.println("Shooter velocity: " + shooterVelocity);
             this.shooterMain.set(ControlMode.Velocity, shooterVelocity);
-        //    this.hood.set(hoodDown);
             outputsChanged = false;
         }
     }
@@ -132,15 +128,7 @@ public class Shooter extends Subsystem {
     }
 
     private TalonSRXChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
-        return new TalonSRXChecker.CheckerConfig() {
-            {
-                mCurrentFloor = Robot.getFactory().getConstant(NAME,"currentFloorCheck");
-                mRPMFloor = Robot.getFactory().getConstant(NAME,"rpmFloorCheck");
-                mCurrentEpsilon = Robot.getFactory().getConstant(NAME,"currentEpsilonCheck");
-                mRPMEpsilon = Robot.getFactory().getConstant(NAME,"rpmEpsilonCheck");
-                mRPMSupplier = () -> talon.getSelectedSensorVelocity(0);
-            }
-        };
+        return TalonSRXChecker.CheckerConfig.getForSubsystemMotor(this, talon);
     }
 
     @Override

@@ -39,4 +39,9 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     public void reset() {
         mDPadValid = new DelayedBoolean(Timer.getFPGATimestamp(), kDPadDelay);
     }
+
+    @Override
+    public boolean getSpinnerReset() {
+        return mController.getDPad() == 1;
+    }
 }

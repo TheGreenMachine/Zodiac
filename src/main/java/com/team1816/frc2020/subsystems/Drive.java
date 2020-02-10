@@ -15,22 +15,25 @@ import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
+import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team1816.lib.subsystems.TrackableDrivetrain;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
 import com.team254.lib.control.PathFollower;
-import com.team254.lib.geometry.*;
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import java.util.ArrayList;
 
-public class Drive extends Subsystem implements TrackableDrivetrain {
+public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider {
     private static Drive mInstance;
     private static final String NAME = "drivetrain";
     private static double DRIVE_ENCODER_PPR;
@@ -134,18 +137,22 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
         return mPeriodicIO.desired_heading.getDegrees();
     }
 
+    @Override
     public double getKP() {
         return mFactory.getConstant(NAME, "kP");
     }
 
+    @Override
     public double getKI() {
         return mFactory.getConstant(NAME, "kI");
     }
 
+    @Override
     public double getKD() {
         return mFactory.getConstant(NAME, "kD");
     }
 
+    @Override
     public double getKF() {
         return mFactory.getConstant(NAME, "kF");
     }
@@ -538,15 +545,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
     }
 
     private TalonSRXChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
-        return new TalonSRXChecker.CheckerConfig() {
-            {
-                mCurrentFloor = Robot.getFactory().getConstant(NAME,"currentFloorCheck");
-                mRPMFloor = Robot.getFactory().getConstant(NAME,"rpmFloorCheck");
-                mCurrentEpsilon = Robot.getFactory().getConstant(NAME,"currentEpsilonCheck");
-                mRPMEpsilon = Robot.getFactory().getConstant(NAME,"rpmEpsilonCheck");
-                mRPMSupplier = () -> talon.getSelectedSensorVelocity(0);
-            }
-        };
+        return TalonSRXChecker.CheckerConfig.getForSubsystemMotor(this, talon);
     }
 
     @Override
