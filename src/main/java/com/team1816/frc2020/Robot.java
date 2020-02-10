@@ -29,6 +29,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.team1816.frc2020.controlboard.ControlUtils.createAction;
+import static com.team1816.frc2020.controlboard.ControlUtils.createHoldAction;
+
 public class Robot extends TimedRobot {
     private BadLog logger;
     private final Looper mEnabledLooper = new Looper();
@@ -48,6 +51,7 @@ public class Robot extends TimedRobot {
     private final LedManager ledManager = LedManager.getInstance();
     private final Shooter shooter = Shooter.getInstance();
     private final Turret turret = Turret.getInstance();
+    private final Spinner spinner = Spinner.getInstance();
 
     // button placed on the robot to allow the drive team to zero the robot right
     // before the start of a match
@@ -122,7 +126,8 @@ public class Robot extends TimedRobot {
                 mSuperstructure,
                 mCarriageCanifier,
                 mInfrastructure,
-                shooter
+                shooter,
+                spinner
             );
 
             mCarriageCanifier.zeroSensors();
@@ -147,7 +152,9 @@ public class Robot extends TimedRobot {
                 // Driver Gamepad
 
                 // Operator Gamepad
-
+                createAction(mControlBoard::getSpinnerReset, spinner::initialize), // TODO: implement button for spinner reset
+                createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
+                createHoldAction(mControlBoard::getSpinner3Times,spinner::spin3Times)
             );
 
             blinkTimer = new AsyncTimer(
@@ -254,7 +261,15 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logTestInit();
 
-            // mDisabledLooper.stop();
+            double initTime = System.currentTimeMillis();
+            double blinkTime = System.currentTimeMillis();
+
+            ledManager.setLedColorBlink(255, 255, 0, 1000);
+            // Warning - blocks thread - intended behavior?
+            while (System.currentTimeMillis() - initTime <= 3000) {
+                ledManager.writePeriodicOutputs();
+            }
+
             mEnabledLooper.stop();
             mDisabledLooper.start();
 
@@ -299,7 +314,7 @@ public class Robot extends TimedRobot {
             // Update auto modes
             mAutoModeSelector.updateModeCreator();
 
-            mCarriageCanifier.writePeriodicOutputs();
+            mCarriageCanifer.writePeriodicOutputs();
 
             Optional<AutoModeBase> autoMode = mAutoModeSelector.getAutoMode();
             mDriveByCameraInAuto = mAutoModeSelector.isDriveByCamera();
@@ -363,12 +378,10 @@ public class Robot extends TimedRobot {
 
         actionManager.update();
         mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, mControlBoard.getQuickTurn()));
-
     }
 
     @Override
     public void testPeriodic() {
-        ledManager.writePeriodicOutputs();
     }
 }
 
