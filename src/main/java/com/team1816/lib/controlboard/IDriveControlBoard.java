@@ -13,5 +13,5 @@ public interface IDriveControlBoard {
 
     boolean getSpinnerColor();
 
-    boolean getSpinner3Times();
+    boolean getSpinnerThreeTimes();
 }

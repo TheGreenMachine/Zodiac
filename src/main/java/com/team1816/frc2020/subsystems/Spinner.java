@@ -92,7 +92,7 @@ public class Spinner extends Subsystem {
         }
     }
 
-    public void spin3Times(boolean held) {
+    public void spinThreeTimes(boolean held) {
         if (held) {
             initialize();
             if (colorsPassed <= 28) {

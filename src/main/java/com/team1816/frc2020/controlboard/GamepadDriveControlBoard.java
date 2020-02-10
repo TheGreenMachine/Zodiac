@@ -52,7 +52,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
         return mController.getButton(LogitechController.Button.A);
     }
 
-    public boolean getSpinner3Times() {
+    public boolean getSpinnerThreeTimes() {
         return mController.getButton(LogitechController.Button.X);
     }
 }

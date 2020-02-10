@@ -49,4 +49,14 @@ public class MainDriveControlBoard implements IDriveControlBoard {
     public boolean getDrivetrainFlipped() {
         return false;
     }
+
+    @Override
+    public boolean getSpinnerColor() {
+        return false;
+    }
+
+    @Override
+    public boolean getSpinnerThreeTimes() {
+        return false;
+    }
 }

@@ -59,8 +59,8 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getSpinner3Times() {
-        return mDriveControlBoard.getSpinner3Times();
+    public boolean getSpinnerThreeTimes() {
+        return mDriveControlBoard.getSpinnerThreeTimes();
     }
 
     @Override
