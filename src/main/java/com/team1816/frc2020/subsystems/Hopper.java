@@ -20,12 +20,12 @@ public class Hopper extends Subsystem {
     }
 
     // Components
-    private final Solenoid hopperSolenoid;
+    private final Solenoid feederFlap;
     private final IMotorControllerEnhanced spindexer;
     private final IMotorControllerEnhanced elevator;
 
     // State
-    private boolean hopperOut;
+    private boolean feederFlapOut;
     private double spindexerVelocity;
     private double elevatorVelocity;
     private boolean outputsChanged;
@@ -34,13 +34,13 @@ public class Hopper extends Subsystem {
         super(NAME);
         RobotFactory factory = Robot.getFactory();
 
-        this.hopperSolenoid = factory.getSolenoid(NAME, "arm");
+        this.feederFlap = factory.getSolenoid(NAME, "feederFlap");
         this.spindexer = factory.getMotor(NAME, "spindexer");
         this.elevator = factory.getMotor(NAME, "elevator");
     }
 
-    public void setHopperPivot(boolean hopperOut) {
-        this.hopperOut = hopperOut;
+    public void setFeederFlap(boolean feederFlapOut) {
+        this.feederFlapOut = feederFlapOut;
         outputsChanged = true;
     }
 
@@ -64,7 +64,7 @@ public class Hopper extends Subsystem {
         if (outputsChanged) {
             this.spindexer.set(ControlMode.PercentOutput, spindexerVelocity);
             this.elevator.set(ControlMode.PercentOutput, elevatorVelocity);
-            this.hopperSolenoid.set(hopperOut);
+            this.feederFlap.set(feederFlapOut);
             outputsChanged = false;
         }
     }

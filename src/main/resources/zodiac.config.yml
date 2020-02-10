@@ -38,7 +38,7 @@ subsystems:
             spindexer: -1
             elevator: -1
         solenoids:
-            arm: -1 # should find a better name - not really an "arm"
+            feederFlap: -1 # should find a better name - not really an "arm"
     shooter:
         implemented: false
         talons:
