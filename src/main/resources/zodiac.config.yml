@@ -29,16 +29,19 @@ subsystems:
         talons:
             elevator: 0
     collector:
-        implemented: false
+        implemented: true
         talons:
             intake: 11
         solenoids:
             arm: -1
     hopper:
-        implemented: false
-        talon:
+        implemented: true
+        talons:
             spindexer: 12
             elevator: 2
+        invertMotor:
+            - 12
+            - 2
         solenoids:
             feederFlap: -1 # should find a better name - not really an "arm"
     shooter:
@@ -48,8 +51,6 @@ subsystems:
             shooterFollowerA: -1
             shooterFollowerB: -1
             shooterFollowerC: -1
-        invertMotor:
-            - 2
         constants: #TODO: need tuning [P, I, D]
             kP: 0.025
             kI: 0
@@ -60,7 +61,7 @@ subsystems:
             rpmFloorCheck: 2000
             rpmEpsilonCheck: 60
     turret:
-        implemented: false
+        implemented: true
         talons:
             turret: 13
         constants: # TODO: tune [P, I, D]
