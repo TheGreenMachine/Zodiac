@@ -133,6 +133,9 @@ local.properties
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
+# JSON Schemas
+!/.idea/jsonSchemas.xml
+
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries

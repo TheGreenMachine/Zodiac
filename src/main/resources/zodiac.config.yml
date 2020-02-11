@@ -43,7 +43,7 @@ subsystems:
             - 12
             - 2
         solenoids:
-            feederFlap: -1 # should find a better name - not really an "arm"
+            feederFlap: -1
     shooter:
         implemented: false
         talons:
