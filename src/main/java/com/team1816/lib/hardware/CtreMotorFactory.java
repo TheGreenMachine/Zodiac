@@ -132,6 +132,7 @@ public class CtreMotorFactory {
     }
 
     private static void configureMotorController(BaseMotorController motor, Configuration config) {
+        motor.configFactoryDefault();
         motor.set(ControlMode.PercentOutput, 0.0);
 
         motor.changeMotionControlFramePeriod(config.MOTION_CONTROL_FRAME_PERIOD_MS);

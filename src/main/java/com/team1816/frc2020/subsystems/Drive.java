@@ -79,10 +79,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         // start all Talons in open loop mode
         mLeftMaster = mFactory.getMotor(NAME, "leftMain");
         mLeftSlaveA = mFactory.getMotor(NAME, "leftFollower", mLeftMaster);
-        mLeftSlaveB = mFactory.getMotor(NAME, "leftSlaveTwo", mLeftMaster);
+        mLeftSlaveB = mFactory.getMotor(NAME, "leftFollowerTwo", mLeftMaster);
         mRightMaster = mFactory.getMotor(NAME, "rightMain");
         mRightSlaveA = mFactory.getMotor(NAME, "rightFollower", mRightMaster);
-        mRightSlaveB = mFactory.getMotor(NAME, "rightSlaveTwo", mRightMaster);
+        mRightSlaveB = mFactory.getMotor(NAME, "rightFollowerTwo", mRightMaster);
 
         mLeftMaster.configOpenloopRamp(Constants.kOpenLoopRampRate, Constants.kCANTimeoutMs);
         mRightMaster.configOpenloopRamp(Constants.kOpenLoopRampRate, Constants.kCANTimeoutMs);

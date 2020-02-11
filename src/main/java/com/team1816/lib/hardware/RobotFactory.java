@@ -29,7 +29,7 @@ public class RobotFactory {
             if (isHardwareValid(subsystem.talons.get(name))) {
                 var motor = CtreMotorFactory.createDefaultTalon(subsystem.talons.get(name), false);
                 if (subsystem.invertMotor.contains(motor.getDeviceID())) {
-                    System.out.println("Inverting " + name);
+                    System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
                     motor.setInverted(true);
                 }
                 motor.config_kP(0, getConstant(subsystemName, "kP", 0), Constants.kLongCANTimeoutMs);
@@ -40,7 +40,7 @@ public class RobotFactory {
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
                 var motor = CtreMotorFactory.createDefaultTalon(subsystem.falcons.get(name), true);
                 if (subsystem.invertMotor.contains(motor.getDeviceID())) {
-                    System.out.println("Inverting" + name);
+                    System.out.println("Inverting " + name + " with id " + motor.getDeviceID());
                     motor.setInverted(true);
                 }
                 motor.config_kP(0, getConstant(subsystemName, "kP", 0), Constants.kLongCANTimeoutMs);

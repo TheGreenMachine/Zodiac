@@ -14,12 +14,15 @@ public class Infrastructure extends Subsystem {
     private static Infrastructure mInstance;
 
     private Superstructure mSuperstructure = Superstructure.getInstance();
-    private Compressor mCompressor = new Compressor(Constants.kPCMId);
+    private Compressor mCompressor;
 
     private boolean mIsManualControl = false;
 
     private Infrastructure() {
         super("Infrastructure");
+        if (Constants.kPCMId >= 0) {
+            mCompressor = new Compressor(Constants.kPCMId);
+        }
     }
 
     public static Infrastructure getInstance() {
@@ -67,11 +70,11 @@ public class Infrastructure extends Subsystem {
     }
 
     private void startCompressor() {
-        mCompressor.start();
+        // mCompressor.start();
     }
 
     private void stopCompressor() {
-        mCompressor.stop();
+        // mCompressor.stop();
     }
 
     @Override

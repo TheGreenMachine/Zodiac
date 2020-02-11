@@ -2,12 +2,14 @@ subsystems:
     drivetrain:
         implemented: true
         falcons:
-            leftMain: 14
-            leftFollower: 15
-            rightMain: 0
-            rightFollower: 1
+            leftMain: 17
+            leftFollower: 1
+            leftFollowerTwo: -1
+            rightMain: 14
+            rightFollower: 15
+            rightFollowerTwo: -1
         invertMotor:
-            - 0
+            - 17
         constants:
             pigeonId: 10
             pigeonOnTalon: -1
@@ -70,7 +72,7 @@ subsystems:
     ledmanager:
         implemented: false
         canifier: 0
-pcm: 8
+pcm: -1 # 8
 constants: #TODO: update constants for new robot
     wheelDiameter: 6.25 #inches
     trackWidth: 25 #inches
