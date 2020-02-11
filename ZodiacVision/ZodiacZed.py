@@ -59,6 +59,10 @@ def findTarget(image, shape, nt_table):
             cy = rect[1] + (rect[3] * .5)
             nt_table.putNumber('center_x', cx)
             nt_table.putNumber('center_y', cy)
+            zed.retrieve_measure(point_cloud, sl.MEASURE.MEASURE_XYZRGBA)
+            err, point3D = point_cloud.get_value(cx, cy)
+            distance = math.sqrt(point3D[0] * point3D[0] + point3D[1] * point3D[1] + point3D[2] * point3D[2])
+            nt_table.putNumber('distance', round(distance))
             return largest
     clearNetworkTables(nt_table)
     return -1
@@ -74,6 +78,7 @@ def postProcess(image, target):
 def clearNetworkTables(table):
     table.putNumber('center_x', -1)
     table.putNumber('center_y', -1)
+    table.putNumber('distance', -1)
 
 
 if __name__ == '__main__':
@@ -85,9 +90,11 @@ if __name__ == '__main__':
     frame_width = 672
     frame_height = 376
     zed = sl.Camera()
-
+    point_cloud = sl.Mat()
     # Set configuration parameters
     init_params = sl.InitParameters()
+    init_params.depth_mode = sl.DEPTH_MODE.DEPTH_MODE_ULTRA  # Use PERFORMANCE depth mode
+    init_params.coordinate_units = sl.UNIT.UNIT_INCH  # Use milliliter units (for depth measurements)
     init_params.camera_resolution = sl.RESOLUTION.VGA
     init_params.camera_fps = 100
 
