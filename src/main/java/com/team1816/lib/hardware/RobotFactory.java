@@ -86,6 +86,9 @@ public class RobotFactory {
         if (isHardwareValid(solenoidId)) {
             return new Solenoid(config.pcm, solenoidId);
         }
+        DriverStation.reportError(
+            "Solenoid " + name +
+                " not defined or invalid in config for subsystem " + subsystem, false);
         return null;
     }
 
@@ -94,6 +97,9 @@ public class RobotFactory {
         if (solenoidConfig != null && isHardwareValid(solenoidConfig.forward) && isHardwareValid(solenoidConfig.reverse)) {
             return new DoubleSolenoid(config.pcm, solenoidConfig.forward, solenoidConfig.reverse);
         }
+        DriverStation.reportError(
+            "DoubleSolenoid " + name +
+                " not defined or invalid in config for subsystem " + subsystem, false);
         return null;
     }
 
@@ -101,6 +107,8 @@ public class RobotFactory {
         if (isImplemented(subsystem) && getSubsystem(subsystem).canifier != null) {
             return new CANifier(getSubsystem(subsystem).canifier);
         }
+        DriverStation.reportError("CANifier ID not defined for subsystem "
+            + subsystem + "! CANifier will be NULL!", false);
         return null;
     }
 
