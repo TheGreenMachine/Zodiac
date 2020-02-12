@@ -134,7 +134,7 @@ public class Shooter extends Subsystem implements PidProvider {
         boolean checkShooter = TalonSRXChecker.checkMotors(this,
             new ArrayList<>() {
                 {
-                    add(new TalonSRXChecker.TalonSRXConfig("left_master", shooterMain));
+                    add(new TalonSRXChecker.TalonSRXConfig("shooterMain", shooterMain));
                 }
             }, getTalonCheckerConfig(shooterMain));
 

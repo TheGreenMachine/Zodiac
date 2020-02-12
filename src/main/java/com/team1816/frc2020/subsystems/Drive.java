@@ -314,6 +314,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public synchronized void setBrakeMode(boolean on) {
+        System.out.println("setBrakeMode " + on);
         if (mIsBrakeMode != on) {
             mIsBrakeMode = on;
             NeutralMode mode = on ? NeutralMode.Brake : NeutralMode.Coast;

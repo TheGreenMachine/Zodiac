@@ -55,6 +55,13 @@ public class Turret extends Subsystem implements PidProvider {
 
         int absolutePosition = getTurretPosAbsolute();
         turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kCANTimeoutMs);
+
+        double peakOutput = 0.5;
+
+        turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
+        turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
+        turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
+        turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
     }
 
     @Override
