@@ -26,8 +26,8 @@ public class Hopper extends Subsystem {
 
     // State
     private boolean feederFlapOut;
-    private double spindexerVelocity;
-    private double elevatorVelocity;
+    private double spindexerPower;
+    private double elevatorPower;
     private boolean outputsChanged;
 
     private Hopper() {
@@ -45,12 +45,12 @@ public class Hopper extends Subsystem {
     }
 
     public void setSpindexer(double spindexerOutput) {
-        this.spindexerVelocity = spindexerOutput;
+        this.spindexerPower = spindexerOutput;
         outputsChanged = true;
     }
 
     public void setElevator(double elevatorOutput) {
-        this.elevatorVelocity = elevatorOutput;
+        this.elevatorPower = elevatorOutput;
         outputsChanged = true;
     }
 
@@ -62,8 +62,8 @@ public class Hopper extends Subsystem {
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
-            this.spindexer.set(ControlMode.PercentOutput, spindexerVelocity);
-            this.elevator.set(ControlMode.PercentOutput, elevatorVelocity);
+            this.spindexer.set(ControlMode.PercentOutput, spindexerPower);
+            this.elevator.set(ControlMode.PercentOutput, elevatorPower);
             // this.feederFlap.set(feederFlapOut);
             outputsChanged = false;
         }
