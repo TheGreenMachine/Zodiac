@@ -40,6 +40,7 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
         mDPadValid = new DelayedBoolean(Timer.getFPGATimestamp(), kDPadDelay);
     }
 
+    // Spinner
     @Override
     public boolean getSpinnerReset() {
         return mController.getButton(LogitechController.Button.START);
@@ -55,18 +56,35 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
         return mController.getButton(LogitechController.Button.B);
     }
 
+    // Turret
     @Override
-    public boolean getFeederFlapperOut() {
+    public boolean getTurretJogLeft() {
+        return mController.getDPad() == 270;
+    }
+
+    @Override
+    public boolean getTurretJogRight() {
+        return mController.getDPad() == 90;
+    }
+
+    // Feeder Flap
+    @Override
+    public boolean getFeederFlapOut() {
         return mController.getButton(LogitechController.Button.Y);
     }
 
     @Override
-    public boolean getFeederFlapperIn() {
+    public boolean getFeederFlapIn() {
         return mController.getButton(LogitechController.Button.A);
     }
 
     @Override
     public double getClimber() {
         return mController.getJoystick(Controller.Side.LEFT, Controller.Axis.Y);
+    }
+
+    @Override
+    public boolean getShoot() {
+        return mController.getTrigger(Controller.Side.RIGHT);
     }
 }

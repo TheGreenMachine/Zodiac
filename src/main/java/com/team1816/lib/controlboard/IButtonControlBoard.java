@@ -7,13 +7,19 @@ public interface IButtonControlBoard {
 
     boolean getSpinnerReset();
 
-    boolean getFeederFlapperOut();
+    boolean getFeederFlapOut();
 
-    boolean getFeederFlapperIn();
+    boolean getFeederFlapIn();
 
     double getClimber();
 
     boolean getSpinnerColor();
 
     boolean getSpinnerThreeTimes();
+
+    boolean getTurretJogLeft();
+
+    boolean getTurretJogRight();
+
+    boolean getShoot();
 }

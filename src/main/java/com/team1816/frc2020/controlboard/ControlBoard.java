@@ -95,6 +95,21 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
+    public boolean getTurretJogLeft() {
+        return mButtonControlBoard.getTurretJogLeft();
+    }
+
+    @Override
+    public boolean getTurretJogRight() {
+        return mButtonControlBoard.getTurretJogRight();
+    }
+
+    @Override
+    public boolean getShoot() {
+        return mButtonControlBoard.getShoot();
+    }
+
+    @Override
     public boolean getSpinnerColor() {
         return mButtonControlBoard.getSpinnerColor();
     }
@@ -105,13 +120,13 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getFeederFlapperOut() {
-        return mButtonControlBoard.getFeederFlapperOut();
+    public boolean getFeederFlapOut() {
+        return mButtonControlBoard.getFeederFlapOut();
     }
 
     @Override
-    public boolean getFeederFlapperIn() {
-        return mButtonControlBoard.getFeederFlapperIn();
+    public boolean getFeederFlapIn() {
+        return mButtonControlBoard.getFeederFlapIn();
     }
 
     @Override

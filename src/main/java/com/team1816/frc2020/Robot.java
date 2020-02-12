@@ -153,8 +153,14 @@ public class Robot extends TimedRobot {
             actionManager = new ActionManager(
                 // TODO: Controls for Zodiac
                 // Driver Gamepad
-                createAction(mControlBoard::getCollectorDown, () -> collector.setDeployed(true)),
-                createAction(mControlBoard::getCollectorUp, () -> collector.setDeployed(false)),
+                createAction(mControlBoard::getCollectorDown, () -> {
+                    hopper.setSpindexer(1);
+                    collector.setDeployed(true);
+                }),
+                createAction(mControlBoard::getCollectorUp, () -> {
+                    collector.setDeployed(false);
+                    hopper.setSpindexer(0);
+                }),
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
 
@@ -168,10 +174,17 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
                 createHoldAction(mControlBoard::getSpinnerThreeTimes,spinner::spinThreeTimes),
 
-                createAction(mControlBoard::getFeederFlapperOut, () -> hopper.setFeederFlap(true)),
-                createAction(mControlBoard::getFeederFlapperIn, () -> hopper.setFeederFlap(false)),
+                createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
+                createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
 
-                createScalar(mControlBoard::getClimber, climber::setClimberPower)
+                createScalar(mControlBoard::getClimber, climber::setClimberPower),
+
+                createAction(mControlBoard::getTurretJogLeft, turret::jogLeft),
+                createAction(mControlBoard::getTurretJogRight, turret::jogRight),
+                createHoldAction(mControlBoard::getShoot, (shooting) -> {
+                    hopper.setIntake(shooting ? 1 : 0);
+                    shooter.setVelocity(shooting ? 1 : 0);
+                })
             );
 
             blinkTimer = new AsyncTimer(
