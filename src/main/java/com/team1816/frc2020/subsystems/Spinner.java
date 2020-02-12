@@ -58,7 +58,6 @@ public class Spinner extends Subsystem {
 
     private Spinner() {
         super(NAME);
-        RobotFactory factory = Robot.getFactory();
         spinnerMotor = factory.getMotor(NAME, "spinner");
     }
 

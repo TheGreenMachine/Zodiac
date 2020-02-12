@@ -32,7 +32,6 @@ public class Collector extends Subsystem {
 
     private Collector() {
         super(NAME);
-        RobotFactory factory = Robot.getFactory();
 
         this.armPiston = factory.getSolenoid(NAME, "arm");
         this.intake = factory.getMotor(NAME, "intake");

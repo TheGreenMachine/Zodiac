@@ -38,13 +38,12 @@ public class Turret extends Subsystem implements PidProvider {
     private final double kD;
     private final double kF;
 
-    private static final double TURRET_ENCODER_PPR = Robot.getFactory().getConstant("turret", "encPPR");
+    private static final double TURRET_ENCODER_PPR = factory.getConstant("turret", "encPPR");
     private static final double TURRET_JOG_DEGREES = 10;
     private static final double TURRET_JOG_TICKS = convertTurretDegreesToTicks(TURRET_JOG_DEGREES);
 
     public Turret() {
         super(NAME);
-        RobotFactory factory = Robot.getFactory();
 
         this.turret = factory.getMotor(NAME, "turret");
 

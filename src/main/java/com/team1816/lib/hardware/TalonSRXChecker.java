@@ -26,12 +26,13 @@ public class TalonSRXChecker {
 
         public static CheckerConfig getForSubsystemMotor(Subsystem subsystem, IMotorControllerEnhanced motor) {
             var name = subsystem.getName();
+            var factory = Robot.getFactory();
             return new TalonSRXChecker.CheckerConfig() {
                 {
-                    mCurrentFloor = Robot.getFactory().getConstant(name,"currentFloorCheck");
-                    mRPMFloor = Robot.getFactory().getConstant(name,"rpmFloorCheck");
-                    mCurrentEpsilon = Robot.getFactory().getConstant(name,"currentEpsilonCheck");
-                    mRPMEpsilon = Robot.getFactory().getConstant(name,"rpmEpsilonCheck");
+                    mCurrentFloor = factory.getConstant(name,"currentFloorCheck");
+                    mRPMFloor = factory.getConstant(name,"rpmFloorCheck");
+                    mCurrentEpsilon = factory.getConstant(name,"currentEpsilonCheck");
+                    mRPMEpsilon = factory.getConstant(name,"rpmEpsilonCheck");
                     mRPMSupplier = () -> motor.getSelectedSensorVelocity(0);
                 }
             };
