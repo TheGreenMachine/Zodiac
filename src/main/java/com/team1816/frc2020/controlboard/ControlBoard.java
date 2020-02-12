@@ -53,12 +53,6 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getSpinnerColor() {
-        return mDriveControlBoard.getSpinnerColor();
-    }
-
-
-    @Override
     public boolean getCollectorDown() {
         return mDriveControlBoard.getCollectorDown();
     }
@@ -69,8 +63,23 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getSpinnerThreeTimes() {
-        return mDriveControlBoard.getSpinnerThreeTimes();
+    public boolean getFeederToTrenchSpline() {
+        return false;
+    }
+
+    @Override
+    public boolean getTrenchToFeederSpline() {
+        return false;
+    }
+
+    @Override
+    public boolean getBrakeMode() {
+        return false;
+    }
+
+    @Override
+    public int getDriverClimber() {
+        return mDriveControlBoard.getDriverClimber();
     }
 
 
@@ -78,6 +87,16 @@ public class ControlBoard implements IControlBoard {
     @Override
     public void setRumble(boolean on) {
         mButtonControlBoard.setRumble(on);
+    }
+
+    @Override
+    public boolean getSpinnerThreeTimes() {
+        return mButtonControlBoard.getSpinnerThreeTimes();
+    }
+
+    @Override
+    public boolean getSpinnerColor() {
+        return mButtonControlBoard.getSpinnerColor();
     }
 
     @Override
@@ -96,7 +115,7 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public int getClimber() {
+    public double getClimber() {
         return mButtonControlBoard.getClimber();
     }
 }

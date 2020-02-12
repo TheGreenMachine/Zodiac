@@ -48,16 +48,6 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     }
 
     @Override
-    public boolean getSpinnerColor() {
-        return mController.getButton(LogitechController.Button.A);
-    }
-
-    @Override
-    public boolean getSpinnerThreeTimes() {
-        return mController.getButton(LogitechController.Button.X);
-    }
-
-    @Override
     public boolean getCollectorDown() {
         return mController.getButton(LogitechController.Button.LB);
     }
@@ -66,4 +56,37 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     public boolean getCollectorUp() {
         return mController.getButton(LogitechController.Button.RB);
     }
+
+    @Override
+    public boolean getFeederToTrenchSpline() {
+        return mController.getButton(LogitechController.Button.X);
+    }
+
+    @Override
+    public boolean getTrenchToFeederSpline() {
+        return mController.getButton(LogitechController.Button.B);
+    }
+
+    @Override
+    public boolean getBrakeMode() {
+        return mController.getButton(LogitechController.Button.A);
+    }
+
+    @Override
+    public int getDriverClimber() {
+        switch (mController.getDPad()) {
+            case 0:
+            case 45:
+            case 315:
+                return 1;
+            case 180:
+            case 135:
+            case 225:
+                return -1;
+            default:
+                return 0;
+        }
+    }
+
+
 }

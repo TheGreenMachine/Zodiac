@@ -20,9 +20,9 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.CrashTracker;
 import com.team254.lib.util.LatchedBoolean;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 
 import java.text.SimpleDateFormat;
@@ -129,7 +129,8 @@ public class Robot extends TimedRobot {
                 shooter,
                 spinner,
                 collector,
-                hopper
+                hopper,
+                turret
                 // climber
             );
 
@@ -154,15 +155,23 @@ public class Robot extends TimedRobot {
                 // Driver Gamepad
                 createAction(mControlBoard::getCollectorDown, () -> collector.setDeployed(true)),
                 createAction(mControlBoard::getCollectorUp, () -> collector.setDeployed(false)),
-                createScalar(mControlBoard::getClimber, climber::setClimberPower),
+
+                createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
+
+                createAction(mControlBoard::getTrenchToFeederSpline, () -> {}), // TODO implement teleop splines
+                createAction(mControlBoard::getFeederToTrenchSpline, () -> {}),
+
+                createHoldAction(mControlBoard::getBrakeMode, mDrive::setBrakeMode),
 
                 // Operator Gamepad
-                createAction(mControlBoard::getSpinnerReset, spinner::initialize), // TODO: implement button for spinner reset
+                createAction(mControlBoard::getSpinnerReset, spinner::initialize),
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
                 createHoldAction(mControlBoard::getSpinnerThreeTimes,spinner::spinThreeTimes),
 
                 createAction(mControlBoard::getFeederFlapperOut, () -> hopper.setFeederFlap(true)),
-                createAction(mControlBoard::getFeederFlapperIn, () -> hopper.setFeederFlap(false))
+                createAction(mControlBoard::getFeederFlapperIn, () -> hopper.setFeederFlap(false)),
+
+                createScalar(mControlBoard::getClimber, climber::setClimberPower)
             );
 
             blinkTimer = new AsyncTimer(

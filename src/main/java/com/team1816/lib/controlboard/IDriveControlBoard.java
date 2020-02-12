@@ -11,12 +11,15 @@ public interface IDriveControlBoard {
 
     boolean getDrivetrainFlipped();
 
-    boolean getSpinnerColor();
-
-    boolean getSpinnerThreeTimes();
-
     boolean getCollectorDown();
 
     boolean getCollectorUp();
 
+    boolean getFeederToTrenchSpline();
+
+    boolean getTrenchToFeederSpline();
+
+    boolean getBrakeMode();
+
+    int getDriverClimber();
 }

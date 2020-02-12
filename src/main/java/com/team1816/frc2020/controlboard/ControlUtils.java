@@ -90,8 +90,8 @@ public class ControlUtils {
             double newValue = input.getAsDouble();
             if (newValue != lastValue) {
                 action.accept(newValue);
+                lastValue = newValue;
             }
-            lastValue = newValue;
         }
     }
 }

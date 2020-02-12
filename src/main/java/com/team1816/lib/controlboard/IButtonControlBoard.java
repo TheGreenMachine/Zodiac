@@ -11,5 +11,9 @@ public interface IButtonControlBoard {
 
     boolean getFeederFlapperIn();
 
-    int getClimber();
+    double getClimber();
+
+    boolean getSpinnerColor();
+
+    boolean getSpinnerThreeTimes();
 }

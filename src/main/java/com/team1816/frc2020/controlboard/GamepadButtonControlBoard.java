@@ -42,7 +42,17 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     @Override
     public boolean getSpinnerReset() {
-        return mController.getDPad() == 0;
+        return mController.getButton(LogitechController.Button.START);
+    }
+
+    @Override
+    public boolean getSpinnerColor() {
+        return mController.getButton(LogitechController.Button.X);
+    }
+
+    @Override
+    public boolean getSpinnerThreeTimes() {
+        return mController.getButton(LogitechController.Button.B);
     }
 
     @Override
@@ -56,7 +66,7 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
-    public int getClimber() {
-        return (int) Math.round(mController.getJoystick(Controller.Side.LEFT, Controller.Axis.Y));
+    public double getClimber() {
+        return mController.getJoystick(Controller.Side.LEFT, Controller.Axis.Y);
     }
 }
