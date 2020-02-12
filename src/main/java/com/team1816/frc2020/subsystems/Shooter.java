@@ -115,7 +115,6 @@ public class Shooter extends Subsystem implements PidProvider {
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
-            System.out.println("Shooter velocity: " + shooterVelocity);
             this.shooterMain.set(ControlMode.Velocity, shooterVelocity);
             outputsChanged = false;
         }
