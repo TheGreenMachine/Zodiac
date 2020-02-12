@@ -56,7 +56,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private boolean mIsBrakeMode;
     private Rotation2d mGyroOffset = Rotation2d.identity();
     private double mLastDriveCurrentSwitchTime = -1;
-    private final RobotFactory mFactory = Robot.getFactory();
     private BadLog mLogger;
 
     private PeriodicIO mPeriodicIO;
@@ -73,22 +72,22 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     private Drive() {
         super(NAME);
-        DRIVE_ENCODER_PPR = mFactory.getConstant(NAME, "encPPR");
+        DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
         mPeriodicIO = new PeriodicIO();
 
         // start all Talons in open loop mode
-        mLeftMaster = mFactory.getMotor(NAME, "leftMain");
-        mLeftSlaveA = mFactory.getMotor(NAME, "leftFollower", mLeftMaster);
-        mLeftSlaveB = mFactory.getMotor(NAME, "leftFollowerTwo", mLeftMaster);
-        mRightMaster = mFactory.getMotor(NAME, "rightMain");
-        mRightSlaveA = mFactory.getMotor(NAME, "rightFollower", mRightMaster);
-        mRightSlaveB = mFactory.getMotor(NAME, "rightFollowerTwo", mRightMaster);
+        mLeftMaster = factory.getMotor(NAME, "leftMain");
+        mLeftSlaveA = factory.getMotor(NAME, "leftFollower", mLeftMaster);
+        mLeftSlaveB = factory.getMotor(NAME, "leftFollowerTwo", mLeftMaster);
+        mRightMaster = factory.getMotor(NAME, "rightMain");
+        mRightSlaveA = factory.getMotor(NAME, "rightFollower", mRightMaster);
+        mRightSlaveB = factory.getMotor(NAME, "rightFollowerTwo", mRightMaster);
 
         mLeftMaster.configOpenloopRamp(Constants.kOpenLoopRampRate, Constants.kCANTimeoutMs);
         mRightMaster.configOpenloopRamp(Constants.kOpenLoopRampRate, Constants.kCANTimeoutMs);
 
-        if (((int) mFactory.getConstant(NAME, "pigeonOnTalon")) == 1) {
-            var pigeonId = ((int) mFactory.getConstant(NAME, "pigeonId"));
+        if (((int) factory.getConstant(NAME, "pigeonOnTalon")) == 1) {
+            var pigeonId = ((int) factory.getConstant(NAME, "pigeonId"));
             System.out.println("Pigeon on Talon " + pigeonId);
             IMotorController master = null;
             if (pigeonId == mLeftSlaveA.getDeviceID()) {
@@ -103,10 +102,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             if(master != null) {
                 mPigeon = new PigeonIMU((TalonSRX) master);
             } else {
-                mPigeon = new PigeonIMU(new TalonSRX((int) mFactory.getConstant(NAME, "pigeonId")));
+                mPigeon = new PigeonIMU(new TalonSRX((int) factory.getConstant(NAME, "pigeonId")));
             }
         } else {
-            mPigeon = new PigeonIMU((int) mFactory.getConstant(NAME, "pigeonId"));
+            mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId"));
         }
         mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 10, 10);
 
@@ -139,22 +138,22 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public double getKP() {
-        return mFactory.getConstant(NAME, "kP");
+        return factory.getConstant(NAME, "kP");
     }
 
     @Override
     public double getKI() {
-        return mFactory.getConstant(NAME, "kI");
+        return factory.getConstant(NAME, "kI");
     }
 
     @Override
     public double getKD() {
-        return mFactory.getConstant(NAME, "kD");
+        return factory.getConstant(NAME, "kD");
     }
 
     @Override
     public double getKF() {
-        return mFactory.getConstant(NAME, "kF");
+        return factory.getConstant(NAME, "kF");
     }
 
     public static class PeriodicIO {

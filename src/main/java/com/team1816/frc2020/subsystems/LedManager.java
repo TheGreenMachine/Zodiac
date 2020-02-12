@@ -30,7 +30,7 @@ public class LedManager extends Subsystem {
 
     private LedManager() {
         super(NAME);
-        this.canifier = Robot.getFactory().getCanifier(NAME);
+        this.canifier = factory.getCanifier(NAME);
         this.ledR = 0;
         this.ledG = 0;
         this.ledB = 0;

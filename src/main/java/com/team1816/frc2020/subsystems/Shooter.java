@@ -45,7 +45,6 @@ public class Shooter extends Subsystem implements PidProvider {
 
     private Shooter() {
         super(NAME);
-        RobotFactory factory = Robot.getFactory();
 
         this.shooterMain = factory.getMotor(NAME, "shooterMaster");
         this.shooterFollowerA = factory.getMotor(NAME, "shooterFollowerA", shooterMain);

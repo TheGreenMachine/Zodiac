@@ -32,7 +32,6 @@ public class Hopper extends Subsystem {
 
     private Hopper() {
         super(NAME);
-        RobotFactory factory = Robot.getFactory();
 
         this.feederFlap = factory.getSolenoid(NAME, "feederFlap");
         this.spindexer = factory.getMotor(NAME, "spindexer");
