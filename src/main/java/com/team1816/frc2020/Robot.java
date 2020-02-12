@@ -29,8 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.team1816.frc2020.controlboard.ControlUtils.createAction;
-import static com.team1816.frc2020.controlboard.ControlUtils.createHoldAction;
+import static com.team1816.frc2020.controlboard.ControlUtils.*;
 
 public class Robot extends TimedRobot {
     private BadLog logger;
@@ -53,6 +52,7 @@ public class Robot extends TimedRobot {
     private final Turret turret = Turret.getInstance();
     private final Spinner spinner = Spinner.getInstance();
     private final Hopper hopper = Hopper.getInstance();
+    private final Climber climber = Climber.getInstance();
 
     // button placed on the robot to allow the drive team to zero the robot right
     // before the start of a match
@@ -130,6 +130,7 @@ public class Robot extends TimedRobot {
                 spinner,
                 collector,
                 hopper
+                // climber
             );
 
             mDrive.zeroSensors();
@@ -153,6 +154,7 @@ public class Robot extends TimedRobot {
                 // Driver Gamepad
                 createAction(mControlBoard::getCollectorDown, () -> collector.setDeployed(true)),
                 createAction(mControlBoard::getCollectorUp, () -> collector.setDeployed(false)),
+                createScalar(mControlBoard::getClimber, climber::setClimberPower),
 
                 // Operator Gamepad
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize), // TODO: implement button for spinner reset
@@ -339,8 +341,11 @@ public class Robot extends TimedRobot {
             mAutoModeExecutor.resume();
         }
 
+        System.out.println("state of signal to stop: " + signalToStop);
+
         // Interrupt if switch flipped down
         if (mWantsAutoInterrupt.update(signalToStop)) {
+            System.out.println("Auto mode interrupted ");
             mAutoModeExecutor.interrupt();
         }
 
@@ -357,9 +362,9 @@ public class Robot extends TimedRobot {
         if (gameData == null || gameData.length() == 0){
             gameData = "0";
         }
-        double targetVelocityPer100Ms = Double.parseDouble(gameData);
+        // double targetVelocityPer100Ms = Double.parseDouble(gameData);
 
-        shooter.setVelocity(targetVelocityPer100Ms);
+        // shooter.setVelocity(targetVelocityPer100Ms);
 
         try {
             manualControl();

@@ -94,4 +94,9 @@ public class ControlBoard implements IControlBoard {
     public boolean getFeederFlapperIn() {
         return mButtonControlBoard.getFeederFlapperIn();
     }
+
+    @Override
+    public int getClimber() {
+        return mButtonControlBoard.getClimber();
+    }
 }

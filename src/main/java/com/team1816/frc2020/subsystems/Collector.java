@@ -39,38 +39,39 @@ public class Collector extends Subsystem {
     }
 
     public boolean isArmDown() {
-        return armDown;
+        return this.armDown;
     }
 
     public double getIntakePow() {
-        return intakePow;
+        return this.intakePow;
     }
 
     public void setArm(boolean down) {
-        armDown = down;
-        outputsChanged = true;
+        this.armDown = down;
+        this.outputsChanged = true;
     }
 
     public void setIntakePow(double intakePower) {
-        intakePow = intakePower;
+        this.intakePow = intakePower;
+        outputsChanged = true;
     }
 
     public void setDeployed(boolean down) {
         if (down) {
-            setArm(true);
-            setIntakePow(1);
+          //  setArm(true);
+            setIntakePow(0.5);
         } else {
             setIntakePow(0);
-            setArm(false);
+         //   setArm(false);
         }
     }
 
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
-            armPiston.set(armDown);
-            intake.set(ControlMode.PercentOutput, intakePow);
-            outputsChanged = false;
+     //       this.armPiston.set(armDown);
+            this.intake.set(ControlMode.PercentOutput, intakePow);
+            this.outputsChanged = false;
         }
     }
 

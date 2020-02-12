@@ -32,7 +32,7 @@ public class Climber extends Subsystem {
     }
 
     public void setClimberPower(double power) {
-        climberPow = power;
+        climberPow = 0.5 * power;
         outputsChanged = true;
     }
 

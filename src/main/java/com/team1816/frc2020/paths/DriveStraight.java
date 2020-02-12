@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DriveStraight implements PathContainer {
 
-    private static int driveDistance = 140;
+    private static int driveDistance = 480;
 
   @Override
   public Path buildPath() {

@@ -10,4 +10,6 @@ public interface IButtonControlBoard {
     boolean getFeederFlapperOut();
 
     boolean getFeederFlapperIn();
+
+    int getClimber();
 }

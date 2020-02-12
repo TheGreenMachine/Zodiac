@@ -54,4 +54,9 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     public boolean getFeederFlapperIn() {
         return mController.getButton(LogitechController.Button.A);
     }
+
+    @Override
+    public int getClimber() {
+        return (int) Math.round(mController.getJoystick(Controller.Side.LEFT, Controller.Axis.Y));
+    }
 }

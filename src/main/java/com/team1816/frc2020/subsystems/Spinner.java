@@ -125,13 +125,16 @@ public class Spinner extends Subsystem {
         SpinnerColor detectedColor = determineColor();
         //System.out.println("detected color index"detectedColor.index);
         //System.out.println("current color index"currentColor.index);
-        if (detectedColor != currentColor) {
+
+        //TODO: Fix NullPointerException here
+      /*  if (detectedColor != currentColor) {
             if (detectedColor.index - currentColor.index == 1 || currentColor.index - detectedColor.index == 3) {
                 colorsPassed++;
                 currentColor = detectedColor;
             }
-        }
-        System.out.println(colorsPassed);
+        } */
+    //    System.out.println(colorsPassed);
+
         inPos = atColor(SpinnerColor.GREEN);
         if (colorMode && inPos) {
             spinnerPow = 0.0;
@@ -174,7 +177,7 @@ public class Spinner extends Subsystem {
             }
         }
 
-        System.out.println(colorDetected);
+    //    System.out.println(colorDetected);
         return colorDetected;
     }
 
