@@ -43,6 +43,8 @@ public class Turret extends Subsystem implements PidProvider {
     private static final double TURRET_ENCODER_PPR = factory.getConstant("turret", "encPPR");
     private static final double TURRET_JOG_DEGREES = 10;
     private static final double TURRET_JOG_TICKS = convertTurretDegreesToTicks(TURRET_JOG_DEGREES);
+    private static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
+    private static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
 
     public Turret() {
         super(NAME);
@@ -61,6 +63,7 @@ public class Turret extends Subsystem implements PidProvider {
         int absolutePosition = getTurretPosAbsolute();
         turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kCANTimeoutMs);
 
+        // Position Control
         double peakOutput = 0.5;
 
         turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
@@ -68,6 +71,11 @@ public class Turret extends Subsystem implements PidProvider {
         turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
         turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
 
+        // Soft Limits
+        turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
+        turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
+        turret.configForwardSoftLimitThreshold(TURRET_POSITION_MAX, Constants.kCANTimeoutMs);
+        turret.configReverseSoftLimitThreshold(TURRET_POSITION_MIN, Constants.kCANTimeoutMs);
     }
 
     public void autoHome() {
