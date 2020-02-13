@@ -177,36 +177,6 @@ public class RobotState {
         vehicle_velocity_predicted_ = predicted_velocity;
     }
 
-    private void updatePortGoalTracker(double timestamp, List<Translation2d> cameraToVisionTargetPoses, GoalTracker tracker) {
-        if (cameraToVisionTargetPoses.size() != 2 ||
-            cameraToVisionTargetPoses.get(0) == null ||
-            cameraToVisionTargetPoses.get(1) == null) return;
-        Pose2d cameraToVisionTarget = Pose2d.fromTranslation(cameraToVisionTargetPoses.get(0).interpolate(
-            cameraToVisionTargetPoses.get(1), 0.5));
-
-        Pose2d fieldToVisionTarget = getFieldToTurret(timestamp).transformBy(source.getTurretToLens()).transformBy(cameraToVisionTarget);
-        tracker.update(timestamp, List.of(new Pose2d(fieldToVisionTarget.getTranslation(), Rotation2d.identity())));
-    }
-
-    public synchronized void addVisionUpdate(double timestamp, List<TargetInfo> observations) {
-        mCameraToVisionTargetPosesLow.clear();
-        mCameraToVisionTargetPosesHigh.clear();
-
-        if (observations == null || observations.isEmpty()) {
-            vision_target_low_.update(timestamp, new ArrayList<>());
-            vision_target_high_.update(timestamp, new ArrayList<>());
-            return;
-        }
-
-        for (TargetInfo target : observations) {
-            mCameraToVisionTargetPosesLow.add(getCameraToVisionTargetPose(target, false, source));
-            mCameraToVisionTargetPosesHigh.add(getCameraToVisionTargetPose(target, true, source));
-        }
-
-        updatePortGoalTracker(timestamp, mCameraToVisionTargetPosesLow, vision_target_low_, source);
-        updatePortGoalTracker(timestamp, mCameraToVisionTargetPosesHigh, vision_target_high_, source);
-    }
-
     public synchronized double getDistanceDriven() {
         return distance_driven_;
     }

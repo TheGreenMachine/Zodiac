@@ -4,10 +4,11 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
-import com.team1816.frc2020.Robot;
-import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class Turret extends Subsystem implements PidProvider {
@@ -18,18 +19,19 @@ public class Turret extends Subsystem implements PidProvider {
         if (INSTANCE == null) {
             INSTANCE = new Turret();
         }
-
         return INSTANCE;
     }
 
     // Components
     private final IMotorControllerEnhanced turret;
+    private final NetworkTable networkTable;
 
     // State
     private double turretPos;
     private double turretSpeed;
     private boolean outputsChanged;
     private boolean isPercentOutput;
+    private double deltaXAngle;
 
     // Constants
     private static final int kPIDLoopIDx = 0;
@@ -44,8 +46,12 @@ public class Turret extends Subsystem implements PidProvider {
 
     public Turret() {
         super(NAME);
-
         this.turret = factory.getMotor(NAME, "turret");
+
+        networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+        networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
+            this.deltaXAngle = (360 - value.getDouble())*(87.0/672.0);
+        }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
@@ -61,6 +67,11 @@ public class Turret extends Subsystem implements PidProvider {
         turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
         turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
         turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
+
+    }
+
+    public void autoHome() {
+        setTurretPosition(getTurretPositionTicks() + convertTurretDegreesToTicks(deltaXAngle));
     }
 
     @Override
@@ -93,6 +104,10 @@ public class Turret extends Subsystem implements PidProvider {
         turretPos = convertTurretDegreesToTicks(position);
         isPercentOutput = false;
         outputsChanged = true;
+    }
+
+    public double getDeltaX() {
+        return deltaXAngle;
     }
 
     public void jogLeft() {
