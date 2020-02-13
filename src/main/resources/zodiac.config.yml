@@ -33,7 +33,7 @@ subsystems:
         talons:
             intake: 11
         solenoids:
-            arm: -1
+            arm: 0
         constants:
             kP: 0.2
             kI: 0
@@ -74,12 +74,12 @@ subsystems:
             kD: 0
             kF: 0 # Should be 0 for position control
             encPPR: 2062.3
-            minPos: -1217
-            maxPos: 1144
+            minPos: -2624
+            maxPos: -1082
     ledmanager:
         implemented: false
         canifier: 0
-pcm: -1 # 8
+pcm: 8
 constants: #TODO: update constants for new robot
     wheelDiameter: 6.25 #inches
     trackWidth: 25 #inches
@@ -89,4 +89,5 @@ constants: #TODO: update constants for new robot
     kLooperDt: .030
     kTrackScrubFactor: 1.0
     pathKs: 2
-    verbose: 0
+    verbose: 0 # O or 1
+    compressorEnabled: 1 # 0 or 1

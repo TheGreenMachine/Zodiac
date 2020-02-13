@@ -10,6 +10,7 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Turret extends Subsystem implements PidProvider {
     private static final String NAME = "turret";
@@ -50,10 +51,10 @@ public class Turret extends Subsystem implements PidProvider {
         super(NAME);
         this.turret = factory.getMotor(NAME, "turret");
 
-        networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
-        networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
-            this.deltaXAngle = (360 - value.getDouble())*(87.0/672.0);
-        }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+        turret.setSensorPhase(true);
+
+        SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
+        SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
@@ -74,8 +75,16 @@ public class Turret extends Subsystem implements PidProvider {
         // Soft Limits
         turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
         turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
-        turret.configForwardSoftLimitThreshold(TURRET_POSITION_MAX, Constants.kCANTimeoutMs);
-        turret.configReverseSoftLimitThreshold(TURRET_POSITION_MIN, Constants.kCANTimeoutMs);
+        turret.configForwardSoftLimitThreshold(TURRET_POSITION_MIN, Constants.kCANTimeoutMs); // Forward = MIN
+        turret.configReverseSoftLimitThreshold(TURRET_POSITION_MAX, Constants.kCANTimeoutMs); // Reverse = MAX
+        turret.overrideLimitSwitchesEnable(true);
+        turret.overrideSoftLimitsEnable(true);
+
+        // Network Table Listener
+        networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+        networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
+            this.deltaXAngle = (360 - value.getDouble())*(87.0/672.0);
+        }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }
 
     public void autoHome() {
@@ -109,9 +118,13 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public void setTurretPosition(double position) {
-        turretPos = convertTurretDegreesToTicks(position);
+        turretPos = position;
         isPercentOutput = false;
         outputsChanged = true;
+    }
+
+    public void setTurretAngle(double angle) {
+        setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
     }
 
     public double getDeltaX() {

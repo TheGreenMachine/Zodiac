@@ -17,6 +17,7 @@ public class Infrastructure extends Subsystem {
     private Compressor mCompressor;
 
     private boolean mIsManualControl = false;
+    private static final boolean COMPRESSOR_ENABLED = factory.getConstant("compressorEnabled") > 0;
 
     private Infrastructure() {
         super("Infrastructure");
@@ -70,11 +71,15 @@ public class Infrastructure extends Subsystem {
     }
 
     private void startCompressor() {
-        // mCompressor.start();
+        if (COMPRESSOR_ENABLED) {
+            mCompressor.start();
+        }
     }
 
     private void stopCompressor() {
-        // mCompressor.stop();
+        if (COMPRESSOR_ENABLED) {
+            mCompressor.stop();
+        }
     }
 
     @Override

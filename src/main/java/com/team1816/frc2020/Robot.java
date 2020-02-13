@@ -179,8 +179,8 @@ public class Robot extends TimedRobot {
 
                 createScalar(mControlBoard::getClimber, climber::setClimberPower),
 
-                createAction(mControlBoard::getTurretJogLeft, turret::jogLeft),
-                createAction(mControlBoard::getTurretJogRight, turret::jogRight),
+                createHoldAction(mControlBoard::getTurretJogLeft, (pressed) -> turret.setTurretSpeed(pressed ? -0.25 : 0)),
+                createHoldAction(mControlBoard::getTurretJogRight, (pressed) -> turret.setTurretSpeed(pressed ? 0.25 : 0)),
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
                     hopper.setIntake(shooting ? 1 : 0);
                     shooter.setVelocity(shooting ? 1 : 0);

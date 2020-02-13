@@ -57,18 +57,18 @@ public class Collector extends Subsystem {
 
     public void setDeployed(boolean down) {
         if (down) {
-          //  setArm(true);
+            setArm(true);
             setIntakePow(0.5);
         } else {
             setIntakePow(0);
-         //   setArm(false);
+            setArm(false);
         }
     }
 
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
-     //       this.armPiston.set(armDown);
+            this.armPiston.set(armDown);
             this.intake.set(ControlMode.PercentOutput, intakePow);
             this.outputsChanged = false;
         }
