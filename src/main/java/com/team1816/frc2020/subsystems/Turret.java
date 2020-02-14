@@ -47,6 +47,8 @@ public class Turret extends Subsystem implements PidProvider {
     public static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
     public static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
     private static final boolean TURRET_SENSOR_PHASE = true;
+    private static final double CAMERA_FOV = 87.0;
+    private static final double VIDEO_WIDTH = 672.0;
 
     public Turret() {
         super(NAME);
@@ -84,7 +86,7 @@ public class Turret extends Subsystem implements PidProvider {
         // Network Table Listener
         networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
-            this.deltaXAngle = (360 - value.getDouble())*(87.0/672.0);
+            this.deltaXAngle = (360 - value.getDouble()) * (CAMERA_FOV / VIDEO_WIDTH);
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }
 
