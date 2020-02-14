@@ -46,12 +46,13 @@ public class Turret extends Subsystem implements PidProvider {
     private static final double TURRET_JOG_TICKS = convertTurretDegreesToTicks(TURRET_JOG_DEGREES);
     private static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
     private static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
+    private static final boolean TURRET_SENSOR_PHASE = true;
 
     public Turret() {
         super(NAME);
         this.turret = factory.getMotor(NAME, "turret");
 
-        turret.setSensorPhase(true);
+        turret.setSensorPhase(TURRET_SENSOR_PHASE);
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
@@ -75,8 +76,8 @@ public class Turret extends Subsystem implements PidProvider {
         // Soft Limits
         turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
         turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
-        turret.configForwardSoftLimitThreshold(TURRET_POSITION_MIN, Constants.kCANTimeoutMs); // Forward = MIN
-        turret.configReverseSoftLimitThreshold(TURRET_POSITION_MAX, Constants.kCANTimeoutMs); // Reverse = MAX
+        turret.configForwardSoftLimitThreshold(TURRET_POSITION_MAX, Constants.kCANTimeoutMs); // Forward = MAX
+        turret.configReverseSoftLimitThreshold(TURRET_POSITION_MIN, Constants.kCANTimeoutMs); // Reverse = MIN
         turret.overrideLimitSwitchesEnable(true);
         turret.overrideSoftLimitsEnable(true);
 
@@ -145,7 +146,8 @@ public class Turret extends Subsystem implements PidProvider {
 
     public int getTurretPosAbsolute() {
         if (turret instanceof TalonSRX) {
-            return ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & 0xFFF;
+            int rawValue = ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & 0xFFF;
+            return (TURRET_SENSOR_PHASE ? -1 : 1) * rawValue;
         }
         return 0;
     }
