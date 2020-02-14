@@ -51,10 +51,10 @@ subsystems:
     shooter:
         implemented: false
         talons:
-            shooterMaster: -1
-            shooterFollowerA: -1
-            shooterFollowerB: -1
-            shooterFollowerC: -1
+            shooterMaster: 20
+            shooterFollowerA: 3
+            shooterFollowerB: 4
+            shooterFollowerC: 5
         constants: #TODO: need tuning [P, I, D]
             kP: 0.025
             kI: 0
