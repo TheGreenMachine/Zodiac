@@ -49,7 +49,7 @@ subsystems:
         solenoids:
             feederFlap: -1
     shooter:
-        implemented: false
+        implemented: true
         talons:
             shooterMaster: 20
             shooterFollowerA: 3
