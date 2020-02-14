@@ -116,6 +116,13 @@ public class Robot extends TimedRobot {
             BadLog.createTopic("Shooter/Error", "NativeUnits", shooter::getError,
                 "hide", "join:Shooter/Velocities");
 
+            BadLog.createTopic("Turret/ActPos", "NativeUnits", () -> (double) turret.getTurretPositionTicks(),
+                "hide", "join:Turret/Positions");
+            BadLog.createTopic("Turret/TargetPos", "NativeUnits", turret::getTargetPosition,
+                "hide", "join:Turret/Positions");
+            BadLog.createTopic("Turret/ErrorPos", "NativeUnits", turret::getPositionError,
+                "hide", "join:Turret/Positions");
+
             logger.finishInitialization();
             mDrive.setLogger(logger);
 
