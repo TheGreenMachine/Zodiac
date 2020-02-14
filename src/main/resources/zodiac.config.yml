@@ -69,7 +69,7 @@ subsystems:
         talons:
             turret: 13
         constants: # TODO: tune [P, I, D]
-            kP: 0
+            kP: 2.85
             kI: 0
             kD: 0
             kF: 0 # Should be 0 for position control

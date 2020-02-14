@@ -44,8 +44,8 @@ public class Turret extends Subsystem implements PidProvider {
     private static final double TURRET_ENCODER_PPR = factory.getConstant("turret", "encPPR");
     private static final double TURRET_JOG_DEGREES = 10;
     private static final double TURRET_JOG_TICKS = convertTurretDegreesToTicks(TURRET_JOG_DEGREES);
-    private static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
-    private static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
+    public static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
+    public static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
     private static final boolean TURRET_SENSOR_PHASE = true;
 
     public Turret() {
@@ -141,7 +141,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public double getTurretPositionDegrees() {
-        return convertTurretTicksToDegrees(getTurretPositionTicks());
+        return convertTurretTicksToDegrees(getTurretPositionTicks() - TURRET_POSITION_MIN);
     }
 
     public int getTurretPosAbsolute() {
@@ -169,7 +169,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public static double convertTurretDegreesToTicks(double degrees) {
-        return (degrees / 360) * TURRET_ENCODER_PPR;
+        return (degrees / 360.0) * TURRET_ENCODER_PPR;
     }
 
     public static double convertTurretTicksToDegrees(int ticks) {
