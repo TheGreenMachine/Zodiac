@@ -22,4 +22,6 @@ public interface IButtonControlBoard {
     boolean getTurretJogRight();
 
     boolean getShoot();
+
+    boolean getAutoHome();
 }

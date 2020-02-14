@@ -105,6 +105,11 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
+    public boolean getAutoHome() {
+        return mButtonControlBoard.getAutoHome();
+    }
+
+    @Override
     public boolean getShoot() {
         return mButtonControlBoard.getShoot();
     }

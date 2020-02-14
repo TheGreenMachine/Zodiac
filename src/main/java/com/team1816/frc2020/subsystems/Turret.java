@@ -33,6 +33,7 @@ public class Turret extends Subsystem implements PidProvider {
     private boolean outputsChanged;
     private boolean isPercentOutput;
     private double deltaXAngle;
+    private boolean autoHomeEnabled;
 
     // Constants
     private static final int kPIDLoopIDx = 0;
@@ -91,7 +92,11 @@ public class Turret extends Subsystem implements PidProvider {
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }
 
-    public void autoHome() {
+    public void setAutoHomeEnabled(boolean autoHomeEnabled) {
+        this.autoHomeEnabled = autoHomeEnabled;
+    }
+
+    private void autoHome() {
         setTurretPosition(getTurretPositionTicks() + convertTurretDegreesToTicks(deltaXAngle));
     }
 
@@ -181,6 +186,9 @@ public class Turret extends Subsystem implements PidProvider {
 
     @Override
     public void writePeriodicOutputs() {
+        if (autoHomeEnabled) {
+            autoHome();
+        }
         if (outputsChanged) {
             if (isPercentOutput) {
                 turret.set(ControlMode.PercentOutput, turretSpeed);
