@@ -86,7 +86,8 @@ public class Turret extends Subsystem implements PidProvider {
         // Network Table Listener
         networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
-            this.deltaXAngle = (360 - value.getDouble()) * (CAMERA_FOV / VIDEO_WIDTH);
+            var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
+            this.deltaXAngle = deltaXPixels * (CAMERA_FOV / VIDEO_WIDTH); // Multiply by FOV to pixel ratio
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }
 
@@ -192,7 +193,8 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     @Override
-    public void stop() {}
+    public void stop() {
+    }
 
     @Override
     public boolean checkSystem() {
