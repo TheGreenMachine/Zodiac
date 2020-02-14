@@ -116,6 +116,12 @@ public class Robot extends TimedRobot {
             BadLog.createTopic("Shooter/Error", "NativeUnits", shooter::getError,
                 "hide", "join:Shooter/Velocities");
 
+            BadLog.createTopic("Turret/ActPos", "NativeUnits", () -> (double) turret.getTurretPositionTicks(),
+                "hide", "join:Turret/Positions");
+            BadLog.createTopic("Turret/TargetPos", "NativeUnits", turret::getTargetPosition,
+                "hide", "join:Turret/Positions");
+            BadLog.createTopic("Turret/ErrorPos", "NativeUnits", turret::getPositionError);
+
             logger.finishInitialization();
             mDrive.setLogger(logger);
 
@@ -179,8 +185,8 @@ public class Robot extends TimedRobot {
 
                 createScalar(mControlBoard::getClimber, climber::setClimberPower),
 
-                createHoldAction(mControlBoard::getTurretJogLeft, (pressed) -> turret.setTurretSpeed(pressed ? -0.25 : 0)),
-                createHoldAction(mControlBoard::getTurretJogRight, (pressed) -> turret.setTurretSpeed(pressed ? 0.25 : 0)),
+                createAction(mControlBoard::getTurretJogLeft, () -> turret.setTurretAngle(0)),
+                createAction(mControlBoard::getTurretJogRight, () -> turret.setTurretAngle(90)),
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
                     hopper.setIntake(shooting ? 1 : 0);
                     shooter.setVelocity(shooting ? 1 : 0);
