@@ -59,10 +59,10 @@ def findTarget(image, shape, nt_table):
             cy = rect[1] + (rect[3] * .5)
             nt_table.putNumber('center_x', cx)
             nt_table.putNumber('center_y', cy)
-            zed.retrieve_measure(point_cloud, sl.MEASURE.MEASURE_XYZRGBA)
             err, point3D = point_cloud.get_value(cx, cy)
             distance = math.sqrt(point3D[0] * point3D[0] + point3D[1] * point3D[1] + point3D[2] * point3D[2])
-            nt_table.putNumber('distance', round(distance))
+            if not math.isnan(distance):
+                nt_table.putNumber('distance', round(distance))
             return largest
     clearNetworkTables(nt_table)
     return -1
@@ -93,8 +93,8 @@ if __name__ == '__main__':
     point_cloud = sl.Mat()
     # Set configuration parameters
     init_params = sl.InitParameters()
-    init_params.depth_mode = sl.DEPTH_MODE.DEPTH_MODE_ULTRA  # Use PERFORMANCE depth mode
-    init_params.coordinate_units = sl.UNIT.UNIT_INCH  # Use milliliter units (for depth measurements)
+    init_params.depth_mode = sl.DEPTH_MODE.ULTRA  # Use PERFORMANCE depth mode
+    init_params.coordinate_units = sl.UNIT.INCH  # Use milliliter units (for depth measurements)
     init_params.camera_resolution = sl.RESOLUTION.VGA
     init_params.camera_fps = 100
 
@@ -104,7 +104,7 @@ if __name__ == '__main__':
         exit(-1)
     image = sl.Mat()
     runtime_parameters = sl.RuntimeParameters()
-    gst_str_rtp = "appsrc ! videoconvert ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! rtph264pay ! udpsink host=127.0.0.1 port=5000"
+    gst_str_rtp = "appsrc ! videoconvert ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! rtph264pay ! udpsink host=10.18.16.5 port=1180"
     # Check if cap is open
     # Create videowriter as a SHM sink
     out = cv2.VideoWriter(gst_str_rtp, 0, fps, (frame_width, frame_height), True)
