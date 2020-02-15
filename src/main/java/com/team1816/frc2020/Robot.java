@@ -370,8 +370,6 @@ public class Robot extends TimedRobot {
             mAutoModeExecutor.resume();
         }
 
-        System.out.println("state of signal to stop: " + signalToStop);
-
         // Interrupt if switch flipped down
         if (mWantsAutoInterrupt.update(signalToStop)) {
             System.out.println("Auto mode interrupted ");
