@@ -25,8 +25,6 @@ public class AutoTrenchMode extends AutoModeBase {
         runAction(
             new SeriesAction(
                 new ShootAction(),
-                new WaitAction(1),
-                new HopperFeedAction(4000),
                 new WaitAction(.5),
                 mDriveTrajectory
             )
