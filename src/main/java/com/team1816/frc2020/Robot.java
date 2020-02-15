@@ -387,13 +387,13 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         loopStart = Timer.getFPGATimestamp();
 
-        String gameData = DriverStation.getInstance().getGameSpecificMessage();
-        if (gameData == null || gameData.length() == 0){
-            gameData = "0";
-        }
-        // double targetVelocityPer100Ms = Double.parseDouble(gameData);
-
-        // shooter.setVelocity(targetVelocityPer100Ms);
+        // String gameData = DriverStation.getInstance().getGameSpecificMessage();
+        // if (gameData == null || gameData.length() == 0){
+        //     gameData = "0";
+        // }
+        //
+        //  double targetVelocityPer100Ms = Double.parseDouble(gameData);
+        //  shooter.setVelocity(targetVelocityPer100Ms);
 
         try {
             manualControl();
