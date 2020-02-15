@@ -16,8 +16,8 @@ def make_half_hex_shape():
 
     for ang in [180, 120, 60, 0]:
         ang_r = math.radians(ang)
-        x1 = int(92.0 * math.cos(ang_r) + 100.5)
-        y1 = int(92.0 * math.sin(ang_r) + 100.5)
+        x1 = int(80.0 * math.cos(ang_r) + 100.5)
+        y1 = int(80.0 * math.sin(ang_r) + 100.5)
         pts.append([x1, y1])
     shape_np = np.array(pts, np.int32)
     shape_np = np.reshape(shape_np, (-1, 1, 2))
@@ -39,28 +39,25 @@ def preProcess(image):
 def findTarget(image, shape, nt_table):
     contours, hierarchy = cv2.findContours(image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     hexes = []
-    largest = None
     firstLoop = True
-    for cont in contours:
-        if firstLoop:
-            largest = cont
-            firstLoop = False
-            continue
-        if cont.size > largest.size:
-            largest = cont
+    if len(contours) != 0:
+        c = max(contours, key=cv2.contourArea)
+        rect = cv2.boundingRect(c)
+    else:
+        return -1
+    print(len(contours))
 
-    if largest is not None:
-        rect = cv2.boundingRect(largest)
     # only process larger areas with at least 5 points in the contour
-    if True or (len(largest) > 4 and rect[2] > 40 and rect[3] > 40):
-        match = cv2.matchShapes(largest, shape, cv2.CONTOURS_MATCH_I2, 0.0)
+    if len(c) > 20 and rect[2] > 10 and rect[3] > 10:
+        cv2.drawContours(frame, [c], -1, (0, 255, 255), 2)
+        match = cv2.matchShapes(c, shape, cv2.CONTOURS_MATCH_I2, 0.0)
         print(match)
-        if match < 10:
+        if match < 5:
             cx = rect[0] + (rect[2] * .5)
             cy = rect[1] + (rect[3] * .5)
             nt_table.putNumber('center_x', cx)
             nt_table.putNumber('center_y', cy)
-            return largest
+            return c
     clearNetworkTables(nt_table)
     return -1
 
@@ -68,7 +65,7 @@ def findTarget(image, shape, nt_table):
 def postProcess(image, target):
     if target is -1:
         return image
-    drawnimage = cv2.drawContours(image, [target], -1, (0, 255, 255), 2)
+    drawnimage = cv2.drawContours(image, hexes, -1, (0, 255, 255), 2)
     return drawnimage
 
 
@@ -85,7 +82,7 @@ if __name__ == '__main__':
     fps = 30
     frame_width = 640
     frame_height = 480
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture("Left_Frame.avi")
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
     cap.set(cv2.CAP_PROP_FPS, fps)
@@ -105,6 +102,7 @@ if __name__ == '__main__':
         preProcessImage = preProcess(frame)
         if args.view:
             cv2.imshow("PreProcessed Image", preProcessImage)
+
         target = findTarget(preProcessImage, hexes, table)
         if args.view:
             postProcessImage = postProcess(frame, target)
