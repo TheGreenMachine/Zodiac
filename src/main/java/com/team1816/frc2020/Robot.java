@@ -413,7 +413,7 @@ public class Robot extends TimedRobot {
         double turn = mControlBoard.getTurn();
 
         actionManager.update();
-        mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
+        mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0));
     }
 
     @Override
