@@ -23,7 +23,7 @@ subsystems:
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000
             rpmEpsilonCheck: 60
-            openLoopRampRate: 3
+            openLoopRampRate: 0.5
     climber:
         implemented: false
         talons:
@@ -74,7 +74,7 @@ subsystems:
             kD: 0
             kF: 0 # Should be 0 for position control
             encPPR: 4124.6
-            minPos: -2617
+            minPos: -3176
             maxPos: -1101
     ledmanager:
         implemented: false

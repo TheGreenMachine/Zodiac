@@ -96,7 +96,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-        isBadLogOn = Robot.factory.getConstant("badLogEnabled") > 0;
+        isBadLogOn = factory.getConstant("badLogEnabled") > 0;
 
         try {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
@@ -299,6 +299,8 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
 
+            turret.setTurretAngle(48.8);
+
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
 
@@ -416,12 +418,12 @@ public class Robot extends TimedRobot {
     public void manualControl() {
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
-
-        double left = Util.limit(throttle + (turn * 0.55), 1);
-        double right = Util.limit(throttle - (turn * 0.55), 1);
+//
+//        double left = Util.limit(throttle + (turn * 0.55), 1);
+//        double right = Util.limit(throttle - (turn * 0.55), 1);
 
         actionManager.update();
-        mDrive.setOpenLoop(new DriveSignal(left, right, true));
+        mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0));
     }
 
     @Override

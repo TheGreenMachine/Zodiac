@@ -9,6 +9,7 @@ import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import java.util.ArrayList;
 
@@ -63,10 +64,7 @@ public class Shooter extends Subsystem implements PidProvider {
         shooterFollowerB.setNeutralMode(NeutralMode.Coast);
         shooterFollowerC.setNeutralMode(NeutralMode.Coast);
 
-        ((TalonSRX) shooterMain).configContinuousCurrentLimit(30);
-        ((TalonSRX) shooterFollowerA).configContinuousCurrentLimit(30);
-        ((TalonSRX) shooterFollowerB).configContinuousCurrentLimit(30);
-        ((TalonSRX) shooterFollowerC).configContinuousCurrentLimit(30);
+        configCurrentLimits(30 /* amps */);
 
         shooterFollowerB.setInverted(true);
         shooterFollowerC.setInverted(true);
@@ -75,7 +73,18 @@ public class Shooter extends Subsystem implements PidProvider {
         shooterMain.setSensorPhase(false);
     }
 
-        @Override
+    private void configCurrentLimits(int currentLimitAmps) {
+        ((TalonSRX) shooterMain).enableCurrentLimit(true);
+        ((TalonSRX) shooterFollowerA).enableCurrentLimit(true);
+        ((TalonSRX) shooterFollowerB).enableCurrentLimit(true);
+        ((TalonSRX) shooterFollowerC).enableCurrentLimit(true);
+        ((TalonSRX) shooterMain).configContinuousCurrentLimit(currentLimitAmps);
+        ((TalonSRX) shooterFollowerA).configContinuousCurrentLimit(currentLimitAmps);
+        ((TalonSRX) shooterFollowerB).configContinuousCurrentLimit(currentLimitAmps);
+        ((TalonSRX) shooterFollowerC).configContinuousCurrentLimit(currentLimitAmps);
+    }
+
+    @Override
     public double getKP() {
         return kP;
     }
@@ -135,6 +144,11 @@ public class Shooter extends Subsystem implements PidProvider {
             }
             outputsChanged = false;
         }
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addBooleanProperty("Shooter/IsAtSpeed", () -> this.getError() < 7000, null);
     }
 
     @Override

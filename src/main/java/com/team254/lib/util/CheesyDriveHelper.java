@@ -140,7 +140,7 @@ public class CheesyDriveHelper {
             rightPwm = -1.0;
         }
 
-        return new DriveSignal(leftPwm, rightPwm);
+        return new DriveSignal(leftPwm, rightPwm, true);
     }
 
     public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn) {

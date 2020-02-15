@@ -63,6 +63,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private PeriodicIO mPeriodicIO;
     private DriveMotionPlanner mMotionPlanner;
     private boolean mOverrideTrajectory = false;
+    private static final boolean IS_BADLOG_ENABLED = factory.getConstant("badLogEnabled") > 0;
 
     private boolean isSlowMode;
 
@@ -233,13 +234,17 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                             break;
                         case PATH_FOLLOWING:
                             if (mPathFollower != null) {
-                                mLogger.updateTopics();
-                                mLogger.log();
+                                if (IS_BADLOG_ENABLED) {
+                                    mLogger.updateTopics();
+                                    mLogger.log();
+                                }
                                 updatePathFollower(timestamp);
                             }
                         case TRAJECTORY_FOLLOWING:
-                            mLogger.updateTopics();
-                            mLogger.log();
+                            if (IS_BADLOG_ENABLED) {
+                                mLogger.updateTopics();
+                                mLogger.log();
+                            }
                             updatePathFollower(timestamp);
                             break;
 
