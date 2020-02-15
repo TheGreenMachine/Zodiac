@@ -2,6 +2,7 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.subsystems.PidProvider;
@@ -48,13 +49,15 @@ public class Turret extends Subsystem implements PidProvider {
     public static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
     public static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
     private static final boolean TURRET_SENSOR_PHASE = true;
-    private static final double CAMERA_FOV = 87.0;
-    private static final double VIDEO_WIDTH = 672.0;
+    private static final double CAMERA_FOV = 87.0; // deg
+    private static final double VIDEO_WIDTH = 672.0; // px
+    public static final double VISION_HOMING_BIAS = 1.75; // deg
 
     public Turret() {
         super(NAME);
         this.turret = factory.getMotor(NAME, "turret");
 
+        turret.setNeutralMode(NeutralMode.Brake);
         turret.setSensorPhase(TURRET_SENSOR_PHASE);
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
@@ -89,7 +92,7 @@ public class Turret extends Subsystem implements PidProvider {
         networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
             if (value.getDouble() < 0) { return; }
             var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
-            this.deltaXAngle = deltaXPixels * (CAMERA_FOV / VIDEO_WIDTH); // Multiply by FOV to pixel ratio
+            this.deltaXAngle = deltaXPixels * (CAMERA_FOV / VIDEO_WIDTH) + VISION_HOMING_BIAS; // Multiply by FOV to pixel ratio
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }
 

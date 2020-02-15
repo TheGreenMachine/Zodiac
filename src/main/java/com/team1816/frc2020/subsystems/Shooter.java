@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.hardware.TalonSRXChecker;
@@ -35,6 +36,7 @@ public class Shooter extends Subsystem implements PidProvider {
     // State
     private double shooterVelocity;
     private boolean outputsChanged;
+    private boolean coast;
 
     // Constants
     private final double kP;
@@ -62,8 +64,8 @@ public class Shooter extends Subsystem implements PidProvider {
         shooterFollowerB.setNeutralMode(NeutralMode.Coast);
         shooterFollowerC.setNeutralMode(NeutralMode.Coast);
 
-        //shooterMain.configClosedloopRamp(1, Constants.kCANTimeoutMs);
-        shooterMain.setSensorPhase(true);
+        shooterMain.configClosedloopRamp(1, Constants.kCANTimeoutMs);
+        shooterMain.setSensorPhase(false);
     }
 
     @Override
@@ -111,10 +113,19 @@ public class Shooter extends Subsystem implements PidProvider {
         return shooterMain.getClosedLoopError(0);
     }
 
+    public void coast() {
+        this.coast = true;
+    }
+
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
-            this.shooterMain.set(ControlMode.Velocity, shooterVelocity);
+            if (coast) {
+                this.shooterMain.set(ControlMode.PercentOutput, 0);
+                coast = false;
+            } else {
+                this.shooterMain.set(ControlMode.Velocity, shooterVelocity);
+            }
             outputsChanged = false;
         }
     }

@@ -24,14 +24,10 @@ public class AutoTrenchMode extends AutoModeBase {
         System.out.println("Running Auto Trench Mode");
         runAction(
             new SeriesAction(
-//                new ParallelAction(
-//                    new HopperFeedAction(4000),
-//                    new SeriesAction(
-//                        new WaitAction(1),
-//                        new ShootAction()
-//                    )
-//                ),
-//                new WaitAction(.5),
+                new ShootAction(),
+                new WaitAction(1),
+                new HopperFeedAction(4000),
+                new WaitAction(.5),
                 mDriveTrajectory
             )
         );

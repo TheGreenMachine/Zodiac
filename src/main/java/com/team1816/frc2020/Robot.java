@@ -189,8 +189,12 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getTurretJogRight, () -> turret.setTurretAngle(90)),
                 createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
+                    shooter.setVelocity(shooting ? 52_000 : 0);
+                    hopper.waitForShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
-                    shooter.setVelocity(shooting ? Shooter.MAX_VELOCITY : 0);
+                    if (!shooting) {
+                        shooter.coast();
+                    }
                 })
             );
 
