@@ -190,7 +190,7 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
                     hopper.setIntake(shooting ? 1 : 0);
-                    shooter.setVelocity(shooting ? 1 : 0);
+                    shooter.setVelocity(shooting ? Shooter.MAX_VELOCITY : 0);
                 })
             );
 
