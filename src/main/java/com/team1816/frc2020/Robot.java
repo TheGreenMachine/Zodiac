@@ -19,11 +19,9 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.CrashTracker;
+import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,6 +31,7 @@ import static com.team1816.frc2020.controlboard.ControlUtils.*;
 
 public class Robot extends TimedRobot {
     private BadLog logger;
+    private boolean isBadLogOn;
     private final Looper mEnabledLooper = new Looper();
     private final Looper mDisabledLooper = new Looper();
 
@@ -73,6 +72,9 @@ public class Robot extends TimedRobot {
     private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
     private AsyncTimer blinkTimer;
 
+    private PowerDistributionPanel pdp = new PowerDistributionPanel();
+
+
     Robot() {
         CrashTracker.logRobotConstruction();
     }
@@ -97,17 +99,16 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-        try {
+        isBadLogOn = Robot.factory.getConstant("badLogEnabled") > 0;
 
+        try {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger = BadLog.init("/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag");
-            DrivetrainLogger.init(mDrive);
-            BadLog.createValue("Drivetrain PID", mDrive.pidToString());
-            BadLog.createValue("Shooter PID", shooter.pidToString());
-            BadLog.createValue("Turret PID", turret.pidToString());
+
             BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
+
 
             BadLog.createTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
                 "hide", "join:Shooter/Velocities");
@@ -116,14 +117,26 @@ public class Robot extends TimedRobot {
             BadLog.createTopic("Shooter/Error", "NativeUnits", shooter::getError,
                 "hide", "join:Shooter/Velocities");
 
-            BadLog.createTopic("Turret/ActPos", "NativeUnits", () -> (double) turret.getTurretPositionTicks(),
-                "hide", "join:Turret/Positions");
-            BadLog.createTopic("Turret/TargetPos", "NativeUnits", turret::getTargetPosition,
-                "hide", "join:Turret/Positions");
-            BadLog.createTopic("Turret/ErrorPos", "NativeUnits", turret::getPositionError);
+            BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
+
+
+            if (isBadLogOn) {
+                DrivetrainLogger.init(mDrive);
+
+                BadLog.createValue("Drivetrain PID", mDrive.pidToString());
+                BadLog.createValue("Shooter PID", shooter.pidToString());
+                BadLog.createValue("Turret PID", turret.pidToString());
+
+                BadLog.createTopic("Turret/ActPos", "NativeUnits", () -> (double) turret.getTurretPositionTicks(),
+                    "hide", "join:Turret/Positions");
+                BadLog.createTopic("Turret/TargetPos", "NativeUnits", turret::getTargetPosition,
+                    "hide", "join:Turret/Positions");
+                BadLog.createTopic("Turret/ErrorPos", "NativeUnits", turret::getPositionError);
+
+                mDrive.setLogger(logger);
+            }
 
             logger.finishInitialization();
-            mDrive.setLogger(logger);
 
             CrashTracker.logRobotInit();
 
@@ -174,6 +187,7 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getFeederToTrenchSpline, () -> {}),
 
                 createHoldAction(mControlBoard::getBrakeMode, mDrive::setBrakeMode),
+                createHoldAction(mControlBoard::getSlowMode, mDrive::setSlowMode),
 
                 // Operator Gamepad
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize),
@@ -185,8 +199,8 @@ public class Robot extends TimedRobot {
 
                 createScalar(mControlBoard::getClimber, climber::setClimberPower),
 
-                createAction(mControlBoard::getTurretJogLeft, () -> turret.setTurretAngle(0)),
-                createAction(mControlBoard::getTurretJogRight, () -> turret.setTurretAngle(90)),
+                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -0.5 : 0)),
+                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.5 : 0)),
                 createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
                     shooter.setVelocity(shooting ? 52_000 : 0);
@@ -194,6 +208,8 @@ public class Robot extends TimedRobot {
                     hopper.setIntake(shooting ? 1 : 0);
                     if (!shooting) {
                         shooter.coast();
+                    } else {
+                        mDrive.setOpenLoop(new DriveSignal(0, 0));
                     }
                 })
             );
@@ -389,14 +405,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         loopStart = Timer.getFPGATimestamp();
 
-        // String gameData = DriverStation.getInstance().getGameSpecificMessage();
-        // if (gameData == null || gameData.length() == 0){
-        //     gameData = "0";
-        // }
-        //
-        //  double targetVelocityPer100Ms = Double.parseDouble(gameData);
-        //  shooter.setVelocity(targetVelocityPer100Ms);
-
         try {
             manualControl();
         } catch (Throwable t) {
@@ -404,8 +412,10 @@ public class Robot extends TimedRobot {
             throw t;
         }
 
-        logger.updateTopics();
-        logger.log();
+    //    if (isBadLogOn) {
+            logger.updateTopics();
+            logger.log();
+    //    }
     }
 
     public void manualControl() {

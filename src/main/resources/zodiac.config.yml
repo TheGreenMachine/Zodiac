@@ -29,7 +29,7 @@ subsystems:
         talons:
             elevator: 0
     collector:
-        implemented: false
+        implemented: true
         talons:
             intake: 11
         solenoids:
@@ -91,3 +91,4 @@ constants: #TODO: update constants for new robot
     pathKs: 2
     verbose: 0 # O or 1
     compressorEnabled: 1 # 0 or 1
+    badLogEnabled: 0

@@ -9,9 +9,11 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
-import com.team1816.frc2020.*;
+import com.team1816.frc2020.AutoModeSelector;
+import com.team1816.frc2020.Constants;
+import com.team1816.frc2020.Kinematics;
+import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.planners.DriveMotionPlanner;
-import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
@@ -61,6 +63,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private PeriodicIO mPeriodicIO;
     private DriveMotionPlanner mMotionPlanner;
     private boolean mOverrideTrajectory = false;
+
+    private boolean isSlowMode;
 
     public synchronized static Drive getInstance() {
         if (mInstance == null) {
@@ -197,8 +201,13 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     @Override
     public synchronized void writePeriodicOutputs() {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
-            mLeftMaster.set(ControlMode.PercentOutput, mPeriodicIO.left_demand);
-            mRightMaster.set(ControlMode.PercentOutput, mPeriodicIO.right_demand);
+            if (isSlowMode) {
+                mLeftMaster.set(ControlMode.PercentOutput, mPeriodicIO.left_demand * 0.5);
+                mRightMaster.set(ControlMode.PercentOutput, mPeriodicIO.right_demand * 0.5);
+            } else {
+                mLeftMaster.set(ControlMode.PercentOutput, mPeriodicIO.left_demand);
+                mRightMaster.set(ControlMode.PercentOutput, mPeriodicIO.right_demand);
+            }
         } else {
             mLeftMaster.set(ControlMode.Velocity, mPeriodicIO.left_demand);
             mRightMaster.set(ControlMode.Velocity, mPeriodicIO.right_demand);
@@ -306,6 +315,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     public boolean isBrakeMode() {
         return mIsBrakeMode;
+    }
+
+    public void setSlowMode(boolean slowMode) {
+        isSlowMode = slowMode;
     }
 
     public void setLogger(BadLog logger){

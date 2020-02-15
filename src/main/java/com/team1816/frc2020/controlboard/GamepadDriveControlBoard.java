@@ -34,7 +34,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public boolean getSlowMode() {
-        return mController.getButton(LogitechController.Button.RB);
+        return mController.getTrigger(LogitechController.Side.RIGHT);
     }
 
     @Override

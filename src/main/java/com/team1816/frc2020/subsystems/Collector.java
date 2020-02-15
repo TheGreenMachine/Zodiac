@@ -2,8 +2,6 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.team1816.frc2020.Robot;
-import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Solenoid;
 
@@ -58,7 +56,7 @@ public class Collector extends Subsystem {
     public void setDeployed(boolean down) {
         if (down) {
             setArm(true);
-            setIntakePow(0.5);
+            setIntakePow(1);
         } else {
             setIntakePow(0);
             setArm(false);

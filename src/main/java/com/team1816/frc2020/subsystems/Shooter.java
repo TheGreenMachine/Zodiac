@@ -4,9 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
-import com.team1816.frc2020.Robot;
-import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
@@ -64,8 +63,10 @@ public class Shooter extends Subsystem implements PidProvider {
         shooterFollowerB.setNeutralMode(NeutralMode.Coast);
         shooterFollowerC.setNeutralMode(NeutralMode.Coast);
 
-        shooterMain.configClosedloopRamp(1, Constants.kCANTimeoutMs);
+        shooterMain.configClosedloopRamp(2, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
+
+        ((TalonSRX) shooterMain).configContinuousCurrentLimit(35);
     }
 
     @Override
