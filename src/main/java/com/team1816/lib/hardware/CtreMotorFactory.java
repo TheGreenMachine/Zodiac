@@ -158,7 +158,7 @@ public class CtreMotorFactory {
         motor.configPeakOutputForward(1.0, kTimeoutMs);
         motor.configPeakOutputReverse(-1.0, kTimeoutMs);
 
-        motor.setNeutralMode(config.NEUTRAL_MODE);
+//        motor.setNeutralMode(config.NEUTRAL_MODE);
 
         motor.configForwardSoftLimitThreshold(config.FORWARD_SOFT_LIMIT, kTimeoutMs);
         motor.configForwardSoftLimitEnable(config.ENABLE_SOFT_LIMIT, kTimeoutMs);

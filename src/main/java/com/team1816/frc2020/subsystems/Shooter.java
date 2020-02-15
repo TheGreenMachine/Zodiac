@@ -51,7 +51,7 @@ public class Shooter extends Subsystem implements PidProvider {
         this.shooterFollowerA = factory.getMotor(NAME, "shooterFollowerA", shooterMain);
         this.shooterFollowerB = factory.getMotor(NAME, "shooterFollowerB", shooterMain);
         this.shooterFollowerC = factory.getMotor(NAME, "shooterFollowerC", shooterMain);
-     //   this.hood = factory.getSolenoid(NAME, "hood");
+        //   this.hood = factory.getSolenoid(NAME, "hood");
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
@@ -63,13 +63,19 @@ public class Shooter extends Subsystem implements PidProvider {
         shooterFollowerB.setNeutralMode(NeutralMode.Coast);
         shooterFollowerC.setNeutralMode(NeutralMode.Coast);
 
+        ((TalonSRX) shooterMain).configContinuousCurrentLimit(30);
+        ((TalonSRX) shooterFollowerA).configContinuousCurrentLimit(30);
+        ((TalonSRX) shooterFollowerB).configContinuousCurrentLimit(30);
+        ((TalonSRX) shooterFollowerC).configContinuousCurrentLimit(30);
+
+        shooterFollowerB.setInverted(true);
+        shooterFollowerC.setInverted(true);
+
         shooterMain.configClosedloopRamp(2, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
-
-        ((TalonSRX) shooterMain).configContinuousCurrentLimit(35);
     }
 
-    @Override
+        @Override
     public double getKP() {
         return kP;
     }

@@ -11,7 +11,7 @@ subsystems:
         invertMotor:
             - 17
         constants:
-            pigeonId: 10
+            pigeonId: 9
             pigeonOnTalon: -1
             kP: 0.13 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
             kI: 0.013 # 0.018
@@ -23,7 +23,7 @@ subsystems:
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000
             rpmEpsilonCheck: 60
-            openLoopRampRate: 1
+            openLoopRampRate: 3
     climber:
         implemented: false
         talons:
@@ -51,7 +51,7 @@ subsystems:
     shooter:
         implemented: true
         talons:
-            shooterMaster: 20
+            shooterMaster: 13
             shooterFollowerA: 3
             shooterFollowerB: 4
             shooterFollowerC: 5
@@ -67,7 +67,7 @@ subsystems:
     turret:
         implemented: true
         talons:
-            turret: 13
+            turret: 10
         constants: # TODO: tune [P, I, D]
             kP: 2.85
             kI: 0

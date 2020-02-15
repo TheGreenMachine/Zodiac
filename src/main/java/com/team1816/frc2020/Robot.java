@@ -17,10 +17,7 @@ import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.CheesyDriveHelper;
-import com.team254.lib.util.CrashTracker;
-import com.team254.lib.util.DriveSignal;
-import com.team254.lib.util.LatchedBoolean;
+import com.team254.lib.util.*;
 import edu.wpi.first.wpilibj.*;
 
 import java.text.SimpleDateFormat;
@@ -185,8 +182,6 @@ public class Robot extends TimedRobot {
 
                 createAction(mControlBoard::getTrenchToFeederSpline, () -> {}), // TODO implement teleop splines
                 createAction(mControlBoard::getFeederToTrenchSpline, () -> {}),
-
-                createHoldAction(mControlBoard::getBrakeMode, mDrive::setBrakeMode),
                 createHoldAction(mControlBoard::getSlowMode, mDrive::setSlowMode),
 
                 // Operator Gamepad
@@ -199,8 +194,8 @@ public class Robot extends TimedRobot {
 
                 createScalar(mControlBoard::getClimber, climber::setClimberPower),
 
-                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -0.5 : 0)),
-                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.5 : 0)),
+                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -0.2 : 0)),
+                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.2 : 0)),
                 createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
                     shooter.setVelocity(shooting ? 52_000 : 0);
@@ -422,8 +417,11 @@ public class Robot extends TimedRobot {
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
 
+        double left = Util.limit(throttle + (turn * 0.55), 1);
+        double right = Util.limit(throttle - (turn * 0.55), 1);
+
         actionManager.update();
-        mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0));
+        mDrive.setOpenLoop(new DriveSignal(left, right, true));
     }
 
     @Override

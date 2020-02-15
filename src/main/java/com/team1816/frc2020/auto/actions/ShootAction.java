@@ -2,6 +2,7 @@ package com.team1816.frc2020.auto.actions;
 
 import com.team1816.frc2020.subsystems.Hopper;
 import com.team1816.frc2020.subsystems.Shooter;
+import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.actions.Action;
 import com.team1816.lib.loops.AsyncTimer;
 
@@ -19,6 +20,7 @@ public class ShootAction implements Action {
 
     @Override
     public void start() {
+        Turret.getInstance().setTurretAngle(90);
         shooterTimer.update();
         hopper.waitForShooter(true);
         hopper.setIntake(1);
