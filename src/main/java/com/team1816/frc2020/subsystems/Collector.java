@@ -19,6 +19,9 @@ public class Collector extends Subsystem {
     private boolean armDown;
     private boolean outputsChanged = false;
 
+    private boolean isRaising;
+    private double startTime;
+
 
     public static Collector getInstance() {
         if (INSTANCE == null) {
@@ -58,7 +61,8 @@ public class Collector extends Subsystem {
             setArm(true);
             setIntakePow(1);
         } else {
-            setIntakePow(0);
+            isRaising = true;
+            startTime = System.currentTimeMillis();
             setArm(false);
         }
     }
@@ -69,6 +73,13 @@ public class Collector extends Subsystem {
             this.armPiston.set(armDown);
             this.intake.set(ControlMode.PercentOutput, intakePow);
             this.outputsChanged = false;
+        }
+
+        if (isRaising) {
+            if ((startTime + System.currentTimeMillis()) > 2) {
+                this.intake.set(ControlMode.PercentOutput, 0);
+                isRaising = false;
+            }
         }
     }
 
