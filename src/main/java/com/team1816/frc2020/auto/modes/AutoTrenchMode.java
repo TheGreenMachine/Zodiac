@@ -13,7 +13,7 @@ public class AutoTrenchMode extends AutoModeBase {
     private DriveTrajectory mDriveTrajectory;
 
     public AutoTrenchMode() {
-        var trajectory = TrajectorySet.getInstance().AUTO_TRENCH;
+        var trajectory = TrajectorySet.getInstance().AUTO_TRENCH_TURN_RIGHT;
         mDriveTrajectory = new DriveTrajectory(trajectory, true);
     }
 
