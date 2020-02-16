@@ -7,6 +7,10 @@ import pyzed.sl as sl
 from flask_opencv_streamer.streamer import Streamer
 # Team 1816's 2020 Vision Processing Code
 # Used with OpenCV and Gstreamer
+
+LOWER_COLOR = [61, 149, 122]
+UPPER_COLOR = [150, 255, 255]
+
 def make_half_hex_shape():
     pts = []
     for ang in [0, 60, 120, 180]:
@@ -26,12 +30,10 @@ def make_half_hex_shape():
 
 
 def preProcess(image):
-    #lower_color = (15, 85, 180)
-    #upper_color = (130, 255, 255)
-    lower_color = (30, 60, 143)
-    upper_color = (94, 255, 255)
+    lower_color = (LOWER_COLOR[0], LOWER_COLOR[1], LOWER_COLOR[2])
+    upper_color = (UPPER_COLOR[0], UPPER_COLOR[1], UPPER_COLOR[2])
     h, w, _ = image.shape
-    # image = image[0:int(h / 2), 0:w]h
+    image = image[0:int(h / 2), 0:w]
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower_color, upper_color)
     return mask
@@ -45,25 +47,27 @@ def findTarget(image, shape, nt_table):
         c = max(contours, key=cv2.contourArea)
         rect = cv2.boundingRect(c)
     else:
+        clearNetworkTables(nt_table)
         return -1
-    print("R2" + str(rect[2]), "R3" + str(rect[3]))
+    # print("R2" + str(rect[2]), "R3" + str(rect[3]))
     # only process larger areas with at least 5 points in the contour
-    if len(c) > 20 and rect[2] > 10 and rect[3] > 10:
-        match = cv2.matchShapes(c, shape, cv2.CONTOURS_MATCH_I2, 0.0)
-        print(match)
-        if match < 10:
-            cx = rect[0] + (rect[2] * .5)
-            cy = rect[1] + (rect[3] * .5)
-            nt_table.putNumber('center_x', cx)
-            nt_table.putNumber('center_y', cy)
-            zed.retrieve_measure(point_cloud, sl.MEASURE.XYZRGBA)
-            err, point3D = point_cloud.get_value(cx, cy)
-            distance = math.sqrt(point3D[0] * point3D[0] + point3D[1] * point3D[1] + point3D[2] * point3D[2])
-            if math.isnan(distance) or math.isinf(distance):
-                nt_table.putNumber('distance', -1)
-                return c
-            nt_table.putNumber('distance', round(distance))
+    # if len(c) > 20 and rect[2] > 5 and rect[3] > 5:
+    #     match = cv2.matchShapes(c, shape, cv2.CONTOURS_MATCH_I2, 0.0)
+    #     print(match)
+    #     if match < 5:
+    if c.any():
+        cx = rect[0] + (rect[2] * .5)
+        cy = rect[1] + (rect[3] * .5)
+        nt_table.putNumber('center_x', cx)
+        nt_table.putNumber('center_y', cy)
+        zed.retrieve_measure(point_cloud, sl.MEASURE.XYZRGBA)
+        err, point3D = point_cloud.get_value(cx, cy)
+        distance = math.sqrt(point3D[0] * point3D[0] + point3D[1] * point3D[1] + point3D[2] * point3D[2])
+        if math.isnan(distance) or math.isinf(distance):
+            nt_table.putNumber('distance', -1)
             return c
+        nt_table.putNumber('distance', round(distance))
+        return c
     clearNetworkTables(nt_table)
     return -1
 
@@ -80,7 +84,19 @@ def clearNetworkTables(table):
     table.putNumber('center_x', -1)
     table.putNumber('center_y', -1)
     table.putNumber('distance', -1)
-
+def valueChanged(table, key, value, isNew):
+    if key == "HMIN":
+        LOWER_COLOR[0] = value
+    elif key == "SMIN":
+        LOWER_COLOR[1] = value
+    elif key == "VMIN":
+        LOWER_COLOR[2] = value
+    elif key == "HMAX":
+        UPPER_COLOR[0] = value
+    elif key == "SMAX":
+        UPPER_COLOR[1] = value
+    elif key == "VMAX":
+        UPPER_COLOR[2] = value
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -106,14 +122,28 @@ if __name__ == '__main__':
     if err != sl.ERROR_CODE.SUCCESS:
         exit(-1)
     image = sl.Mat()
-    zed.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, 30)
+    zed.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, 10)
     runtime_parameters = sl.RuntimeParameters()
     # gst_str_rtp = "appsrc ! videoconvert ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! rtph264pay ! udpsink host=10.18.16.5 port=1180"
     # # Check if cap is open
     # # Create videowriter as a SHM sink
     # out = cv2.VideoWriter(gst_str_rtp, 0, fps, (frame_width, frame_height), True)
     nt.NetworkTables.initialize(server='10.18.16.2')
+    camera_table = nt.NetworkTables.getTable("CameraPublisher")
+    table = camera_table.getSubTable("Camera")
+    table.getEntry("streams").setStringArray(["mjpg:http://10.18.16.142:1180/video_feed"])
     table = nt.NetworkTables.getTable('SmartDashboard')
+
+    calibTable = nt.NetworkTables.getTable('SmartDashboard/Calibration')
+    calibTable.putNumber("HMIN", LOWER_COLOR[0])
+    calibTable.putNumber("HMAX", UPPER_COLOR[0])
+    calibTable.putNumber("SMIN", LOWER_COLOR[1])
+    calibTable.putNumber("SMAX", UPPER_COLOR[1])
+    calibTable.putNumber("VMIN", LOWER_COLOR[2])
+    calibTable.putNumber("VMAX", LOWER_COLOR[2])
+    calibTable.putNumber("EXPOSURE", 10)
+    calibTable.addEntryListener(valueChanged)
+
     if table:
         print('table OK')
     clearNetworkTables(table)

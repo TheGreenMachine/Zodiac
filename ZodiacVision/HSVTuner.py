@@ -2,7 +2,7 @@ import cv2
 #import pyzed.sl as sl
 import math
 import numpy as np
-
+import pyzed.sl as sl
 
 # Team 1816's 2020 Vision Processing Code
 # Used with OpenCV and Gstreamer
@@ -40,7 +40,22 @@ def callback(x):
 
 
 if __name__ == '__main__':
-    cap = cv2.VideoCapture(0)
+    zed = sl.Camera()
+    point_cloud = sl.Mat()
+    # Set configuration parameters
+    init_params = sl.InitParameters()
+    init_params.depth_mode = sl.DEPTH_MODE.ULTRA  # Use PERFORMANCE depth mode
+    init_params.coordinate_units = sl.UNIT.INCH  # Use milliliter units (for depth measurements)
+    init_params.camera_resolution = sl.RESOLUTION.VGA
+    init_params.camera_fps = 100
+
+    # Open the camera
+    err = zed.open(init_params)
+    if err != sl.ERROR_CODE.SUCCESS:
+        exit(-1)
+    image = sl.Mat()
+    zed.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, 10)
+    runtime_parameters = sl.RuntimeParameters()
     cv2.namedWindow('image')
     cv2.createTrackbar('lowH', 'image', 0, 179, callback)
     cv2.createTrackbar('highH', 'image', 179, 179, callback)
@@ -51,8 +66,11 @@ if __name__ == '__main__':
     cv2.createTrackbar('lowV', 'image', 0, 255, callback)
     cv2.createTrackbar('highV', 'image', 255, 255, callback)
     while True:
-        # grab the frame
-        ret, frame = cap.read()
+        if zed.grab(runtime_parameters) == sl.ERROR_CODE.SUCCESS:
+
+            # A new image is available if grab() returns SUCCESS
+            zed.retrieve_image(image, sl.VIEW.RIGHT)  # Retrieve the left image
+            frame = image.get_data()
 
         # get trackbar positions
         ilowH = cv2.getTrackbarPos('lowH', 'image')
