@@ -1,6 +1,6 @@
 package com.team1816.frc2020.auto.modes;
 
-import com.team1816.frc2020.auto.actions.CollectorDeployAction;
+import com.team1816.frc2020.auto.actions.CollectAction;
 import com.team1816.frc2020.auto.actions.ShootAction;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.lib.auto.AutoModeEndedException;
@@ -29,10 +29,10 @@ public class AutoTrenchMode extends AutoModeBase {
                     mDriveTrajectory,
                     new SeriesAction(
                         new WaitUntilInsideRegion(new Translation2d(114, 40), new Translation2d(210, 90)),
-                        new CollectorDeployAction(true)
+                        new CollectAction(true)
                     )
                 ),
-                new CollectorDeployAction(false)
+                new CollectAction(false)
             )
         );
     }

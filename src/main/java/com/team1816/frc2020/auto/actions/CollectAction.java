@@ -1,18 +1,20 @@
 package com.team1816.frc2020.auto.actions;
 
 import com.team1816.frc2020.subsystems.Collector;
+import com.team1816.frc2020.subsystems.Hopper;
 import com.team1816.lib.auto.actions.Action;
 
-public class CollectorDeployAction implements Action {
-    private boolean isDeployed;
+public class CollectAction implements Action {
+    private boolean isCollecting;
 
-    public CollectorDeployAction(boolean isDeployed) {
-        this.isDeployed = isDeployed;
+    public CollectAction(boolean isCollecting) {
+        this.isCollecting = isCollecting;
     }
 
     @Override
     public void start() {
-        Collector.getInstance().setDeployed(isDeployed);
+        Collector.getInstance().setDeployed(isCollecting);
+        Hopper.getInstance().setSpindexer(isCollecting ? 1 : 0);
     }
 
     @Override
