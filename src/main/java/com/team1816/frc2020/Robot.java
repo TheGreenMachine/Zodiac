@@ -167,7 +167,6 @@ public class Robot extends TimedRobot {
             mAutoModeSelector.updateModeCreator();
 
             actionManager = new ActionManager(
-                // TODO: Controls for Zodiac
                 // Driver Gamepad
                 createAction(mControlBoard::getCollectorDown, () -> {
                     hopper.setSpindexer(1);
@@ -204,7 +203,7 @@ public class Robot extends TimedRobot {
                     if (!shooting) {
                         shooter.coast();
                     } else {
-                        mDrive.setOpenLoop(new DriveSignal(0, 0));
+                        mDrive.setOpenLoop(DriveSignal.BRAKE);
                     }
                 })
             );
