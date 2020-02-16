@@ -53,6 +53,9 @@ public class Turret extends Subsystem implements PidProvider {
     private static final double VIDEO_WIDTH = 672.0; // px
     public static final double VISION_HOMING_BIAS = 1.75; // deg
 
+    public static final double CARDINAL_SOUTH = 48.8; // deg
+    public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90;
+
     public Turret() {
         super(NAME);
         this.turret = factory.getMotor(NAME, "turret");

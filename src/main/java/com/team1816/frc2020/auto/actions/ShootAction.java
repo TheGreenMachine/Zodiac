@@ -20,7 +20,7 @@ public class ShootAction implements Action {
 
     @Override
     public void start() {
-        Turret.getInstance().setTurretAngle(90);
+        Turret.getInstance().setTurretAngle(Turret.CARDINAL_WEST);
         shooterTimer.update();
         hopper.waitForShooter(true);
         hopper.setIntake(1);
