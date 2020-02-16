@@ -60,6 +60,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private boolean mIsBrakeMode;
     private Rotation2d mGyroOffset = Rotation2d.identity();
     private double mLastDriveCurrentSwitchTime = -1;
+    private double openLoopRampRate;
     private BadLog mLogger;
 
     private PeriodicIO mPeriodicIO;
@@ -90,8 +91,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mRightSlaveA = factory.getMotor(NAME, "rightFollower", mRightMaster);
         mRightSlaveB = factory.getMotor(NAME, "rightFollowerTwo", mRightMaster);
 
-        mLeftMaster.configOpenloopRamp(Constants.kOpenLoopRampRate, Constants.kCANTimeoutMs);
-        mRightMaster.configOpenloopRamp(Constants.kOpenLoopRampRate, Constants.kCANTimeoutMs);
+        setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
         if (((int) factory.getConstant(NAME, "pigeonOnTalon")) == 1) {
             var pigeonId = ((int) factory.getConstant(NAME, "pigeonId"));
@@ -299,6 +299,16 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mPeriodicIO.right_demand = signal.getRight();
         mPeriodicIO.left_feedforward = 0.0;
         mPeriodicIO.right_feedforward = 0.0;
+    }
+
+    public void setOpenLoopRampRate(double openLoopRampRate) {
+        this.openLoopRampRate = openLoopRampRate;
+        mLeftMaster.configOpenloopRamp(openLoopRampRate, Constants.kCANTimeoutMs);
+        mRightMaster.configOpenloopRamp(openLoopRampRate, Constants.kCANTimeoutMs);
+    }
+
+    public double getOpenLoopRampRate() {
+        return openLoopRampRate;
     }
 
     /**
@@ -598,6 +608,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
         builder.addDoubleProperty("Left Drive Distance", this::getLeftEncoderDistance, null);
         builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
+        builder.addDoubleProperty("Drive/OpenLoopRampRate", this::getOpenLoopRampRate,
+            this::setOpenLoopRampRate);
         // SmartDashboard.putNumber("Right Linear Velocity", getRightLinearVelocity());
         // SmartDashboard.putNumber("Left Linear Velocity", getLeftLinearVelocity());
 
