@@ -1,6 +1,6 @@
 package com.team1816.lib.controlboard;
 
-import com.team1816.frc2019.Constants;
+import com.team1816.frc2020.Constants;
 import edu.wpi.first.wpilibj.Joystick;
 
 public abstract class Controller {

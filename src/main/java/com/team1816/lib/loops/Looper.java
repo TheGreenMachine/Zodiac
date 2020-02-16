@@ -1,8 +1,6 @@
 package com.team1816.lib.loops;
 
-import com.team1816.frc2019.Constants;
-import com.team1816.frc2019.Robot;
-import com.team1816.lib.hardware.YamlConfig;
+import com.team1816.frc2020.Constants;
 import com.team254.lib.util.CrashTrackingRunnable;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;

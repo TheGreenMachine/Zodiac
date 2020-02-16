@@ -1,6 +1,6 @@
 package com.team1816.lib.auto.actions;
 
-import com.team1816.frc2019.RobotState;
+import com.team1816.frc2020.RobotState;
 import com.team254.lib.geometry.Translation2d;
 
 public class WaitUntilInsideRegion implements Action {

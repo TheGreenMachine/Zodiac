@@ -1,7 +1,7 @@
 package com.team254.lib.motion;
 
-import static com.team254.lib.util.Util.epsilonEquals;
 import static com.team254.lib.motion.MotionUtil.kEpsilon;
+import static com.team254.lib.util.Util.epsilonEquals;
 
 /**
  * A MotionState is a completely specified state of 1D motion through time.

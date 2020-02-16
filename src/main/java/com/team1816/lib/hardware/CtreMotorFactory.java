@@ -41,12 +41,9 @@ public class CtreMotorFactory {
 
         public double OPEN_LOOP_RAMP_RATE = 0.0;
         public double CLOSED_LOOP_RAMP_RATE = 0.0;
-
-        public FeedbackDevice ENCODER_TYPE = FeedbackDevice.CTRE_MagEncoder_Relative;
     }
 
     private static final Configuration kDefaultConfiguration = new Configuration();
-    private static final Configuration kFalconConfiguration = new Configuration();
     private static final Configuration kSlaveConfiguration = new Configuration();
 
     static {
@@ -61,28 +58,21 @@ public class CtreMotorFactory {
         kSlaveConfiguration.QUAD_ENCODER_STATUS_FRAME_RATE_MS = 1000;
         kSlaveConfiguration.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS = 1000;
         kSlaveConfiguration.PULSE_WIDTH_STATUS_FRAME_RATE_MS = 1000;
-
-        // TalonFX Config edits
-        kFalconConfiguration.ENCODER_TYPE = FeedbackDevice.IntegratedSensor;
     }
 
     // Create a CANTalon with the default (out of the box) configuration.
-    public static IMotorControllerEnhanced createDefaultTalon(int id) {
-        return createTalon(id, kDefaultConfiguration);
+    public static IMotorControllerEnhanced createDefaultTalon(int id, boolean isFalcon) {
+        return createTalon(id, kDefaultConfiguration, isFalcon);
     }
 
-    public static IMotorControllerEnhanced createDefaultFalcon(int id) {
-        return createTalon(id, kFalconConfiguration);
-    }
-
-    public static IMotorControllerEnhanced createPermanentSlaveTalon(int id, IMotorController master) {
-        final IMotorControllerEnhanced talon = createTalon(id, kSlaveConfiguration);
+    public static IMotorControllerEnhanced createPermanentSlaveTalon(int id, boolean isFalcon, IMotorController master) {
+        final IMotorControllerEnhanced talon = createTalon(id, kSlaveConfiguration, isFalcon);
         System.out.println("Slaving talon on " + id + " to talon on " + master.getDeviceID());
         talon.follow(master);
         return talon;
     }
 
-    private static IMotorControllerEnhanced createTalon(int id, Configuration config) {
+    private static IMotorControllerEnhanced createTalon(int id, Configuration config, boolean isFalcon) {
         TalonSRX talon = new TalonSRX(id);
         configureMotorController(talon, config);
 
@@ -101,7 +91,10 @@ public class CtreMotorFactory {
                 config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS, kTimeoutMs);
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth,
                 config.PULSE_WIDTH_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        talon.configSelectedFeedbackSensor(config.ENCODER_TYPE, 0, 20);
+        talon.configSelectedFeedbackSensor(
+            isFalcon ? FeedbackDevice.IntegratedSensor : FeedbackDevice.CTRE_MagEncoder_Relative,
+            0, 20
+        );
 
         return talon;
     }
@@ -139,6 +132,7 @@ public class CtreMotorFactory {
     }
 
     private static void configureMotorController(BaseMotorController motor, Configuration config) {
+        motor.configFactoryDefault();
         motor.set(ControlMode.PercentOutput, 0.0);
 
         motor.changeMotionControlFramePeriod(config.MOTION_CONTROL_FRAME_PERIOD_MS);
@@ -164,7 +158,7 @@ public class CtreMotorFactory {
         motor.configPeakOutputForward(1.0, kTimeoutMs);
         motor.configPeakOutputReverse(-1.0, kTimeoutMs);
 
-        motor.setNeutralMode(config.NEUTRAL_MODE);
+//        motor.setNeutralMode(config.NEUTRAL_MODE);
 
         motor.configForwardSoftLimitThreshold(config.FORWARD_SOFT_LIMIT, kTimeoutMs);
         motor.configForwardSoftLimitEnable(config.ENABLE_SOFT_LIMIT, kTimeoutMs);
