@@ -298,7 +298,7 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
 
-            turret.setTurretAngle(Turret.CARDINAL_SOUTH);
+            turret.setTurretAngle(Turret.CARDINAL_NORTH);
 
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();

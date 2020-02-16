@@ -15,7 +15,7 @@ public class ShootAction implements Action {
     public ShootAction() {
         this.shooter = Shooter.getInstance();
         this.hopper = Hopper.getInstance();
-        this.shooterTimer = new AsyncTimer(6000, shooter::startShooter, shooter::stopShooter);
+        this.shooterTimer = new AsyncTimer(9, shooter::startShooter, shooter::stopShooter);
     }
 
     @Override

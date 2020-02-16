@@ -64,7 +64,7 @@ public class Shooter extends Subsystem implements PidProvider {
         shooterFollowerB.setNeutralMode(NeutralMode.Coast);
         shooterFollowerC.setNeutralMode(NeutralMode.Coast);
 
-        configCurrentLimits(30 /* amps */);
+        configCurrentLimits(32 /* amps */);
 
         shooterFollowerB.setInverted(true);
         shooterFollowerC.setInverted(true);
@@ -149,6 +149,7 @@ public class Shooter extends Subsystem implements PidProvider {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.addBooleanProperty("Shooter/IsAtSpeed", () -> this.getError() < 7000, null);
+        builder.addDoubleProperty("Shooter/ShooterVelocity", this::getActualVelocity, this::setVelocity);
     }
 
     @Override

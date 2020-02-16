@@ -9,8 +9,6 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.Util;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -95,8 +93,8 @@ public class TrajectoryTest {
     @Test
     public void test() {
         var trajectories = TrajectorySet.getInstance();
-        System.out.println(trajectories.DRIVE_STRAIGHT);
-        verifyTrajectory(trajectories.DRIVE_STRAIGHT, true);
+        System.out.println(trajectories.AUTO_TRENCH_TURN_RIGHT);
+        verifyTrajectory(trajectories.AUTO_TRENCH_TURN_RIGHT, false);
     }
 
     private void verifyTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, boolean shouldBeReversed) {

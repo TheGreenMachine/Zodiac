@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 
@@ -308,7 +309,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public double getOpenLoopRampRate() {
-        return openLoopRampRate;
+        return this.openLoopRampRate;
     }
 
     /**
@@ -608,9 +609,14 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
         builder.addDoubleProperty("Left Drive Distance", this::getLeftEncoderDistance, null);
         builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
-        builder.addDoubleProperty("Drive/OpenLoopRampRate", this::getOpenLoopRampRate,
-            this::setOpenLoopRampRate);
-        // SmartDashboard.putNumber("Right Linear Velocity", getRightLinearVelocity());
+
+        SmartDashboard.putNumber("Drive/OpenLoopRampRateGetter", openLoopRampRate);
+        System.out.println("openLoopRampRate: " + openLoopRampRate);
+
+        // builder.addDoubleProperty("Drive/OpenLoopRampRateSetter", null, this::setOpenLoopRampRate);
+        // builder.addDoubleProperty("Drive/OpenLoopRampRateValue", this::getOpenLoopRampRate, null);
+
+                // SmartDashboard.putNumber("Right Linear Velocity", getRightLinearVelocity());
         // SmartDashboard.putNumber("Left Linear Velocity", getLeftLinearVelocity());
 
         // SmartDashboard.putNumber("X Error", mPeriodicIO.error.getTranslation().x());

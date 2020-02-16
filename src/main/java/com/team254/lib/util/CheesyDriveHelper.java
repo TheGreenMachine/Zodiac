@@ -7,8 +7,8 @@ package com.team254.lib.util;
  * turn-in-place maneuvers.
  */
 public class CheesyDriveHelper {
-    private static final double kThrottleDeadband = 0.035;
-    private static final double kWheelDeadband = 0.02;
+    private static final double kThrottleDeadband = 0.0175; // 0.035
+    private static final double kWheelDeadband = 0.01; // 0.02
 
     // These factor determine how fast the wheel traverses the "non linear" sine curve.
     private static final double kHighWheelNonLinearity = 0.01;
@@ -22,9 +22,9 @@ public class CheesyDriveHelper {
     private static final double kLowNegInertiaFarScalar = 4.0;
 
     private static final double kHighSensitivity = 0.6;
-    private static final double kLowSensitiity = 0.625;
+    private static final double kLowSensitiity = 0.469; // 0.625
 
-    private static final double kWheelQuckTurnScalar = .65;
+    private static final double kWheelQuckTurnScalar = .48; // .65
 
     private static final double kQuickStopDeadband = 0.5;
     private static final double kQuickStopWeight = 0.125;

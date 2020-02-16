@@ -51,10 +51,10 @@ public class Turret extends Subsystem implements PidProvider {
     private static final boolean TURRET_SENSOR_PHASE = true;
     private static final double CAMERA_FOV = 87.0; // deg
     private static final double VIDEO_WIDTH = 672.0; // px
-    public static final double VISION_HOMING_BIAS = 1.75; // deg
+    public static final double VISION_HOMING_BIAS = 3 /* 1.75 */; // deg
 
-    public static final double CARDINAL_SOUTH = 48.8; // deg
-    public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90;
+    public static final double CARDINAL_WEST = 48.8; // deg
+    public static final double CARDINAL_NORTH = CARDINAL_WEST + 90;
 
     public Turret() {
         super(NAME);

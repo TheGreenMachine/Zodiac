@@ -2,8 +2,10 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 
 
 public class Collector extends Subsystem {
@@ -36,6 +38,9 @@ public class Collector extends Subsystem {
 
         this.armPiston = factory.getSolenoid(NAME, "arm");
         this.intake = factory.getMotor(NAME, "intake");
+
+       ((TalonSRX) intake).enableCurrentLimit(true);
+        ((TalonSRX) intake).configContinuousCurrentLimit(20);
     }
 
     public boolean isArmDown() {
@@ -69,17 +74,19 @@ public class Collector extends Subsystem {
 
     @Override
     public void writePeriodicOutputs() {
+        if (isRaising) {
+            if ((startTime + System.currentTimeMillis()) > 2000) {
+                System.out.println("Raising timer passed at : " + (Timer.getFPGATimestamp() - startTime));
+                intakePow = 0;
+                this.intake.set(ControlMode.PercentOutput, intakePow);
+                isRaising = false;
+            }
+        }
+
         if (outputsChanged) {
             this.armPiston.set(armDown);
             this.intake.set(ControlMode.PercentOutput, intakePow);
             this.outputsChanged = false;
-        }
-
-        if (isRaising) {
-            if ((startTime + System.currentTimeMillis()) > 2) {
-                this.intake.set(ControlMode.PercentOutput, 0);
-                isRaising = false;
-            }
         }
     }
 

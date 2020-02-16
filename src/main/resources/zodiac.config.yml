@@ -23,7 +23,7 @@ subsystems:
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000
             rpmEpsilonCheck: 60
-            openLoopRampRate: 0.5
+            openLoopRampRate: 0.8
     climber:
         implemented: false
         talons:
@@ -42,10 +42,10 @@ subsystems:
     hopper:
         implemented: true
         talons:
-            spindexer: 12
-            elevator: 2
+            spindexer: 4 # 12
+            elevator: 5 # 2
         invertMotor:
-            - 12
+            - 4
         solenoids:
             feederFlap: -1
     shooter:
@@ -53,12 +53,12 @@ subsystems:
         talons:
             shooterMaster: 13
             shooterFollowerA: 3
-            shooterFollowerB: 4
-            shooterFollowerC: 5
+            shooterFollowerB: 12 #4
+            shooterFollowerC: 2 # 5
         constants: #TODO: need tuning [P, I, D]
-            kP: 0.35
+            kP: 0.30
             kI: 0
-            kD: 4
+            kD: 4.5
             kF: 0.00953253
             currentFloorCheck: .12
             currentEpsilonCheck: .2
@@ -91,4 +91,4 @@ constants: #TODO: update constants for new robot
     pathKs: 2
     verbose: 0 # O or 1
     compressorEnabled: 1 # 0 or 1
-    badLogEnabled: 0
+    badLogEnabled: 1

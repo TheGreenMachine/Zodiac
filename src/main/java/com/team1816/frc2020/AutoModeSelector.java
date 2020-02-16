@@ -27,8 +27,9 @@ public class AutoModeSelector {
         PID,
         DRIVE_STRAIGHT,
         AUTO_TRENCH,
+        AUTO_TRENCH_TURN_RIGHT,
         FEEDER_TO_TRENCH,
-        FEEDER_TO_TRENCH_REVERSED
+        FEEDER_TO_TRENCH_REVERSED,
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -41,18 +42,15 @@ public class AutoModeSelector {
 
     private AutoModeSelector() {
         mStartPositionChooser = new SendableChooser<>();
-        mStartPositionChooser.addOption("Left HAB 2", StartingPosition.LEFT_HAB_2);
-        mStartPositionChooser.addOption("Right HAB 2", StartingPosition.RIGHT_HAB_2);
-        mStartPositionChooser.addOption("Right HAB 1", StartingPosition.RIGHT_HAB_1);
-        mStartPositionChooser.addOption("Left HAB 1", StartingPosition.LEFT_HAB_1);
+
         mStartPositionChooser.setDefaultOption("Center HAB 1", StartingPosition.CENTER_HAB_1);
 
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
 
         mModeChooser = new SendableChooser<>();
+
         mModeChooser.addOption("Drive By Camera", DesiredMode.DRIVE_BY_CAMERA);
         mModeChooser.addOption("Tune Drivetrain", DesiredMode.TUNE_DRIVETRAIN);
-        mModeChooser.addOption("Front Then Side Cargo Ship", DesiredMode.FRONT_THEN_SIDE_CARGO_SHIP);
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
         SmartDashboard.putData("Auto mode", mModeChooser);
 
@@ -62,6 +60,7 @@ public class AutoModeSelector {
 //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
         mModeChooser.addOption("Auto Trench", DesiredMode.AUTO_TRENCH);
+        mModeChooser.addOption("Auto Trench Turn Right", DesiredMode.AUTO_TRENCH_TURN_RIGHT);
         mModeChooser.addOption("FeederToTrench", DesiredMode.FEEDER_TO_TRENCH);
         mModeChooser.addOption("FeederToTrenchReversed", DesiredMode.FEEDER_TO_TRENCH_REVERSED);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
@@ -107,7 +106,9 @@ public class AutoModeSelector {
             case LIVING_ROOM:
                 return (Optional.of(new LivingRoomMode()));
             case AUTO_TRENCH:
-                return (Optional.of(new AutoTrenchMode()));
+                return (Optional.of(new AutoTrenchMode(false)));
+            case AUTO_TRENCH_TURN_RIGHT:
+                return (Optional.of(new AutoTrenchMode(true)));
             case FEEDER_TO_TRENCH:
                 return (Optional.of(new FeederToTrenchMode(false)));
             case FEEDER_TO_TRENCH_REVERSED:

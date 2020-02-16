@@ -1,7 +1,6 @@
 package com.team1816.frc2020.auto.modes;
 
 import com.team1816.frc2020.auto.actions.CollectAction;
-import com.team1816.frc2020.auto.actions.ShootAction;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.*;
@@ -12,8 +11,13 @@ public class AutoTrenchMode extends AutoModeBase {
 
     private DriveTrajectory mDriveTrajectory;
 
-    public AutoTrenchMode() {
-        var trajectory = TrajectorySet.getInstance().AUTO_TRENCH_TURN_RIGHT;
+    public AutoTrenchMode(boolean turnRight) {
+        var trajectory = TrajectorySet.getInstance().AUTO_TRENCH;
+
+        if (turnRight) {
+            trajectory = TrajectorySet.getInstance().AUTO_TRENCH_TURN_RIGHT;
+        }
+
         mDriveTrajectory = new DriveTrajectory(trajectory, true);
     }
 
@@ -24,7 +28,7 @@ public class AutoTrenchMode extends AutoModeBase {
         // runAction(mDriveTrajectory);
         runAction(
             new SeriesAction(
-                new ShootAction(),
+               // new ShootAction(),
                 new ParallelAction(
                     mDriveTrajectory,
                     new SeriesAction(
