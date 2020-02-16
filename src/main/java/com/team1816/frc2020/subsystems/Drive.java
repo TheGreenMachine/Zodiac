@@ -31,6 +31,8 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import java.util.ArrayList;
@@ -615,7 +617,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         // }
 
         if (getHeading() != null) {
-            builder.addDoubleProperty("Gyro Heading", this::getHeadingDegrees, null);
+            Shuffleboard.getTab("Drive")
+                .addNumber("Gyro Heading", this::getHeadingDegrees)
+                .withWidget(BuiltInWidgets.kGyro);
         }
     }
 
