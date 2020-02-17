@@ -67,7 +67,7 @@ public class Collector extends Subsystem {
             setIntakePow(1);
         } else {
             isRaising = true;
-            startTime = System.currentTimeMillis();
+            startTime = Timer.getFPGATimestamp();
             setArm(false);
         }
     }
@@ -75,10 +75,9 @@ public class Collector extends Subsystem {
     @Override
     public void writePeriodicOutputs() {
         if (isRaising) {
-            if ((startTime + System.currentTimeMillis()) > 2000) {
+            if ((Timer.getFPGATimestamp() - startTime) > 2) {
                 System.out.println("Raising timer passed at : " + (Timer.getFPGATimestamp() - startTime));
-                intakePow = 0;
-                this.intake.set(ControlMode.PercentOutput, intakePow);
+                setIntakePow(0);
                 isRaising = false;
             }
         }

@@ -610,8 +610,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         builder.addDoubleProperty("Left Drive Distance", this::getLeftEncoderDistance, null);
         builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
 
-        SmartDashboard.putNumber("Drive/OpenLoopRampRateGetter", openLoopRampRate);
-        System.out.println("openLoopRampRate: " + openLoopRampRate);
+        SmartDashboard.putNumber("OpenLoopRampRateGetter", this.openLoopRampRate);
 
         // builder.addDoubleProperty("Drive/OpenLoopRampRateSetter", null, this::setOpenLoopRampRate);
         // builder.addDoubleProperty("Drive/OpenLoopRampRateValue", this::getOpenLoopRampRate, null);

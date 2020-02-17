@@ -1,11 +1,14 @@
 package com.team1816.frc2020.auto.modes;
 
 import com.team1816.frc2020.auto.actions.CollectAction;
+import com.team1816.frc2020.auto.actions.ShootAction;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.lib.auto.AutoModeEndedException;
-import com.team1816.lib.auto.actions.*;
+import com.team1816.lib.auto.actions.DriveTrajectory;
+import com.team1816.lib.auto.actions.ParallelAction;
+import com.team1816.lib.auto.actions.SeriesAction;
+import com.team1816.lib.auto.actions.WaitAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
-import com.team254.lib.geometry.Translation2d;
 
 public class AutoTrenchMode extends AutoModeBase {
 
@@ -28,11 +31,11 @@ public class AutoTrenchMode extends AutoModeBase {
         // runAction(mDriveTrajectory);
         runAction(
             new SeriesAction(
-               // new ShootAction(),
+                new ShootAction(),
                 new ParallelAction(
                     mDriveTrajectory,
                     new SeriesAction(
-                        new WaitUntilInsideRegion(new Translation2d(114, 40), new Translation2d(210, 90)),
+                       // new WaitUntilInsideRegion(new Translation2d(114, 40), new Translation2d(210, 90)),
                         new CollectAction(true)
                     )
                 ),

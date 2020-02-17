@@ -13,6 +13,7 @@ public class CollectAction implements Action {
 
     @Override
     public void start() {
+        System.out.println("Modifying collector!");
         Collector.getInstance().setDeployed(isCollecting);
         Hopper.getInstance().setSpindexer(isCollecting ? 1 : 0);
     }

@@ -2,12 +2,8 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.team1816.frc2020.Robot;
-import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class Hopper extends Subsystem {
     private static final String NAME = "hopper";
@@ -74,15 +70,22 @@ public class Hopper extends Subsystem {
                 waitForShooterLoopCounter++;
                 return;
             }
-            if (Math.abs(Shooter.getInstance().getError()) > 7000) {
-                System.out.println("WAITING FOR SHOOTER!");
+
+            if (Math.abs(Shooter.getInstance().getError()) > 3000) {
+//              System.out.println("WAITING FOR SHOOTER!");
                 return;
             } else {
                 waitForShooter = false;
-                System.out.println("Stopped waiting for shooter at " + Timer.getFPGATimestamp());
+//              System.out.println("Stopped waiting for shooter at " + Timer.getFPGATimestamp());
             }
         }
         if (outputsChanged) {
+            if (Math.abs(Shooter.getInstance().getError()) > 3000) {
+                waitForShooter = true;
+                outputsChanged = false;
+                return;
+            }
+
             this.spindexer.set(ControlMode.PercentOutput, spindexerPower);
             this.elevator.set(ControlMode.PercentOutput, elevatorPower);
             // this.feederFlap.set(feederFlapOut);

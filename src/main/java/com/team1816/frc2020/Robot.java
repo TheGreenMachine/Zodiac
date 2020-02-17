@@ -209,7 +209,7 @@ public class Robot extends TimedRobot {
             );
 
             blinkTimer = new AsyncTimer(
-                3000, // ms (3 s)
+                3, // (3 s)
                 () -> ledManager.blinkStatus(LedManager.RobotStatus.ERROR),
                 () -> ledManager.indicateStatus(LedManager.RobotStatus.OFF)
             );
@@ -408,10 +408,12 @@ public class Robot extends TimedRobot {
             throw t;
         }
 
-    //    if (isBadLogOn) {
+        boolean teleopDesired = false;
+
+        if (isBadLogOn && teleopDesired) {
             logger.updateTopics();
             logger.log();
-    //    }
+        }
     }
 
     public void manualControl() {
