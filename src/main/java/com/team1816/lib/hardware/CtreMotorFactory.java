@@ -66,6 +66,8 @@ public class CtreMotorFactory {
 
     public static IMotorControllerEnhanced createPermanentSlaveTalon(int id, boolean isFalcon, IMotorController master) {
         final IMotorControllerEnhanced talon = createTalon(id, kSlaveConfiguration, isFalcon);
+        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255 /* ms */, kTimeoutMs);
+        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255 /* ms */, kTimeoutMs);
         System.out.println("Slaving talon on " + id + " to talon on " + master.getDeviceID());
         talon.follow(master);
         return talon;
@@ -115,6 +117,8 @@ public class CtreMotorFactory {
 
     public static IMotorController createPermanentSlaveVictor(int id, IMotorController master) {
         final IMotorController victor = createVictor(id, kSlaveConfiguration);
+        victor.setStatusFramePeriod(StatusFrame.Status_1_General, 255 /* ms */, kTimeoutMs);
+        victor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255 /* ms */, kTimeoutMs);
         System.out.println("Slaving victor on " + id + " to talon on " + master.getDeviceID());
         victor.follow(master);
         return victor;
