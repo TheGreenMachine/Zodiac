@@ -64,6 +64,7 @@ subsystems:
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000
             rpmEpsilonCheck: 60
+            velocityThreshold: 3000
     turret:
         implemented: true
         talons:

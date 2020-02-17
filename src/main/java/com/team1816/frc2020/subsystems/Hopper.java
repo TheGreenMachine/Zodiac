@@ -71,7 +71,7 @@ public class Hopper extends Subsystem {
                 return;
             }
 
-            if (Math.abs(Shooter.getInstance().getError()) > 3000) {
+            if (Math.abs(Shooter.getInstance().getError()) > Shooter.VELOCITY_THRESHOLD) {
 //              System.out.println("WAITING FOR SHOOTER!");
                 return;
             } else {
@@ -80,7 +80,7 @@ public class Hopper extends Subsystem {
             }
         }
         if (outputsChanged) {
-            if (Math.abs(Shooter.getInstance().getError()) > 3000) {
+            if (Math.abs(Shooter.getInstance().getError()) > Shooter.VELOCITY_THRESHOLD) {
                 waitForShooter = true;
                 outputsChanged = false;
                 return;

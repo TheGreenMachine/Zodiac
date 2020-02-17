@@ -44,6 +44,7 @@ public class Shooter extends Subsystem implements PidProvider {
     private final double kD;
     private final double kF;
     public static final int MAX_VELOCITY = 65000;
+    public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(NAME, "velocityThreshold", 3000);
 
     private Shooter() {
         super(NAME);
@@ -148,7 +149,7 @@ public class Shooter extends Subsystem implements PidProvider {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addBooleanProperty("Shooter/IsAtSpeed", () -> this.getError() < 7000, null);
+        builder.addBooleanProperty("Shooter/IsAtSpeed", () -> this.getError() < VELOCITY_THRESHOLD, null);
         builder.addDoubleProperty("Shooter/ShooterVelocity", this::getActualVelocity, this::setVelocity);
     }
 
