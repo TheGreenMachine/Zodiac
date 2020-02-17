@@ -52,8 +52,8 @@ public class CtreMotorFactory {
         // Slave Config edits
         kSlaveConfiguration.CONTROL_FRAME_PERIOD_MS = 100;
         kSlaveConfiguration.MOTION_CONTROL_FRAME_PERIOD_MS = 1000;
-        kSlaveConfiguration.GENERAL_STATUS_FRAME_RATE_MS = 1000;
-        kSlaveConfiguration.FEEDBACK_STATUS_FRAME_RATE_MS = 1000;
+        kSlaveConfiguration.GENERAL_STATUS_FRAME_RATE_MS = 255;
+        kSlaveConfiguration.FEEDBACK_STATUS_FRAME_RATE_MS = 255;
         kSlaveConfiguration.QUAD_ENCODER_STATUS_FRAME_RATE_MS = 1000;
         kSlaveConfiguration.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS = 1000;
         kSlaveConfiguration.PULSE_WIDTH_STATUS_FRAME_RATE_MS = 1000;
@@ -66,8 +66,6 @@ public class CtreMotorFactory {
 
     public static IMotorControllerEnhanced createPermanentSlaveTalon(int id, boolean isFalcon, IMotorController master) {
         final IMotorControllerEnhanced talon = createTalon(id, kSlaveConfiguration, isFalcon);
-        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255 /* ms */, kTimeoutMs);
-        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255 /* ms */, kTimeoutMs);
         System.out.println("Slaving talon on " + id + " to talon on " + master.getDeviceID());
         talon.follow(master);
         return talon;
@@ -117,8 +115,6 @@ public class CtreMotorFactory {
 
     public static IMotorController createPermanentSlaveVictor(int id, IMotorController master) {
         final IMotorController victor = createVictor(id, kSlaveConfiguration);
-        victor.setStatusFramePeriod(StatusFrame.Status_1_General, 255 /* ms */, kTimeoutMs);
-        victor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 255 /* ms */, kTimeoutMs);
         System.out.println("Slaving victor on " + id + " to talon on " + master.getDeviceID());
         victor.follow(master);
         return victor;
