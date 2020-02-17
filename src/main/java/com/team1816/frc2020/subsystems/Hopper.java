@@ -27,8 +27,10 @@ public class Hopper extends Subsystem {
     private double spindexerPower;
     private double elevatorPower;
     private boolean outputsChanged;
-    private boolean waitForShooter;
+
+    private boolean lockToShooter;
     private int waitForShooterLoopCounter;
+    private boolean shooterWasAtTarget;
 
     private Hopper() {
         super(NAME);
@@ -58,34 +60,31 @@ public class Hopper extends Subsystem {
         setSpindexer(intakeOutput);
     }
 
-    public void waitForShooter(boolean wait) {
-        this.waitForShooter = wait;
+    public void lockToShooter(boolean lock) {
+        this.lockToShooter = lock;
         this.waitForShooterLoopCounter = 0;
     }
 
     @Override
     public void writePeriodicOutputs() {
-        if (waitForShooter) {
+        if (lockToShooter) {
             if (waitForShooterLoopCounter < 10) {
                 waitForShooterLoopCounter++;
                 return;
             }
 
-            if (Math.abs(Shooter.getInstance().getError()) > Shooter.VELOCITY_THRESHOLD) {
-//              System.out.println("WAITING FOR SHOOTER!");
+            if (!Shooter.getInstance().isVelocityNearTarget()) {
+                // Shooter has not sped up yet, wait.
+                if (shooterWasAtTarget) {
+                    this.spindexer.set(ControlMode.PercentOutput, 0);
+                    this.elevator.set(ControlMode.PercentOutput, 0);
+                    shooterWasAtTarget = false;
+                }
                 return;
-            } else {
-                waitForShooter = false;
-//              System.out.println("Stopped waiting for shooter at " + Timer.getFPGATimestamp());
             }
+            shooterWasAtTarget = true;
         }
         if (outputsChanged) {
-            if (Math.abs(Shooter.getInstance().getError()) > Shooter.VELOCITY_THRESHOLD) {
-                waitForShooter = true;
-                outputsChanged = false;
-                return;
-            }
-
             this.spindexer.set(ControlMode.PercentOutput, spindexerPower);
             this.elevator.set(ControlMode.PercentOutput, elevatorPower);
             // this.feederFlap.set(feederFlapOut);

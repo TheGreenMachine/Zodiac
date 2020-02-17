@@ -195,7 +195,7 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
                     shooter.setVelocity(shooting ? 52_000 : 0);
-                    hopper.waitForShooter(shooting);
+                    hopper.lockToShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
                     if (shooting) {
                         mDrive.setOpenLoop(DriveSignal.BRAKE);
