@@ -73,6 +73,7 @@ public class Constants {
     public static final double kPathFollowingProfileKffa = 0;  // % throttle per inch/s^2
     public static final double kPathFollowingProfileKs = factory.getConstant("pathKs");;  // % throttle required to break static friction
 
+    public static final boolean kIsBadlogEnabled = factory.getConstant("badLogEnabled") > 0;
 
     // Do not change anything after this line unless you rewire the robot and
     // update the spreadsheet!

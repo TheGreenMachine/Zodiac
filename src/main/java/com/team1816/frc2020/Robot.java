@@ -28,7 +28,7 @@ import static com.team1816.frc2020.controlboard.ControlUtils.*;
 
 public class Robot extends TimedRobot {
     private BadLog logger;
-    private boolean isBadLogOn;
+
     private final Looper mEnabledLooper = new Looper();
     private final Looper mDisabledLooper = new Looper();
 
@@ -96,8 +96,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-        isBadLogOn = factory.getConstant("badLogEnabled") > 0;
-
         try {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger = BadLog.init("/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag");
@@ -116,8 +114,7 @@ public class Robot extends TimedRobot {
 
             BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
 
-
-            if (isBadLogOn) {
+            if (Constants.kIsBadlogEnabled) {
                 DrivetrainLogger.init(mDrive);
 
                 BadLog.createValue("Drivetrain PID", mDrive.pidToString());
@@ -410,7 +407,7 @@ public class Robot extends TimedRobot {
 
         boolean teleopDesired = false;
 
-        if (isBadLogOn && teleopDesired) {
+        if (Constants.kIsBadlogEnabled && teleopDesired) {
             logger.updateTopics();
             logger.log();
         }
