@@ -36,7 +36,6 @@ public class Shooter extends Subsystem implements PidProvider {
     // State
     private double shooterVelocity;
     private boolean outputsChanged;
-    private boolean coast;
 
     // Constants
     private final double kP;
@@ -130,16 +129,15 @@ public class Shooter extends Subsystem implements PidProvider {
         return shooterMain.getClosedLoopError(0);
     }
 
-    public void coast() {
-        this.coast = true;
+    public boolean isVelocityNearTarget() {
+        return Math.abs(this.getError()) < VELOCITY_THRESHOLD;
     }
 
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
-            if (coast) {
-                this.shooterMain.set(ControlMode.PercentOutput, 0);
-                coast = false;
+            if (shooterVelocity == 0) {
+                this.shooterMain.set(ControlMode.PercentOutput, 0); // Inertia coast to 0
             } else {
                 this.shooterMain.set(ControlMode.Velocity, shooterVelocity);
             }
@@ -149,7 +147,7 @@ public class Shooter extends Subsystem implements PidProvider {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addBooleanProperty("Shooter/IsAtSpeed", () -> this.getError() < VELOCITY_THRESHOLD, null);
+        builder.addBooleanProperty("Shooter/IsAtSpeed", this::isVelocityNearTarget, null);
         builder.addDoubleProperty("Shooter/ShooterVelocity", this::getActualVelocity, this::setVelocity);
     }
 

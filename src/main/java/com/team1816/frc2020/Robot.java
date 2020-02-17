@@ -197,9 +197,7 @@ public class Robot extends TimedRobot {
                     shooter.setVelocity(shooting ? 52_000 : 0);
                     hopper.waitForShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
-                    if (!shooting) {
-                        shooter.coast();
-                    } else {
+                    if (shooting) {
                         mDrive.setOpenLoop(DriveSignal.BRAKE);
                     }
                 })
