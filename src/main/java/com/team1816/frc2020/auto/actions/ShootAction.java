@@ -22,7 +22,7 @@ public class ShootAction implements Action {
     public void start() {
         Turret.getInstance().setTurretAngle(Turret.CARDINAL_WEST);
         shooterTimer.update();
-        hopper.waitForShooter(true);
+        hopper.lockToShooter(true);
         hopper.setIntake(1);
     }
 
@@ -39,6 +39,7 @@ public class ShootAction implements Action {
     @Override
     public void done() {
         shooter.stopShooter();
+        hopper.lockToShooter(false);
         hopper.setIntake(0);
     }
 }
