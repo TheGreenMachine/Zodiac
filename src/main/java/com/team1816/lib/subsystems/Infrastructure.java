@@ -18,6 +18,7 @@ public class Infrastructure extends Subsystem {
 
     private boolean mIsManualControl = false;
     private static final boolean COMPRESSOR_ENABLED = factory.getConstant("compressorEnabled") > 0;
+    private boolean lastCompressorOn = true;
 
     private Infrastructure() {
         super("Infrastructure");
@@ -46,9 +47,15 @@ public class Infrastructure extends Subsystem {
                     boolean superstructureMoving = !mSuperstructure.isAtDesiredState();
 
                     if (superstructureMoving || !mIsManualControl) {
-                        stopCompressor();
+                        if (lastCompressorOn) {
+                            stopCompressor();
+                            lastCompressorOn = false;
+                        }
                     } else {
-                        startCompressor();
+                        if (!lastCompressorOn) {
+                            startCompressor();
+                            lastCompressorOn = true;
+                        }
                     }
                 }
             }
