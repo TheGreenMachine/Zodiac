@@ -126,7 +126,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         setOpenLoop(DriveSignal.NEUTRAL);
 
         // force a CAN message across
-        mIsBrakeMode = true;
+        mIsBrakeMode = false;
         setBrakeMode(mIsBrakeMode);
 
         mMotionPlanner = new DriveMotionPlanner();
@@ -224,7 +224,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             public void onStart(double timestamp) {
                 synchronized (Drive.this) {
                     stop();
-                    setBrakeMode(true);
+                    setBrakeMode(false);
                 }
             }
 
@@ -289,7 +289,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
      */
     public synchronized void setOpenLoop(DriveSignal signal) {
         if (mDriveControlState != DriveControlState.OPEN_LOOP) {
-            setBrakeMode(true);
+            setBrakeMode(false);
             System.out.println("switching to open loop");
             System.out.println(signal);
             mDriveControlState = DriveControlState.OPEN_LOOP;
@@ -316,7 +316,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
      */
     public synchronized void setVelocity(DriveSignal signal, DriveSignal feedforward) {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
-            setBrakeMode(true);
+            setBrakeMode(false);
             System.out.println("Switching to Velocity");
             mLeftMaster.selectProfileSlot(0, 0);
             mRightMaster.selectProfileSlot(0, 0);

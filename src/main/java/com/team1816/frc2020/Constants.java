@@ -26,7 +26,7 @@ public class Constants {
     public static final int kButtonGamepadPort = 1;
     public static final int kMainThrottleJoystickPort = 0;
     public static final int kMainTurnJoystickPort = 0;
-    public static final double kJoystickThreshold = 0.2;
+    public static final double kJoystickThreshold = 0.04; // deadband
 
     public static final double kMaxTrackerDistance = 9.0;
     public static final double kMaxGoalTrackAge = 2.5;
@@ -74,6 +74,7 @@ public class Constants {
     public static final double kPathFollowingProfileKs = factory.getConstant("pathKs");;  // % throttle required to break static friction
 
     public static final boolean kIsBadlogEnabled = factory.getConstant("badLogEnabled") > 0;
+    public static final boolean kIsLoggingTeleOp = factory.getConstant("logTeleOp") > 0;
 
     // Do not change anything after this line unless you rewire the robot and
     // update the spreadsheet!

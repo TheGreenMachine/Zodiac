@@ -7,8 +7,8 @@ package com.team254.lib.util;
  * turn-in-place maneuvers.
  */
 public class CheesyDriveHelper {
-    private static final double kThrottleDeadband = 0; // 0.035
-    private static final double kWheelDeadband = 0; // 0.02, 0.01
+    private static final double kThrottleDeadband = 0.035; // 0.035
+    private static final double kWheelDeadband = 0.02; // 0.02, 0.01
 
     // These factor determine how fast the wheel traverses the "non linear" sine curve.
     private static final double kHighWheelNonLinearity = 0.01;
@@ -38,6 +38,10 @@ public class CheesyDriveHelper {
 
     private double leftPrevPwm = 0;
     private double rightPrevPwm = 0;
+
+    public DriveSignal arcadeDrive(double throttle, double wheel) {
+        return null;
+    }
 
     public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn,
                                    boolean isHighGear) {
@@ -72,23 +76,21 @@ public class CheesyDriveHelper {
 
         // Negative inertia!
         double negInertiaScalar;
-        if (isHighGear) {
-            negInertiaScalar = kHighNegInertiaScalar;
-            sensitivity = kHighSensitivity;
+        if (wheel * negInertia > 0) {
+            // If we are moving away from 0.0, aka, trying to get more wheel.
+            negInertiaScalar = kLowNegInertiaTurnScalar;
         } else {
-            if (wheel * negInertia > 0) {
-                // If we are moving away from 0.0, aka, trying to get more wheel.
-                negInertiaScalar = kLowNegInertiaTurnScalar;
+            // Otherwise, we are attempting to go back to 0.0.
+            if (Math.abs(wheel) > kLowNegInertiaThreshold) {
+                negInertiaScalar = kLowNegInertiaFarScalar;
             } else {
-                // Otherwise, we are attempting to go back to 0.0.
-                if (Math.abs(wheel) > kLowNegInertiaThreshold) {
-                    negInertiaScalar = kLowNegInertiaFarScalar;
-                } else {
-                    negInertiaScalar = kLowNegInertiaCloseScalar;
-                }
+                negInertiaScalar = kLowNegInertiaCloseScalar;
             }
-            sensitivity = kLowSensitiity;
         }
+
+        sensitivity = kLowSensitiity;
+
+
         double negInertiaPower = negInertia * negInertiaScalar;
         mNegInertiaAccumlator += negInertiaPower;
 
@@ -100,20 +102,20 @@ public class CheesyDriveHelper {
         } else {
             mNegInertiaAccumlator = 0;
         }
-        linearPower = Math.signum(throttle) * (throttle * throttle);
+        linearPower = throttle; // Math.signum(throttle) * (throttle * throttle);
 
         // Quickturn!
         if (isQuickTurn) {
             if (Math.abs(linearPower) < kQuickStopDeadband) {
                 double alpha = kQuickStopWeight;
                 mQuickStopAccumlator = (1 - alpha) * mQuickStopAccumlator
-                        + alpha * Util.limit(wheel, 1.0) * kQuickStopScalar;
+                    + alpha * Util.limit(wheel, 1.0) * kQuickStopScalar;
             }
             overPower = 1.0;
             angularPower = wheel * kWheelQuckTurnScalar;
         } else {
             overPower = 0.0;
-            angularPower = Math.abs(throttle) * wheel * sensitivity - mQuickStopAccumlator;
+            angularPower = 0.5 * (wheel) * sensitivity - mQuickStopAccumlator; // removed variable throttle input to calculation
             if (mQuickStopAccumlator > 1) {
                 mQuickStopAccumlator -= 1;
             } else if (mQuickStopAccumlator < -1) {
@@ -141,7 +143,7 @@ public class CheesyDriveHelper {
             rightPwm = -1.0;
         }
 
-        return new DriveSignal(leftPwm, rightPwm, true);
+        return new DriveSignal(leftPwm, rightPwm);
     }
 
     public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn) {
