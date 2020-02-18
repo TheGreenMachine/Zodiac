@@ -3,9 +3,8 @@ package com.team1816.lib.hardware;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.*;
+import com.team254.lib.drivers.LazyTalonSRX;
 
 /**
  * A class to create Falcon (TalonFX), TalonSRX, VictorSPX, and GhostTalonSRX objects.
@@ -53,8 +52,8 @@ public class CtreMotorFactory {
         // Slave Config edits
         kSlaveConfiguration.CONTROL_FRAME_PERIOD_MS = 100;
         kSlaveConfiguration.MOTION_CONTROL_FRAME_PERIOD_MS = 1000;
-        kSlaveConfiguration.GENERAL_STATUS_FRAME_RATE_MS = 1000;
-        kSlaveConfiguration.FEEDBACK_STATUS_FRAME_RATE_MS = 1000;
+        kSlaveConfiguration.GENERAL_STATUS_FRAME_RATE_MS = 255;
+        kSlaveConfiguration.FEEDBACK_STATUS_FRAME_RATE_MS = 255;
         kSlaveConfiguration.QUAD_ENCODER_STATUS_FRAME_RATE_MS = 1000;
         kSlaveConfiguration.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS = 1000;
         kSlaveConfiguration.PULSE_WIDTH_STATUS_FRAME_RATE_MS = 1000;
@@ -73,12 +72,19 @@ public class CtreMotorFactory {
     }
 
     private static IMotorControllerEnhanced createTalon(int id, Configuration config, boolean isFalcon) {
-        TalonSRX talon = new TalonSRX(id);
+        BaseTalon talon = isFalcon ? new LazyTalonFX(id) : new LazyTalonSRX(id);
         configureMotorController(talon, config);
 
         talon.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
                 LimitSwitchNormal.NormallyOpen, kTimeoutMs);
-        talon.enableCurrentLimit(config.ENABLE_CURRENT_LIMIT);
+
+        if (talon instanceof TalonSRX) {
+            ((TalonSRX) talon).enableCurrentLimit(config.ENABLE_CURRENT_LIMIT);
+        } else {
+            ((TalonFX) talon).configSupplyCurrentLimit(
+                new SupplyCurrentLimitConfiguration(config.ENABLE_CURRENT_LIMIT, 0, 0, 0)
+            );
+        }
 
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General,
                 config.GENERAL_STATUS_FRAME_RATE_MS, kTimeoutMs);
