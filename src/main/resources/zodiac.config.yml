@@ -93,3 +93,4 @@ constants: #TODO: update constants for new robot
     verbose: 0 # O or 1
     compressorEnabled: 1 # 0 or 1
     badLogEnabled: 1
+    logTeleOp: 0

@@ -403,23 +403,29 @@ public class Robot extends TimedRobot {
             throw t;
         }
 
-        boolean teleopDesired = false;
-
-        if (Constants.kIsBadlogEnabled && teleopDesired) {
+        if (Constants.kIsBadlogEnabled && Constants.kIsLoggingTeleOp) {
             logger.updateTopics();
             logger.log();
         }
     }
 
     public void manualControl() {
+
+        boolean arcadeDrive = false;
+
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
-//
-//        double left = Util.limit(throttle + (turn * 0.55), 1);
-//        double right = Util.limit(throttle - (turn * 0.55), 1);
 
         actionManager.update();
-        mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0));
+
+        if (arcadeDrive) {
+            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
+            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
+            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
+            mDrive.setOpenLoop(new DriveSignal(left, right));
+        } else {
+            mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0));
+        }
     }
 
     @Override
