@@ -418,14 +418,19 @@ public class Robot extends TimedRobot {
 
         actionManager.update();
 
+        DriveSignal driveSignal;
+
         if (arcadeDrive) {
             var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
             double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
             double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-            mDrive.setOpenLoop(new DriveSignal(left, right));
+            driveSignal = new DriveSignal(left, right);
         } else {
-            mDrive.setOpenLoop(cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0));
+            driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
         }
+
+
+        mDrive.setOpenLoop(driveSignal);
     }
 
     @Override
