@@ -39,7 +39,7 @@ public class Collector extends Subsystem {
         this.armPiston = factory.getSolenoid(NAME, "arm");
         this.intake = factory.getMotor(NAME, "intake");
 
-       ((TalonSRX) intake).enableCurrentLimit(true);
+        ((TalonSRX) intake).enableCurrentLimit(true);
         ((TalonSRX) intake).configContinuousCurrentLimit(20);
     }
 
