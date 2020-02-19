@@ -243,6 +243,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                                 updatePathFollower(timestamp);
                             }
                         case TRAJECTORY_FOLLOWING:
+                            System.out.println("Now setting trajectory");
                             if (Constants.kIsBadlogEnabled) {
                                 mLogger.updateTopics();
                                 mLogger.log();
@@ -374,6 +375,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mLeftMaster.setSelectedSensorPosition(0, 0, 0);
         mRightMaster.setSelectedSensorPosition(0, 0, 0);
         mPeriodicIO = new PeriodicIO();
+    }
+
+    public DriveControlState getDriveControlState() {
+        return mDriveControlState;
     }
 
     public double getLeftEncoderRotations() {
