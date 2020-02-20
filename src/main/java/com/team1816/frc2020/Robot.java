@@ -182,7 +182,7 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getTrenchToFeederSpline, () -> {
                     var trajectory = new DriveTrajectory(TrajectorySet.getInstance().TRENCH_TO_FEEDER, true);
                     trajectory.start();
-                }), // TODO implement teleop splines
+                }),
                 createAction(mControlBoard::getFeederToTrenchSpline, () -> {
                     var trajectory = new DriveTrajectory(TrajectorySet.getInstance().FEEDER_TO_TRENCH,true);
                     trajectory.start();
@@ -419,22 +419,22 @@ public class Robot extends TimedRobot {
     }
 
     public void manualControl() {
-
-        boolean arcadeDrive = false;
+        // boolean arcadeDrive = false;
+        actionManager.update();
 
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
 
         DriveSignal driveSignal;
 
-        if (arcadeDrive) {
-            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
-            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
-            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-            driveSignal = new DriveSignal(left, right);
-        } else {
-            driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
-        }
+        // if (arcadeDrive) {
+        //     var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
+        //     double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
+        //     double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
+        //     driveSignal = new DriveSignal(left, right);
+        // } else {
+        driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
+        // }
         if (mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING) {
             if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0 || mDrive.isDoneWithTrajectory()) {
                 mDrive.setOpenLoop(driveSignal);
@@ -442,8 +442,6 @@ public class Robot extends TimedRobot {
         } else {
             mDrive.setOpenLoop(driveSignal);
         }
-
-        actionManager.update();
     }
 
     @Override
