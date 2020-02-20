@@ -16,9 +16,9 @@ public class AutoTrenchTurnRightPath implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         return List.of(
-            new Pose2d(0, 0, Rotation2d.fromDegrees(-90/* 90 */)),
-            new Pose2d(114, 65, Rotation2d.fromDegrees(0 /*0*/)),
-            new Pose2d(210, 65, Rotation2d.fromDegrees(0 /*0*/))
+            new Pose2d(0, 0, Rotation2d.fromDegrees(0/* 90 */)),
+            new Pose2d(114, 65, Rotation2d.fromDegrees(90 /*0*/)),
+            new Pose2d(210, 65, Rotation2d.fromDegrees(90 /*0*/))
         );
     }
 

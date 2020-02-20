@@ -3,9 +3,11 @@ package com.team1816.frc2020;
 import badlog.lib.BadLog;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
+import com.team1816.frc2020.paths.DriveStraight;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
+import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.hardware.RobotFactory;
@@ -17,6 +19,7 @@ import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.util.*;
 import edu.wpi.first.wpilibj.*;
 
@@ -176,8 +179,14 @@ public class Robot extends TimedRobot {
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
 
-                createAction(mControlBoard::getTrenchToFeederSpline, () -> {}), // TODO implement teleop splines
-                createAction(mControlBoard::getFeederToTrenchSpline, () -> {}),
+                createAction(mControlBoard::getTrenchToFeederSpline, () -> {
+                    var trajectory = new DriveTrajectory(TrajectorySet.getInstance().TRENCH_TO_FEEDER, true);
+                    trajectory.start();
+                }),
+                createAction(mControlBoard::getFeederToTrenchSpline, () -> {
+                    var trajectory = new DriveTrajectory(TrajectorySet.getInstance().FEEDER_TO_TRENCH,true);
+                    trajectory.start();
+                }),
                 createHoldAction(mControlBoard::getSlowMode, mDrive::setSlowMode),
 
                 // Operator Gamepad
@@ -410,27 +419,29 @@ public class Robot extends TimedRobot {
     }
 
     public void manualControl() {
-
-        boolean arcadeDrive = false;
+        // boolean arcadeDrive = false;
+        actionManager.update();
 
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
 
-        actionManager.update();
-
         DriveSignal driveSignal;
 
-        if (arcadeDrive) {
-            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
-            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
-            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-            driveSignal = new DriveSignal(left, right);
+        // if (arcadeDrive) {
+        //     var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
+        //     double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
+        //     double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
+        //     driveSignal = new DriveSignal(left, right);
+        // } else {
+        driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
+        // }
+        if (mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING) {
+            if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0 || mDrive.isDoneWithTrajectory()) {
+                mDrive.setOpenLoop(driveSignal);
+            }
         } else {
-            driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
+            mDrive.setOpenLoop(driveSignal);
         }
-
-
-        mDrive.setOpenLoop(driveSignal);
     }
 
     @Override

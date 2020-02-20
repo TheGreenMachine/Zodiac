@@ -244,6 +244,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                                 updatePathFollower(timestamp);
                             }
                         case TRAJECTORY_FOLLOWING:
+                            System.out.println("Now setting trajectory");
                             if (Constants.kIsBadlogEnabled) {
                                 mLogger.updateTopics();
                                 mLogger.log();
@@ -375,6 +376,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mLeftMaster.setSelectedSensorPosition(0, 0, 0);
         mRightMaster.setSelectedSensorPosition(0, 0, 0);
         mPeriodicIO = new PeriodicIO();
+    }
+
+    public DriveControlState getDriveControlState() {
+        return mDriveControlState;
     }
 
     public double getLeftEncoderRotations() {
@@ -609,6 +614,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
         builder.addDoubleProperty("Left Drive Distance", this::getLeftEncoderDistance, null);
         builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
+        builder.addStringProperty("Drive/ControlState", () -> this.getDriveControlState().toString(), null);
 
         SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
         SmartDashboard.getEntry("Drive/OpenLoopRampRate").addListener(notification -> {

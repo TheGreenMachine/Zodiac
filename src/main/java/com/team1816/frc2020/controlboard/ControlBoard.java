@@ -64,12 +64,12 @@ public class ControlBoard implements IControlBoard {
 
     @Override
     public boolean getFeederToTrenchSpline() {
-        return false;
+        return mDriveControlBoard.getFeederToTrenchSpline();
     }
 
     @Override
     public boolean getTrenchToFeederSpline() {
-        return false;
+        return mDriveControlBoard.getTrenchToFeederSpline();
     }
 
     @Override
