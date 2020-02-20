@@ -22,6 +22,7 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.util.*;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -180,10 +181,15 @@ public class Robot extends TimedRobot {
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
 
                 createAction(mControlBoard::getTrenchToFeederSpline, () -> {
+                    System.out.println("STARTING TRENCH TO FEEDER");
+                    SmartDashboard.putString("Teleop Spline", "TRENCH TO FEEDER");
                     var trajectory = new DriveTrajectory(TrajectorySet.getInstance().TRENCH_TO_FEEDER, true);
                     trajectory.start();
                 }),
                 createAction(mControlBoard::getFeederToTrenchSpline, () -> {
+                    System.out.println("STARTING FEEDER TO TRENCH");
+                    SmartDashboard.putString("Teleop Spline", "FEEDER TO TRENCH");
+                    turret.setTurretAngle(Turret.CARDINAL_SOUTH);
                     var trajectory = new DriveTrajectory(TrajectorySet.getInstance().FEEDER_TO_TRENCH,true);
                     trajectory.start();
                 }),

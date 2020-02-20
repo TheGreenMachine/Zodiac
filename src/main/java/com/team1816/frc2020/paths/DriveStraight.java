@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DriveStraight implements PathContainer {
-    private static int driveDistance = 60;
+    private static int driveDistance = -60;
 
     @Override
     public Path buildPath() {
@@ -32,6 +32,6 @@ public class DriveStraight implements PathContainer {
 
     @Override
     public boolean isReversed() {
-        return false;
+        return true;
     }
 }

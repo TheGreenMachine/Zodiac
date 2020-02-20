@@ -13,7 +13,7 @@ subsystems:
         constants:
             pigeonId: 9
             pigeonOnTalon: -1
-            kP: 0.13 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
+            kP: 0.12 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
             kI: 0.013 # 0.018
             kD: 4.0 # 3.6
             kF: 0.0475813

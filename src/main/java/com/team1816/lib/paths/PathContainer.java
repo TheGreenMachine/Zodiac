@@ -12,6 +12,7 @@ import com.team254.lib.trajectory.timing.TimedState;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Interface containing all information necessary for a path including the Path itself, the Path's starting pose, and
@@ -30,17 +31,30 @@ public interface PathContainer {
     List<Pose2d> buildWaypoints();
 
     default Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory() {
+        return generateBaseTrajectory(isReversed(), buildWaypoints());
+    }
+
+    default Trajectory<TimedState<Pose2dWithCurvature>> generateMirroredTrajectory() {
+        return TrajectoryUtil.mirrorTimed(
+            generateBaseTrajectory(!isReversed(), reverseWaypoints(buildWaypoints()))
+        );
+    }
+
+    private Trajectory<TimedState<Pose2dWithCurvature>> generateBaseTrajectory(
+        boolean isReversed, List<Pose2d> waypoints) {
         return DriveMotionPlanner.getInstance().generateTrajectory(
-            false,
-            buildWaypoints(),
+            isReversed,
+            waypoints,
             Arrays.asList(new CentripetalAccelerationConstraint(kMaxCentripetalAccel)),
             kMaxVelocity, kMaxAccel, kMaxVoltage);
     }
 
-    default Trajectory<TimedState<Pose2dWithCurvature>> generateMirroredTrajectory() {
-        return TrajectoryUtil.mirrorTimed(generateTrajectory());
+    private List<Pose2d> reverseWaypoints(List<Pose2d> waypoints) {
+        return waypoints
+            .stream()
+            .map(pose -> new Pose2d(-pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation()))
+            .collect(Collectors.toList());
     }
-
 
     boolean isReversed();
 }

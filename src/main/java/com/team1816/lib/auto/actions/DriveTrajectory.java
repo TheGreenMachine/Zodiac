@@ -3,6 +3,7 @@ package com.team1816.lib.auto.actions;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
@@ -46,6 +47,7 @@ public class DriveTrajectory implements Action {
     public void start() {
         System.out.println("Starting trajectory! (length=" + mTrajectory.getRemainingProgress() + ")");
         if (mResetPose) {
+            mDrive.setHeading(Rotation2d.identity());
             mRobotState.reset(Timer.getFPGATimestamp(), mTrajectory.getState().state().getPose());
         }
         mDrive.setTrajectory(mTrajectory);
