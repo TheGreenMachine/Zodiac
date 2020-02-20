@@ -34,7 +34,7 @@ public interface PathContainer {
         return generateBaseTrajectory(isReversed(), buildWaypoints());
     }
 
-    default Trajectory<TimedState<Pose2dWithCurvature>> generateMirroredTrajectory() {
+    default Trajectory<TimedState<Pose2dWithCurvature>> generateReversedTrajectory() {
         return TrajectoryUtil.mirrorTimed(
             generateBaseTrajectory(!isReversed(), reverseWaypoints(buildWaypoints()))
         );
