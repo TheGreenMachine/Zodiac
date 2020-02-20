@@ -53,8 +53,10 @@ public class Turret extends Subsystem implements PidProvider {
     private static final double VIDEO_WIDTH = 672.0; // px
     public static final double VISION_HOMING_BIAS = 3 /* 1.75 */; // deg
 
-    public static final double CARDINAL_WEST = 48.8; // deg
-    public static final double CARDINAL_NORTH = CARDINAL_WEST + 90;
+    public static final double CARDINAL_SOUTH = 0; // deg
+    public static final double CARDINAL_WEST = 90; // deg
+    public static final double CARDINAL_NORTH = 180; // deg
+    public static final double CARDINAL_EAST = 270; // deg
 
     public Turret() {
         super(NAME);
