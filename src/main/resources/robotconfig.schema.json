@@ -1,0 +1,85 @@
+{
+    "definitions": {
+        "hardwareMap": {
+            "type": "object",
+            "propertyNames": {
+                "pattern": "^[a-z]+([A-Z][a-z]*)*$"
+            },
+            "additionalProperties": {
+                "type": "integer"
+            }
+        },
+        "constants": {
+            "type": "object",
+            "title": "The Constants Schema",
+            "additionalProperties": {
+                "type": "number"
+            }
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://edinarobotics.com/robotconfig.json",
+    "type": "object",
+    "title": "The Robot Configuration Schema",
+    "required": [
+        "subsystems",
+        "pcm",
+        "constants"
+    ],
+    "properties": {
+        "subsystems": {
+            "$id": "#/properties/subsystems",
+            "type": "object",
+            "title": "The Subsystems Schema",
+            "additionalProperties": {
+                "$id": "#/properties/subsystems/subsystem",
+                "type": "object",
+                "title": "The Subsystem Schema",
+                "required": [
+                    "implemented"
+                ],
+                "properties": {
+                    "implemented": { "type": "boolean" },
+                    "talons": { "$ref": "#/definitions/hardwareMap" },
+                    "victors": { "$ref": "#/definitions/hardwareMap" },
+                    "falcons": { "$ref": "#/definitions/hardwareMap" },
+                    "invertMotor": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "solenoids": { "$ref": "#/definitions/hardwareMap" },
+                    "doublesolenoids": {
+                        "type": "object",
+                        "propertyNames": {
+                            "pattern": "^[a-z]+([A-Z][a-z]*)*$"
+                        },
+                        "additionalProperties": {
+                            "type": "object",
+                            "required": ["forward", "reverse"],
+                            "properties": {
+                                "forward": {
+                                    "type": "integer"
+                                },
+                                "reverse": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "canifier": { "type": "integer" },
+                    "constants": { "$ref": "#/definitions/constants" }
+                },
+                "additionalProperties": false
+            }
+        },
+        "pcm": {
+            "$id": "#/properties/pcm",
+            "type": "integer"
+        },
+        "constants": {
+            "$ref": "#/definitions/constants"
+        }
+    }
+}

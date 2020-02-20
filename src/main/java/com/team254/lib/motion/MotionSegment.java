@@ -1,7 +1,7 @@
 package com.team254.lib.motion;
 
-import static com.team254.lib.util.Util.epsilonEquals;
 import static com.team254.lib.motion.MotionUtil.kEpsilon;
+import static com.team254.lib.util.Util.epsilonEquals;
 
 /**
  * A MotionSegment is a movement from a start MotionState to an end MotionState with a constant acceleration.

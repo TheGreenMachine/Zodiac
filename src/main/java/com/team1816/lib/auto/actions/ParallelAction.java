@@ -1,7 +1,5 @@
 package com.team1816.lib.auto.actions;
 
-import com.team1816.lib.auto.actions.Action;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

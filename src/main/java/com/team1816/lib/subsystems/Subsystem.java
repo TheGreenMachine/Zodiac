@@ -1,7 +1,11 @@
 package com.team1816.lib.subsystems;
 
+import com.team1816.frc2020.Robot;
+import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.ILooper;
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 
 /**
  * The Subsystem abstract class, which serves as a basic framework for all robot subsystems. Each subsystem outputs
@@ -13,11 +17,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
  * state; the robot code will try to match the two states with actions. Each Subsystem also is responsible for
  * initializing all member components at the start of the match.
  */
-public abstract class Subsystem {
+public abstract class Subsystem implements Sendable {
     private final String name;
+    protected static final RobotFactory factory = Robot.getFactory();
 
     protected Subsystem(String name) {
         this.name = name;
+        SendableRegistry.addLW(this, name, name);
     }
 
     public void writeToLog() {}
@@ -39,6 +45,7 @@ public abstract class Subsystem {
     @Deprecated
     public void outputTelemetry() {}
 
+    @Override
     public void initSendable(SendableBuilder builder) {}
 
     public String getName() {

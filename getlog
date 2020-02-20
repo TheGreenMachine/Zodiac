@@ -1,8 +1,3 @@
 #!/usr/bin/env bash
-FNAME=$( ssh lvuser@10.18.16.2 'ls -rt zeta* ' 2>&1 | tail -1 )
-
-echo "Getting $FNAME"
-
-scp lvuser@10.18.16.2:$FNAME .
-
-badlogvis -o $FNAME
+echo "ERROR: getlog is deprecated. Use logutil fetch instead."
+exit 1

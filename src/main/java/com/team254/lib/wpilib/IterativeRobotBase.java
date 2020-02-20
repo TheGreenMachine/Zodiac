@@ -8,11 +8,12 @@ package com.team254.lib.wpilib;
 /*----------------------------------------------------------------------------*/
 
 import edu.wpi.first.hal.HAL;
-// import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+// import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * IterativeRobotBase implements a specific type of robot program framework, extending the RobotBase
@@ -44,6 +45,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  *   - teleopPeriodic()
  *   - testPeriodic()
  */
+@Deprecated
 @SuppressWarnings("PMD.TooManyMethods")
 public abstract class IterativeRobotBase extends RobotBase {
     protected double m_period;

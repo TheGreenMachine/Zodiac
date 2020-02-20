@@ -3,31 +3,25 @@ package com.team1816.lib.controlboard;
 public interface IButtonControlBoard {
     void reset();
 
-    boolean getScorePresetLow();
-    boolean getScorePresetMiddle();
-    boolean getScorePresetHigh();
-    boolean getScorePresetCargo();
-
-    boolean getPresetStow();
-    boolean getPickupDiskWall();
-    boolean getPickupBallGround();
-
     void setRumble(boolean on);
 
-    // Climbing
-    boolean getToggleHangMode();
-    boolean getToggleHangModeLow();
+    boolean getSpinnerReset();
 
-    boolean getBeakOpen();
-    boolean getBeakClose();
+    boolean getFeederFlapOut();
 
-    double getClimberThrottle();
+    boolean getFeederFlapIn();
 
-    boolean getShooterOut();
-    boolean getShooterIn();
+    double getClimber();
 
-    boolean getShooterPositionUp();
-    boolean getShooterPositionRocket();
+    boolean getSpinnerColor();
 
+    boolean getSpinnerThreeTimes();
 
+    boolean getTurretJogLeft();
+
+    boolean getTurretJogRight();
+
+    boolean getShoot();
+
+    boolean getAutoHome();
 }

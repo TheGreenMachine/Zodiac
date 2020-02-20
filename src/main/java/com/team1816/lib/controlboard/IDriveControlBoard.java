@@ -7,21 +7,19 @@ public interface IDriveControlBoard {
 
     boolean getQuickTurn();
 
-    boolean getShoot();
-
-    boolean getWantsLowGear();
-
-    boolean getThrust();
-
     boolean getSlowMode();
 
     boolean getDrivetrainFlipped();
 
-    boolean getEjectBeak();
+    boolean getCollectorDown();
 
-    boolean getReleaseBeak();
+    boolean getCollectorUp();
 
-    double getCargoIntake();
+    boolean getFeederToTrenchSpline();
 
-    boolean getClimberAndCameraPiston();
+    boolean getTrenchToFeederSpline();
+
+    boolean getBrakeMode();
+
+    int getDriverClimber();
 }

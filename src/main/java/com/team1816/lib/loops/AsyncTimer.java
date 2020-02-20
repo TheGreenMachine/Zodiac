@@ -1,5 +1,7 @@
 package com.team1816.lib.loops;
 
+import edu.wpi.first.wpilibj.Timer;
+
 import javax.annotation.Nullable;
 
 public class AsyncTimer {
@@ -26,16 +28,21 @@ public class AsyncTimer {
         if (completed) return;
 
         if (!hasStarted) {
-            startTime = System.currentTimeMillis();
+            startTime = (long) (Timer.getFPGATimestamp()); // Timer.getFPGATimeStamp in SECONDS
             if (startAction != null) {
                 startAction.run();
+                hasStarted = true;
             }
         } else {
-            if (System.currentTimeMillis() >= startTime + duration) {
+            if (Timer.getFPGATimestamp() >= startTime + duration) {
                 completed = true;
                 endAction.run();
             }
         }
+    }
+
+    public boolean isCompleted() {
+        return completed;
     }
 
     public void reset() {
