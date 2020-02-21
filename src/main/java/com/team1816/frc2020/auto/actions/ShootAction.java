@@ -11,16 +11,17 @@ public class ShootAction implements Action {
     private Shooter shooter;
     private Hopper hopper;
     private AsyncTimer shooterTimer;
-
-    public ShootAction() {
+    private double TurretDirection;
+    public ShootAction(double direction) {
         this.shooter = Shooter.getInstance();
         this.hopper = Hopper.getInstance();
         this.shooterTimer = new AsyncTimer(9, shooter::startShooter, shooter::stopShooter);
+        this.TurretDirection=direction;
     }
 
     @Override
     public void start() {
-        Turret.getInstance().setTurretAngle(Turret.CARDINAL_WEST);
+        Turret.getInstance().setTurretAngle(TurretDirection);
         shooterTimer.update();
         hopper.lockToShooter(true);
         hopper.setIntake(1);
