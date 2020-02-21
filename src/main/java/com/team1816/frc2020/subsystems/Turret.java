@@ -52,7 +52,7 @@ public class Turret extends Subsystem implements PidProvider {
     private static final double CAMERA_FOV = 87.0; // deg
     private static final double CAMERA_FOCAL_LENGTH = 350; // px
     private static final double VIDEO_WIDTH = 672.0; // px
-    public static final double VISION_HOMING_BIAS = 3 /* 1.75 */; // deg
+    public static final double VISION_HOMING_BIAS = 0 /* 1.75 */; // deg
 
     public static final double CARDINAL_SOUTH = 0; // deg
     public static final double CARDINAL_WEST = 90; // deg
@@ -98,9 +98,9 @@ public class Turret extends Subsystem implements PidProvider {
         networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
             if (value.getDouble() < 0) { return; }
             var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
-            // this.deltaXAngle = deltaXPixels * (CAMERA_FOV / VIDEO_WIDTH) + VISION_HOMING_BIAS; // Multiply by FOV to pixel ratio
+            this.deltaXAngle = deltaXPixels * (CAMERA_FOV / VIDEO_WIDTH) + VISION_HOMING_BIAS; // Multiply by FOV to pixel ratio
             // TODO: test this formula
-            this.deltaXAngle = Math.atan(deltaXPixels / CAMERA_FOCAL_LENGTH) + VISION_HOMING_BIAS;
+            SmartDashboard.putNumber("atan2 Vision", Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH) + VISION_HOMING_BIAS);
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }
 
@@ -226,5 +226,6 @@ public class Turret extends Subsystem implements PidProvider {
         builder.addDoubleProperty("Turret Degrees", this::getTurretPositionDegrees, null);
         builder.addDoubleProperty("Turret Absolute Ticks", this::getTurretPosAbsolute, null);
         builder.addDoubleProperty("Turret Relative Ticks", this::getTurretPositionTicks, null);
+        builder.addDoubleProperty("Turret Error", this::getPositionError, null);
     }
 }

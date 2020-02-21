@@ -70,8 +70,8 @@ subsystems:
         talons:
             turret: 10
         constants: # TODO: tune [P, I, D]
-            kP: 2.85
-            kI: 0
+            kP: 1 #2.85
+            kI: 0.002
             kD: 0
             kF: 0 # Should be 0 for position control
             encPPR: 4124.6
@@ -93,4 +93,4 @@ constants: #TODO: update constants for new robot
     verbose: 0 # O or 1
     compressorEnabled: 1 # 0 or 1
     badLogEnabled: 1
-    logTeleOp: 0
+    logTeleOp: 1

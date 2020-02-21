@@ -75,13 +75,14 @@ public class Hopper extends Subsystem {
 
             if (!Shooter.getInstance().isVelocityNearTarget()) {
                 // Shooter has not sped up yet, wait.
-                if (shooterWasAtTarget) {
-                    this.spindexer.set(ControlMode.PercentOutput, 0);
-                    this.elevator.set(ControlMode.PercentOutput, 0);
-                    shooterWasAtTarget = false;
-                }
+                // if (shooterWasAtTarget) {
+                //     this.spindexer.set(ControlMode.PercentOutput, 0);
+                //     this.elevator.set(ControlMode.PercentOutput, 0);
+                //     shooterWasAtTarget = false;
+                // }
                 return;
             }
+            lockToShooter = false;
             shooterWasAtTarget = true;
         }
         if (outputsChanged) {
