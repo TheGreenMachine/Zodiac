@@ -17,11 +17,11 @@ public class AutoTrenchPath implements PathContainer {
 
     @Override
     public List<Pose2d> buildWaypoints() {
-        List<Pose2d> waypoints = new ArrayList<>();
-        waypoints.add(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0)));
-        waypoints.add(new Pose2d(114,65, Rotation2d.fromDegrees(0)));
-        waypoints.add( new Pose2d(210,65, Rotation2d.fromDegrees(0)));
-        return waypoints;
+        return List.of(
+            new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0)),
+            new Pose2d(114,65, Rotation2d.fromDegrees(0)),
+            new Pose2d(210,65, Rotation2d.fromDegrees(0))
+        );
     }
 
     @Override

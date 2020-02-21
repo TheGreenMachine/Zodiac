@@ -456,6 +456,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     public synchronized void setTrajectory(TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory) {
         if (mMotionPlanner != null) {
+            setBrakeMode(true);
             mOverrideTrajectory = false;
             mMotionPlanner.reset();
             mMotionPlanner.setTrajectory(trajectory);

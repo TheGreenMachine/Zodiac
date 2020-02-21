@@ -2,7 +2,7 @@ plugins {
     id "java"
     id "idea"
     id "eclipse"
-    id "edu.wpi.first.GradleRIO" version "2020.2.2"
+    id "edu.wpi.first.GradleRIO" version "2020.3.2"
 }
 
 def ROBOT_MAIN_CLASS = "com.team1816.frc2020.Main"
@@ -77,9 +77,14 @@ jar {
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
 }
 
-apply plugin: 'java'
-sourceCompatibility = 11
-targetCompatibility = 11
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+wrapper {
+    gradleVersion = '6.2'
+}
 
 //tasks.create('deployVision') {
 //    println "Deploying ZodiacVision..."
