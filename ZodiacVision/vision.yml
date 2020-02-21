@@ -1,0 +1,22 @@
+camera:
+  exposure: 10
+  fps: 100
+color:
+  lower:
+    H: 61
+    S: 106.08
+    V: 1.0
+  upper:
+    H: 150
+    S: 224.52
+    V: 255
+main:
+  team-number: 1816
+network:
+  nt-ip: 10.18.16.2
+  variables:
+  - center_x
+  - center_y
+  - distance
+stream:
+  port: 1180
