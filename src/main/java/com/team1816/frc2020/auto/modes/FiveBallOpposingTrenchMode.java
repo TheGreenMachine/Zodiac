@@ -12,14 +12,14 @@ import com.team254.lib.geometry.Translation2d;
 public class FiveBallOpposingTrenchMode extends AutoModeBase {
     private DriveTrajectory mDriveTrajectory;
 
-    public FiveBallOpposingTrenchMode(boolean turnRight) {
+    public FiveBallOpposingTrenchMode() {
         var trajectory = TrajectorySet.getInstance().FIVE_BALL_AUTO_OPPOSE;
         mDriveTrajectory = new DriveTrajectory(trajectory, true);
     }
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        System.out.println("Running Auto Trench Mode");
+        System.out.println("Running Five Ball Opposition Auto Trench Mode");
         runAction(new WaitAction(.5));
         // runAction(mDriveTrajectory);
         runAction(

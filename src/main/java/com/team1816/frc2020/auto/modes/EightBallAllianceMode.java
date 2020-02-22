@@ -12,19 +12,14 @@ import com.team254.lib.geometry.Translation2d;
 public class EightBallAllianceMode extends AutoModeBase {
     private DriveTrajectory mDriveTrajectory;
 
-    public EightBallAllianceMode(boolean turnRight) {
-        var trajectory = TrajectorySet.getInstance().AUTO_TRENCH;
-
-        if (turnRight) {
-            trajectory = TrajectorySet.getInstance().AUTO_TRENCH_TURN_RIGHT;
-        }
-
+    public EightBallAllianceMode() {
+        var trajectory = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCE;
         mDriveTrajectory = new DriveTrajectory(trajectory, true);
     }
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        System.out.println("Running Auto Trench Mode");
+        System.out.println("Running 8 Ball Alliance Side Auto Trench Mode");
         runAction(new WaitAction(.5));
         // runAction(mDriveTrajectory);
         runAction(
@@ -32,7 +27,10 @@ public class EightBallAllianceMode extends AutoModeBase {
                 new ShootAction(Turret.CARDINAL_NORTH),
                 new ParallelAction(
                     mDriveTrajectory,
-                    new CollectAction(true)
+                    new SeriesAction(
+                        new CollectAction(true)
+
+                    )
                 ),
                 new CollectAction(false),
                 new ShootAction(Turret.CARDINAL_EAST)

@@ -11,28 +11,23 @@ import com.team1816.lib.auto.actions.SeriesAction;
 import com.team1816.lib.auto.actions.WaitAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
-public class AutoTrenchMode extends AutoModeBase {
+public class SixBallAllianceMode extends AutoModeBase {
 
     private DriveTrajectory mDriveTrajectory;
 
-    public AutoTrenchMode(boolean turnRight) {
-        var trajectory = TrajectorySet.getInstance().AUTO_TRENCH;
-
-        if (turnRight) {
-            trajectory = TrajectorySet.getInstance().AUTO_TRENCH_TURN_RIGHT;
-        }
-
+    public SixBallAllianceMode() {
+        var trajectory = TrajectorySet.getInstance().SIX_BALL_ALLIANCE;
         mDriveTrajectory = new DriveTrajectory(trajectory, true);
     }
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        System.out.println("Running Auto Trench Mode");
+        System.out.println("Running Six Ball Alliance Auto Trench Mode");
         runAction(new WaitAction(.5));
         // runAction(mDriveTrajectory);
         runAction(
             new SeriesAction(
-                new ShootAction(Turret.CARDINAL_WEST),
+                new ShootAction(Turret.CARDINAL_SOUTH),
                 new ParallelAction(
                     mDriveTrajectory,
                     new SeriesAction(
@@ -40,7 +35,9 @@ public class AutoTrenchMode extends AutoModeBase {
                         new CollectAction(true)
                     )
                 ),
-                new CollectAction(false)
+                new CollectAction(false),
+                new ShootAction(Turret.CARDINAL_EAST)
+
             )
         );
     }

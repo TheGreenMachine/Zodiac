@@ -5,9 +5,11 @@ import com.team254.lib.control.Path;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class EightBallAllianceAPath implements PathContainer {
+public class SixBallAlliancePath implements PathContainer {
+
     @Override
     public Path buildPath() {
         return new Path();
@@ -18,7 +20,7 @@ public class EightBallAllianceAPath implements PathContainer {
         return List.of(
             new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0)),
             new Pose2d(114,65, Rotation2d.fromDegrees(0)),
-            new Pose2d(210,65, Rotation2d.fromDegrees(90)),
+            new Pose2d(200,65, Rotation2d.fromDegrees(0)),
             new Pose2d(150,0, Rotation2d.fromDegrees(80))
         );
     }

@@ -14,7 +14,7 @@ public class EightBallOpposeMode extends AutoModeBase {
     private DriveTrajectory mDriveTrajectoryA;
     private DriveTrajectory mDriveTrajectoryB;
 
-    public EightBallOpposeMode(boolean turnRight) {
+    public EightBallOpposeMode() {
         var trajectoryA = TrajectorySet.getInstance().EIGHT_BALL_AUTO_OPPOSEA;
         var trajectoryB = TrajectorySet.getInstance().EIGHT_BALL_AUTO_OPPOSEB;
         mDriveTrajectoryA = new DriveTrajectory(trajectoryA, true);
@@ -23,7 +23,7 @@ public class EightBallOpposeMode extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        System.out.println("Running Auto Trench Mode");
+        System.out.println("Running 8 Ball Opposition Side Auto Trench Mode");
         runAction(new WaitAction(.5));
         // runAction(mDriveTrajectory);
         runAction(
