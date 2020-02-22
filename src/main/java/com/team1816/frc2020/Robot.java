@@ -206,8 +206,12 @@ public class Robot extends TimedRobot {
 
                 createScalar(mControlBoard::getClimber, climber::setClimberPower),
 
-                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -0.2 : 0)),
-                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.2 : 0)),
+                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> {
+                    if (moving) turret.jogLeft();
+                }),
+                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> {
+                    if (moving) turret.jogRight();
+                }),
                 createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
                     shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);

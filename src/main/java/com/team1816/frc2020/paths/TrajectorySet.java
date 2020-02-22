@@ -21,7 +21,8 @@ public class TrajectorySet {
 
     public final Trajectory<TimedState<Pose2dWithCurvature>> FEEDER_TO_TRENCH;
     public final Trajectory<TimedState<Pose2dWithCurvature>> TRENCH_TO_FEEDER;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> FIVE_BALL_AUTO_OPPOSE;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> FIVE_BALL_AUTO_OPPOSEA;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> FIVE_BALL_AUTO_OPPOSEB;
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_ALLIANCE;
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_OPPOSEA;
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_OPPOSEB;
@@ -34,7 +35,8 @@ public class TrajectorySet {
         this.AUTO_TRENCH_TURN_RIGHT = new AutoTrenchTurnRightPath().generateTrajectory();
         this.FEEDER_TO_TRENCH = new FeederToTrenchPath().generateTrajectory();
         this.TRENCH_TO_FEEDER = new FeederToTrenchPath().generateReversedTrajectory();
-        this.FIVE_BALL_AUTO_OPPOSE = new FiveBallOpposingPath().generateTrajectory();
+        this.FIVE_BALL_AUTO_OPPOSEA = new DriveStraight(96).generateReversedTrajectory();
+        this.FIVE_BALL_AUTO_OPPOSEB = new FiveBallOpposingPathPartB().generateReversedTrajectory();
         this.EIGHT_BALL_AUTO_ALLIANCE = new EightBallAlliancePath().generateTrajectory();
         this.EIGHT_BALL_AUTO_OPPOSEA = new EightBallOpposingAPath().generateTrajectory();
         this.EIGHT_BALL_AUTO_OPPOSEB = new EightBallOpposingBPath().generateTrajectory();
