@@ -210,7 +210,7 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.2 : 0)),
                 createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
-                    shooter.setVelocity(shooting ? 11_000 : 0);
+                    shooter.setVelocity(shooting ? 10_800 : 0);
                     hopper.lockToShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
                     if (shooting) {
@@ -309,7 +309,8 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
 
-            turret.setTurretAngle(Turret.CARDINAL_NORTH);
+            //turret.setTurretAngle(Turret.CARDINAL_NORTH);
+            turret.setTurretPosition(-3960);
 
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
