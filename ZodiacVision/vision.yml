@@ -3,13 +3,13 @@ camera:
   fps: 100
 color:
   lower:
-    H: 61
-    S: 106.08
-    V: 1.0
+    H: 61.0
+    S: 126.48
+    V: 110.72800000000001
   upper:
-    H: 150
+    H: 150.0
     S: 224.52
-    V: 255
+    V: 188.96
 main:
   team-number: 1816
 network:

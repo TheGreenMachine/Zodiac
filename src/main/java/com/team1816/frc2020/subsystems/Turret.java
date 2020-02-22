@@ -44,6 +44,7 @@ public class Turret extends Subsystem implements PidProvider {
     private final double kF;
 
     private static final double TURRET_ENCODER_PPR = factory.getConstant("turret", "encPPR");
+    private static final int ALLOWABLE_ERROR_TICKS = 5;
     private static final double TURRET_JOG_DEGREES = 10;
     private static final double TURRET_JOG_TICKS = convertTurretDegreesToTicks(TURRET_JOG_DEGREES);
     public static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
@@ -54,10 +55,9 @@ public class Turret extends Subsystem implements PidProvider {
     private static final double VIDEO_WIDTH = 672.0; // px
     public static final double VISION_HOMING_BIAS = 0 /* 1.75 */; // deg
 
-    public static final double CARDINAL_SOUTH = 0; // deg
-    public static final double CARDINAL_WEST = 90; // deg
-    public static final double CARDINAL_NORTH = 180; // deg
-    public static final double CARDINAL_EAST = 270; // deg
+    public static final double CARDINAL_SOUTH = 32.556; // deg
+    public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90; // deg
+    public static final double CARDINAL_NORTH = CARDINAL_SOUTH + 180; // deg
 
     public Turret() {
         super(NAME);
@@ -85,6 +85,7 @@ public class Turret extends Subsystem implements PidProvider {
         turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
         turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
         turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
+        turret.configAllowableClosedloopError(kPIDLoopIDx, ALLOWABLE_ERROR_TICKS, Constants.kCANTimeoutMs);
 
         // Soft Limits
         turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);

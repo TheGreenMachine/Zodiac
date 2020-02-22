@@ -2,11 +2,14 @@ import cv2
 import yaml
 import pyzed.sl as sl
 from vision import *
+import time
 
-with open('vision.yml', 'r') as file:
+time.sleep(10)
+path = 'vision.yml'
+with open(path, 'r') as file:
     data = yaml.safe_load(file)
-
-net = networktables.NetworkTables(data, 'vision.yml')
+print(data)
+net = networktables.NetworkTables(data, path)
 net.setupCalib()
 # Set configuration parameters
 zed = sl.Camera()
@@ -25,13 +28,10 @@ if err != sl.ERROR_CODE.SUCCESS:
 image = sl.Mat()
 zed.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, data['camera']['exposure'])
 runtime_parameters = sl.RuntimeParameters()
-detector = detect.Detector(data, 'vision.yml', net)
+detector = detect.Detector(net)
 streamer = stream.Streamer(data['stream']['port'])
 while True:
     zed.retrieve_measure(point_cloud, sl.MEASURE.XYZRGBA)
-    if net.need_reload:
-        detector.reloadData()
-        net.need_reload = False
     if zed.grab(runtime_parameters) == sl.ERROR_CODE.SUCCESS:
         # A new image is available if grab() returns SUCCESS
         zed.retrieve_image(image, sl.VIEW.RIGHT)  # Retrieve the left image
