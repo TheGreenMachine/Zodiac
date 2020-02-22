@@ -58,6 +58,7 @@ public class Turret extends Subsystem implements PidProvider {
     public static final double CARDINAL_SOUTH = 32.556; // deg
     public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90; // deg
     public static final double CARDINAL_NORTH = CARDINAL_SOUTH + 180; // deg
+    public static final double MAX_ANGLE = convertTurretTicksToDegrees(TURRET_POSITION_MAX - TURRET_POSITION_MIN);
 
     public Turret() {
         super(NAME);

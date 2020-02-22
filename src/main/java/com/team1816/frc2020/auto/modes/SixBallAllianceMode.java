@@ -36,7 +36,7 @@ public class SixBallAllianceMode extends AutoModeBase {
                     )
                 ),
                 new CollectAction(false),
-                new ShootAction(Turret.CARDINAL_EAST)
+                new ShootAction(Turret.CARDINAL_SOUTH)
 
             )
         );
