@@ -19,16 +19,10 @@ public class AutoModeSelector {
     enum DesiredMode {
         DRIVE_BY_CAMERA,
         DO_NOTHING,
-        FRONT_THEN_SIDE_CARGO_SHIP,
         TUNE_DRIVETRAIN,
-        CROSS_AUTO_LINE,
         LIVING_ROOM,
-        SHOP,
-        PID,
         DRIVE_STRAIGHT,
         AUTO_TRENCH_TURN_RIGHT,
-        FEEDER_TO_TRENCH,
-        FEEDER_TO_TRENCH_REVERSED,
         FIVE_BALL_OPPOSING,
         SIX_BALL_ALLIANCE,
         EIGHT_BALL_ALLIANCE,
@@ -65,8 +59,6 @@ public class AutoModeSelector {
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
         mModeChooser.addOption("Auto Trench", DesiredMode.SIX_BALL_ALLIANCE);
         mModeChooser.addOption("Auto Trench Turn Right", DesiredMode.AUTO_TRENCH_TURN_RIGHT);
-        mModeChooser.addOption("FeederToTrench", DesiredMode.FEEDER_TO_TRENCH);
-        mModeChooser.addOption("FeederToTrenchReversed", DesiredMode.FEEDER_TO_TRENCH_REVERSED);
         mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
         mModeChooser.addOption("8 Ball Opposing Trench", DesiredMode.EIGHT_BALL_OPPOSE);
         mModeChooser.addOption("8 Ball Alliance Trench", DesiredMode.EIGHT_BALL_ALLIANCE);
@@ -80,14 +72,14 @@ public class AutoModeSelector {
 
     public void updateModeCreator() {
         DesiredMode desiredMode = mModeChooser.getSelected();
-        StartingPosition staringPosition = mStartPositionChooser.getSelected();
-        if (mCachedDesiredMode != desiredMode || staringPosition != mCachedStartingPosition) {
+        StartingPosition startingPosition = mStartPositionChooser.getSelected();
+        if (mCachedDesiredMode != desiredMode || startingPosition != mCachedStartingPosition) {
             System.out.println("Auto selection changed, updating creator: desiredMode->" + desiredMode.name()
-                    + ", starting position->" + staringPosition.name());
-            mAutoMode = getAutoModeForParams(desiredMode, staringPosition);
+                    + ", starting position->" + startingPosition.name());
+            mAutoMode = getAutoModeForParams(desiredMode, startingPosition);
         }
         mCachedDesiredMode = desiredMode;
-        mCachedStartingPosition = staringPosition;
+        mCachedStartingPosition = startingPosition;
     }
 
     private boolean startingLeft(StartingPosition position) {
@@ -115,10 +107,6 @@ public class AutoModeSelector {
                 return (Optional.of(new LivingRoomMode()));
             case SIX_BALL_ALLIANCE:
                 return (Optional.of(new SixBallAllianceMode()));
-            case FEEDER_TO_TRENCH:
-                return (Optional.of(new FeederToTrenchMode(false)));
-            case FEEDER_TO_TRENCH_REVERSED:
-                return (Optional.of(new FeederToTrenchMode(true)));
             case FIVE_BALL_OPPOSING:
                 return (Optional.of(new FiveBallOpposingTrenchMode()));
             case EIGHT_BALL_ALLIANCE:
