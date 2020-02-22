@@ -76,8 +76,8 @@ subsystems:
             kD: 0
             kF: 0 # Should be 0 for position control
             encPPR: 4124.6
-            minPos: -3826
-            maxPos: -100
+            minPos: -4220
+            maxPos: -1072
     ledmanager:
         implemented: false
         canifier: 0
