@@ -57,15 +57,15 @@ subsystems:
             shooterFollowerA: -1 # 3
             shooterFollowerC: -1 # 2
         constants: #TODO: need tuning [P, I, D]
-            kP: 0 #0.30
+            kP: 0.15 #0.30
             kI: 0
-            kD: 0 #4.5
-            kF: 0.069069 #0.00953253
+            kD: 2.5 #4.5
+            kF: 0.053 #0.00953253
             currentFloorCheck: .12
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000
             rpmEpsilonCheck: 60
-            velocityThreshold: 3000
+            velocityThreshold: 500
     turret:
         implemented: true
         talons:
