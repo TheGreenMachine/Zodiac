@@ -29,8 +29,12 @@ image = sl.Mat()
 zed.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, data['camera']['exposure'])
 runtime_parameters = sl.RuntimeParameters()
 detector = detect.Detector(net)
-streamer = stream.Streamer(data['stream']['port'])
+streamer = str  eam.Streamer(data['stream']['port'])
 while True:
+    # time_start = time.time()
+    if net.update_exposure:
+        zed.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, net.yml_data['camera']['exposure'])
+        net.update_exposure = False
     zed.retrieve_measure(point_cloud, sl.MEASURE.XYZRGBA)
     if zed.grab(runtime_parameters) == sl.ERROR_CODE.SUCCESS:
         # A new image is available if grab() returns SUCCESS
@@ -45,3 +49,4 @@ while True:
             streamer.write(mask)
         else:
             streamer.write(stream_image)
+        # print(time.time() - time_start)

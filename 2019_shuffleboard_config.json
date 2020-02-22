@@ -208,6 +208,19 @@
               "Colors/Color when true": "#7CFC00FF",
               "Colors/Color when false": "#8B0000FF"
             }
+          },
+          "5,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Number Slider",
+              "_title": "Number Slider",
+              "Slider Settings/Min": -1.0,
+              "Slider Settings/Max": 1.0,
+              "Slider Settings/Block increment": 0.0625
+            }
           }
         }
       }
@@ -268,12 +281,153 @@
           }
         }
       }
+    },
+    {
+      "title": "Calibration",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {
+          "4,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Number Slider",
+              "_source0": "network_table:///SmartDashboard/Calibration/HMIN",
+              "_title": "HMIN",
+              "Slider Settings/Min": 1.0,
+              "Slider Settings/Max": 180.0,
+              "Slider Settings/Block increment": 1.0
+            }
+          },
+          "4,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Number Slider",
+              "_source0": "network_table:///SmartDashboard/Calibration/SMIN",
+              "_title": "SMIN",
+              "Slider Settings/Min": 0.0,
+              "Slider Settings/Max": 255.0,
+              "Slider Settings/Block increment": 1.0
+            }
+          },
+          "4,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Number Slider",
+              "_source0": "network_table:///SmartDashboard/Calibration/VMIN",
+              "_title": "VMIN",
+              "Slider Settings/Min": 1.0,
+              "Slider Settings/Max": 255.0,
+              "Slider Settings/Block increment": 1.0
+            }
+          },
+          "6,0": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Number Slider",
+              "_source0": "network_table:///SmartDashboard/Calibration/HMAX",
+              "_title": "HMAX",
+              "Slider Settings/Min": 1.0,
+              "Slider Settings/Max": 180.0,
+              "Slider Settings/Block increment": 1.0
+            }
+          },
+          "6,1": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Number Slider",
+              "_source0": "network_table:///SmartDashboard/Calibration/SMAX",
+              "_title": "SMAX",
+              "Slider Settings/Min": 1.0,
+              "Slider Settings/Max": 255.0,
+              "Slider Settings/Block increment": 1.0
+            }
+          },
+          "6,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Number Slider",
+              "_source0": "network_table:///SmartDashboard/Calibration/VMAX",
+              "_title": "VMAX",
+              "Slider Settings/Min": 1.0,
+              "Slider Settings/Max": 255.0,
+              "Slider Settings/Block increment": 1.0
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///SmartDashboard/Calibration/CalibrationCamera",
+              "_title": "Toggle Button"
+            }
+          },
+          "8,1": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://Camera",
+              "_title": "Camera",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "4,3": {
+            "size": [
+              4,
+              1
+            ],
+            "content": {
+              "_type": "Number Slider",
+              "_source0": "network_table:///SmartDashboard/Calibration/EXPOSURE",
+              "_title": "Exposure",
+              "Slider Settings/Min": 0.0,
+              "Slider Settings/Max": 100.0,
+              "Slider Settings/Block increment": 1.0
+            }
+          }
+        }
+      }
     }
   ],
   "windowGeometry": {
-    "x": -6.400000095367432,
-    "y": 1.600000023841858,
-    "width": 1547.199951171875,
-    "height": 828.7999877929688
+    "x": 0.0,
+    "y": 27.0,
+    "width": 1920.0,
+    "height": 1053.0
   }
 }
