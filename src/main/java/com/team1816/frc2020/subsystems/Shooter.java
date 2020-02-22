@@ -120,7 +120,7 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     public void startShooter() {
-        setVelocity(9_000);
+        setVelocity(10_800);
     }
 
     public void stopShooter() {

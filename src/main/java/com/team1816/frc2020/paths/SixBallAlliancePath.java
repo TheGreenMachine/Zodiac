@@ -19,9 +19,9 @@ public class SixBallAlliancePath implements PathContainer {
     public List<Pose2d> buildWaypoints() {
         return List.of(
             new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0)),
-            new Pose2d(114,65, Rotation2d.fromDegrees(0)),
-            new Pose2d(200,65, Rotation2d.fromDegrees(0)),
-            new Pose2d(150,0, Rotation2d.fromDegrees(180))
+            new Pose2d(88,78, Rotation2d.fromDegrees(0)),
+            new Pose2d(169,78, Rotation2d.fromDegrees(0))
+            //new Pose2d(124,0, Rotation2d.fromDegrees(180))
         );
     }
 

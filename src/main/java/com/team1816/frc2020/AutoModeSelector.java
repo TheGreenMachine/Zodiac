@@ -57,7 +57,7 @@ public class AutoModeSelector {
 //        mModeChooser.addOption("Shop", DesiredMode.SHOP);
 //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
-        mModeChooser.addOption("Auto Trench", DesiredMode.SIX_BALL_ALLIANCE);
+        mModeChooser.addOption("6 Ball Alliance Trench", DesiredMode.SIX_BALL_ALLIANCE);
         mModeChooser.addOption("Auto Trench Turn Right", DesiredMode.AUTO_TRENCH_TURN_RIGHT);
         mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
         mModeChooser.addOption("8 Ball Opposing Trench", DesiredMode.EIGHT_BALL_OPPOSE);

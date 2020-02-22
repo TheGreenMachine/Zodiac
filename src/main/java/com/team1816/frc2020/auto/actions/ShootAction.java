@@ -11,21 +11,23 @@ public class ShootAction implements Action {
     private Hopper hopper;
     private AsyncTimer shooterTimer;
     private double turretAngle;
+    private Turret turret;
 
     public ShootAction(double turretAngle) {
         this.shooter = Shooter.getInstance();
         this.hopper = Hopper.getInstance();
-        this.shooterTimer = new AsyncTimer(9, shooter::startShooter, shooter::stopShooter);
+        this.turret = Turret.getInstance();
+        this.shooterTimer = new AsyncTimer(4, shooter::startShooter, shooter::stopShooter);
         this.turretAngle = turretAngle;
     }
 
     @Override
     public void start() {
-        Turret.getInstance().setTurretAngle(turretAngle);
+        turret.setTurretAngle(turretAngle);
+        // turret.setAutoHomeEnabled(true);
         shooterTimer.update();
         hopper.lockToShooter(true);
         hopper.setIntake(1);
-        Turret.getInstance().setAutoHomeEnabled(true);
     }
 
     @Override
@@ -43,5 +45,6 @@ public class ShootAction implements Action {
         shooter.stopShooter();
         hopper.lockToShooter(false);
         hopper.setIntake(0);
+        turret.setAutoHomeEnabled(false);
     }
 }

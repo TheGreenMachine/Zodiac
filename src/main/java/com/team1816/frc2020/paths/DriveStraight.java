@@ -16,7 +16,7 @@ public class DriveStraight implements PathContainer {
     }
 
     public DriveStraight() {
-        this(60);
+        this(12);
     }
 
     @Override

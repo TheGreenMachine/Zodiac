@@ -83,9 +83,9 @@ subsystems:
         canifier: 0
 pcm: 8
 constants: #TODO: update constants for new robot
-    wheelDiameter: 6.29 #inches
+    wheelDiameter: 6.15 #inches
     trackWidth: 25 #inches
-    maxVel: 120 #inch/s
+    maxVel: 110 #inch/s
     maxAccel: 40 #inch/s^2
     sensorPhase: 0
     kLooperDt: .030

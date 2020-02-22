@@ -28,7 +28,7 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> TEN_BALL_AUTO;
 
     private TrajectorySet() {
-        this.DRIVE_STRAIGHT = new DriveStraight().generateTrajectory();
+        this.DRIVE_STRAIGHT = new DriveStraight(12).generateTrajectory();
         this.LIVING_ROOM = new LivingRoomPath().generateTrajectory();
         this.SIX_BALL_ALLIANCE = new SixBallAlliancePath().generateTrajectory();
         this.AUTO_TRENCH_TURN_RIGHT = new AutoTrenchTurnRightPath().generateTrajectory();
