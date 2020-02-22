@@ -50,16 +50,17 @@ subsystems:
             feederFlap: -1
     shooter:
         implemented: true
-        talons:
+        falcons:
             shooterMaster: 13
-            shooterFollowerA: 3
-            shooterFollowerB: 12 #4
-            shooterFollowerC: 2 # 5
+            shooterFollowerB: 12
+        talons:
+            shooterFollowerA: -1 # 3
+            shooterFollowerC: -1 # 2
         constants: #TODO: need tuning [P, I, D]
-            kP: 0.30
+            kP: 0 #0.30
             kI: 0
-            kD: 4.5
-            kF: 0.00953253
+            kD: 0 #4.5
+            kF: 0.0897 #0.00953253
             currentFloorCheck: .12
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000
@@ -70,13 +71,13 @@ subsystems:
         talons:
             turret: 10
         constants: # TODO: tune [P, I, D]
-            kP: 1 #2.85
-            kI: 0.002
+            kP: 2.83
+            kI: 0 #0.0003
             kD: 0
             kF: 0 # Should be 0 for position control
             encPPR: 4124.6
-            minPos: -3642
-            maxPos: -597
+            minPos: -3826
+            maxPos: -100
     ledmanager:
         implemented: false
         canifier: 0

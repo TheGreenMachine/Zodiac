@@ -44,6 +44,7 @@ public class Turret extends Subsystem implements PidProvider {
     private final double kF;
 
     private static final double TURRET_ENCODER_PPR = factory.getConstant("turret", "encPPR");
+    private static final int ALLOWABLE_ERROR_TICKS = 5;
     private static final double TURRET_JOG_DEGREES = 10;
     private static final double TURRET_JOG_TICKS = convertTurretDegreesToTicks(TURRET_JOG_DEGREES);
     public static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
@@ -85,6 +86,7 @@ public class Turret extends Subsystem implements PidProvider {
         turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
         turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
         turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
+        turret.configAllowableClosedloopError(kPIDLoopIDx, ALLOWABLE_ERROR_TICKS, Constants.kCANTimeoutMs);
 
         // Soft Limits
         turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);

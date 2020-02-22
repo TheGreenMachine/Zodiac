@@ -1,9 +1,7 @@
 package com.team1816.frc2020.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.IMotorController;
-import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.TalonSRXChecker;
@@ -42,7 +40,7 @@ public class Shooter extends Subsystem implements PidProvider {
     private final double kI;
     private final double kD;
     private final double kF;
-    public static final int MAX_VELOCITY = 65000;
+    public static final int MAX_VELOCITY = 11_400;
     public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(NAME, "velocityThreshold", 3000);
 
     private Shooter() {
@@ -64,24 +62,36 @@ public class Shooter extends Subsystem implements PidProvider {
         shooterFollowerB.setNeutralMode(NeutralMode.Coast);
         shooterFollowerC.setNeutralMode(NeutralMode.Coast);
 
-        configCurrentLimits(32 /* amps */);
+        configCurrentLimits(40 /* amps */);
 
-        shooterFollowerB.setInverted(true);
-        shooterFollowerC.setInverted(true);
+        shooterMain.setInverted(true);
+        shooterFollowerA.setInverted(true);
+        shooterFollowerB.setInverted(false);
+        shooterFollowerC.setInverted(false);
 
         shooterMain.configClosedloopRamp(2, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
     }
 
     private void configCurrentLimits(int currentLimitAmps) {
-        ((TalonSRX) shooterMain).enableCurrentLimit(true);
-        ((TalonSRX) shooterFollowerA).enableCurrentLimit(true);
-        ((TalonSRX) shooterFollowerB).enableCurrentLimit(true);
-        ((TalonSRX) shooterFollowerC).enableCurrentLimit(true);
-        ((TalonSRX) shooterMain).configContinuousCurrentLimit(currentLimitAmps);
-        ((TalonSRX) shooterFollowerA).configContinuousCurrentLimit(currentLimitAmps);
-        ((TalonSRX) shooterFollowerB).configContinuousCurrentLimit(currentLimitAmps);
-        ((TalonSRX) shooterFollowerC).configContinuousCurrentLimit(currentLimitAmps);
+        // ((TalonSRX) shooterMain).enableCurrentLimit(true);
+        // ((TalonSRX) shooterFollowerA).enableCurrentLimit(true);
+        // ((TalonSRX) shooterFollowerB).enableCurrentLimit(true);
+        // ((TalonSRX) shooterFollowerC).enableCurrentLimit(true);
+        // ((TalonSRX) shooterMain).configContinuousCurrentLimit(currentLimitAmps);
+        // ((TalonSRX) shooterFollowerA).configContinuousCurrentLimit(currentLimitAmps);
+        // ((TalonSRX) shooterFollowerB).configContinuousCurrentLimit(currentLimitAmps);
+        // ((TalonSRX) shooterFollowerC).configContinuousCurrentLimit(currentLimitAmps);
+        if (shooterMain instanceof TalonFX) {
+            ((TalonFX) shooterMain).configSupplyCurrentLimit(
+                new SupplyCurrentLimitConfiguration(true, currentLimitAmps, 0, 0)
+            );
+        }
+        if (shooterFollowerB instanceof TalonFX) {
+            ((TalonFX) shooterFollowerB).configSupplyCurrentLimit(
+                new SupplyCurrentLimitConfiguration(true, currentLimitAmps, 0, 0)
+            );
+        }
     }
 
     @Override
@@ -110,7 +120,7 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     public void startShooter() {
-        setVelocity(MAX_VELOCITY);
+        setVelocity(9_000);
     }
 
     public void stopShooter() {
