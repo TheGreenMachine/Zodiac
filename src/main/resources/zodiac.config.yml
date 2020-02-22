@@ -60,7 +60,7 @@ subsystems:
             kP: 0 #0.30
             kI: 0
             kD: 0 #4.5
-            kF: 0.0897 #0.00953253
+            kF: 0.069069 #0.00953253
             currentFloorCheck: .12
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000
