@@ -69,7 +69,7 @@ public class Shooter extends Subsystem implements PidProvider {
         shooterFollowerB.setInverted(false);
         shooterFollowerC.setInverted(false);
 
-        shooterMain.configClosedloopRamp(2, Constants.kCANTimeoutMs);
+        shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
     }
 
