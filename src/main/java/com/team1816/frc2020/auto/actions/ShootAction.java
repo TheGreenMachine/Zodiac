@@ -7,24 +7,25 @@ import com.team1816.lib.auto.actions.Action;
 import com.team1816.lib.loops.AsyncTimer;
 
 public class ShootAction implements Action {
-
     private Shooter shooter;
     private Hopper hopper;
     private AsyncTimer shooterTimer;
-    private double TurretDirection;
-    public ShootAction(double direction) {
+    private double turretAngle;
+
+    public ShootAction(double turretAngle) {
         this.shooter = Shooter.getInstance();
         this.hopper = Hopper.getInstance();
         this.shooterTimer = new AsyncTimer(9, shooter::startShooter, shooter::stopShooter);
-        this.TurretDirection=direction;
+        this.turretAngle = turretAngle;
     }
 
     @Override
     public void start() {
-        Turret.getInstance().setTurretAngle(TurretDirection);
+        Turret.getInstance().setTurretAngle(turretAngle);
         shooterTimer.update();
         hopper.lockToShooter(true);
         hopper.setIntake(1);
+        Turret.getInstance().setAutoHomeEnabled(true);
     }
 
     @Override
