@@ -8,7 +8,6 @@ import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.*;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.trajectory.Trajectory;
 
 public class EightBallOpposeMode extends AutoModeBase {
     private DriveTrajectory mDriveTrajectoryA;

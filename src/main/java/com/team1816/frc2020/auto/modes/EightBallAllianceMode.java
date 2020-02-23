@@ -7,7 +7,6 @@ import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.*;
 import com.team1816.lib.auto.modes.AutoModeBase;
-import com.team254.lib.geometry.Translation2d;
 
 public class EightBallAllianceMode extends AutoModeBase {
     private DriveTrajectory mDriveTrajectory;
