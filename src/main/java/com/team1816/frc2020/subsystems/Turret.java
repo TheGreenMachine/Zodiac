@@ -69,7 +69,6 @@ public class Turret extends Subsystem implements PidProvider {
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
-        SmartDashboard.putNumber("atan2 Vision", 0);
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
@@ -101,8 +100,6 @@ public class Turret extends Subsystem implements PidProvider {
         networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
             if (value.getDouble() < 0) { return; }
             var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
-//            this.deltaXAngle = deltaXPixels * (CAMERA_FOV / VIDEO_WIDTH) + VISION_HOMING_BIAS; // Multiply by FOV to pixel ratio
-            // TODO: test this formula
             this.deltaXAngle = Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH)) + VISION_HOMING_BIAS;
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }

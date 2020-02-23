@@ -24,7 +24,7 @@ public class ShootAction implements Action {
     @Override
     public void start() {
         turret.setTurretAngle(turretAngle);
-        // turret.setAutoHomeEnabled(true);
+        turret.setAutoHomeEnabled(true);
         shooterTimer.update();
         hopper.lockToShooter(true);
         hopper.setIntake(1);

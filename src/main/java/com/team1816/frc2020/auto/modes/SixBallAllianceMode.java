@@ -1,8 +1,6 @@
 package com.team1816.frc2020.auto.modes;
 
-import com.team1816.frc2020.auto.actions.CollectAction;
-import com.team1816.frc2020.auto.actions.RampUpShooterAction;
-import com.team1816.frc2020.auto.actions.ShootAction;
+import com.team1816.frc2020.auto.actions.*;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.AutoModeEndedException;
@@ -26,12 +24,16 @@ public class SixBallAllianceMode extends AutoModeBase {
         // runAction(mDriveTrajectory);
         runAction(
             new SeriesAction(
-                new RampUpShooterAction(Turret.CARDINAL_SOUTH),
+                new PrepareToShootAction(Turret.CARDINAL_SOUTH),
                 new ShootAction(Turret.CARDINAL_SOUTH),
                 new ParallelAction(
                     new CollectAction(true),
                     mDriveTrajectory,
-                    new RampUpShooterAction(15.2)
+                    new TurretAction(15.2),
+                    new SeriesAction(
+                        new WaitUntilInsideRegion(new Translation2d(78, 68), new Translation2d(180, 88)),
+                        new RampUpShooterAction()
+                    )
                 ),
                 new CollectAction(false),
                 new ShootAction(15.2)
