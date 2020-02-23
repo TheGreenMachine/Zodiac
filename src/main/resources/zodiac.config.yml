@@ -28,6 +28,8 @@ subsystems:
         implemented: false
         talons:
             elevator: 0
+        solenoids:
+            deployer: -1
     collector:
         implemented: true
         talons:
