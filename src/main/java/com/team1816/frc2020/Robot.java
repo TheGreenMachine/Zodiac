@@ -181,6 +181,11 @@ public class Robot extends TimedRobot {
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
 
+                createAction(mControlBoard::getClimberDeploy, () -> {
+                    if (DriverStation.getInstance().getMatchTime() > 120) {
+                        climber.setDeployed(true);
+                    }
+                }),
                 createAction(mControlBoard::getTrenchToFeederSpline, () -> {
                     System.out.println("STARTING TRENCH TO FEEDER");
                     SmartDashboard.putString("Teleop Spline", "TRENCH TO FEEDER");
