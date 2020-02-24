@@ -88,6 +88,15 @@ public class Collector extends Subsystem {
             this.outputsChanged = false;
         }
     }
+    public void setCollectorBackSpin(boolean spin) {
+        if (spin) {
+            intakePow = 0.2;
+            outputsChanged = true;
+        } else {
+            intakePow = 0.0;
+            outputsChanged = true;
+        }
+    }
 
     @Override
     public void stop() {

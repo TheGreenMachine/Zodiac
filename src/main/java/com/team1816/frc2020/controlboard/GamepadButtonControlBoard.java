@@ -92,4 +92,9 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     public boolean getAutoHome() {
         return mController.getButton(LogitechController.Button.LB);
     }
+
+    @Override
+    public boolean getCollectorBackSpin(){
+        return mController.getButton(LogitechController.Button.RB);
+    }
 }

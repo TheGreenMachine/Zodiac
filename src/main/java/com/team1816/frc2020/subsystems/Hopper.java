@@ -93,6 +93,8 @@ public class Hopper extends Subsystem {
         }
     }
 
+
+
     @Override
     public void stop() {
 

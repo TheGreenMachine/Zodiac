@@ -220,7 +220,8 @@ public class Robot extends TimedRobot {
                     if (shooting) {
                         mDrive.setOpenLoop(DriveSignal.BRAKE);
                     }
-                })
+                }),
+                createHoldAction (mControlBoard::getCollectorBackSpin, collector::setCollectorBackSpin)
             );
 
             blinkTimer = new AsyncTimer(
