@@ -22,5 +22,4 @@ public interface IDriveControlBoard {
     boolean getBrakeMode();
 
     int getDriverClimber();
-
 }
