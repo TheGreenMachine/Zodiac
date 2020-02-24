@@ -24,4 +24,6 @@ public interface IButtonControlBoard {
     boolean getShoot();
 
     boolean getAutoHome();
+
+    boolean getClimberDeploy();
 }
