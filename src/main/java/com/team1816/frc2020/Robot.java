@@ -74,8 +74,6 @@ public class Robot extends TimedRobot {
     private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
     private AsyncTimer blinkTimer;
 
-    private boolean isShooting;
-
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 
@@ -217,18 +215,14 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.2 : 0)),
                 createAction(mControlBoard::getAutoHome, () ->
                     turret.setAutoHomeEnabled(!turret.isAutoHomeEnabled())),
-
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
-
-                    isShooting=shooting;
-                    shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
+                    shooter.setVelocity(shooting ? 11_000 : 0);
                     hopper.lockToShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
                     if (shooting) {
                         mDrive.setOpenLoop(DriveSignal.BRAKE);
                     }
-                }),
-                createHoldAction (mControlBoard::getCollectorBackSpin, collector::setCollectorBackSpin)
+                })
             );
 
             blinkTimer = new AsyncTimer(
@@ -321,8 +315,7 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
 
-            //turret.setTurretAngle(Turret.CARDINAL_NORTH);
-            turret.setTurretPosition(-3960);
+            turret.setTurretAngle(Turret.CARDINAL_NORTH);
 
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
@@ -459,11 +452,8 @@ public class Robot extends TimedRobot {
             if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0 || mDrive.isDoneWithTrajectory()) {
                 mDrive.setOpenLoop(driveSignal);
             }
-        } else if (!isShooting){
+        } else {
             mDrive.setOpenLoop(driveSignal);
-        }else{
-            System.out.println("Setting to brake mode");
-            mDrive.setOpenLoop(driveSignal.BRAKE);
         }
     }
 

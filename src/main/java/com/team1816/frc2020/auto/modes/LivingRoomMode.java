@@ -17,7 +17,7 @@ public class LivingRoomMode  extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        System.out.println("Running Living Room Mode");
+        System.out.println("Running Drive Straight Mode");;
         runAction(new WaitAction(.5));
         runAction(mDriveTrajectory);
     }
