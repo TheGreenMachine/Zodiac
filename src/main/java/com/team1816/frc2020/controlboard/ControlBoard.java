@@ -19,7 +19,7 @@ public class ControlBoard implements IControlBoard {
     private final IButtonControlBoard mButtonControlBoard;
 
     private ControlBoard() {
-        mDriveControlBoard =  GamepadDriveControlBoard.getInstance();
+        mDriveControlBoard = GamepadDriveControlBoard.getInstance();
         mButtonControlBoard = GamepadButtonControlBoard.getInstance();
     }
 
@@ -140,7 +140,9 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getCollectorBackSpin(){return mButtonControlBoard.getCollectorBackSpin();}
+    public boolean getCollectorBackSpin() {
+        return mButtonControlBoard.getCollectorBackSpin();
+    }
 
     @Override
     public boolean getClimberDeploy() {

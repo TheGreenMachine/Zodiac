@@ -28,12 +28,10 @@ public class EightBallAllianceMode extends AutoModeBase {
                     mDriveTrajectory,
                     new SeriesAction(
                         new CollectAction(true)
-
                     )
                 ),
                 new CollectAction(false),
                 new ShootAction(Turret.MAX_ANGLE)
-
             )
         );
     }
