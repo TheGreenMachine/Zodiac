@@ -18,7 +18,10 @@ import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.*;
+import com.team254.lib.util.CheesyDriveHelper;
+import com.team254.lib.util.CrashTracker;
+import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -145,8 +148,8 @@ public class Robot extends TimedRobot {
                 spinner,
                 collector,
                 hopper,
-                turret,
-                climber
+                turret
+                // climber
             );
 
             mDrive.zeroSensors();
@@ -178,10 +181,9 @@ public class Robot extends TimedRobot {
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
 
-                createHoldAction(mControlBoard::getClimberDeploy, (pressed) -> {
-                    if ((DriverStation.getInstance().getMatchTime() > 120) ||
-                        (DriverStation.getInstance().getMatchTime() == -1)) {
-                        climber.setDeployed(pressed);
+                createAction(mControlBoard::getClimberDeploy, () -> {
+                    if (DriverStation.getInstance().getMatchTime() > 120) {
+                        climber.setDeployed(true);
                     }
                 }),
                 createAction(mControlBoard::getTrenchToFeederSpline, () -> {
@@ -202,25 +204,20 @@ public class Robot extends TimedRobot {
                 // Operator Gamepad
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize),
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
-                createHoldAction(mControlBoard::getSpinnerThreeTimes, spinner::spinThreeTimes),
-                //TODO: remove HoldAction once working
-                createHoldAction(mControlBoard::getFollowTarget,turret::followTarget),
+                createHoldAction(mControlBoard::getSpinnerThreeTimes,spinner::spinThreeTimes),
+
                 createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
                 createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
 
-                createScalar(mControlBoard::getClimber, power -> climber.setClimberPower(power > 0 ? power : 0)),
+                createScalar(mControlBoard::getClimber, climber::setClimberPower),
 
-                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)),
-                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)),
-                createHoldAction(mControlBoard::getAutoHome, pressed -> {
-                    ledManager.setCameraLed(pressed);
-                    ledManager.indicateStatus(pressed ? LedManager.RobotStatus.SEEN_TARGET : LedManager.RobotStatus.ENABLED);
-                    turret.setAutoHomeEnabled(pressed);
-                }),
+                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -0.2 : 0)),
+                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.2 : 0)),
+                createAction(mControlBoard::getAutoHome, () ->
+                    turret.setAutoHomeEnabled(!turret.isAutoHomeEnabled())),
 
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
-                   // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
-                    shooter.shootFromChooser(shooting);
+                    shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                     hopper.lockToShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
                     if (shooting) {
@@ -310,6 +307,9 @@ public class Robot extends TimedRobot {
             mDisabledLooper.stop();
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
 
+            // shooter
+            // shooter.setVelocity(4200);
+
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
             }
@@ -318,7 +318,7 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
 
-            turret.setTurretAngle(Turret.CARDINAL_SOUTH);
+            turret.setTurretAngle(Turret.CARDINAL_NORTH);
 
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
@@ -366,7 +366,6 @@ public class Robot extends TimedRobot {
             mSubsystemManager.outputToSmartDashboard();
             mRobotState.outputToSmartDashboard();
             mAutoModeSelector.outputToSmartDashboard();
-            mRobotStateEstimator.outputToSmartDashboard();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
@@ -422,9 +421,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         loopStart = Timer.getFPGATimestamp();
 
-
-        System.out.println("Match time when no match: " + DriverStation.getInstance().getMatchTime());
-
         try {
             manualControl();
         } catch (Throwable t) {
@@ -448,12 +444,12 @@ public class Robot extends TimedRobot {
         DriveSignal driveSignal;
 
         // if (arcadeDrive) {
-//            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
-//            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
-//            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-//            driveSignal = new DriveSignal(left, right);
+        //     var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
+        //     double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
+        //     double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
+        //     driveSignal = new DriveSignal(left, right);
         // } else {
-         driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
+        driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
         // }
         if (mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING) {
             if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0 || mDrive.isDoneWithTrajectory()) {

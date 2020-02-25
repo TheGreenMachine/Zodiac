@@ -17,7 +17,7 @@ public class EightBallOpposingBPath implements PathContainer {
     public List<Pose2d> buildWaypoints() {
         return List.of(
             new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
-            new Pose2d(0, 50, Rotation2d.fromDegrees(0))
+            new Pose2d(0, 60, Rotation2d.fromDegrees(0))
         );
     }
 
