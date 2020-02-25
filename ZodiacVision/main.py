@@ -3,8 +3,7 @@ import yaml
 import pyzed.sl as sl
 from vision import *
 import time
-
-time.sleep(10)
+# time.sleep(10)
 path = 'vision.yml'
 with open(path, 'r') as file:
     data = yaml.safe_load(file)
@@ -27,16 +26,18 @@ if err != sl.ERROR_CODE.SUCCESS:
     exit(-1)
 image = sl.Mat()
 zed.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, data['camera']['exposure'])
+
 runtime_parameters = sl.RuntimeParameters()
 detector = detect.Detector(net)
-streamer = str  eam.Streamer(data['stream']['port'])
+streamer = stream.Streamer(data['stream']['port'])
+width = int(net.yml_data['stream']['line'])
 while True:
-    # time_start = time.time()
+    fpsCounter = fps.FPS().start()
     if net.update_exposure:
         zed.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, net.yml_data['camera']['exposure'])
         net.update_exposure = False
-    zed.retrieve_measure(point_cloud, sl.MEASURE.XYZRGBA)
     if zed.grab(runtime_parameters) == sl.ERROR_CODE.SUCCESS:
+        zed.retrieve_measure(point_cloud, sl.MEASURE.XYZRGBA)
         # A new image is available if grab() returns SUCCESS
         zed.retrieve_image(image, sl.VIEW.RIGHT)  # Retrieve the left image
         frame = image.get_data()
@@ -45,8 +46,15 @@ while True:
             continue
         contour = detector.findTarget(mask, zed, point_cloud)
         stream_image = detector.postProcess(frame, contour)
+        fpsCounter.update()
+        fpsCounter.stop()
+        stream_image = fps.putIterationsPerSec(stream_image, fpsCounter.fps())
+
+        if net.line:
+            width = int(net.yml_data['stream']['line'])
+            net.line = False
+        stream_image = cv2.line(stream_image, (width, 0), (width, int(stream_image.shape[0])), (0, 255, 0), 3)
         if net.calib_camera:
             streamer.write(mask)
         else:
             streamer.write(stream_image)
-        # print(time.time() - time_start)
