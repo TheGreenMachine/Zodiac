@@ -105,7 +105,13 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public void setAutoHomeEnabled(boolean autoHomeEnabled) {
-        this.autoHomeEnabled = autoHomeEnabled;
+        if (Constants.kUseAutoAim) {
+            this.autoHomeEnabled = autoHomeEnabled;
+        }
+    }
+
+    public boolean isAutoHomeEnabled() {
+        return autoHomeEnabled;
     }
 
     private void autoHome() {
@@ -203,7 +209,11 @@ public class Turret extends Subsystem implements PidProvider {
         }
         if (outputsChanged) {
             if (isPercentOutput) {
-                turret.set(ControlMode.PercentOutput, turretSpeed);
+                if (turretSpeed == 0) {
+                    turret.set(ControlMode.Position, getTurretPositionTicks());
+                } else {
+                    turret.set(ControlMode.PercentOutput, turretSpeed);
+                }
             } else {
                 turret.set(ControlMode.Position, turretPos);
             }

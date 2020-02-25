@@ -28,6 +28,8 @@ subsystems:
         implemented: false
         talons:
             elevator: 0
+        solenoids:
+            deployer: 5
     collector:
         implemented: true
         talons:
@@ -42,12 +44,12 @@ subsystems:
     hopper:
         implemented: true
         talons:
-            spindexer: 4 # 12
-            elevator: 5 # 2
+            spindexer: 4
+            elevator: 5
         invertMotor:
             - 4
         solenoids:
-            feederFlap: -1
+            feederFlap: 4
     shooter:
         implemented: true
         falcons:
@@ -95,3 +97,4 @@ constants: #TODO: update constants for new robot
     compressorEnabled: 1 # 0 or 1
     badLogEnabled: 1
     logTeleOp: 1
+    useAutoAim: 1

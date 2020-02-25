@@ -27,6 +27,5 @@ public interface IButtonControlBoard {
 
     boolean getCollectorBackSpin();
 
-
-
+    boolean getClimberDeploy();
 }
