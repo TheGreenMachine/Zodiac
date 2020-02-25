@@ -76,6 +76,8 @@ public class Constants {
     public static final boolean kIsBadlogEnabled = factory.getConstant("badLogEnabled") > 0;
     public static final boolean kIsLoggingTeleOp = factory.getConstant("logTeleOp") > 0;
 
+    public static final boolean kUseAutoAim = factory.getConstant("useAutoAim") > 0;
+
     // Do not change anything after this line unless you rewire the robot and
     // update the spreadsheet!
     // Port assignments should match up with the spreadsheet here:

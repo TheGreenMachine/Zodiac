@@ -108,7 +108,9 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public void setAutoHomeEnabled(boolean autoHomeEnabled) {
-        this.autoHomeEnabled = autoHomeEnabled;
+        if (Constants.kUseAutoAim) {
+            this.autoHomeEnabled = autoHomeEnabled;
+        }
     }
 
     private void autoHome() {

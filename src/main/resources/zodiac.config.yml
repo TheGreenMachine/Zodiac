@@ -97,3 +97,4 @@ constants: #TODO: update constants for new robot
     compressorEnabled: 1 # 0 or 1
     badLogEnabled: 1
     logTeleOp: 1
+    useAutoAim: 1
