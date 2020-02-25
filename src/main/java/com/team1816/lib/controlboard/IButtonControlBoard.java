@@ -25,5 +25,7 @@ public interface IButtonControlBoard {
 
     boolean getAutoHome();
 
+    boolean getCollectorBackSpin();
+
     boolean getClimberDeploy();
 }

@@ -74,6 +74,7 @@ public class Hopper extends Subsystem {
             }
 
             if (!Shooter.getInstance().isVelocityNearTarget()) {
+                this.spindexer.set(ControlMode.PercentOutput,-0.25);
                 // Shooter has not sped up yet, wait.
                 // if (shooterWasAtTarget) {
                 //     this.spindexer.set(ControlMode.PercentOutput, 0);
@@ -92,6 +93,8 @@ public class Hopper extends Subsystem {
             outputsChanged = false;
         }
     }
+
+
 
     @Override
     public void stop() {

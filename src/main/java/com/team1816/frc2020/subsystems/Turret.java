@@ -45,7 +45,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     private static final double TURRET_ENCODER_PPR = factory.getConstant("turret", "encPPR");
     private static final int ALLOWABLE_ERROR_TICKS = 5;
-    private static final double TURRET_JOG_DEGREES = 10;
+    private static final double TURRET_JOG_DEGREES = 1;
     private static final double TURRET_JOG_TICKS = convertTurretDegreesToTicks(TURRET_JOG_DEGREES);
     public static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
     public static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
@@ -58,6 +58,7 @@ public class Turret extends Subsystem implements PidProvider {
     public static final double CARDINAL_SOUTH = 32.556; // deg
     public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90; // deg
     public static final double CARDINAL_NORTH = CARDINAL_SOUTH + 180; // deg
+    public static final double MAX_ANGLE = convertTurretTicksToDegrees(TURRET_POSITION_MAX - TURRET_POSITION_MIN);
 
     public Turret() {
         super(NAME);
@@ -68,7 +69,6 @@ public class Turret extends Subsystem implements PidProvider {
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
-        SmartDashboard.putNumber("atan2 Vision", 0);
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
@@ -100,10 +100,7 @@ public class Turret extends Subsystem implements PidProvider {
         networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
             if (value.getDouble() < 0) { return; }
             var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
-            this.deltaXAngle = deltaXPixels * (CAMERA_FOV / VIDEO_WIDTH) + VISION_HOMING_BIAS; // Multiply by FOV to pixel ratio
-            // TODO: test this formula
-            SmartDashboard.getEntry("atan2 vision").setDouble(
-                Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH) + VISION_HOMING_BIAS));
+            this.deltaXAngle = Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH)) + VISION_HOMING_BIAS;
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }
 

@@ -57,6 +57,8 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
         return mController.getButton(LogitechController.Button.RB);
     }
 
+
+
     @Override
     public boolean getFeederToTrenchSpline() {
         return mController.getButton(LogitechController.Button.X);

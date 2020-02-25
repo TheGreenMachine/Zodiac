@@ -94,6 +94,11 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
+    public boolean getCollectorBackSpin() {
+        return mController.getButton(LogitechController.Button.RB);
+    }
+
+    @Override
     public boolean getClimberDeploy() {
         return mController.getDPad() == 180;
     }

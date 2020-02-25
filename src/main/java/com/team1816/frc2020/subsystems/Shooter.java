@@ -40,7 +40,9 @@ public class Shooter extends Subsystem implements PidProvider {
     private final double kI;
     private final double kD;
     private final double kF;
-    public static final int MAX_VELOCITY = 11_400;
+    public static final int MAX_VELOCITY = 11_800; // Far
+    public static final int NEAR_VELOCITY = 10_800;  // Initiation line
+    public static final int MID_VELOCITY = 9_900 ; // Trench this also worked from initiation
     public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(NAME, "velocityThreshold", 3000);
 
     private Shooter() {
@@ -120,7 +122,7 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     public void startShooter() {
-        setVelocity(9_000);
+        setVelocity(MID_VELOCITY);
     }
 
     public void stopShooter() {
