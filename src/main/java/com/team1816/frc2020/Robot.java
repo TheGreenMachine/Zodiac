@@ -171,7 +171,7 @@ public class Robot extends TimedRobot {
             actionManager = new ActionManager(
                 // Driver Gamepad
                 createAction(mControlBoard::getCollectorDown, () -> {
-                    hopper.setSpindexer(1);
+                    hopper.setSpindexer(-1);
                     collector.setDeployed(true);
                 }),
                 createAction(mControlBoard::getCollectorUp, () -> {
