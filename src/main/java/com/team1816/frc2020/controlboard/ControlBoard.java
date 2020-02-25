@@ -140,9 +140,6 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getCollectorBackSpin(){return mButtonControlBoard.getCollectorBackSpin();}
-
-    @Override
     public boolean getClimberDeploy() {
         return mButtonControlBoard.getClimberDeploy();
     }

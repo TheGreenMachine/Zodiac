@@ -75,7 +75,7 @@ public class Collector extends Subsystem {
     @Override
     public void writePeriodicOutputs() {
         if (isRaising) {
-            if ((Timer.getFPGATimestamp() - startTime) > 1) {
+            if ((Timer.getFPGATimestamp() - startTime) > 2) {
                 System.out.println("Raising timer passed at : " + (Timer.getFPGATimestamp() - startTime));
                 setIntakePow(0);
                 isRaising = false;
@@ -86,15 +86,6 @@ public class Collector extends Subsystem {
             this.armPiston.set(armDown);
             this.intake.set(ControlMode.PercentOutput, intakePow);
             this.outputsChanged = false;
-        }
-    }
-    public void setCollectorBackSpin(boolean spin) {
-        if (spin) {
-            intakePow = 0.2;
-            outputsChanged = true;
-        } else {
-            intakePow = 0.0;
-            outputsChanged = true;
         }
     }
 

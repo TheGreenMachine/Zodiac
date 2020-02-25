@@ -7,24 +7,20 @@ import com.team1816.lib.auto.actions.Action;
 import com.team1816.lib.loops.AsyncTimer;
 
 public class ShootAction implements Action {
+
     private Shooter shooter;
     private Hopper hopper;
     private AsyncTimer shooterTimer;
-    private double turretAngle;
-    private Turret turret;
 
-    public ShootAction(double turretAngle) {
+    public ShootAction() {
         this.shooter = Shooter.getInstance();
         this.hopper = Hopper.getInstance();
-        this.turret = Turret.getInstance();
-        this.shooterTimer = new AsyncTimer(4, shooter::startShooter, shooter::stopShooter);
-        this.turretAngle = turretAngle;
+        this.shooterTimer = new AsyncTimer(9, shooter::startShooter, shooter::stopShooter);
     }
 
     @Override
     public void start() {
-        turret.setTurretAngle(turretAngle);
-        turret.setAutoHomeEnabled(true);
+        Turret.getInstance().setTurretAngle(Turret.CARDINAL_WEST);
         shooterTimer.update();
         hopper.lockToShooter(true);
         hopper.setIntake(1);
@@ -45,6 +41,5 @@ public class ShootAction implements Action {
         shooter.stopShooter();
         hopper.lockToShooter(false);
         hopper.setIntake(0);
-        turret.setAutoHomeEnabled(false);
     }
 }
