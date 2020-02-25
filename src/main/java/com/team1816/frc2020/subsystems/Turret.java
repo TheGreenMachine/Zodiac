@@ -113,6 +113,10 @@ public class Turret extends Subsystem implements PidProvider {
         }
     }
 
+    public boolean isAutoHomeEnabled() {
+        return autoHomeEnabled;
+    }
+
     private void autoHome() {
         setTurretPosition(getTurretPositionTicks() + convertTurretDegreesToTicks(deltaXAngle));
     }
@@ -208,7 +212,11 @@ public class Turret extends Subsystem implements PidProvider {
         }
         if (outputsChanged) {
             if (isPercentOutput) {
-                turret.set(ControlMode.PercentOutput, turretSpeed);
+                if (turretSpeed == 0) {
+                    turret.set(ControlMode.Position, getTurretPositionTicks());
+                } else {
+                    turret.set(ControlMode.PercentOutput, turretSpeed);
+                }
             } else {
                 turret.set(ControlMode.Position, turretPos);
             }

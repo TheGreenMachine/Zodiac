@@ -213,7 +213,8 @@ public class Robot extends TimedRobot {
 
                 createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -0.2 : 0)),
                 createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.2 : 0)),
-                createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
+                createAction(mControlBoard::getAutoHome, () ->
+                    turret.setAutoHomeEnabled(!turret.isAutoHomeEnabled())),
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
                     shooter.setVelocity(shooting ? 11_000 : 0);
                     hopper.lockToShooter(shooting);
