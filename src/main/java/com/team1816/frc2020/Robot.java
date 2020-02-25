@@ -74,6 +74,8 @@ public class Robot extends TimedRobot {
     private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
     private AsyncTimer blinkTimer;
 
+    private boolean isShooting;
+
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 
@@ -171,7 +173,7 @@ public class Robot extends TimedRobot {
             actionManager = new ActionManager(
                 // Driver Gamepad
                 createAction(mControlBoard::getCollectorDown, () -> {
-                    hopper.setSpindexer(1);
+                    hopper.setSpindexer(-1);
                     collector.setDeployed(true);
                 }),
                 createAction(mControlBoard::getCollectorUp, () -> {
@@ -214,6 +216,8 @@ public class Robot extends TimedRobot {
                 }),
                 createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
+
+                    isShooting=shooting;
                     shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                     hopper.lockToShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
@@ -452,8 +456,11 @@ public class Robot extends TimedRobot {
             if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0 || mDrive.isDoneWithTrajectory()) {
                 mDrive.setOpenLoop(driveSignal);
             }
-        } else {
+        } else if (!isShooting){
             mDrive.setOpenLoop(driveSignal);
+        }else{
+            System.out.println("Setting to brake mode");
+            mDrive.setOpenLoop(driveSignal.BRAKE);
         }
     }
 

@@ -75,7 +75,7 @@ public class Collector extends Subsystem {
     @Override
     public void writePeriodicOutputs() {
         if (isRaising) {
-            if ((Timer.getFPGATimestamp() - startTime) > 2) {
+            if ((Timer.getFPGATimestamp() - startTime) > 1) {
                 System.out.println("Raising timer passed at : " + (Timer.getFPGATimestamp() - startTime));
                 setIntakePow(0);
                 isRaising = false;

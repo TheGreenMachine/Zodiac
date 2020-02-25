@@ -296,7 +296,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             System.out.println(signal);
             mDriveControlState = DriveControlState.OPEN_LOOP;
         }
-
+        setBrakeMode(signal.getBrakeMode());
         mPeriodicIO.left_demand = signal.getLeft();
         mPeriodicIO.right_demand = signal.getRight();
         mPeriodicIO.left_feedforward = 0.0;
