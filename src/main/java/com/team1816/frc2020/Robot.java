@@ -183,6 +183,11 @@ public class Robot extends TimedRobot {
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
 
+                createAction(mControlBoard::getClimberDeploy, () -> {
+                    if (DriverStation.getInstance().getMatchTime() > 120) {
+                        climber.setDeployed(true);
+                    }
+                }),
                 createAction(mControlBoard::getTrenchToFeederSpline, () -> {
                     System.out.println("STARTING TRENCH TO FEEDER");
                     SmartDashboard.putString("Teleop Spline", "TRENCH TO FEEDER");
@@ -208,13 +213,11 @@ public class Robot extends TimedRobot {
 
                 createScalar(mControlBoard::getClimber, climber::setClimberPower),
 
-                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> {
-                    if (moving) turret.jogLeft();
-                }),
-                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> {
-                    if (moving) turret.jogRight();
-                }),
-                createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
+                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -0.2 : 0)),
+                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.2 : 0)),
+                createAction(mControlBoard::getAutoHome, () ->
+                    turret.setAutoHomeEnabled(!turret.isAutoHomeEnabled())),
+
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
 
                     isShooting=shooting;

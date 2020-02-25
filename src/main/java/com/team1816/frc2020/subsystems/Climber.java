@@ -2,9 +2,8 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.team1816.frc2020.Robot;
-import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Climber extends Subsystem {
     private static final String NAME = "climber";
@@ -19,15 +18,18 @@ public class Climber extends Subsystem {
     }
 
     // Components
-    private final IMotorControllerEnhanced climberMotor;
+    private final IMotorControllerEnhanced elevator;
+    private final Solenoid deployer;
 
     // State
     private double climberPow;
+    private boolean isDeployed;
     private boolean outputsChanged = false;
 
     public Climber() {
         super(NAME);
-        climberMotor = factory.getMotor(NAME, "elevator");
+        elevator = factory.getMotor(NAME, "elevator");
+        deployer = factory.getSolenoid(NAME, "deployer");
     }
 
     public void setClimberPower(double power) {
@@ -35,10 +37,16 @@ public class Climber extends Subsystem {
         outputsChanged = true;
     }
 
+    public void setDeployed(boolean deployed) {
+        this.isDeployed = deployed;
+        outputsChanged = true;
+    }
+
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
-            climberMotor.set(ControlMode.PercentOutput, climberPow);
+            elevator.set(ControlMode.PercentOutput, climberPow);
+            deployer.set(isDeployed);
             outputsChanged = false;
         }
     }
