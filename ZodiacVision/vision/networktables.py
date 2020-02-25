@@ -7,6 +7,7 @@ class NetworkTables:
         self.update_exposure = False
         self.yml_path = yml_path
         self.calib_camera = False
+        self.line = False
         if ip is None:
             self.ip = self.yml_data['network']['nt-ip']
         print(self.ip)
@@ -14,7 +15,7 @@ class NetworkTables:
         self.table = nt.NetworkTables.getTable('SmartDashboard')
         camera_table = nt.NetworkTables.getTable("CameraPublisher")
         table = camera_table.getSubTable("Camera")
-        table.getEntry("streams").setStringArray(["mjpg:http://10.18.16.142:1180/video_feed"])
+        table.getEntry("streams").setStringArray([f"mjpg:http://{self.yml_data['main']['device-ip']}:1180/video_feed"])
 
     def clearTable(self):
         for item in self.yml_data['network']['variables']:
@@ -47,6 +48,10 @@ class NetworkTables:
                 self.yml_data['camera']['exposure'] = value
                 dumpYML()
                 self.update_exposure = True
+            elif key == "LINE":
+                self.yml_data['stream']['line'] = value
+                dumpYML()
+                self.line = True
             elif key == "CalibrationCamera":
                 self.calib_camera = value
         lower = self.yml_data['color']['lower']
@@ -59,6 +64,7 @@ class NetworkTables:
         calibTable.putNumber("VMIN", lower['V'])
         calibTable.putNumber("VMAX", upper['V'])
         calibTable.putNumber("EXPOSURE", self.yml_data['camera']['exposure'])
+        calibTable.putNumber("LINE", self.yml_data['stream']['line'])
         calibTable.putBoolean("CalibrationCamera", False)
         calibTable.addEntryListener(valueChanged)
 
