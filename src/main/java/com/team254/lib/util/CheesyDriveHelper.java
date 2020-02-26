@@ -115,7 +115,7 @@ public class CheesyDriveHelper {
             angularPower = wheel * kWheelQuckTurnScalar;
         } else {
             overPower = 0.0;
-            angularPower = 0.5 * (wheel) * sensitivity - mQuickStopAccumlator; // removed variable throttle input to calculation
+            angularPower = 0.75 * (wheel) * sensitivity - mQuickStopAccumlator; // removed variable throttle input to calculation
             if (mQuickStopAccumlator > 1) {
                 mQuickStopAccumlator -= 1;
             } else if (mQuickStopAccumlator < -1) {
