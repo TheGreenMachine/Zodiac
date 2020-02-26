@@ -201,42 +201,10 @@ public class Robot extends TimedRobot {
                 // Operator Gamepad
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize),
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
-                createHoldAction(mControlBoard::getSpinnerThreeTimes,(shooting) -> {
-                    shooter.setVelocity(shooting ? Shooter.NEAR_VELOCITY : 0);
+                createHoldAction(mControlBoard::getSpinnerThreeTimes, spinner::spinThreeTimes),
 
-                    hopper.lockToShooter(shooting);
-                    hopper.setIntake(shooting ? 1 : 0);
-
-                    if (shooting) {
-                        mDrive.setOpenLoop(DriveSignal.BRAKE);
-                    }
-                }),//spinner::spinThreeTimes),
-
-                // TODO: revert back to normal action after testing
-                createHoldAction(mControlBoard::getFeederFlapOut, (shooting) -> {
-                        shooter.setVelocity(shooting ? Shooter.MAX_VELOCITY : 0);
-
-                        hopper.lockToShooter(shooting);
-                        hopper.setIntake(shooting ? 1 : 0);
-
-                        if (shooting) {
-                            mDrive.setOpenLoop(DriveSignal.BRAKE);
-                        }
-                    }),
-                    //() -> hopper.setFeederFlap(true)),
-
-                // TODO: revert back to normal after testing
-                createHoldAction(mControlBoard::getFeederFlapIn, (shooting) -> {
-                    shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
-
-                    hopper.lockToShooter(shooting);
-                    hopper.setIntake(shooting ? 1 : 0);
-
-                    if (shooting) {
-                        mDrive.setOpenLoop(DriveSignal.BRAKE);
-                    }
-                }),
-                    //() -> hopper.setFeederFlap(false)),
+                createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
+                createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
 
                 createScalar(mControlBoard::getClimber, climber::setClimberPower),
 
@@ -245,7 +213,7 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getAutoHome, (autoHome) -> turret.setAutoHomeEnabled(autoHome)),
 
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
-                    shooter.setVelocity(shooting ? Shooter.MAX_VELOCITY : 0);
+                    shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                     hopper.lockToShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
                     if (shooting) {
