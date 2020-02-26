@@ -18,10 +18,7 @@ import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.CheesyDriveHelper;
-import com.team254.lib.util.CrashTracker;
-import com.team254.lib.util.DriveSignal;
-import com.team254.lib.util.LatchedBoolean;
+import com.team254.lib.util.*;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -444,12 +441,12 @@ public class Robot extends TimedRobot {
         DriveSignal driveSignal;
 
         // if (arcadeDrive) {
-        //     var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
-        //     double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
-        //     double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-        //     driveSignal = new DriveSignal(left, right);
+            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
+            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
+            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
+            driveSignal = new DriveSignal(left, right);
         // } else {
-        driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
+        // driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
         // }
         if (mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING) {
             if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0 || mDrive.isDoneWithTrajectory()) {
