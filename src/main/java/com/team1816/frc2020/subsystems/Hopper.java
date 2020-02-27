@@ -88,7 +88,7 @@ public class Hopper extends Subsystem {
         if (outputsChanged) {
             this.spindexer.set(ControlMode.PercentOutput, spindexerPower);
             this.elevator.set(ControlMode.PercentOutput, elevatorPower);
-            // this.feederFlap.set(feederFlapOut);
+            this.feederFlap.set(feederFlapOut);
             outputsChanged = false;
         }
     }

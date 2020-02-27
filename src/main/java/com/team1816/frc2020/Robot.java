@@ -182,7 +182,8 @@ public class Robot extends TimedRobot {
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
 
                 createAction(mControlBoard::getClimberDeploy, () -> {
-                    if (DriverStation.getInstance().getMatchTime() > 120) {
+                    if ((DriverStation.getInstance().getMatchTime() > 120) ||
+                        (DriverStation.getInstance().getMatchTime() == -1)) {
                         climber.setDeployed(true);
                     }
                 }),
@@ -417,6 +418,9 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         loopStart = Timer.getFPGATimestamp();
+
+
+        System.out.println("Match time when no match: " + DriverStation.getInstance().getMatchTime());
 
         try {
             manualControl();

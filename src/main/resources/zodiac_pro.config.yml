@@ -72,15 +72,15 @@ subsystems:
     turret:
         implemented: true
         talons:
-            turret: -10
+            turret: 10
         constants: # TODO: tune [P, I, D]
             kP: 2.83
             kI: 0 #0.0003
             kD: 0
             kF: 0 # Should be 0 for position control
             encPPR: 4124.6
-            minPos: -5331
-            maxPos: 1946
+            minPos: -374
+            maxPos: 2850
     ledmanager:
         implemented: false
         canifier: 0
