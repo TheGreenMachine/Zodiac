@@ -3,9 +3,9 @@ package com.team1816.lib.hardware;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class YamlConfigTest {
 
@@ -34,6 +34,39 @@ public class YamlConfigTest {
     @Test
     public void loadFromActive_doesNotThrow() throws ConfigIsAbstractException {
         YamlConfig.loadFrom(getClass().getClassLoader().getResourceAsStream("test_active.config.yml"));
+    }
+
+    @Test
+    public void yamlConfig_merge() {
+        InputStream baseConfigFile = getClass().getClassLoader().getResourceAsStream("test_base.config.yml");
+        InputStream activeConfigFile = getClass().getClassLoader().getResourceAsStream("test_active.config.yml");
+
+        YamlConfig base = YamlConfig.loadRaw(baseConfigFile);
+        YamlConfig active = YamlConfig.loadRaw(activeConfigFile);
+        YamlConfig result = YamlConfig.merge(active, base);
+
+        System.out.println(result);
+        verifyMergedConfig(result);
+    }
+
+    void verifyMergedConfig(YamlConfig config) {
+        assertNotNull("Merged YAML config is not null", config);
+        assertNotNull("Subsystem config drivetrain is present", config.subsystems.get("drivetrain"));
+        assertNotNull("Subsystem config shooter is present", config.subsystems.get("shooter"));
+
+        assertEquals("Turret Talon ID == 13",
+            13, config.subsystems.get("turret").talons.get("turret").intValue());
+        assertEquals("Overridden constant turret.minPos == -374",
+            -374, config.subsystems.get("turret").constants.get("minPos").intValue());
+
+        assertEquals("Constant defined in base configuration baseConstant == 1",
+            1, config.constants.get("baseConstant"), 0);
+        assertEquals("Constant overridden in active config overriddenConstant == 0",
+            0, config.constants.get("overriddenConstant"), 0);
+
+        assertEquals("PCM ID is 8", 8, config.pcm.intValue());
+        assertTrue("invertMotor for invertMotorTest subsystem contains 1 and 2",
+            config.subsystems.get("invertMotorTest").invertMotor.containsAll(List.of(1, 2)));
     }
 
 }

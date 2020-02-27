@@ -19,7 +19,7 @@ public class YamlConfig {
     private String $extends;
     Map<String, SubsystemConfig> subsystems;
     Map<String, Double> constants = new HashMap<>();
-    int pcm;
+    Integer pcm;
 
     public static YamlConfig loadFrom(InputStream input) throws ConfigIsAbstractException {
         Representer representer = new Representer();
@@ -104,8 +104,21 @@ public class YamlConfig {
 
     @Override
     public String toString() {
-        return "YamlConfig {\n  subsystems = " + subsystems.toString() +
-                "\n  pcm = " + pcm + "\n  constants = " + constants.toString( )+ "\n}";
+        return "YamlConfig {\n" +
+            "  subsystems = " + subsystems.toString() +
+                "\n  pcm = " + pcm + "\n  constants = " + constants.toString() + "\n}";
+    }
+
+    public static YamlConfig merge(YamlConfig active, YamlConfig fallback) {
+        var result = new YamlConfig();
+        result.subsystems = new HashMap<>(fallback.subsystems);
+        active.subsystems.forEach((key, value) ->
+            result.subsystems.merge(key, value, (f, a) -> SubsystemConfig.merge(a, f)));
+        mergeMap(result.constants, active.constants, fallback.constants);
+        result.pcm = active.pcm != null ? active.pcm : fallback.pcm;
+        result.$abstract = false;
+        result.$extends = null;
+        return result;
     }
 
     private static <K, V> void mergeMap(Map<K, V> result, Map<K, V> active, Map<K, V> fallback) {

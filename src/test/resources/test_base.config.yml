@@ -44,7 +44,7 @@ subsystems:
             motorB: 2
         invertMotor:
             - 1
-pcm: 0
+pcm: 8
 constants:
     baseConstant: 1
     overriddenConstant: 0.25

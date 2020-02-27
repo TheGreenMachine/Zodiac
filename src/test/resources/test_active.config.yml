@@ -29,7 +29,6 @@ subsystems:
     invertMotorTest:
         invertMotor:
             - 2 # Adding to base invert array
-pcm: 0
 constants:
     overriddenConstant: 0
     activeConstant: 399.42
