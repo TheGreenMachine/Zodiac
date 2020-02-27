@@ -31,8 +31,13 @@ public class RobotYamlTests {
         loadConfig("zenith");
     }
 
-    private void loadConfig(String configName){
-        var config = YamlConfig.loadFrom(this.getClass().getClassLoader().getResourceAsStream(configName + ".config.yml"));
+    private void loadConfig(String configName) {
+        YamlConfig config = null;
+        try {
+            config = YamlConfig.loadFrom(this.getClass().getClassLoader().getResourceAsStream(configName + ".config.yml"));
+        } catch (ConfigIsAbstractException e) {
+            e.printStackTrace();
+        }
         assertNotNull(config);
     }
 }

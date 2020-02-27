@@ -15,11 +15,27 @@ import java.util.Map;
 // IDEs will report that the collections are never updated.
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class YamlConfig {
+    private boolean $abstract = false;
+    private String $extends;
     Map<String, SubsystemConfig> subsystems;
     Map<String, Double> constants = new HashMap<>();
     int pcm;
 
-    public static YamlConfig loadFrom(InputStream input) {
+    public static YamlConfig loadFrom(InputStream input) throws ConfigIsAbstractException {
+        Representer representer = new Representer();
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+        Yaml yaml = new Yaml(new Constructor(YamlConfig.class), representer);
+        yaml.setBeanAccess(BeanAccess.FIELD);
+
+        YamlConfig loadedConfig = yaml.load(input);
+        if (loadedConfig.$abstract) {
+            throw new ConfigIsAbstractException();
+        }
+
+        return loadedConfig;
+    }
+
+    static YamlConfig loadRaw(InputStream input) {
         Representer representer = new Representer();
         representer.getPropertyUtils().setSkipMissingProperties(true);
         Yaml yaml = new Yaml(new Constructor(YamlConfig.class), representer);

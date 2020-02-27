@@ -14,8 +14,8 @@ public class YamlConfigTest {
         InputStream baseConfigFile = getClass().getClassLoader().getResourceAsStream("test_base.config.yml");
         InputStream activeConfigFile = getClass().getClassLoader().getResourceAsStream("test_active.config.yml");
 
-        YamlConfig.SubsystemConfig base = YamlConfig.loadFrom(baseConfigFile).subsystems.get("turret");
-        YamlConfig.SubsystemConfig active = YamlConfig.loadFrom(activeConfigFile).subsystems.get("turret");
+        YamlConfig.SubsystemConfig base = YamlConfig.loadRaw(baseConfigFile).subsystems.get("turret");
+        YamlConfig.SubsystemConfig active = YamlConfig.loadRaw(activeConfigFile).subsystems.get("turret");
         YamlConfig.SubsystemConfig result = YamlConfig.SubsystemConfig.merge(active, base);
         System.out.println(result);
 
@@ -25,4 +25,15 @@ public class YamlConfigTest {
         assertEquals("Turret talon should be overridden to 13", 13, result.talons.get("turret").intValue());
         assertTrue("implemented == true (favors true)", result.implemented);
     }
+
+    @Test(expected = ConfigIsAbstractException.class)
+    public void loadFromBase_throwsIfAbstract() throws ConfigIsAbstractException {
+        YamlConfig.loadFrom(getClass().getClassLoader().getResourceAsStream("test_base.config.yml"));
+    }
+
+    @Test
+    public void loadFromActive_doesNotThrow() throws ConfigIsAbstractException {
+        YamlConfig.loadFrom(getClass().getClassLoader().getResourceAsStream("test_active.config.yml"));
+    }
+
 }
