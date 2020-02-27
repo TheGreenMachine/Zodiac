@@ -1,7 +1,6 @@
 package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.CANifier;
-import com.team1816.frc2020.Robot;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;

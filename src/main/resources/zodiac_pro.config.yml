@@ -25,7 +25,7 @@ subsystems:
             rpmEpsilonCheck: 60
             openLoopRampRate: 0.8
     climber:
-        implemented: false
+        implemented: true
         talons:
             elevator: 12
         solenoids:
@@ -48,13 +48,14 @@ subsystems:
             elevator: 5
         invertMotor:
             - 4
+            - 5
         solenoids:
             feederFlap: 4
     shooter:
         implemented: true
         falcons:
-            shooterMaster: 3
-            shooterFollowerB: 2
+            shooterMaster: -13
+            shooterFollowerB: -12
         talons:
             shooterFollowerA: -1 # 3
             shooterFollowerC: -1 # 2
@@ -71,15 +72,15 @@ subsystems:
     turret:
         implemented: true
         talons:
-            turret: 10
+            turret: -10
         constants: # TODO: tune [P, I, D]
             kP: 2.83
             kI: 0 #0.0003
             kD: 0
             kF: 0 # Should be 0 for position control
             encPPR: 4124.6
-            minPos: -4220
-            maxPos: -1072
+            minPos: -5331
+            maxPos: 1946
     ledmanager:
         implemented: false
         canifier: 0
