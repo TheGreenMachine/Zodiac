@@ -32,6 +32,11 @@ public class YamlConfig {
             throw new ConfigIsAbstractException();
         }
 
+        if (loadedConfig.$extends != null && !loadedConfig.$extends.equals("")) {
+            var baseConfigFile = YamlConfig.class.getClassLoader().getResourceAsStream(loadedConfig.$extends + ".config.yml");
+            return merge(loadedConfig, loadRaw(baseConfigFile));
+        }
+
         return loadedConfig;
     }
 
@@ -74,19 +79,19 @@ public class YamlConfig {
                     "}";
         }
 
-        public static SubsystemConfig merge(SubsystemConfig active, SubsystemConfig fallback) {
+        public static SubsystemConfig merge(SubsystemConfig active, SubsystemConfig base) {
             var result = new SubsystemConfig();
 
-            result.implemented = active.implemented || fallback.implemented;
-            mergeMap(result.talons, active.talons, fallback.talons);
-            mergeMap(result.falcons, active.falcons, fallback.falcons);
-            mergeMap(result.victors, active.victors, fallback.victors);
-            mergeMap(result.solenoids, active.solenoids, fallback.solenoids);
-            mergeMap(result.doublesolenoids, active.doublesolenoids, fallback.doublesolenoids);
-            result.invertMotor.addAll(fallback.invertMotor);
+            result.implemented = active.implemented || base.implemented;
+            mergeMap(result.talons, active.talons, base.talons);
+            mergeMap(result.falcons, active.falcons, base.falcons);
+            mergeMap(result.victors, active.victors, base.victors);
+            mergeMap(result.solenoids, active.solenoids, base.solenoids);
+            mergeMap(result.doublesolenoids, active.doublesolenoids, base.doublesolenoids);
+            result.invertMotor.addAll(base.invertMotor);
             result.invertMotor.addAll(active.invertMotor);
-            result.canifier = active.canifier != null ? active.canifier : fallback.canifier;
-            mergeMap(result.constants, active.constants, fallback.constants);
+            result.canifier = active.canifier != null ? active.canifier : base.canifier;
+            mergeMap(result.constants, active.constants, base.constants);
 
             return result;
         }
@@ -109,13 +114,16 @@ public class YamlConfig {
                 "\n  pcm = " + pcm + "\n  constants = " + constants.toString() + "\n}";
     }
 
-    public static YamlConfig merge(YamlConfig active, YamlConfig fallback) {
+    public static YamlConfig merge(YamlConfig active, YamlConfig base) {
         var result = new YamlConfig();
-        result.subsystems = new HashMap<>(fallback.subsystems);
+        result.subsystems = new HashMap<>(base.subsystems);
+
+        // Complex merge, add all subsystems in active config to result (already containing base subsystems)
+        // using SubsystemConfig::merge to resolve conflicts.
         active.subsystems.forEach((key, value) ->
-            result.subsystems.merge(key, value, (f, a) -> SubsystemConfig.merge(a, f)));
-        mergeMap(result.constants, active.constants, fallback.constants);
-        result.pcm = active.pcm != null ? active.pcm : fallback.pcm;
+            result.subsystems.merge(key, value, (b, a) -> SubsystemConfig.merge(a, b)));
+        mergeMap(result.constants, active.constants, base.constants);
+        result.pcm = active.pcm != null ? active.pcm : base.pcm;
         result.$abstract = false;
         result.$extends = null;
         return result;

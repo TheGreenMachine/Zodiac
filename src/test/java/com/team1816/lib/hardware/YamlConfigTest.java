@@ -45,11 +45,19 @@ public class YamlConfigTest {
         YamlConfig active = YamlConfig.loadRaw(activeConfigFile);
         YamlConfig result = YamlConfig.merge(active, base);
 
-        System.out.println(result);
         verifyMergedConfig(result);
     }
 
+    @Test
+    public void yamlConfig_autoMerge_ifExtends() throws ConfigIsAbstractException {
+        var configFile = getClass().getClassLoader().getResourceAsStream("test_active.config.yml");
+        YamlConfig config = YamlConfig.loadFrom(configFile);
+        verifyMergedConfig(config);
+    }
+
     void verifyMergedConfig(YamlConfig config) {
+        System.out.println(config);
+
         assertNotNull("Merged YAML config is not null", config);
         assertNotNull("Subsystem config drivetrain is present", config.subsystems.get("drivetrain"));
         assertNotNull("Subsystem config shooter is present", config.subsystems.get("shooter"));
@@ -63,6 +71,8 @@ public class YamlConfigTest {
             1, config.constants.get("baseConstant"), 0);
         assertEquals("Constant overridden in active config overriddenConstant == 0",
             0, config.constants.get("overriddenConstant"), 0);
+        assertEquals("Constant defined in active configuration activeConstant == 399.42",
+            399.42, config.constants.get("activeConstant"), 0);
 
         assertEquals("PCM ID is 8", 8, config.pcm.intValue());
         assertTrue("invertMotor for invertMotorTest subsystem contains 1 and 2",
