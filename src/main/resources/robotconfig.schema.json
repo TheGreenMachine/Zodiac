@@ -21,12 +21,15 @@
     "$id": "http://edinarobotics.com/robotconfig.json",
     "type": "object",
     "title": "The Robot Configuration Schema",
-    "required": [
-        "subsystems",
-        "pcm",
-        "constants"
-    ],
     "properties": {
+        "$abstract": {
+            "type": "boolean"
+        },
+        "$extends": {
+            "type": "string",
+            "$id": "#/properties/extends",
+            "pattern": "\\w.+"
+        },
         "subsystems": {
             "$id": "#/properties/subsystems",
             "type": "object",
@@ -35,9 +38,6 @@
                 "$id": "#/properties/subsystems/subsystem",
                 "type": "object",
                 "title": "The Subsystem Schema",
-                "required": [
-                    "implemented"
-                ],
                 "properties": {
                     "implemented": { "type": "boolean" },
                     "talons": { "$ref": "#/definitions/hardwareMap" },
@@ -81,5 +81,20 @@
         "constants": {
             "$ref": "#/definitions/constants"
         }
-    }
+    },
+    "oneOf": [
+        {
+            "required": ["$extends"]
+        },
+        {
+            "properties": {
+                "subsystems": {
+                    "additionalProperties": {
+                        "required": ["implemented"]
+                    }
+                }
+            },
+            "required": ["subsystems", "pcm", "constants"]
+        }
+    ]
 }

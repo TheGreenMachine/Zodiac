@@ -1,6 +1,31 @@
 $abstract: true
 subsystems:
-    turret:
+    drivetrain: # Subsystem defined only in base config
+        implemented: true
+        falcons:
+            leftMain: 17
+            leftFollower: 1
+            leftFollowerTwo: -1
+            rightMain: 14
+            rightFollower: 15
+            rightFollowerTwo: -1
+        invertMotor:
+            - 17
+        constants:
+            pigeonId: 9
+            pigeonOnTalon: -1
+            kP: 0.12
+            kI: 0.013
+            kD: 4.0
+            kF: 0.0475813
+            iZone: 0
+            encPPR: 22220.8
+            currentFloorCheck: .12
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 2000
+            rpmEpsilonCheck: 60
+            openLoopRampRate: 0.8
+    turret: # Overridden in active config
         implemented: false
         talons:
             turret: 10
@@ -12,6 +37,13 @@ subsystems:
             encPPR: 4124.6
             minPos: -4220
             maxPos: -1072
+    invertMotorTest:
+        implemented: true
+        talons:
+            motorA: 1
+            motorB: 2
+        invertMotor:
+            - 1
 pcm: 0
 constants:
     baseConstant: 1
