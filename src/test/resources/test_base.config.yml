@@ -1,0 +1,18 @@
+$abstract: true
+subsystems:
+    turret:
+        implemented: false
+        talons:
+            turret: 10
+        constants:
+            kP: 2.83
+            kI: 0 #0.0003
+            kD: 0
+            kF: 0 # Should be 0 for position control
+            encPPR: 4124.6
+            minPos: -4220
+            maxPos: -1072
+pcm: 0
+constants:
+    baseConstant: 1
+    overriddenConstant: 0.25

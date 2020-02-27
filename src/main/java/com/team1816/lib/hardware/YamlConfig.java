@@ -57,6 +57,23 @@ public class YamlConfig {
                     "  constants = " + constants.toString() + ",\n" +
                     "}";
         }
+
+        public static SubsystemConfig merge(SubsystemConfig active, SubsystemConfig fallback) {
+            var result = new SubsystemConfig();
+
+            result.implemented = active.implemented || fallback.implemented;
+            mergeMap(result.talons, active.talons, fallback.talons);
+            mergeMap(result.falcons, active.falcons, fallback.falcons);
+            mergeMap(result.victors, active.victors, fallback.victors);
+            mergeMap(result.solenoids, active.solenoids, fallback.solenoids);
+            mergeMap(result.doublesolenoids, active.doublesolenoids, fallback.doublesolenoids);
+            result.invertMotor.addAll(fallback.invertMotor);
+            result.invertMotor.addAll(active.invertMotor);
+            result.canifier = active.canifier != null ? active.canifier : fallback.canifier;
+            mergeMap(result.constants, active.constants, fallback.constants);
+
+            return result;
+        }
     }
 
     public static class DoubleSolenoidConfig {
@@ -73,5 +90,10 @@ public class YamlConfig {
     public String toString() {
         return "YamlConfig {\n  subsystems = " + subsystems.toString() +
                 "\n  pcm = " + pcm + "\n  constants = " + constants.toString( )+ "\n}";
+    }
+
+    private static <K, V> void mergeMap(Map<K, V> result, Map<K, V> active, Map<K, V> fallback) {
+        result.putAll(fallback);
+        result.putAll(active);
     }
 }

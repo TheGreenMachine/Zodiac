@@ -1,0 +1,14 @@
+$extends: test_base
+subsystems:
+    turret:
+        implemented: true
+        talons:
+            turret: 13
+        constants:
+            minPos: -374 # Overriding base
+            maxPos: 2850 # Overriding base
+            newConstant: 34 # New constant defined only in active config
+pcm: 0
+constants:
+    overriddenConstant: 0
+    activeConstant: 399.42
