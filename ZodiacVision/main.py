@@ -3,7 +3,7 @@ import yaml
 import pyzed.sl as sl
 from vision import *
 import time
-# time.sleep(10)
+time.sleep(10)
 path = 'vision.yml'
 with open(path, 'r') as file:
     data = yaml.safe_load(file)
