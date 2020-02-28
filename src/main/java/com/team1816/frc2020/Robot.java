@@ -202,17 +202,16 @@ public class Robot extends TimedRobot {
                 // Operator Gamepad
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize),
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
-                createHoldAction(mControlBoard::getSpinnerThreeTimes,spinner::spinThreeTimes),
+                createHoldAction(mControlBoard::getSpinnerThreeTimes, spinner::spinThreeTimes),
 
                 createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
                 createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
 
                 createScalar(mControlBoard::getClimber, climber::setClimberPower),
 
-                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -0.2 : 0)),
-                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.2 : 0)),
-                createAction(mControlBoard::getAutoHome, () ->
-                    turret.setAutoHomeEnabled(!turret.isAutoHomeEnabled())),
+                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)),
+                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)),
+                createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
 
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
                     shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
@@ -445,12 +444,12 @@ public class Robot extends TimedRobot {
         DriveSignal driveSignal;
 
         // if (arcadeDrive) {
-            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
-            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
-            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-            driveSignal = new DriveSignal(left, right);
+//            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
+//            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
+//            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
+//            driveSignal = new DriveSignal(left, right);
         // } else {
-        // driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
+         driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
         // }
         if (mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING) {
             if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0 || mDrive.isDoneWithTrajectory()) {
