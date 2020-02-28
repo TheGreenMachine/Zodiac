@@ -1,0 +1,19 @@
+$extends: zodiac_base
+subsystems:
+    climber:
+        implemented: true
+    hopper:
+        invertMotor:
+            - 5
+    shooter:
+        falcons:
+            shooterMaster: 3
+            shooterFollowerB: 2
+    turret:
+        constants:
+            minPos: -4445
+            maxPos: -1273
+    ledmanager:
+        implemented: true
+constants:
+    wheelDiameter: 6.32 #inches

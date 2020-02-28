@@ -2,11 +2,13 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import java.util.ArrayList;
@@ -16,6 +18,9 @@ public class Shooter extends Subsystem implements PidProvider {
     private static Shooter INSTANCE;
 
     private LedManager ledManager = LedManager.getInstance();
+
+    private NetworkTable networkTable;
+    private double distance;
 
     public static Shooter getInstance() {
         if (INSTANCE == null) {
@@ -73,6 +78,13 @@ public class Shooter extends Subsystem implements PidProvider {
 
         shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
+
+        networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+
+        networkTable.addEntryListener("distance", (table, key, entry, value, flags) -> {
+            distance = value.getDouble();
+        },EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+
     }
 
     private void configCurrentLimits(int currentLimitAmps) {
@@ -119,6 +131,16 @@ public class Shooter extends Subsystem implements PidProvider {
     public void setVelocity(double velocity) {
         this.shooterVelocity = velocity;
         outputsChanged = true;
+    }
+
+    public void startShooterBasedOnDistance() {
+        /* if (distance <  ) { TODO: Find correct distances
+            setVelocity(MID_VELOCITY);
+        } else if (< distance < ) {
+            setVelocity(NEAR_VELOCITY);
+        } else if (distance > ) {
+            setVelocity(MAX_VELOCITY);
+        } */
     }
 
     public void startShooter() {

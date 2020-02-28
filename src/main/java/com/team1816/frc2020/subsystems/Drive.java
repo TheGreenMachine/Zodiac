@@ -643,11 +643,11 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         //     SmartDashboard.putNumber("Drive CTE", 0.0);
         // }
 
-        // if (getHeading() != null) {
-        //     Shuffleboard.getTab("Drive")
-        //         .addNumber("Gyro Heading", this::getHeadingDegrees)
-        //         .withWidget(BuiltInWidgets.kGyro);
-        // }
+         if (getHeading() != null) {
+             Shuffleboard.getTab("Drive")
+                 .addNumber("Gyro Heading", this::getHeadingDegrees)
+                 .withWidget(BuiltInWidgets.kGyro);
+         }
     }
 
     public synchronized double getTimestamp() {

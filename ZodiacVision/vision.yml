@@ -11,7 +11,7 @@ color:
     S: 224.52
     V: 188.96
 main:
-  device-ip: localhost
+  device-ip: 10.18.16.16
   team-number: 1816
 network:
   nt-ip: 10.18.16.2
