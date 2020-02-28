@@ -15,7 +15,11 @@ public class RobotFactory {
 
     public RobotFactory(String configName) {
         System.out.println("Loading Config for " + configName);
-        config = YamlConfig.loadFrom(this.getClass().getClassLoader().getResourceAsStream(configName + ".config.yml"));
+        try {
+            config = YamlConfig.loadFrom(this.getClass().getClassLoader().getResourceAsStream(configName + ".config.yml"));
+        } catch (ConfigIsAbstractException e) {
+            DriverStation.reportError("Yaml Config was abstract!", e.getStackTrace());
+        }
         verbose = getConstant("verbose") >= 1;
     }
 

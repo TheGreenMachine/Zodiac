@@ -15,11 +15,32 @@ import java.util.Map;
 // IDEs will report that the collections are never updated.
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class YamlConfig {
+    private boolean $abstract = false;
+    private String $extends;
     Map<String, SubsystemConfig> subsystems;
     Map<String, Double> constants = new HashMap<>();
-    int pcm;
+    Integer pcm;
 
-    public static YamlConfig loadFrom(InputStream input) {
+    public static YamlConfig loadFrom(InputStream input) throws ConfigIsAbstractException {
+        Representer representer = new Representer();
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+        Yaml yaml = new Yaml(new Constructor(YamlConfig.class), representer);
+        yaml.setBeanAccess(BeanAccess.FIELD);
+
+        YamlConfig loadedConfig = yaml.load(input);
+        if (loadedConfig.$abstract) {
+            throw new ConfigIsAbstractException();
+        }
+
+        if (loadedConfig.$extends != null && !loadedConfig.$extends.equals("")) {
+            var baseConfigFile = YamlConfig.class.getClassLoader().getResourceAsStream(loadedConfig.$extends + ".config.yml");
+            return merge(loadedConfig, loadRaw(baseConfigFile));
+        }
+
+        return loadedConfig;
+    }
+
+    static YamlConfig loadRaw(InputStream input) {
         Representer representer = new Representer();
         representer.getPropertyUtils().setSkipMissingProperties(true);
         Yaml yaml = new Yaml(new Constructor(YamlConfig.class), representer);
@@ -57,6 +78,23 @@ public class YamlConfig {
                     "  constants = " + constants.toString() + ",\n" +
                     "}";
         }
+
+        public static SubsystemConfig merge(SubsystemConfig active, SubsystemConfig base) {
+            var result = new SubsystemConfig();
+
+            result.implemented = active.implemented || base.implemented;
+            mergeMap(result.talons, active.talons, base.talons);
+            mergeMap(result.falcons, active.falcons, base.falcons);
+            mergeMap(result.victors, active.victors, base.victors);
+            mergeMap(result.solenoids, active.solenoids, base.solenoids);
+            mergeMap(result.doublesolenoids, active.doublesolenoids, base.doublesolenoids);
+            result.invertMotor.addAll(base.invertMotor);
+            result.invertMotor.addAll(active.invertMotor);
+            result.canifier = active.canifier != null ? active.canifier : base.canifier;
+            mergeMap(result.constants, active.constants, base.constants);
+
+            return result;
+        }
     }
 
     public static class DoubleSolenoidConfig {
@@ -71,7 +109,28 @@ public class YamlConfig {
 
     @Override
     public String toString() {
-        return "YamlConfig {\n  subsystems = " + subsystems.toString() +
-                "\n  pcm = " + pcm + "\n  constants = " + constants.toString( )+ "\n}";
+        return "YamlConfig {\n" +
+            "  subsystems = " + subsystems.toString() +
+                "\n  pcm = " + pcm + "\n  constants = " + constants.toString() + "\n}";
+    }
+
+    public static YamlConfig merge(YamlConfig active, YamlConfig base) {
+        var result = new YamlConfig();
+        result.subsystems = new HashMap<>(base.subsystems);
+
+        // Complex merge, add all subsystems in active config to result (already containing base subsystems)
+        // using SubsystemConfig::merge to resolve conflicts.
+        active.subsystems.forEach((key, value) ->
+            result.subsystems.merge(key, value, (b, a) -> SubsystemConfig.merge(a, b)));
+        mergeMap(result.constants, active.constants, base.constants);
+        result.pcm = active.pcm != null ? active.pcm : base.pcm;
+        result.$abstract = false;
+        result.$extends = null;
+        return result;
+    }
+
+    private static <K, V> void mergeMap(Map<K, V> result, Map<K, V> active, Map<K, V> fallback) {
+        result.putAll(fallback);
+        result.putAll(active);
     }
 }
