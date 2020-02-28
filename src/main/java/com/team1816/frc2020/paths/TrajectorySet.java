@@ -15,6 +15,7 @@ public class TrajectorySet {
     }
 
     public final Trajectory<TimedState<Pose2dWithCurvature>> DRIVE_STRAIGHT;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> TUNE_DRIVETRAIN;
     public final Trajectory<TimedState<Pose2dWithCurvature>> LIVING_ROOM;
     public final Trajectory<TimedState<Pose2dWithCurvature>> SIX_BALL_ALLIANCE;
     public final Trajectory<TimedState<Pose2dWithCurvature>> AUTO_TRENCH_TURN_RIGHT;
@@ -30,6 +31,7 @@ public class TrajectorySet {
 
     private TrajectorySet() {
         this.DRIVE_STRAIGHT = new DriveStraight(12).generateTrajectory();
+        this.TUNE_DRIVETRAIN = new DriveStraight(176).generateTrajectory();
         this.LIVING_ROOM = new LivingRoomPath().generateTrajectory();
         this.SIX_BALL_ALLIANCE = new SixBallAlliancePath().generateTrajectory();
         this.AUTO_TRENCH_TURN_RIGHT = new AutoTrenchTurnRightPath().generateTrajectory();
