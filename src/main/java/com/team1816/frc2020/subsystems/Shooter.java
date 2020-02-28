@@ -135,9 +135,9 @@ public class Shooter extends Subsystem implements PidProvider {
 
     public void startShooterBasedOnDistance() {
         /* if (distance <  ) { TODO: Find correct distances
-            setVelocity(MID_VELOCITY);
-        } else if (< distance < ) {
             setVelocity(NEAR_VELOCITY);
+        } else if (< distance < ) {
+            setVelocity(MID_VELOCITY);
         } else if (distance > ) {
             setVelocity(MAX_VELOCITY);
         } */
