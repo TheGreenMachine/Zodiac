@@ -27,6 +27,9 @@ public class RobotYamlTests {
     }
 
     @Test
+    public void zodiacProYamlTest() { loadConfig("zodiac_pro"); }
+
+    @Test
     public void zenithYamlTest(){
         loadConfig("zenith");
     }
@@ -39,5 +42,6 @@ public class RobotYamlTests {
             e.printStackTrace();
         }
         assertNotNull(config);
+        System.out.println(config);
     }
 }

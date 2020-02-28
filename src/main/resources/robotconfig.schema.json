@@ -82,7 +82,7 @@
             "$ref": "#/definitions/constants"
         }
     },
-    "oneOf": [
+    "anyOf": [
         {
             "required": ["$extends"]
         },
