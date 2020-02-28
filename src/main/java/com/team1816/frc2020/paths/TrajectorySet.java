@@ -31,7 +31,7 @@ public class TrajectorySet {
 
     private TrajectorySet() {
         this.DRIVE_STRAIGHT = new DriveStraight(12).generateTrajectory();
-        this.TUNE_DRIVETRAIN = new DriveStraight(155).generateTrajectory();
+        this.TUNE_DRIVETRAIN = new DriveStraight(176).generateTrajectory();
         this.LIVING_ROOM = new LivingRoomPath().generateTrajectory();
         this.SIX_BALL_ALLIANCE = new SixBallAlliancePath().generateTrajectory();
         this.AUTO_TRENCH_TURN_RIGHT = new AutoTrenchTurnRightPath().generateTrajectory();

@@ -40,7 +40,7 @@ public class Collector extends Subsystem {
         this.intake = factory.getMotor(NAME, "intake");
 
         ((TalonSRX) intake).enableCurrentLimit(true);
-        ((TalonSRX) intake).configContinuousCurrentLimit(35);
+        ((TalonSRX) intake).configContinuousCurrentLimit(40);
     }
 
     public boolean isArmDown() {

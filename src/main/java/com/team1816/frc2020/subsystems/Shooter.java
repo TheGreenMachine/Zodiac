@@ -10,8 +10,6 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 
@@ -52,8 +50,6 @@ public class Shooter extends Subsystem implements PidProvider {
     public static final int MID_VELOCITY = 9_900 ; // Trench this also worked from initiation
     public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(NAME, "velocityThreshold", 3000);
 
-    private SendableChooser<Integer> velocityChooser = new SendableChooser<>();
-
     private Shooter() {
         super(NAME);
 
@@ -75,10 +71,10 @@ public class Shooter extends Subsystem implements PidProvider {
 
         configCurrentLimits(40 /* amps */);
 
-        shooterMain.setInverted(false);
-        shooterFollowerA.setInverted(false);
-        shooterFollowerB.setInverted(true);
-        shooterFollowerC.setInverted(true);
+        shooterMain.setInverted(true);
+        shooterFollowerA.setInverted(true);
+        shooterFollowerB.setInverted(false);
+        shooterFollowerC.setInverted(false);
 
         shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
@@ -139,16 +135,12 @@ public class Shooter extends Subsystem implements PidProvider {
 
     public void startShooterBasedOnDistance() {
         /* if (distance <  ) { TODO: Find correct distances
-            setVelocity(NEAR_VELOCITY);
-        } else if (< distance < ) {
             setVelocity(MID_VELOCITY);
+        } else if (< distance < ) {
+            setVelocity(NEAR_VELOCITY);
         } else if (distance > ) {
             setVelocity(MAX_VELOCITY);
         } */
-    }
-
-    public void shootFromChooser(boolean shooting) {
-        setVelocity(shooting ? velocityChooser.getSelected() : 0);
     }
 
     public void startShooter() {
@@ -191,12 +183,6 @@ public class Shooter extends Subsystem implements PidProvider {
     public void initSendable(SendableBuilder builder) {
         builder.addBooleanProperty("Shooter/IsAtSpeed", this::isVelocityNearTarget, null);
         builder.addDoubleProperty("Shooter/ShooterVelocity", this::getActualVelocity, this::setVelocity);
-
-        velocityChooser.setDefaultOption("NEAR_VELOCITY", NEAR_VELOCITY);
-        velocityChooser.addOption("MID_VELOCITY", MID_VELOCITY);
-        velocityChooser.addOption("MAX_VELOCITY", MAX_VELOCITY);
-
-        SmartDashboard.putData(velocityChooser);
     }
 
     @Override
