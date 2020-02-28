@@ -27,12 +27,21 @@ public class RobotYamlTests {
     }
 
     @Test
+    public void zodiacProYamlTest() { loadConfig("zodiac_pro"); }
+
+    @Test
     public void zenithYamlTest(){
         loadConfig("zenith");
     }
 
-    private void loadConfig(String configName){
-        var config = YamlConfig.loadFrom(this.getClass().getClassLoader().getResourceAsStream(configName + ".config.yml"));
+    private void loadConfig(String configName) {
+        YamlConfig config = null;
+        try {
+            config = YamlConfig.loadFrom(this.getClass().getClassLoader().getResourceAsStream(configName + ".config.yml"));
+        } catch (ConfigIsAbstractException e) {
+            e.printStackTrace();
+        }
         assertNotNull(config);
+        System.out.println(config);
     }
 }
