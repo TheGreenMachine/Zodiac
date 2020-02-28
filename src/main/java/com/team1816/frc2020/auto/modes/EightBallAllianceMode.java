@@ -5,15 +5,21 @@ import com.team1816.frc2020.auto.actions.ShootAction;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.AutoModeEndedException;
-import com.team1816.lib.auto.actions.*;
+import com.team1816.lib.auto.actions.DriveTrajectory;
+import com.team1816.lib.auto.actions.ParallelAction;
+import com.team1816.lib.auto.actions.SeriesAction;
+import com.team1816.lib.auto.actions.WaitAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
 public class EightBallAllianceMode extends AutoModeBase {
-    private DriveTrajectory mDriveTrajectory;
+    private DriveTrajectory mDriveTrajectoryA;
+    private DriveTrajectory mDriveTrajectoryB;
 
     public EightBallAllianceMode() {
-        var trajectory = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCE;
-        mDriveTrajectory = new DriveTrajectory(trajectory, true);
+        var trajectoryA = TrajectorySet.getInstance().SIX_BALL_ALLIANCE;
+        var trajectoryB = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCE;
+        mDriveTrajectoryA = new DriveTrajectory(trajectoryA, true);
+        mDriveTrajectoryB = new DriveTrajectory(trajectoryB, true);
     }
 
     @Override
@@ -25,7 +31,10 @@ public class EightBallAllianceMode extends AutoModeBase {
             new SeriesAction(
                 new ShootAction(Turret.CARDINAL_NORTH),
                 new ParallelAction(
-                    mDriveTrajectory,
+                    new SeriesAction(
+                        mDriveTrajectoryA,
+                        mDriveTrajectoryB
+                    ),
                     new SeriesAction(
                         new CollectAction(true)
                     )

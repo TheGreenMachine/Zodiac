@@ -15,10 +15,11 @@ public class EightBallOpposingAPath implements PathContainer {
 
     @Override
     public List<Pose2d> buildWaypoints() {
-        return List.of(
-            new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0)),
-            new Pose2d(100, 0.0, Rotation2d.fromDegrees(0)),
-            new Pose2d(120, 65, Rotation2d.fromDegrees(90))
+        return List.of( // TODO: Needs to be tested
+            new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
+            new Pose2d(125, 0, Rotation2d.fromDegrees(0)),
+            new Pose2d(50, 0, Rotation2d.fromDegrees(0)),
+            new Pose2d(115, 80, Rotation2d.fromDegrees(90))
         );
     }
 
