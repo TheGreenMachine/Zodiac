@@ -15,5 +15,6 @@ subsystems:
             maxPos: -1273
     ledmanager:
         implemented: true
+        canifier: 18
 constants:
     wheelDiameter: 6.32 #inches
