@@ -148,8 +148,8 @@ public class Robot extends TimedRobot {
                 spinner,
                 collector,
                 hopper,
-                turret
-                // climber
+                turret,
+                climber
             );
 
             mDrive.zeroSensors();
