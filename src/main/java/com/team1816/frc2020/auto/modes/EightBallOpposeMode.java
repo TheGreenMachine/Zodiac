@@ -30,9 +30,9 @@ public class EightBallOpposeMode extends AutoModeBase {
                 new ParallelAction(
                     mDriveTrajectoryA,
                     new SeriesAction(
-                        new WaitUntilInsideRegion(new Translation2d(50, -20), new Translation2d(100, 20)),
+                        new WaitUntilInsideRegion(new Translation2d(70, 0), new Translation2d(125, 0)),
                         new CollectAction(true),
-                        new WaitUntilInsideRegion(new Translation2d(70,35), new Translation2d(100,75)),
+                        new WaitUntilInsideRegion(new Translation2d(50, 0), new Translation2d(70,0)),
                         new CollectAction(false)
                     )
                 ),
