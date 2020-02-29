@@ -5,11 +5,9 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
+import com.team1816.frc2020.RobotState;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
-import edu.wpi.first.networktables.EntryListenerFlags;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -26,14 +24,14 @@ public class Turret extends Subsystem implements PidProvider {
 
     // Components
     private final IMotorControllerEnhanced turret;
-    private final NetworkTable networkTable;
+    private final Camera camera = Camera.getInstance();
+    private final RobotState robotState = RobotState.getInstance();
 
     // State
     private double turretPos;
     private double turretSpeed;
     private boolean outputsChanged;
     private boolean isPercentOutput;
-    private double deltaXAngle;
     private boolean autoHomeEnabled;
 
     // Constants
@@ -51,9 +49,6 @@ public class Turret extends Subsystem implements PidProvider {
     public static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
     public static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
     private static final boolean TURRET_SENSOR_PHASE = true;
-    private static final double CAMERA_FOV = 87.0; // deg
-    private static final double CAMERA_FOCAL_LENGTH = 350; // px
-    private static final double VIDEO_WIDTH = 672.0; // px
     public static final double VISION_HOMING_BIAS = 0 /* 1.75 */; // deg
 
     public static final double CARDINAL_SOUTH = 32.556; // deg
@@ -95,14 +90,6 @@ public class Turret extends Subsystem implements PidProvider {
         turret.configReverseSoftLimitThreshold(TURRET_POSITION_MIN, Constants.kCANTimeoutMs); // Reverse = MIN
         turret.overrideLimitSwitchesEnable(true);
         turret.overrideSoftLimitsEnable(true);
-
-        // Network Table Listener
-        networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
-        networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
-            if (value.getDouble() < 0) { return; }
-            var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
-            this.deltaXAngle = Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH)) + VISION_HOMING_BIAS;
-        }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }
 
     public void setAutoHomeEnabled(boolean autoHomeEnabled) {
@@ -116,7 +103,9 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     private void autoHome() {
-        setTurretPosition(getTurretPositionTicks() + convertTurretDegreesToTicks(deltaXAngle));
+        if (robotState.getLatestFieldToTurret().cos() < 0) {
+            setTurretAngle(getTurretPositionDegrees() + camera.getDeltaXAngle());
+        }
     }
 
     @Override
@@ -153,10 +142,6 @@ public class Turret extends Subsystem implements PidProvider {
 
     public void setTurretAngle(double angle) {
         setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
-    }
-
-    public double getDeltaX() {
-        return deltaXAngle;
     }
 
     public void jogLeft() {

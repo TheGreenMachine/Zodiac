@@ -1,5 +1,6 @@
 package com.team1816.frc2020;
 
+import com.team1816.frc2020.subsystems.Drive;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -81,6 +82,8 @@ public class RobotState {
     List<Translation2d> mCameraToVisionTargetPosesLow = new ArrayList<>();
     List<Translation2d> mCameraToVisionTargetPosesHigh = new ArrayList<>();
 
+    private Rotation2d headingRelativeToInitial;
+
     private RobotState() {
         reset(0.0, Pose2d.identity(), Rotation2d.identity());
     }
@@ -160,6 +163,22 @@ public class RobotState {
 
     public synchronized void addVehicleToTurretObservation(double timestamp, Rotation2d observation) {
         vehicle_to_turret_.put(new InterpolatingDouble(timestamp), observation);
+    }
+
+    /**
+     * Rotation of robot relative to initial position,
+     * unaffected by calls to {@link #reset()}
+     */
+    public Rotation2d getHeadingRelativeToInitial() {
+        return headingRelativeToInitial;
+    }
+
+    public void setHeadingRelativeToInitial(Rotation2d heading) {
+        this.headingRelativeToInitial = heading;
+    }
+
+    public Rotation2d getLatestFieldToTurret() {
+        return getHeadingRelativeToInitial().rotateBy(getLatestVehicleToTurret().getValue());
     }
 
     public synchronized void addObservations(double timestamp, Twist2d displacement, Twist2d measured_velocity,
