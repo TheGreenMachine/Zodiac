@@ -5,10 +5,12 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
-import com.team1816.frc2020.Robot;
 import com.team1816.frc2020.RobotState;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -50,14 +52,12 @@ public class Turret extends Subsystem implements PidProvider {
     public static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
     public static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
     private static final boolean TURRET_SENSOR_PHASE = true;
-    public static final double VISION_HOMING_BIAS = 0; /* 1.75 */; // deg
+    public static final double VISION_HOMING_BIAS = 0 /* 1.75 */; // deg
 
     public static final double CARDINAL_SOUTH = 32.556; // deg
     public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90; // deg
     public static final double CARDINAL_NORTH = CARDINAL_SOUTH + 180; // deg
     public static final double MAX_ANGLE = convertTurretTicksToDegrees(TURRET_POSITION_MAX - TURRET_POSITION_MIN);
-
-    public static double TURRET_ANGLE_RELATIVE_TO_FIELD;
 
     public Turret() {
         super(NAME);
@@ -65,7 +65,6 @@ public class Turret extends Subsystem implements PidProvider {
 
         turret.setNeutralMode(NeutralMode.Brake);
         turret.setSensorPhase(TURRET_SENSOR_PHASE);
-
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
@@ -75,51 +74,27 @@ public class Turret extends Subsystem implements PidProvider {
         this.kD = factory.getConstant(NAME, "kD");
         this.kF = factory.getConstant(NAME, "kF");
 
-        synchronized (this) {
-            int absolutePosition = getTurretPosAbsolute();
-            turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kCANTimeoutMs);
+        int absolutePosition = getTurretPosAbsolute();
+        turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kCANTimeoutMs);
 
-            // Position Control
-            double peakOutput = 0.5;
+        // Position Control
+        double peakOutput = 0.5;
 
-            turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
-            turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
-            turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
-            turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
-            turret.configAllowableClosedloopError(kPIDLoopIDx, ALLOWABLE_ERROR_TICKS, Constants.kCANTimeoutMs);
+        turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
+        turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
+        turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
+        turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
+        turret.configAllowableClosedloopError(kPIDLoopIDx, ALLOWABLE_ERROR_TICKS, Constants.kCANTimeoutMs);
 
-            // Soft Limits
-            turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
-            turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
-            turret.configForwardSoftLimitThreshold(TURRET_POSITION_MAX, Constants.kCANTimeoutMs); // Forward = MAX
-            turret.configReverseSoftLimitThreshold(TURRET_POSITION_MIN, Constants.kCANTimeoutMs); // Reverse = MIN
-            turret.overrideLimitSwitchesEnable(true);
-            turret.overrideSoftLimitsEnable(true);
-
-            TURRET_ANGLE_RELATIVE_TO_FIELD = robotState.getLatestFieldToTurret();
-        }
-
-
+        // Soft Limits
+        turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
+        turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
+        turret.configForwardSoftLimitThreshold(TURRET_POSITION_MAX, Constants.kCANTimeoutMs); // Forward = MAX
+        turret.configReverseSoftLimitThreshold(TURRET_POSITION_MIN, Constants.kCANTimeoutMs); // Reverse = MIN
+        turret.overrideLimitSwitchesEnable(true);
+        turret.overrideSoftLimitsEnable(true);
     }
-    // TODO: make followTarget be constantly called, improve math
-    public void followTarget(boolean follow){
-        if(follow){
-            if(Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)<360-Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)) {
-                if (TURRET_ANGLE_RELATIVE_TO_FIELD < 0) {
-                    setTurretAngle(getTurretPositionDegrees() + Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)-CARDINAL_SOUTH);
-                } else {
-                    setTurretAngle(getTurretPositionDegrees() - Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)-CARDINAL_SOUTH);
-                }
-            }
-            else{
-                if (TURRET_ANGLE_RELATIVE_TO_FIELD < 0) {
-                    setTurretAngle(getTurretPositionDegrees() + Math.abs(360-Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD))-CARDINAL_SOUTH);
-                } else {
-                    setTurretAngle(getTurretPositionDegrees() - Math.abs(360-Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD))-CARDINAL_SOUTH);
-                }
-            }
-        }
-    }
+
     public void setAutoHomeEnabled(boolean autoHomeEnabled) {
         if (Constants.kUseAutoAim) {
             this.autoHomeEnabled = autoHomeEnabled;
@@ -130,10 +105,10 @@ public class Turret extends Subsystem implements PidProvider {
         return autoHomeEnabled;
     }
 
-    public void autoHome() {
-       // if (robotState.getLatestFieldToTurret().cos() < 0) {
-            setTurretAngle(getTurretPositionDegrees() + camera.getDeltaXAngle() + VISION_HOMING_BIAS);
-       // }
+    private void autoHome() {
+        if (robotState.getLatestFieldToTurret().cos() < 1) {
+            setTurretAngle(getTurretPositionDegrees() + camera.getDeltaXAngle());
+        }
     }
 
     @Override
@@ -162,18 +137,14 @@ public class Turret extends Subsystem implements PidProvider {
         outputsChanged = true;
     }
 
-    public synchronized void setTurretPosition(double position) {
+    public void setTurretPosition(double position) {
         turretPos = position;
         isPercentOutput = false;
         outputsChanged = true;
     }
 
-    public synchronized void setTurretAngle(double angle) {
+    public void setTurretAngle(double angle) {
         setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
-    }
-
-    public synchronized void setTurretAngleRelativeToField() {
-
     }
 
     public void jogLeft() {
@@ -222,14 +193,13 @@ public class Turret extends Subsystem implements PidProvider {
 
     @Override
     public void writePeriodicOutputs() {
-        TURRET_ANGLE_RELATIVE_TO_FIELD= robotState.getLatestFieldToTurret();
         if (autoHomeEnabled) {
             autoHome();
         }
         if (outputsChanged) {
             if (isPercentOutput) {
                 if (turretSpeed == 0) {
-                    turret.set(ControlMode.Position, getTurretPositionTicks() + 200 * turret.getMotorOutputPercent());
+                    turret.set(ControlMode.Position, getTurretPositionTicks());
                 } else {
                     turret.set(ControlMode.PercentOutput, turretSpeed);
                 }
@@ -238,8 +208,6 @@ public class Turret extends Subsystem implements PidProvider {
             }
 
             outputsChanged = false;
-        } else {
-
         }
     }
 
@@ -258,6 +226,5 @@ public class Turret extends Subsystem implements PidProvider {
         builder.addDoubleProperty("Turret Absolute Ticks", this::getTurretPosAbsolute, null);
         builder.addDoubleProperty("Turret Relative Ticks", this::getTurretPositionTicks, null);
         builder.addDoubleProperty("Turret Error", this::getPositionError, null);
-        SmartDashboard.putNumber("Initial Field to Turret Angle", TURRET_ANGLE_RELATIVE_TO_FIELD);
     }
 }
