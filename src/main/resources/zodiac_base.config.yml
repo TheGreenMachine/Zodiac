@@ -15,8 +15,8 @@ subsystems:
             pigeonId: 9
             pigeonOnTalon: -1
             kP: 0.1 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
-            kI: 0.00008 # 0.018
-            kD: 4.5 # 3.6
+            kI: 0.0001 # 0.018
+            kD: 4.0 # 3.6
             kF: 0.0475813
             iZone: 0
             encPPR: 22220.8
