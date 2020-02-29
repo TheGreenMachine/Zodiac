@@ -16,5 +16,8 @@ subsystems:
     ledmanager:
         implemented: true
         canifier: 18
+    camera:
+        implemented: true
+        canifier: 19
 constants:
     wheelDiameter: 6.32 #inches

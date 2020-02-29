@@ -14,6 +14,7 @@ public class LedManager extends Subsystem {
 
     // Components
     private final CANifier canifier;
+    private final CANifier cameraCanifier;
 
     // State
     private boolean blinkMode;
@@ -23,6 +24,7 @@ public class LedManager extends Subsystem {
     private int ledR;
     private int ledG;
     private int ledB;
+    private boolean cameraLedOn = false;
 
     private int period; // ms
     private long lastWriteTime = System.currentTimeMillis();
@@ -30,6 +32,7 @@ public class LedManager extends Subsystem {
     private LedManager() {
         super(NAME);
         this.canifier = factory.getCanifier(NAME);
+        this.cameraCanifier = factory.getCanifier("camera");
         this.ledR = 0;
         this.ledG = 0;
         this.ledB = 0;
@@ -49,6 +52,11 @@ public class LedManager extends Subsystem {
             canifier.setLEDOutput((ledR / 255.0), CANifier.LEDChannel.LEDChannelB);
             canifier.setLEDOutput((ledB / 255.0), CANifier.LEDChannel.LEDChannelC);
         }
+    }
+
+    public void setCameraLed(boolean cameraLedOn) {
+        this.cameraLedOn = cameraLedOn;
+        outputsChanged = true;
     }
 
     public void setLedColor(int r, int g, int b) {
@@ -125,6 +133,9 @@ public class LedManager extends Subsystem {
                 System.out.printf("R: %d, G: %d, B: %d%n", ledR, ledG, ledB);
                 writeLedHardware(ledR, ledG, ledB);
                 outputsChanged = false;
+            }
+            if (outputsChanged) {
+                cameraCanifier.setLEDOutput(cameraLedOn ? 1 : 0, CANifier.LEDChannel.LEDChannelA);
             }
         }
     }
