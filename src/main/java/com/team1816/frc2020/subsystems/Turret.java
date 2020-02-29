@@ -196,7 +196,7 @@ public class Turret extends Subsystem implements PidProvider {
         if (outputsChanged) {
             if (isPercentOutput) {
                 if (turretSpeed == 0) {
-                    turret.set(ControlMode.Position, getTurretPositionTicks());
+                    turret.set(ControlMode.Position, getTurretPositionTicks() + 10);
                 } else {
                     turret.set(ControlMode.PercentOutput, turretSpeed);
                 }

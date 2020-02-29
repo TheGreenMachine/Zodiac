@@ -177,7 +177,7 @@ public class LedManager extends Subsystem {
 
     public enum RobotStatus {
         ENABLED(0, 255, 0), // green
-        DISABLED(255, 103, 0), // orange
+        DISABLED(255, 64, 0), // orange
         ERROR(255, 0, 0), // red
         AUTONOMOUS(0, 255, 255), // cyan (we can also try 42, 161, 152)
         ENDGAME(0, 0, 255), // blue
