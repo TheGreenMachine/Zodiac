@@ -5,10 +5,6 @@ subsystems:
     hopper:
         invertMotor:
             - 5
-    shooter:
-        falcons:
-            shooterMaster: 3
-            shooterFollowerB: 2
     turret:
         constants:
             minPos: -4445

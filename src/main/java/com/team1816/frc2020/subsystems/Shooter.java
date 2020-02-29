@@ -75,10 +75,10 @@ public class Shooter extends Subsystem implements PidProvider {
 
         configCurrentLimits(40 /* amps */);
 
-        shooterMain.setInverted(true);
-        shooterFollowerA.setInverted(true);
-        shooterFollowerB.setInverted(false);
-        shooterFollowerC.setInverted(false);
+        shooterMain.setInverted(false);
+        shooterFollowerA.setInverted(false);
+        shooterFollowerB.setInverted(true);
+        shooterFollowerC.setInverted(true);
 
         shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
@@ -147,8 +147,8 @@ public class Shooter extends Subsystem implements PidProvider {
         } */
     }
 
-    public void shootFromChooser() {
-        setVelocity(velocityChooser.getSelected());
+    public void shootFromChooser(boolean shooting) {
+        setVelocity(shooting ? velocityChooser.getSelected() : 0);
     }
 
     public void startShooter() {

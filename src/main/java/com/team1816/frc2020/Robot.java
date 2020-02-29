@@ -178,10 +178,10 @@ public class Robot extends TimedRobot {
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
 
-                createAction(mControlBoard::getClimberDeploy, () -> {
+                createHoldAction(mControlBoard::getClimberDeploy, (pressed) -> {
                     if ((DriverStation.getInstance().getMatchTime() > 120) ||
                         (DriverStation.getInstance().getMatchTime() == -1)) {
-                        climber.setDeployed(true);
+                        climber.setDeployed(pressed);
                     }
                 }),
                 createAction(mControlBoard::getTrenchToFeederSpline, () -> {
@@ -207,18 +207,21 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
                 createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
 
-                createScalar(mControlBoard::getClimber, climber::setClimberPower),
+                createScalar(mControlBoard::getClimber, power -> climber.setClimberPower(power > 0 ? power : 0)),
 
                 createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)),
                 createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)),
                 createHoldAction(mControlBoard::getAutoHome, pressed -> {
+                    ledManager.setCameraLed(pressed);
                     ledManager.indicateStatus(pressed ? LedManager.RobotStatus.SEEN_TARGET : LedManager.RobotStatus.ENABLED);
-                    turret.setAutoHomeEnabled(pressed);
+                    if (pressed) {
+                        turret.autoHome();
+                    }
                 }),
 
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
                    // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
-                    shooter.shootFromChooser();
+                    shooter.shootFromChooser(shooting);
                     hopper.lockToShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
                     if (shooting) {
@@ -307,9 +310,6 @@ public class Robot extends TimedRobot {
             CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
-
-            // shooter
-            // shooter.setVelocity(4200);
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();

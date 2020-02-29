@@ -71,25 +71,27 @@ public class Turret extends Subsystem implements PidProvider {
         this.kD = factory.getConstant(NAME, "kD");
         this.kF = factory.getConstant(NAME, "kF");
 
-        int absolutePosition = getTurretPosAbsolute();
-        turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kCANTimeoutMs);
+        synchronized (this) {
+            int absolutePosition = getTurretPosAbsolute();
+            turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kCANTimeoutMs);
 
-        // Position Control
-        double peakOutput = 0.5;
+            // Position Control
+            double peakOutput = 0.5;
 
-        turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
-        turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
-        turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
-        turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
-        turret.configAllowableClosedloopError(kPIDLoopIDx, ALLOWABLE_ERROR_TICKS, Constants.kCANTimeoutMs);
+            turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
+            turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
+            turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
+            turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
+            turret.configAllowableClosedloopError(kPIDLoopIDx, ALLOWABLE_ERROR_TICKS, Constants.kCANTimeoutMs);
 
-        // Soft Limits
-        turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
-        turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
-        turret.configForwardSoftLimitThreshold(TURRET_POSITION_MAX, Constants.kCANTimeoutMs); // Forward = MAX
-        turret.configReverseSoftLimitThreshold(TURRET_POSITION_MIN, Constants.kCANTimeoutMs); // Reverse = MIN
-        turret.overrideLimitSwitchesEnable(true);
-        turret.overrideSoftLimitsEnable(true);
+            // Soft Limits
+            turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
+            turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
+            turret.configForwardSoftLimitThreshold(TURRET_POSITION_MAX, Constants.kCANTimeoutMs); // Forward = MAX
+            turret.configReverseSoftLimitThreshold(TURRET_POSITION_MIN, Constants.kCANTimeoutMs); // Reverse = MIN
+            turret.overrideLimitSwitchesEnable(true);
+            turret.overrideSoftLimitsEnable(true);
+        }
     }
 
     public void setAutoHomeEnabled(boolean autoHomeEnabled) {
@@ -102,7 +104,7 @@ public class Turret extends Subsystem implements PidProvider {
         return autoHomeEnabled;
     }
 
-    private void autoHome() {
+    public void autoHome() {
         if (robotState.getLatestFieldToTurret().cos() < 0) {
             setTurretAngle(getTurretPositionDegrees() + camera.getDeltaXAngle());
         }
@@ -134,13 +136,13 @@ public class Turret extends Subsystem implements PidProvider {
         outputsChanged = true;
     }
 
-    public void setTurretPosition(double position) {
+    public synchronized void setTurretPosition(double position) {
         turretPos = position;
         isPercentOutput = false;
         outputsChanged = true;
     }
 
-    public void setTurretAngle(double angle) {
+    public synchronized void setTurretAngle(double angle) {
         setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
     }
 
@@ -196,7 +198,7 @@ public class Turret extends Subsystem implements PidProvider {
         if (outputsChanged) {
             if (isPercentOutput) {
                 if (turretSpeed == 0) {
-                    turret.set(ControlMode.Position, getTurretPositionTicks() + 10);
+                    turret.set(ControlMode.Position, getTurretPositionTicks() + 200 * turret.getMotorOutputPercent());
                 } else {
                     turret.set(ControlMode.PercentOutput, turretSpeed);
                 }
