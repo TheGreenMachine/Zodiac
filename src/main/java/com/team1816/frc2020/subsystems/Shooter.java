@@ -10,6 +10,8 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 
@@ -49,6 +51,8 @@ public class Shooter extends Subsystem implements PidProvider {
     public static final int NEAR_VELOCITY = 10_800;  // Initiation line
     public static final int MID_VELOCITY = 9_900 ; // Trench this also worked from initiation
     public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(NAME, "velocityThreshold", 3000);
+
+    private SendableChooser<Integer> velocityChooser = new SendableChooser<>();
 
     private Shooter() {
         super(NAME);
@@ -143,6 +147,10 @@ public class Shooter extends Subsystem implements PidProvider {
         } */
     }
 
+    public void shootFromChooser() {
+        setVelocity(velocityChooser.getSelected());
+    }
+
     public void startShooter() {
         setVelocity(MID_VELOCITY);
     }
@@ -183,6 +191,12 @@ public class Shooter extends Subsystem implements PidProvider {
     public void initSendable(SendableBuilder builder) {
         builder.addBooleanProperty("Shooter/IsAtSpeed", this::isVelocityNearTarget, null);
         builder.addDoubleProperty("Shooter/ShooterVelocity", this::getActualVelocity, this::setVelocity);
+
+        velocityChooser.setDefaultOption("NEAR_VELOCITY", NEAR_VELOCITY);
+        velocityChooser.addOption("MID_VELOCITY", MID_VELOCITY);
+        velocityChooser.addOption("MAX_VELOCITY", MAX_VELOCITY);
+
+        SmartDashboard.putData(velocityChooser);
     }
 
     @Override

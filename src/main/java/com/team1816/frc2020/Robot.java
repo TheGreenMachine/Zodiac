@@ -210,10 +210,14 @@ public class Robot extends TimedRobot {
 
                 createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)),
                 createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)),
-                createHoldAction(mControlBoard::getAutoHome, turret::setAutoHomeEnabled),
+                createHoldAction(mControlBoard::getAutoHome, pressed -> {
+                    ledManager.indicateStatus(pressed ? LedManager.RobotStatus.SEEN_TARGET : LedManager.RobotStatus.ENABLED);
+                    turret.setAutoHomeEnabled(pressed);
+                }),
 
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
-                    shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
+                   // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
+                    shooter.shootFromChooser();
                     hopper.lockToShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
                     if (shooting) {
