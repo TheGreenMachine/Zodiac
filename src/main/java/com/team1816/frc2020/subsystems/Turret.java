@@ -8,9 +8,6 @@ import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
-import edu.wpi.first.networktables.EntryListenerFlags;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -106,7 +103,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     private void autoHome() {
-        if (robotState.getLatestFieldToTurret().cos() < 1) {
+        if (robotState.getLatestFieldToTurret().cos() < 0) {
             setTurretAngle(getTurretPositionDegrees() + camera.getDeltaXAngle());
         }
     }
