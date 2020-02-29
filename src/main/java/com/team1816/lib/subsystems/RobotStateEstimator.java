@@ -3,6 +3,7 @@ package com.team1816.lib.subsystems;
 import com.team1816.frc2020.Kinematics;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team254.lib.geometry.Pose2d;
@@ -13,6 +14,7 @@ public class RobotStateEstimator extends Subsystem {
     static RobotStateEstimator mInstance = new RobotStateEstimator();
     private RobotState mRobotState = RobotState.getInstance();
     private Drive mDrive = Drive.getInstance();
+    private Turret turret = Turret.getInstance();
     private double left_encoder_prev_distance_ = 0.0;
     private double right_encoder_prev_distance_ = 0.0;
     private double prev_timestamp_ = -1.0;
@@ -54,7 +56,11 @@ public class RobotStateEstimator extends Subsystem {
             final double delta_left = left_distance - left_encoder_prev_distance_;
             final double delta_right = right_distance - right_encoder_prev_distance_;
             final Rotation2d gyro_angle = mDrive.getHeading();
+            final Rotation2d gyro_angle_relative_to_initial = mDrive.getHeadingRelativeToInitial();
             Twist2d odometry_twist;
+
+            final Rotation2d turret_angle = Rotation2d.fromDegrees(turret.getTurretPositionDegrees() - Turret.CARDINAL_NORTH);
+
             synchronized (mRobotState) {
                 final Pose2d last_measurement = mRobotState.getLatestFieldToVehicle().getValue();
                 odometry_twist = Kinematics.forwardKinematics(last_measurement.getRotation(), delta_left,
@@ -66,6 +72,8 @@ public class RobotStateEstimator extends Subsystem {
                     mDrive.getRightLinearVelocity()).scaled(dt);
             mRobotState.addObservations(timestamp, odometry_twist, measured_velocity,
                     predicted_velocity);
+            mRobotState.setHeadingRelativeToInitial(gyro_angle_relative_to_initial);
+            mRobotState.addVehicleToTurretObservation(timestamp, turret_angle);
             left_encoder_prev_distance_ = left_distance;
             right_encoder_prev_distance_ = right_distance;
             prev_heading_ = gyro_angle;
