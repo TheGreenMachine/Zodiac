@@ -214,9 +214,7 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getAutoHome, pressed -> {
                     ledManager.setCameraLed(pressed);
                     ledManager.indicateStatus(pressed ? LedManager.RobotStatus.SEEN_TARGET : LedManager.RobotStatus.ENABLED);
-                    if (pressed) {
-                        turret.autoHome();
-                    }
+                    turret.setAutoHomeEnabled(pressed);
                 }),
 
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
@@ -319,7 +317,7 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
 
-            turret.setTurretAngle(Turret.CARDINAL_NORTH);
+            turret.setTurretAngle(Turret.CARDINAL_SOUTH);
 
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
@@ -367,6 +365,7 @@ public class Robot extends TimedRobot {
             mSubsystemManager.outputToSmartDashboard();
             mRobotState.outputToSmartDashboard();
             mAutoModeSelector.outputToSmartDashboard();
+            mRobotStateEstimator.outputToSmartDashboard();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
