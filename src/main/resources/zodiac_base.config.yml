@@ -72,10 +72,10 @@ subsystems:
     turret:
         implemented: true
         talons:
-            turret: 10
+            turret: 13
         constants: # TODO: tune [P, I, D]
-            kP: 2.83
-            kI: 0 #0.0003
+            kP: 1.645 # 1.981 # 2.83
+            kI: 0.0007
             kD: 0
             kF: 0 # Should be 0 for position control
             encPPR: 4124.6

@@ -7,8 +7,8 @@ subsystems:
             - 5
     turret:
         constants:
-            minPos: -4445
-            maxPos: -1273
+            minPos: -3802
+            maxPos: -757
     ledmanager:
         implemented: true
         canifier: 18
