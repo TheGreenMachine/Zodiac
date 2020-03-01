@@ -46,7 +46,7 @@
                     "invertMotor": {
                         "type": "array",
                         "items": {
-                            "type": "integer"
+                            "type": "string"
                         }
                     },
                     "solenoids": { "$ref": "#/definitions/hardwareMap" },

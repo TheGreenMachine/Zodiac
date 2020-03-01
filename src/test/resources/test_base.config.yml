@@ -43,7 +43,7 @@ subsystems:
             motorA: 1
             motorB: 2
         invertMotor:
-            - 1
+            - motorA
 pcm: 8
 constants:
     baseConstant: 1

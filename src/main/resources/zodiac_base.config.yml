@@ -10,7 +10,7 @@ subsystems:
             rightFollower: 15
             rightFollowerTwo: -1
         invertMotor:
-            - 17
+            - leftMain
         constants:
             pigeonId: 9
             pigeonOnTalon: -1
@@ -48,7 +48,7 @@ subsystems:
             spindexer: 4
             elevator: 5
         invertMotor:
-            - 4
+            - spindexer
         solenoids:
             feederFlap: 4
     shooter:

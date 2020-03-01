@@ -4,7 +4,7 @@ subsystems:
         implemented: true
     hopper:
         invertMotor:
-            - 5
+            - elevator
     shooter:
         falcons:
             shooterMain: 3
