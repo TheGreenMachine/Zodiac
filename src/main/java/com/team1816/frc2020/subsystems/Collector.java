@@ -3,6 +3,7 @@ package com.team1816.frc2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
@@ -39,8 +40,7 @@ public class Collector extends Subsystem {
         this.armPiston = factory.getSolenoid(NAME, "arm");
         this.intake = factory.getMotor(NAME, "intake");
 
-        ((TalonSRX) intake).enableCurrentLimit(true);
-        ((TalonSRX) intake).configContinuousCurrentLimit(20);
+        MotorUtil.configCurrentLimit(intake, true, 20, 0, 0);
     }
 
     public boolean isArmDown() {

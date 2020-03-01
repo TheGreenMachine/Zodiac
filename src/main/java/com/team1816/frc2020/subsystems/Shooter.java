@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
+import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
@@ -28,7 +29,7 @@ public class Shooter extends Subsystem implements PidProvider {
     // Components
     private final IMotorControllerEnhanced shooterMain;
     private final IMotorController shooterFollowerA;
-    private final IMotorController shooterFollowerB;
+    private final IMotorControllerEnhanced shooterFollowerB;
     private final IMotorController shooterFollowerC;
 
     // State
@@ -48,7 +49,7 @@ public class Shooter extends Subsystem implements PidProvider {
 
         this.shooterMain = factory.getMotor(NAME, "shooterMaster");
         this.shooterFollowerA = factory.getMotor(NAME, "shooterFollowerA", shooterMain);
-        this.shooterFollowerB = factory.getMotor(NAME, "shooterFollowerB", shooterMain);
+        this.shooterFollowerB = (IMotorControllerEnhanced) factory.getMotor(NAME, "shooterFollowerB", shooterMain);
         this.shooterFollowerC = factory.getMotor(NAME, "shooterFollowerC", shooterMain);
         //   this.hood = factory.getSolenoid(NAME, "hood");
 
@@ -74,24 +75,8 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     private void configCurrentLimits(int currentLimitAmps) {
-        // ((TalonSRX) shooterMain).enableCurrentLimit(true);
-        // ((TalonSRX) shooterFollowerA).enableCurrentLimit(true);
-        // ((TalonSRX) shooterFollowerB).enableCurrentLimit(true);
-        // ((TalonSRX) shooterFollowerC).enableCurrentLimit(true);
-        // ((TalonSRX) shooterMain).configContinuousCurrentLimit(currentLimitAmps);
-        // ((TalonSRX) shooterFollowerA).configContinuousCurrentLimit(currentLimitAmps);
-        // ((TalonSRX) shooterFollowerB).configContinuousCurrentLimit(currentLimitAmps);
-        // ((TalonSRX) shooterFollowerC).configContinuousCurrentLimit(currentLimitAmps);
-        if (shooterMain instanceof TalonFX) {
-            ((TalonFX) shooterMain).configSupplyCurrentLimit(
-                new SupplyCurrentLimitConfiguration(true, currentLimitAmps, 0, 0)
-            );
-        }
-        if (shooterFollowerB instanceof TalonFX) {
-            ((TalonFX) shooterFollowerB).configSupplyCurrentLimit(
-                new SupplyCurrentLimitConfiguration(true, currentLimitAmps, 0, 0)
-            );
-        }
+        MotorUtil.configCurrentLimit(shooterMain, true, currentLimitAmps, 0, 0);
+        MotorUtil.configCurrentLimit(shooterFollowerB, true, currentLimitAmps, 0, 0);
     }
 
     @Override
