@@ -148,4 +148,10 @@ public class ControlBoard implements IControlBoard {
     public boolean getClimberDeploy() {
         return mButtonControlBoard.getClimberDeploy();
     }
+    public boolean getFollowTarget(){
+        return mDriveControlBoard.getFollowTarget();
+    }
+
+
+
 }

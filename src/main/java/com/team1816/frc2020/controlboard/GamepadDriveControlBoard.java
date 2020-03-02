@@ -71,7 +71,8 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     public boolean getBrakeMode() {
         return mController.getButton(LogitechController.Button.A);
     }
-
+    @Override
+    public boolean getFollowTarget(){return mController.getButton(LogitechController.Button.BACK);}
     @Override
     public int getDriverClimber() {
         switch (mController.getDPad()) {
