@@ -50,7 +50,8 @@ public class Turret extends Subsystem implements PidProvider {
     public static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
     public static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
     private static final boolean TURRET_SENSOR_PHASE = true;
-    public static final double VISION_HOMING_BIAS = 0; /* 1.75 */; // deg
+    public static final double VISION_HOMING_BIAS = 0; /* 1.75 */
+    ; // deg
 
     public static final double CARDINAL_SOUTH = 32.556; // deg
     public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90; // deg
@@ -75,6 +76,7 @@ public class Turret extends Subsystem implements PidProvider {
         this.kD = factory.getConstant(NAME, "kD");
         this.kF = factory.getConstant(NAME, "kF");
 
+//head
         synchronized (this) {
             int absolutePosition = getTurretPosAbsolute();
             turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kCANTimeoutMs);
@@ -100,8 +102,14 @@ public class Turret extends Subsystem implements PidProvider {
         }
 
 
-    }
-    // TODO: make followTarget be constantly called, improve math
+        // TODO: make followTarget be constantly called, improve math
+
+
+        this.zeroSensors();
+
+        // Position Control
+        double peakOutput = 0.5;
+}
     public void followTarget(boolean follow){
         if(follow){
             if(Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)<360-Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)) {
@@ -113,6 +121,13 @@ public class Turret extends Subsystem implements PidProvider {
             }
         }
     }
+    @Override
+    public synchronized void zeroSensors() {
+        int absolutePosition = getTurretPosAbsolute();
+        turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kLongCANTimeoutMs);
+    }
+
+//master
     public void setAutoHomeEnabled(boolean autoHomeEnabled) {
         if (Constants.kUseAutoAim) {
             this.autoHomeEnabled = autoHomeEnabled;

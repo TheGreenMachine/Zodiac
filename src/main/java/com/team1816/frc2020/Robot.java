@@ -150,6 +150,7 @@ public class Robot extends TimedRobot {
             );
 
             mDrive.zeroSensors();
+            turret.zeroSensors();
 
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
             mSubsystemManager.registerDisabledLoops(mDisabledLooper);
@@ -289,6 +290,7 @@ public class Robot extends TimedRobot {
             mInfrastructure.setIsManualControl(true); // turn on compressor when superstructure is not moving
 
             mDrive.zeroSensors();
+            turret.zeroSensors();
 
             System.out.println("Auto init - " + mDriveByCameraInAuto);
             if (!mDriveByCameraInAuto) {
@@ -309,6 +311,10 @@ public class Robot extends TimedRobot {
             CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
+
+
+            turret.zeroSensors();
+
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();

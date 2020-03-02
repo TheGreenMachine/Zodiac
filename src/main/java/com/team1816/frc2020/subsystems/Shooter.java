@@ -1,8 +1,9 @@
 package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 import com.team1816.frc2020.Constants;
+import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
@@ -34,9 +35,7 @@ public class Shooter extends Subsystem implements PidProvider {
 
     // Components
     private final IMotorControllerEnhanced shooterMain;
-    private final IMotorController shooterFollowerA;
-    private final IMotorController shooterFollowerB;
-    private final IMotorController shooterFollowerC;
+    private final IMotorControllerEnhanced shooterFollower;
 
     // State
     private double shooterVelocity;
@@ -57,11 +56,8 @@ public class Shooter extends Subsystem implements PidProvider {
     private Shooter() {
         super(NAME);
 
-        this.shooterMain = factory.getMotor(NAME, "shooterMaster");
-        this.shooterFollowerA = factory.getMotor(NAME, "shooterFollowerA", shooterMain);
-        this.shooterFollowerB = factory.getMotor(NAME, "shooterFollowerB", shooterMain);
-        this.shooterFollowerC = factory.getMotor(NAME, "shooterFollowerC", shooterMain);
-        //   this.hood = factory.getSolenoid(NAME, "hood");
+        this.shooterMain = factory.getMotor(NAME, "shooterMain");
+        this.shooterFollower = (IMotorControllerEnhanced) factory.getMotor(NAME, "shooterFollower", shooterMain);
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
@@ -69,16 +65,14 @@ public class Shooter extends Subsystem implements PidProvider {
         this.kF = factory.getConstant(NAME, "kF");
 
         shooterMain.setNeutralMode(NeutralMode.Coast);
-        shooterFollowerA.setNeutralMode(NeutralMode.Coast);
-        shooterFollowerB.setNeutralMode(NeutralMode.Coast);
-        shooterFollowerC.setNeutralMode(NeutralMode.Coast);
+        shooterFollower.setNeutralMode(NeutralMode.Coast);
 
         configCurrentLimits(40 /* amps */);
 
-        shooterMain.setInverted(false);
-        shooterFollowerA.setInverted(false);
-        shooterFollowerB.setInverted(true);
-        shooterFollowerC.setInverted(true);
+
+        shooterMain.setInverted(true);
+        shooterFollower.setInverted(false);
+
 
         shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
@@ -92,24 +86,8 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     private void configCurrentLimits(int currentLimitAmps) {
-        // ((TalonSRX) shooterMain).enableCurrentLimit(true);
-        // ((TalonSRX) shooterFollowerA).enableCurrentLimit(true);
-        // ((TalonSRX) shooterFollowerB).enableCurrentLimit(true);
-        // ((TalonSRX) shooterFollowerC).enableCurrentLimit(true);
-        // ((TalonSRX) shooterMain).configContinuousCurrentLimit(currentLimitAmps);
-        // ((TalonSRX) shooterFollowerA).configContinuousCurrentLimit(currentLimitAmps);
-        // ((TalonSRX) shooterFollowerB).configContinuousCurrentLimit(currentLimitAmps);
-        // ((TalonSRX) shooterFollowerC).configContinuousCurrentLimit(currentLimitAmps);
-        if (shooterMain instanceof TalonFX) {
-            ((TalonFX) shooterMain).configSupplyCurrentLimit(
-                new SupplyCurrentLimitConfiguration(true, currentLimitAmps, 0, 0)
-            );
-        }
-        if (shooterFollowerB instanceof TalonFX) {
-            ((TalonFX) shooterFollowerB).configSupplyCurrentLimit(
-                new SupplyCurrentLimitConfiguration(true, currentLimitAmps, 0, 0)
-            );
-        }
+        MotorUtil.configCurrentLimit(shooterMain, true, currentLimitAmps, 0, 0);
+        MotorUtil.configCurrentLimit(shooterFollower, true, currentLimitAmps, 0, 0);
     }
 
     @Override
