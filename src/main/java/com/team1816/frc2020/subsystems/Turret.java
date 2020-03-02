@@ -75,8 +75,7 @@ public class Turret extends Subsystem implements PidProvider {
         this.kD = factory.getConstant(NAME, "kD");
         this.kF = factory.getConstant(NAME, "kF");
 
-        int absolutePosition = getTurretPosAbsolute();
-        turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kCANTimeoutMs);
+        this.zeroSensors();
 
         // Position Control
         double peakOutput = 0.5;
@@ -105,6 +104,12 @@ public class Turret extends Subsystem implements PidProvider {
             SmartDashboard.getEntry("atan2 vision").setDouble(
                 Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH) + VISION_HOMING_BIAS));
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+    }
+
+    @Override
+    public synchronized void zeroSensors() {
+        int absolutePosition = getTurretPosAbsolute();
+        turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kLongCANTimeoutMs);
     }
 
     public void setAutoHomeEnabled(boolean autoHomeEnabled) {
@@ -153,7 +158,7 @@ public class Turret extends Subsystem implements PidProvider {
         outputsChanged = true;
     }
 
-    public void setTurretAngle(double angle) {
+    public synchronized void setTurretAngle(double angle) {
         setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
     }
 
