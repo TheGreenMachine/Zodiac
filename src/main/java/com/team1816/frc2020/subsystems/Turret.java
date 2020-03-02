@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
+import com.team1816.frc2020.Robot;
 import com.team1816.frc2020.RobotState;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
@@ -56,6 +57,8 @@ public class Turret extends Subsystem implements PidProvider {
     public static final double CARDINAL_NORTH = CARDINAL_SOUTH + 180; // deg
     public static final double MAX_ANGLE = convertTurretTicksToDegrees(TURRET_POSITION_MAX - TURRET_POSITION_MIN);
 
+    RobotState robotState1=RobotState.getInstance();
+
     public static double TURRET_ANGLE_RELATIVE_TO_FIELD;
 
     public Turret() {
@@ -64,6 +67,7 @@ public class Turret extends Subsystem implements PidProvider {
 
         turret.setNeutralMode(NeutralMode.Brake);
         turret.setSensorPhase(TURRET_SENSOR_PHASE);
+
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
@@ -94,12 +98,30 @@ public class Turret extends Subsystem implements PidProvider {
             turret.overrideLimitSwitchesEnable(true);
             turret.overrideSoftLimitsEnable(true);
 
-            TURRET_ANGLE_RELATIVE_TO_FIELD = robotState.getLatestFieldToTurret().getDegrees();
+            TURRET_ANGLE_RELATIVE_TO_FIELD = robotState.getLatestFieldToTurret();
         }
 
 
     }
-
+    // TODO: make followTarget be constantly called, improve math
+    public void followTarget(boolean follow){
+        if(follow){
+            if(Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)<360-Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)) {
+                if (TURRET_ANGLE_RELATIVE_TO_FIELD < 0) {
+                    setTurretAngle(getTurretPositionDegrees() + Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)-CARDINAL_SOUTH);
+                } else {
+                    setTurretAngle(getTurretPositionDegrees() - Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)-CARDINAL_SOUTH);
+                }
+            }
+            else{
+                if (TURRET_ANGLE_RELATIVE_TO_FIELD < 0) {
+                    setTurretAngle(getTurretPositionDegrees() + Math.abs(360-Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD))-CARDINAL_SOUTH);
+                } else {
+                    setTurretAngle(getTurretPositionDegrees() - Math.abs(360-Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD))-CARDINAL_SOUTH);
+                }
+            }
+        }
+    }
     public void setAutoHomeEnabled(boolean autoHomeEnabled) {
         if (Constants.kUseAutoAim) {
             this.autoHomeEnabled = autoHomeEnabled;
@@ -202,6 +224,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     @Override
     public void writePeriodicOutputs() {
+        TURRET_ANGLE_RELATIVE_TO_FIELD= robotState.getLatestFieldToTurret();
         if (autoHomeEnabled) {
             autoHome();
         }
@@ -237,7 +260,6 @@ public class Turret extends Subsystem implements PidProvider {
         builder.addDoubleProperty("Turret Absolute Ticks", this::getTurretPosAbsolute, null);
         builder.addDoubleProperty("Turret Relative Ticks", this::getTurretPositionTicks, null);
         builder.addDoubleProperty("Turret Error", this::getPositionError, null);
-
         SmartDashboard.putNumber("Initial Field to Turret Angle", TURRET_ANGLE_RELATIVE_TO_FIELD);
     }
 }

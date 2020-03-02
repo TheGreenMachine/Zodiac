@@ -203,7 +203,8 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize),
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
                 createHoldAction(mControlBoard::getSpinnerThreeTimes, spinner::spinThreeTimes),
-
+                //TODO: remove HoldAction once working
+                createHoldAction(mControlBoard::getFollowTarget,turret::followTarget),
                 createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
                 createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
 

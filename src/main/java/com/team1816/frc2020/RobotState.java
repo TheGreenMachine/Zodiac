@@ -1,5 +1,6 @@
 package com.team1816.frc2020;
 
+import com.team1816.frc2020.subsystems.Turret;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -176,8 +177,14 @@ public class RobotState {
         this.headingRelativeToInitial = heading;
     }
 
-    public Rotation2d getLatestFieldToTurret() {
-        return getHeadingRelativeToInitial().rotateBy(getLatestVehicleToTurret().getValue());
+    public double getLatestFieldToTurret() {
+        Rotation2d fieldToTurret=new Rotation2d().fromDegrees(-getHeadingRelativeToInitial().getDegrees()).rotateBy(getLatestVehicleToTurret().getValue());
+        if(fieldToTurret.getDegrees()<0){
+            return fieldToTurret.getDegrees()+360;
+        }
+        else{
+            return fieldToTurret.getDegrees();
+        }
     }
 
     public synchronized void addObservations(double timestamp, Twist2d displacement, Twist2d measured_velocity,
@@ -308,8 +315,10 @@ public class RobotState {
         SmartDashboard.putNumber("Estimated Pose X", getEstimatedX());
         SmartDashboard.putNumber("Estimated Pose Y", getEstimatedY());
 
-        SmartDashboard.putNumber("Field to Turret", getLatestFieldToTurret().getDegrees());
-        SmartDashboard.putString("Vehicle to Turret", getLatestVehicleToTurret().toString());
+            SmartDashboard.putNumber("Field to Turret", getLatestFieldToTurret());
+
+
+        SmartDashboard.putNumber("Vehicle to Turret", getLatestVehicleToTurret().getValue().getDegrees());
         SmartDashboard.putNumber("Heading Relative to Initial", getHeadingRelativeToInitial().getDegrees());
     }
 }
