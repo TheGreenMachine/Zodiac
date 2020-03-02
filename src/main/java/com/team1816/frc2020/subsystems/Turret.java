@@ -111,13 +111,6 @@ public class Turret extends Subsystem implements PidProvider {
                     setTurretAngle(getTurretPositionDegrees() - Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)-CARDINAL_SOUTH);
                 }
             }
-            else{
-                if (TURRET_ANGLE_RELATIVE_TO_FIELD < 0) {
-                    setTurretAngle(getTurretPositionDegrees() + Math.abs(360-Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD))-CARDINAL_SOUTH);
-                } else {
-                    setTurretAngle(getTurretPositionDegrees() - Math.abs(360-Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD))-CARDINAL_SOUTH);
-                }
-            }
         }
     }
     public void setAutoHomeEnabled(boolean autoHomeEnabled) {
