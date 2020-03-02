@@ -57,8 +57,6 @@ public class Turret extends Subsystem implements PidProvider {
     public static final double CARDINAL_NORTH = CARDINAL_SOUTH + 180; // deg
     public static final double MAX_ANGLE = convertTurretTicksToDegrees(TURRET_POSITION_MAX - TURRET_POSITION_MIN);
 
-    RobotState robotState1=RobotState.getInstance();
-
     public static double TURRET_ANGLE_RELATIVE_TO_FIELD;
 
     public Turret() {
