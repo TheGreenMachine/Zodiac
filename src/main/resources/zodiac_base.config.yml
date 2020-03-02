@@ -54,16 +54,8 @@ subsystems:
     shooter:
         implemented: true
         falcons:
-<<<<<<< HEAD
-            shooterMaster: 3
-            shooterFollowerB: 2
-        talons:
-            shooterFollowerA: -1 # 3
-            shooterFollowerC: -1 # 2
-=======
             shooterMain: -1
             shooterFollower: -1
->>>>>>> master
         constants:
             kP: 0.15 #0.30
             kI: 0
