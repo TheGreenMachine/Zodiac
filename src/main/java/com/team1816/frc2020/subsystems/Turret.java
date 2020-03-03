@@ -103,7 +103,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public void trackGyro() {
-            followTargetTurretSetAngle = (getTurretPositionDegrees() - turretAngleRelativeToField + CARDINAL_SOUTH);
+            followTargetTurretSetAngle = (getTurretPositionDegrees() - turretAngleRelativeToField);
             setTurretAngle(followTargetTurretSetAngle);
     }
 
