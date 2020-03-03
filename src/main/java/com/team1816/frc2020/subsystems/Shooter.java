@@ -36,6 +36,7 @@ public class Shooter extends Subsystem implements PidProvider {
     // Components
     private final IMotorControllerEnhanced shooterMain;
     private final IMotorControllerEnhanced shooterFollower;
+    private final Camera camera = Camera.getInstance();
 
     // State
     private double shooterVelocity;
@@ -53,6 +54,7 @@ public class Shooter extends Subsystem implements PidProvider {
     public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(NAME, "velocityThreshold", 3000);
 
     private SendableChooser<Integer> velocityChooser = new SendableChooser<>();
+    private VelocityManager velocityManager = new VelocityManager();
 
     private Shooter() {
         super(NAME);
@@ -116,22 +118,12 @@ public class Shooter extends Subsystem implements PidProvider {
         outputsChanged = true;
     }
 
-    public void startShooterBasedOnDistance() {
-        /* if (distance <  ) { TODO: Find correct distances
-            setVelocity(NEAR_VELOCITY);
-        } else if (< distance < ) {
-            setVelocity(MID_VELOCITY);
-        } else if (distance > ) {
-            setVelocity(MAX_VELOCITY);
-        } */
-    }
-
     public void shootFromChooser(boolean shooting) {
         setVelocity(shooting ? velocityChooser.getSelected() : 0);
     }
 
     public void startShooter() {
-        setVelocity(MID_VELOCITY);
+        setVelocity(velocityManager.getShooterVelocity(camera.getDistance()));
     }
 
     public void stopShooter() {

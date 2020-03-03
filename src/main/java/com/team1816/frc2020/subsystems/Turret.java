@@ -161,7 +161,13 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     private synchronized void setTurretAngleInternal(double angle) {
-        setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
+        if (angle < MAX_ANGLE - 360) {
+            setTurretPosition(convertTurretDegreesToTicks(angle + 360) + TURRET_POSITION_MIN);
+        } else if (angle > 360) {
+            setTurretPosition(convertTurretDegreesToTicks(angle - 360) + TURRET_POSITION_MIN);
+        } else {
+            setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
+        }
     }
 
     public void jogLeft() {

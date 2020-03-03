@@ -230,12 +230,15 @@ public class Robot extends TimedRobot {
 
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
                    // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
-                    shooter.shootFromChooser(shooting);
-                    hopper.lockToShooter(shooting);
-                    hopper.setIntake(shooting ? 1 : 0);
                     if (shooting) {
                         mDrive.setOpenLoop(DriveSignal.BRAKE);
+                        shooter.startShooter(); // Uses ZED distance
+                    } else {
+                        shooter.stopShooter();
                     }
+                    hopper.lockToShooter(shooting);
+                    hopper.setIntake(shooting ? 1 : 0);
+
                 }),
                 createHoldAction(mControlBoard::getCollectorBackSpin,
                     (pressed) -> collector.setIntakePow(pressed ? 0.2 : 0))
