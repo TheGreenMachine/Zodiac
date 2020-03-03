@@ -53,8 +53,8 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getCollectorDown() {
-        return mDriveControlBoard.getCollectorDown();
+    public boolean getCollectorToggle() {
+        return mDriveControlBoard.getCollectorToggle();
     }
 
     @Override

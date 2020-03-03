@@ -171,13 +171,14 @@ public class Robot extends TimedRobot {
 
             actionManager = new ActionManager(
                 // Driver Gamepad
-                createAction(mControlBoard::getCollectorDown, () -> {
-                    hopper.setSpindexer(-1);
-                    collector.setDeployed(true);
-                }),
-                createAction(mControlBoard::getCollectorUp, () -> {
-                    collector.setDeployed(false);
-                    hopper.setSpindexer(0);
+                createAction(mControlBoard::getCollectorToggle, () -> {
+                    if (collector.isArmDown()) {
+                        hopper.setSpindexer(0);
+                        collector.setDeployed(false);
+                    } else {
+                        hopper.setSpindexer(-1);
+                        collector.setDeployed(true);
+                    }
                 }),
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),

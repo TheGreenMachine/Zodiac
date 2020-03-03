@@ -11,7 +11,7 @@ public interface IDriveControlBoard {
 
     boolean getDrivetrainFlipped();
 
-    boolean getCollectorDown();
+    boolean getCollectorToggle();
 
     boolean getCollectorUp();
 
