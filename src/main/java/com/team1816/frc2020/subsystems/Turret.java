@@ -52,8 +52,7 @@ public class Turret extends Subsystem implements PidProvider {
     public static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
     public static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
     private static final boolean TURRET_SENSOR_PHASE = true;
-    public static final double VISION_HOMING_BIAS = 0; /* 1.75 */
-    ; // deg
+    public static final double VISION_HOMING_BIAS = 0; /* 1.75 */ // deg
 
     public static final double CARDINAL_SOUTH = 32.556; // deg
     public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90; // deg
@@ -103,8 +102,8 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public void trackGyro() {
-            followTargetTurretSetAngle = (getTurretPositionDegrees() - turretAngleRelativeToField);
-            setTurretAngle(followTargetTurretSetAngle);
+        followTargetTurretSetAngle = (getTurretPositionDegrees() - turretAngleRelativeToField);
+        setTurretAngle(followTargetTurretSetAngle);
     }
 
     public void setGyroTrackingEnabled(boolean gyroTrackingEnabled) {
@@ -125,7 +124,6 @@ public class Turret extends Subsystem implements PidProvider {
         turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kLongCANTimeoutMs);
     }
 
-//master
     public void setAutoHomeEnabled(boolean autoHomeEnabled) {
         if (Constants.kUseAutoAim) {
             this.autoHomeEnabled = autoHomeEnabled;
@@ -137,9 +135,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public void autoHome() {
-       // if (robotState.getLatestFieldToTurret().cos() < 0) {
-            setTurretAngle(getTurretPositionDegrees() + camera.getDeltaXAngle() + VISION_HOMING_BIAS);
-       // }
+        setTurretAngle(getTurretPositionDegrees() + camera.getDeltaXAngle() + VISION_HOMING_BIAS);
     }
 
     @Override
@@ -176,10 +172,6 @@ public class Turret extends Subsystem implements PidProvider {
 
     public synchronized void setTurretAngle(double angle) {
         setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
-    }
-
-    public synchronized void setTurretAngleRelativeToField() {
-
     }
 
     public void jogLeft() {
@@ -250,8 +242,6 @@ public class Turret extends Subsystem implements PidProvider {
             }
 
             outputsChanged = false;
-        } else {
-
         }
     }
 
@@ -270,7 +260,7 @@ public class Turret extends Subsystem implements PidProvider {
         builder.addDoubleProperty("Turret Absolute Ticks", this::getTurretPosAbsolute, null);
         builder.addDoubleProperty("Turret Relative Ticks", this::getTurretPositionTicks, null);
         builder.addDoubleProperty("Turret Error", this::getPositionError, null);
-        builder.addDoubleProperty("Angle Set According to Gyro", this::getFollowTargetTurretSetAngle,null);
+        builder.addDoubleProperty("Angle Set According to Gyro", this::getFollowTargetTurretSetAngle, null);
         builder.addBooleanProperty("Turret Gyro Tracking", this::isGyroTrackingEnabled, null);
     }
 }

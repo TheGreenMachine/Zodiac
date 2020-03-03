@@ -40,9 +40,7 @@ public class Collector extends Subsystem {
         this.armPiston = factory.getSolenoid(NAME, "arm");
         this.intake = factory.getMotor(NAME, "intake");
 
-
         MotorUtil.configCurrentLimit(intake, true, 20, 0, 0);
-
     }
 
     public boolean isArmDown() {

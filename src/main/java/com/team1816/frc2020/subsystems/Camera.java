@@ -30,6 +30,7 @@ public class Camera {
         networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
             if (value.getDouble() < 0) {
+                // Reset deltaX to 0 if contour not detected
                 deltaXAngle = 0;
                 return;
             }
@@ -38,9 +39,7 @@ public class Camera {
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
 
         networkTable.addEntryListener("distance", (table, key, entry, value, flags) -> {
-            if (value.getDouble() < 0) {
-                deltaXAngle=0;
-            return; }
+            // Use most recently available distance if distance not found
             this.distance = value.getDouble();
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }

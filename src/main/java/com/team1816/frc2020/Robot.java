@@ -177,8 +177,8 @@ public class Robot extends TimedRobot {
                 // Driver Gamepad
                 createAction(mControlBoard::getCollectorToggle, () -> {
                     if (collector.isArmDown()) {
-                        hopper.setSpindexer(0);
                         collector.setDeployed(false);
+                        hopper.setSpindexer(0);
                     } else {
                         hopper.setSpindexer(-1);
                         collector.setDeployed(true);
@@ -212,7 +212,6 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize),
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
                 createHoldAction(mControlBoard::getSpinnerThreeTimes, spinner::spinThreeTimes),
-                //TODO: remove HoldAction once working
                 createAction(mControlBoard::getFollowTarget, () -> {
                     turret.setGyroTrackingEnabled(!turret.isGyroTrackingEnabled());
                 }),
@@ -322,9 +321,7 @@ public class Robot extends TimedRobot {
             mDisabledLooper.stop();
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
 
-
             turret.zeroSensors();
-
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
