@@ -48,7 +48,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     }
 
     @Override
-    public boolean getCollectorDown() {
+    public boolean getCollectorToggle() {
         return mController.getButton(LogitechController.Button.LB);
     }
 
