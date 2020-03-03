@@ -73,11 +73,6 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     }
 
     @Override
-    public boolean getFollowTarget() {
-        return mController.getButton(LogitechController.Button.BACK);
-    }
-
-    @Override
     public int getDriverClimber() {
         switch (mController.getDPad()) {
             case 0:

@@ -67,6 +67,11 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
         return mController.getDPad() == 90;
     }
 
+    @Override
+    public boolean getFieldFollowing() {
+        return mController.getDPad() == 180;
+    }
+
     // Feeder Flap
     @Override
     public boolean getFeederFlapOut() {

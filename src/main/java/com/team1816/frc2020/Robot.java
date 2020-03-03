@@ -212,8 +212,8 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize),
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
                 createHoldAction(mControlBoard::getSpinnerThreeTimes, spinner::spinThreeTimes),
-                createAction(mControlBoard::getFollowTarget, () -> {
-                    turret.setGyroTrackingEnabled(!turret.isGyroTrackingEnabled());
+                createAction(mControlBoard::getFieldFollowing, () -> {
+                    turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
                 }),
                 createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
                 createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
@@ -225,7 +225,7 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getAutoHome, pressed -> {
                     ledManager.setCameraLed(pressed);
                     ledManager.indicateStatus(pressed ? LedManager.RobotStatus.SEEN_TARGET : LedManager.RobotStatus.ENABLED);
-                    turret.setAutoHomeEnabled(pressed);
+                    turret.setControlMode(pressed ? Turret.ControlMode.CAMERA_FOLLOWING : Turret.ControlMode.FIELD_FOLLOWING);
                 }),
 
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {

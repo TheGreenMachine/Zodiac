@@ -22,6 +22,4 @@ public interface IDriveControlBoard {
     boolean getBrakeMode();
 
     int getDriverClimber();
-
-    boolean getFollowTarget();
 }

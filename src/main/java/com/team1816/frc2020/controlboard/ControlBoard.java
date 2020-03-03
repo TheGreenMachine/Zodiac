@@ -105,6 +105,11 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
+    public boolean getFieldFollowing() {
+        return mButtonControlBoard.getFieldFollowing();
+    }
+
+    @Override
     public boolean getAutoHome() {
         return mButtonControlBoard.getAutoHome();
     }
@@ -147,9 +152,5 @@ public class ControlBoard implements IControlBoard {
     @Override
     public boolean getClimberDeploy() {
         return mButtonControlBoard.getClimberDeploy();
-    }
-
-    public boolean getFollowTarget(){
-        return mDriveControlBoard.getFollowTarget();
     }
 }
