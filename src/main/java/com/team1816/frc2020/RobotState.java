@@ -178,13 +178,14 @@ public class RobotState {
     }
 
     public double getLatestFieldToTurret() {
-        Rotation2d fieldToTurret=new Rotation2d().fromDegrees(-getHeadingRelativeToInitial().getDegrees()).rotateBy(getLatestVehicleToTurret().getValue());
-        if(fieldToTurret.getDegrees()<0){
-            return fieldToTurret.getDegrees()+360;
-        }
-        else{
-            return fieldToTurret.getDegrees();
-        }
+        Rotation2d fieldToTurret= getHeadingRelativeToInitial().inverse().rotateBy(getLatestVehicleToTurret().getValue());
+        return fieldToTurret.getDegrees();
+//        if(fieldToTurret.getDegrees() <0){
+//            return fieldToTurret.getDegrees()+360;
+//        }
+//        else{
+//            return fieldToTurret.getDegrees();
+//        }
     }
 
     public synchronized void addObservations(double timestamp, Twist2d displacement, Twist2d measured_velocity,

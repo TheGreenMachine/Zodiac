@@ -35,6 +35,8 @@ subsystems:
         implemented: true
         talons:
             intake: 11
+        invertMotor:
+            - 11
         solenoids:
             arm: 0
         constants:

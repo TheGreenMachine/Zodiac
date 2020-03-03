@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
-import com.team1816.frc2020.Robot;
 import com.team1816.frc2020.RobotState;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
@@ -34,6 +33,9 @@ public class Turret extends Subsystem implements PidProvider {
     private boolean outputsChanged;
     private boolean isPercentOutput;
     private boolean autoHomeEnabled;
+    private double turretAngleRelativeToField;
+    private double followTargetTurretSetAngle;
+    private boolean gyroTrackingEnabled;
 
     // Constants
     private static final int kPIDLoopIDx = 0;
@@ -58,15 +60,12 @@ public class Turret extends Subsystem implements PidProvider {
     public static final double CARDINAL_NORTH = CARDINAL_SOUTH + 180; // deg
     public static final double MAX_ANGLE = convertTurretTicksToDegrees(TURRET_POSITION_MAX - TURRET_POSITION_MIN);
 
-    public static double TURRET_ANGLE_RELATIVE_TO_FIELD;
-
     public Turret() {
         super(NAME);
         this.turret = factory.getMotor(NAME, "turret");
 
         turret.setNeutralMode(NeutralMode.Brake);
         turret.setSensorPhase(TURRET_SENSOR_PHASE);
-
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
@@ -76,10 +75,8 @@ public class Turret extends Subsystem implements PidProvider {
         this.kD = factory.getConstant(NAME, "kD");
         this.kF = factory.getConstant(NAME, "kF");
 
-//head
         synchronized (this) {
-            int absolutePosition = getTurretPosAbsolute();
-            turret.setSelectedSensorPosition(absolutePosition, kPIDLoopIDx, Constants.kCANTimeoutMs);
+            this.zeroSensors();
 
             // Position Control
             double peakOutput = 0.5;
@@ -98,29 +95,30 @@ public class Turret extends Subsystem implements PidProvider {
             turret.overrideLimitSwitchesEnable(true);
             turret.overrideSoftLimitsEnable(true);
 
-            TURRET_ANGLE_RELATIVE_TO_FIELD = robotState.getLatestFieldToTurret();
+            turretAngleRelativeToField = robotState.getLatestFieldToTurret();
         }
-
-
-        // TODO: make followTarget be constantly called, improve math
-
-
-        this.zeroSensors();
 
         // Position Control
         double peakOutput = 0.5;
-}
-    public void followTarget(boolean follow){
-        if(follow){
-            if(Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)<360-Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)) {
-                if (TURRET_ANGLE_RELATIVE_TO_FIELD < 0) {
-                    setTurretAngle(getTurretPositionDegrees() + Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)-CARDINAL_SOUTH);
-                } else {
-                    setTurretAngle(getTurretPositionDegrees() - Math.abs(TURRET_ANGLE_RELATIVE_TO_FIELD)-CARDINAL_SOUTH);
-                }
-            }
-        }
     }
+
+    public void trackGyro() {
+            followTargetTurretSetAngle = (getTurretPositionDegrees() - turretAngleRelativeToField + CARDINAL_SOUTH);
+            setTurretAngle(followTargetTurretSetAngle);
+    }
+
+    public void setGyroTrackingEnabled(boolean gyroTrackingEnabled) {
+        this.gyroTrackingEnabled = gyroTrackingEnabled;
+    }
+
+    public boolean isGyroTrackingEnabled() {
+        return gyroTrackingEnabled;
+    }
+
+    public double getFollowTargetTurretSetAngle() {
+        return followTargetTurretSetAngle;
+    }
+
     @Override
     public synchronized void zeroSensors() {
         int absolutePosition = getTurretPosAbsolute();
@@ -228,11 +226,17 @@ public class Turret extends Subsystem implements PidProvider {
         return (ticks / TURRET_ENCODER_PPR) * 360;
     }
 
+    public double getTurretAngleRelativeToField() {
+        return turretAngleRelativeToField;
+    }
+
     @Override
     public void writePeriodicOutputs() {
-        TURRET_ANGLE_RELATIVE_TO_FIELD= robotState.getLatestFieldToTurret();
+        turretAngleRelativeToField = robotState.getLatestFieldToTurret();
         if (autoHomeEnabled) {
             autoHome();
+        } else if (gyroTrackingEnabled) {
+            trackGyro();
         }
         if (outputsChanged) {
             if (isPercentOutput) {
@@ -266,6 +270,7 @@ public class Turret extends Subsystem implements PidProvider {
         builder.addDoubleProperty("Turret Absolute Ticks", this::getTurretPosAbsolute, null);
         builder.addDoubleProperty("Turret Relative Ticks", this::getTurretPositionTicks, null);
         builder.addDoubleProperty("Turret Error", this::getPositionError, null);
-        SmartDashboard.putNumber("Initial Field to Turret Angle", TURRET_ANGLE_RELATIVE_TO_FIELD);
+        builder.addDoubleProperty("Angle Set According to Gyro", this::getFollowTargetTurretSetAngle,null);
+        builder.addBooleanProperty("Turret Gyro Tracking", this::isGyroTrackingEnabled, null);
     }
 }

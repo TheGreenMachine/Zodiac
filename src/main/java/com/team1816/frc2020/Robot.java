@@ -129,6 +129,13 @@ public class Robot extends TimedRobot {
                     "hide", "join:Turret/Positions");
                 BadLog.createTopic("Turret/ErrorPos", "NativeUnits", turret::getPositionError);
 
+                BadLog.createTopic("Turret/FieldToTurret", "Degrees", mRobotState::getLatestFieldToTurret,
+                    "hide", "join:Tracking/Angles");
+                BadLog.createTopic("Drive/HeadingRelativeToInitial", "Degrees", () -> mDrive.getHeadingRelativeToInitial().getDegrees(),
+                    "hide", "join:Tracking/Angles");
+                BadLog.createTopic("Turret/TurretAngle", "Degrees", turret::getTurretPositionDegrees,
+                    "hide", "join:Tracking/Angles");
+
                 mDrive.setLogger(logger);
             }
 
@@ -205,7 +212,9 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
                 createHoldAction(mControlBoard::getSpinnerThreeTimes, spinner::spinThreeTimes),
                 //TODO: remove HoldAction once working
-                createHoldAction(mControlBoard::getFollowTarget,turret::followTarget),
+                createAction(mControlBoard::getFollowTarget, () -> {
+                    turret.setGyroTrackingEnabled(!turret.isGyroTrackingEnabled());
+                }),
                 createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
                 createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
 

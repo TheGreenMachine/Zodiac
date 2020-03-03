@@ -2,6 +2,8 @@ $extends: zodiac_base
 subsystems:
     climber:
         implemented: true
+        invertMotor:
+            - 12
     hopper:
         invertMotor:
             - 5
