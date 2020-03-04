@@ -137,7 +137,6 @@ public class LedManager extends Subsystem {
                     lastWriteTime = System.currentTimeMillis();
                 }
             } else if (outputsChanged) {
-                System.out.printf("R: %d, G: %d, B: %d%n", ledR, ledG, ledB);
                 writeLedHardware(ledR, ledG, ledB);
                 outputsChanged = false;
             }
