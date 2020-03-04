@@ -67,6 +67,11 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
         return mController.getDPad() == 90;
     }
 
+    @Override
+    public boolean getFieldFollowing() {
+        return mController.getDPad() == 180;
+    }
+
     // Feeder Flap
     @Override
     public boolean getFeederFlapOut() {
@@ -80,7 +85,7 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     @Override
     public double getClimber() {
-        return mController.getJoystick(Controller.Side.LEFT, Controller.Axis.Y);
+        return -mController.getJoystick(Controller.Side.LEFT, Controller.Axis.Y);
     }
 
     @Override
@@ -94,7 +99,12 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
+    public boolean getCollectorBackSpin() {
+        return mController.getButton(LogitechController.Button.RB);
+    }
+
+    @Override
     public boolean getClimberDeploy() {
-        return mController.getDPad() == 180;
+        return mController.getDPad() == 0;
     }
 }

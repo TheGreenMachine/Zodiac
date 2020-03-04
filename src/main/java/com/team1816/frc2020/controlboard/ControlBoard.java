@@ -19,7 +19,7 @@ public class ControlBoard implements IControlBoard {
     private final IButtonControlBoard mButtonControlBoard;
 
     private ControlBoard() {
-        mDriveControlBoard =  GamepadDriveControlBoard.getInstance();
+        mDriveControlBoard = GamepadDriveControlBoard.getInstance();
         mButtonControlBoard = GamepadButtonControlBoard.getInstance();
     }
 
@@ -105,6 +105,11 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
+    public boolean getFieldFollowing() {
+        return mButtonControlBoard.getFieldFollowing();
+    }
+
+    @Override
     public boolean getAutoHome() {
         return mButtonControlBoard.getAutoHome();
     }
@@ -137,6 +142,11 @@ public class ControlBoard implements IControlBoard {
     @Override
     public double getClimber() {
         return mButtonControlBoard.getClimber();
+    }
+
+    @Override
+    public boolean getCollectorBackSpin() {
+        return mButtonControlBoard.getCollectorBackSpin();
     }
 
     @Override

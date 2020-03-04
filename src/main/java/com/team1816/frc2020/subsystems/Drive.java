@@ -117,13 +117,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         }
         mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 10, 10);
 
-        if (mPigeon.getLastError() != ErrorCode.OK) {
-            // BadLog.createValue("PigeonErrorDetected", "true");
-            System.out.println("Error detected with Pigeon IMU - check if the sensor is present and plugged in!");
-            System.out.println("Defaulting to drive straight mode");
-            AutoModeSelector.getInstance().setHardwareFailure(true);
-        }
-
         setOpenLoop(DriveSignal.NEUTRAL);
 
         // force a CAN message across
@@ -172,6 +165,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         public int left_velocity_ticks_per_100ms;
         public int right_velocity_ticks_per_100ms;
         public Rotation2d gyro_heading = Rotation2d.identity();
+        // no_offset = Relative to initial position, unaffected by reset
+        public Rotation2d gyro_heading_no_offset = Rotation2d.identity();
         public Pose2d error = Pose2d.identity();
         double left_error;
         double right_error;
@@ -195,7 +190,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
         mPeriodicIO.left_velocity_ticks_per_100ms = mLeftMaster.getSelectedSensorVelocity(0);
         mPeriodicIO.right_velocity_ticks_per_100ms = mRightMaster.getSelectedSensorVelocity(0);
-        mPeriodicIO.gyro_heading = Rotation2d.fromDegrees(mPigeon.getFusedHeading()).rotateBy(mGyroOffset);
+        mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+        mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
         mPeriodicIO.left_error = mLeftMaster.getClosedLoopError(0);
         mPeriodicIO.right_error = mRightMaster.getClosedLoopError(0);
 
@@ -296,7 +292,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             System.out.println(signal);
             mDriveControlState = DriveControlState.OPEN_LOOP;
         }
-
+        setBrakeMode(signal.getBrakeMode());
         mPeriodicIO.left_demand = signal.getLeft();
         mPeriodicIO.right_demand = signal.getRight();
         mPeriodicIO.left_feedforward = 0.0;
@@ -345,8 +341,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public synchronized void setBrakeMode(boolean on) {
-        System.out.println("setBrakeMode " + on);
         if (mIsBrakeMode != on) {
+            System.out.println("setBrakeMode " + on);
             mIsBrakeMode = on;
             NeutralMode mode = on ? NeutralMode.Brake : NeutralMode.Coast;
             mRightMaster.setNeutralMode(mode);
@@ -363,6 +359,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         return mPeriodicIO.gyro_heading;
     }
 
+    public synchronized Rotation2d getHeadingRelativeToInitial() { return mPeriodicIO.gyro_heading_no_offset; }
+
     public synchronized void setHeading(Rotation2d heading) {
         System.out.println("set heading: " + heading.getDegrees());
 
@@ -370,6 +368,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         System.out.println("gyro offset: " + mGyroOffset.getDegrees());
 
         mPeriodicIO.desired_heading = heading;
+    }
+
+    public synchronized void resetPigeon() {
+        mPigeon.setFusedHeading(0);
     }
 
     public synchronized void resetEncoders() {
@@ -541,8 +543,17 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public void zeroSensors() {
+        resetPigeon();
         setHeading(Rotation2d.identity());
         resetEncoders();
+        if (mPigeon.getLastError() != ErrorCode.OK) {
+            // BadLog.createValue("PigeonErrorDetected", "true");
+            System.out.println("Error detected with Pigeon IMU - check if the sensor is present and plugged in!");
+            System.out.println("Defaulting to drive straight mode");
+            AutoModeSelector.getInstance().setHardwareFailure(true);
+        } else {
+            AutoModeSelector.getInstance().setHardwareFailure(false);
+        }
     }
 
     @Override
@@ -643,11 +654,11 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         //     SmartDashboard.putNumber("Drive CTE", 0.0);
         // }
 
-        // if (getHeading() != null) {
-        //     Shuffleboard.getTab("Drive")
-        //         .addNumber("Gyro Heading", this::getHeadingDegrees)
-        //         .withWidget(BuiltInWidgets.kGyro);
-        // }
+         if (getHeading() != null) {
+             Shuffleboard.getTab("Drive")
+                 .addNumber("Gyro Heading", this::getHeadingDegrees)
+                 .withWidget(BuiltInWidgets.kGyro);
+         }
     }
 
     public synchronized double getTimestamp() {

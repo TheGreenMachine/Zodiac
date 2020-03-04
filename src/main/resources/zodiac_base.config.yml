@@ -15,8 +15,8 @@ subsystems:
             pigeonId: 9
             pigeonOnTalon: -1
             kP: 0.1 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
-            kI: 0.00008 # 0.018
-            kD: 4.5 # 3.6
+            kI: 0.0001 # 0.018
+            kD: 4.0 # 3.6
             kF: 0.0475813
             iZone: 0
             encPPR: 22220.8
@@ -35,6 +35,8 @@ subsystems:
         implemented: true
         talons:
             intake: 11
+        invertMotor:
+            - 11
         solenoids:
             arm: 0
         constants:
@@ -69,16 +71,15 @@ subsystems:
     turret:
         implemented: true
         talons:
-            turret: 10
+            turret: 13
         constants: # TODO: tune [P, I, D]
-            kP: 2.83
-            kI: 0 #0.0003
+            kP: 2.83 # 1.981 # 1.645
+            kI: 0
             kD: 0
             kF: 0 # Should be 0 for position control
             encPPR: 4124.6
     ledmanager:
         implemented: false
-        canifier: 0
 pcm: 8
 constants:
     trackWidth: 25 #inches

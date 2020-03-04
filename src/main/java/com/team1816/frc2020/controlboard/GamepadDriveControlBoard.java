@@ -87,6 +87,4 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
                 return 0;
         }
     }
-
-
 }

@@ -1,12 +1,18 @@
 package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.*;
+
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 
@@ -15,6 +21,9 @@ public class Shooter extends Subsystem implements PidProvider {
     private static Shooter INSTANCE;
 
     private LedManager ledManager = LedManager.getInstance();
+
+    private NetworkTable networkTable;
+    private double distance;
 
     public static Shooter getInstance() {
         if (INSTANCE == null) {
@@ -27,6 +36,7 @@ public class Shooter extends Subsystem implements PidProvider {
     // Components
     private final IMotorControllerEnhanced shooterMain;
     private final IMotorControllerEnhanced shooterFollower;
+    private final Camera camera = Camera.getInstance();
 
     // State
     private double shooterVelocity;
@@ -37,8 +47,14 @@ public class Shooter extends Subsystem implements PidProvider {
     private final double kI;
     private final double kD;
     private final double kF;
-    public static final int MAX_VELOCITY = 11_400;
+    public static final int MAX_VELOCITY = 11_800; // Far
+    public static final int NEAR_VELOCITY = 11_100;  // Initiation line
+    public static final int MID_VELOCITY = 9_900; // Trench this also worked from initiation
+    public static final int MID_FAR_VELOCITY = 11_200;
     public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(NAME, "velocityThreshold", 3000);
+
+    private SendableChooser<Integer> velocityChooser = new SendableChooser<>();
+    private VelocityManager velocityManager = new VelocityManager();
 
     private Shooter() {
         super(NAME);
@@ -61,6 +77,13 @@ public class Shooter extends Subsystem implements PidProvider {
 
         shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
+
+        networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+
+        networkTable.addEntryListener("distance", (table, key, entry, value, flags) -> {
+            distance = value.getDouble();
+        },EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+
     }
 
     private void configCurrentLimits(int currentLimitAmps) {
@@ -93,8 +116,12 @@ public class Shooter extends Subsystem implements PidProvider {
         outputsChanged = true;
     }
 
+    public void shootFromChooser(boolean shooting) {
+        setVelocity(shooting ? velocityChooser.getSelected() : 0);
+    }
+
     public void startShooter() {
-        setVelocity(9_000);
+        setVelocity(velocityManager.getShooterVelocity(camera.getDistance()));
     }
 
     public void stopShooter() {
@@ -133,6 +160,13 @@ public class Shooter extends Subsystem implements PidProvider {
     public void initSendable(SendableBuilder builder) {
         builder.addBooleanProperty("Shooter/IsAtSpeed", this::isVelocityNearTarget, null);
         builder.addDoubleProperty("Shooter/ShooterVelocity", this::getActualVelocity, this::setVelocity);
+
+        velocityChooser.setDefaultOption("NEAR_VELOCITY", NEAR_VELOCITY);
+        velocityChooser.addOption("MID_VELOCITY", MID_VELOCITY);
+        velocityChooser.addOption("MID_FAR_VELOCITY", MID_FAR_VELOCITY);
+        velocityChooser.addOption("MAX_VELOCITY", MAX_VELOCITY);
+
+        SmartDashboard.putData(velocityChooser);
     }
 
     @Override

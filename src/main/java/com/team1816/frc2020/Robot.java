@@ -18,10 +18,7 @@ import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.CheesyDriveHelper;
-import com.team254.lib.util.CrashTracker;
-import com.team254.lib.util.DriveSignal;
-import com.team254.lib.util.LatchedBoolean;
+import com.team254.lib.util.*;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -54,6 +51,7 @@ public class Robot extends TimedRobot {
     private final Spinner spinner = Spinner.getInstance();
     private final Hopper hopper = Hopper.getInstance();
     private final Climber climber = Climber.getInstance();
+    private final Camera camera = Camera.getInstance();
 
     // button placed on the robot to allow the drive team to zero the robot right
     // before the start of a match
@@ -132,6 +130,15 @@ public class Robot extends TimedRobot {
                     "hide", "join:Turret/Positions");
                 BadLog.createTopic("Turret/ErrorPos", "NativeUnits", turret::getPositionError);
 
+                BadLog.createTopic("Turret/FieldToTurret", "Degrees", mRobotState::getLatestFieldToTurret,
+                    "hide", "join:Tracking/Angles");
+                BadLog.createTopic("Drive/HeadingRelativeToInitial", "Degrees", () -> mDrive.getHeadingRelativeToInitial().getDegrees(),
+                    "hide", "join:Tracking/Angles");
+                BadLog.createTopic("Turret/TurretAngle", "Degrees", turret::getTurretPositionDegrees,
+                    "hide", "join:Tracking/Angles");
+                BadLog.createTopic("Vision/DeltaXAngle", "Degrees", camera::getDeltaXAngle);
+                BadLog.createTopic("Vision/Distance", "inches", camera::getDistance);
+
                 mDrive.setLogger(logger);
             }
 
@@ -172,21 +179,17 @@ public class Robot extends TimedRobot {
             actionManager = new ActionManager(
                 // Driver Gamepad
                 createAction(mControlBoard::getCollectorToggle, () -> {
-                    if (collector.isArmDown()) {
-                        hopper.setSpindexer(0);
-                        collector.setDeployed(false);
-                    } else {
-                        hopper.setSpindexer(-1);
-                        collector.setDeployed(true);
-                    }
+                    System.out.println("Collector toggled!");
+                    collector.setDeployed(!collector.isArmDown());
+                    hopper.setSpindexer(collector.isArmDown() ? -1 : 0);
                 }),
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
 
-                createAction(mControlBoard::getClimberDeploy, () -> {
-                    if ((DriverStation.getInstance().getMatchTime() > 120) ||
+                createHoldAction(mControlBoard::getClimberDeploy, (pressed) -> {
+                    if ((DriverStation.getInstance().getMatchTime() <= 30) ||
                         (DriverStation.getInstance().getMatchTime() == -1)) {
-                        climber.setDeployed(true);
+                        climber.setDeployed(pressed);
                     }
                 }),
                 createAction(mControlBoard::getTrenchToFeederSpline, () -> {
@@ -207,25 +210,42 @@ public class Robot extends TimedRobot {
                 // Operator Gamepad
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize),
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
-                createHoldAction(mControlBoard::getSpinnerThreeTimes,spinner::spinThreeTimes),
-
+                createHoldAction(mControlBoard::getSpinnerThreeTimes, spinner::spinThreeTimes),
+                createAction(mControlBoard::getFieldFollowing, () -> {
+                    turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+                }),
                 createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
                 createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
 
-                createScalar(mControlBoard::getClimber, climber::setClimberPower),
+                createScalar(mControlBoard::getClimber, power -> {
+                    if ((DriverStation.getInstance().getMatchTime() <= 30) ||
+                        (DriverStation.getInstance().getMatchTime() == -1)) {
+                        climber.setClimberPower(power > 0 ? power : 0);
+                    }
+                }),
 
-                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -0.2 : 0)),
-                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.2 : 0)),
-                createAction(mControlBoard::getAutoHome, () ->
-                    turret.setAutoHomeEnabled(!turret.isAutoHomeEnabled())),
+                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)),
+                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)),
+                createHoldAction(mControlBoard::getAutoHome, pressed -> {
+                    ledManager.setCameraLed(pressed);
+                    ledManager.indicateStatus(pressed ? LedManager.RobotStatus.SEEN_TARGET : LedManager.RobotStatus.ENABLED);
+                    turret.setControlMode(pressed ? Turret.ControlMode.CAMERA_FOLLOWING : Turret.ControlMode.FIELD_FOLLOWING);
+                }),
+
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
-                    shooter.setVelocity(shooting ? 11_000 : 0);
-                    hopper.lockToShooter(shooting);
-                    hopper.setIntake(shooting ? 1 : 0);
+                   // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                     if (shooting) {
                         mDrive.setOpenLoop(DriveSignal.BRAKE);
+                        shooter.startShooter(); // Uses ZED distance
+                    } else {
+                        shooter.stopShooter();
                     }
-                })
+                    hopper.lockToShooter(shooting);
+                    hopper.setIntake(shooting ? 1 : 0);
+                    collector.setIntakePow(shooting ? 0.3 : 0);
+                }),
+                createHoldAction(mControlBoard::getCollectorBackSpin,
+                    (pressed) -> collector.setIntakePow(pressed ? 0.2 : 0))
             );
 
             blinkTimer = new AsyncTimer(
@@ -318,7 +338,8 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
 
-            turret.setTurretAngle(Turret.CARDINAL_NORTH);
+            turret.setTurretAngle(Turret.CARDINAL_SOUTH);
+            turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
 
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
@@ -366,6 +387,7 @@ public class Robot extends TimedRobot {
             mSubsystemManager.outputToSmartDashboard();
             mRobotState.outputToSmartDashboard();
             mAutoModeSelector.outputToSmartDashboard();
+            mRobotStateEstimator.outputToSmartDashboard();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
@@ -376,9 +398,15 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {
         loopStart = Timer.getFPGATimestamp();
         try {
-            if (!resetRobotButton.get() && !mHasBeenEnabled) {
+            if (RobotController.getUserButton() && !mHasBeenEnabled) {
                 System.out.println("Zeroing Robot!");
                 mDrive.zeroSensors();
+                turret.zeroSensors();
+                mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
+                mDrive.setHeading(Rotation2d.identity());
+                ledManager.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
+            } else {
+                ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
             }
 
             // Update auto modes
@@ -415,14 +443,16 @@ public class Robot extends TimedRobot {
         if (mDriveByCameraInAuto || mAutoModeExecutor.isInterrupted()) {
             manualControl();
         }
+
+        if (Constants.kIsBadlogEnabled) {
+            logger.updateTopics();
+            logger.log();
+        }
     }
 
     @Override
     public void teleopPeriodic() {
         loopStart = Timer.getFPGATimestamp();
-
-
-        System.out.println("Match time when no match: " + DriverStation.getInstance().getMatchTime());
 
         try {
             manualControl();
@@ -447,19 +477,22 @@ public class Robot extends TimedRobot {
         DriveSignal driveSignal;
 
         // if (arcadeDrive) {
-        //     var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
-        //     double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
-        //     double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-        //     driveSignal = new DriveSignal(left, right);
+//            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
+//            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
+//            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
+//            driveSignal = new DriveSignal(left, right);
         // } else {
-        driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
+         driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
         // }
         if (mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING) {
             if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0 || mDrive.isDoneWithTrajectory()) {
                 mDrive.setOpenLoop(driveSignal);
             }
-        } else {
+        } else if (!(shooter.getTargetVelocity() > 0)) {
             mDrive.setOpenLoop(driveSignal);
+        } else {
+            System.out.println("Setting to brake mode");
+            mDrive.setOpenLoop(DriveSignal.BRAKE);
         }
     }
 
