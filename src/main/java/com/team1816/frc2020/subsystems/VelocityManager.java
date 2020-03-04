@@ -27,7 +27,8 @@ public class VelocityManager {
         new Entry(250, 9_900, 1),
         new Entry(285, 9_900, 1),
         new Entry(315, 10_200, 1),
-        new Entry(360, 10_400, 1)
+        new Entry(360, 10_400, 1),
+        new Entry(400, 11_100, 1)
     };
 
     public double getShooterVelocity(double distance) {

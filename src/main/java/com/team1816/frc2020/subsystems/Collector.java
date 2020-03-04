@@ -44,7 +44,7 @@ public class Collector extends Subsystem {
     }
 
     public boolean isArmDown() {
-        return armPiston.get();
+        return this.armDown;
     }
 
     public double getIntakePow() {

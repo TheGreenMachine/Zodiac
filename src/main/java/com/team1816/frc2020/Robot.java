@@ -51,6 +51,7 @@ public class Robot extends TimedRobot {
     private final Spinner spinner = Spinner.getInstance();
     private final Hopper hopper = Hopper.getInstance();
     private final Climber climber = Climber.getInstance();
+    private final Camera camera = Camera.getInstance();
 
     // button placed on the robot to allow the drive team to zero the robot right
     // before the start of a match
@@ -135,6 +136,8 @@ public class Robot extends TimedRobot {
                     "hide", "join:Tracking/Angles");
                 BadLog.createTopic("Turret/TurretAngle", "Degrees", turret::getTurretPositionDegrees,
                     "hide", "join:Tracking/Angles");
+                BadLog.createTopic("Vision/DeltaXAngle", "Degrees", camera::getDeltaXAngle);
+                BadLog.createTopic("Vision/Distance", "inches", camera::getDistance);
 
                 mDrive.setLogger(logger);
             }
@@ -178,8 +181,7 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getCollectorToggle, () -> {
                     System.out.println("Collector toggled!");
                     collector.setDeployed(!collector.isArmDown());
-                    // isArmDown is previous state of collector
-                    hopper.setSpindexer(collector.isArmDown() ? 0 : -1);
+                    hopper.setSpindexer(collector.isArmDown() ? -1 : 0);
                 }),
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
@@ -240,7 +242,7 @@ public class Robot extends TimedRobot {
                     }
                     hopper.lockToShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
-                    collector.setIntakePow(0.2);
+                    collector.setIntakePow(shooting ? 0.3 : 0);
                 }),
                 createHoldAction(mControlBoard::getCollectorBackSpin,
                     (pressed) -> collector.setIntakePow(pressed ? 0.2 : 0))
@@ -402,6 +404,9 @@ public class Robot extends TimedRobot {
                 turret.zeroSensors();
                 mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
                 mDrive.setHeading(Rotation2d.identity());
+                ledManager.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
+            } else {
+                ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
             }
 
             // Update auto modes
