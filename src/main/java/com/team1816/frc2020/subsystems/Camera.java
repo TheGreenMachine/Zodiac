@@ -29,13 +29,17 @@ public class Camera {
     private Camera() {
         networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
-            if (value.getDouble() < 0) { return; }
+            if (value.getDouble() < 0) {
+                // Reset deltaX to 0 if contour not detected
+                deltaXAngle = 0;
+                return;
+            }
             var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
             this.deltaXAngle = Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH));
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
 
         networkTable.addEntryListener("distance", (table, key, entry, value, flags) -> {
-            if (value.getDouble() < 0) { return; }
+            // Use most recently available distance if distance not found
             this.distance = value.getDouble();
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     }

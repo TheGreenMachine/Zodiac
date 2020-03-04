@@ -53,8 +53,8 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getCollectorDown() {
-        return mDriveControlBoard.getCollectorDown();
+    public boolean getCollectorToggle() {
+        return mDriveControlBoard.getCollectorToggle();
     }
 
     @Override
@@ -102,6 +102,11 @@ public class ControlBoard implements IControlBoard {
     @Override
     public boolean getTurretJogRight() {
         return mButtonControlBoard.getTurretJogRight();
+    }
+
+    @Override
+    public boolean getFieldFollowing() {
+        return mButtonControlBoard.getFieldFollowing();
     }
 
     @Override

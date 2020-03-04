@@ -1,8 +1,9 @@
 package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 import com.team1816.frc2020.Constants;
+import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
@@ -34,9 +35,8 @@ public class Shooter extends Subsystem implements PidProvider {
 
     // Components
     private final IMotorControllerEnhanced shooterMain;
-    private final IMotorController shooterFollowerA;
-    private final IMotorController shooterFollowerB;
-    private final IMotorController shooterFollowerC;
+    private final IMotorControllerEnhanced shooterFollower;
+    private final Camera camera = Camera.getInstance();
 
     // State
     private double shooterVelocity;
@@ -48,20 +48,19 @@ public class Shooter extends Subsystem implements PidProvider {
     private final double kD;
     private final double kF;
     public static final int MAX_VELOCITY = 11_800; // Far
-    public static final int NEAR_VELOCITY = 10_800;  // Initiation line
-    public static final int MID_VELOCITY = 9_900 ; // Trench this also worked from initiation
+    public static final int NEAR_VELOCITY = 11_100;  // Initiation line
+    public static final int MID_VELOCITY = 9_900; // Trench this also worked from initiation
+    public static final int MID_FAR_VELOCITY = 11_200;
     public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(NAME, "velocityThreshold", 3000);
 
     private SendableChooser<Integer> velocityChooser = new SendableChooser<>();
+    private VelocityManager velocityManager = new VelocityManager();
 
     private Shooter() {
         super(NAME);
 
-        this.shooterMain = factory.getMotor(NAME, "shooterMaster");
-        this.shooterFollowerA = factory.getMotor(NAME, "shooterFollowerA", shooterMain);
-        this.shooterFollowerB = factory.getMotor(NAME, "shooterFollowerB", shooterMain);
-        this.shooterFollowerC = factory.getMotor(NAME, "shooterFollowerC", shooterMain);
-        //   this.hood = factory.getSolenoid(NAME, "hood");
+        this.shooterMain = factory.getMotor(NAME, "shooterMain");
+        this.shooterFollower = (IMotorControllerEnhanced) factory.getMotor(NAME, "shooterFollower", shooterMain);
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
@@ -69,16 +68,14 @@ public class Shooter extends Subsystem implements PidProvider {
         this.kF = factory.getConstant(NAME, "kF");
 
         shooterMain.setNeutralMode(NeutralMode.Coast);
-        shooterFollowerA.setNeutralMode(NeutralMode.Coast);
-        shooterFollowerB.setNeutralMode(NeutralMode.Coast);
-        shooterFollowerC.setNeutralMode(NeutralMode.Coast);
+        shooterFollower.setNeutralMode(NeutralMode.Coast);
 
         configCurrentLimits(40 /* amps */);
 
+
         shooterMain.setInverted(false);
-        shooterFollowerA.setInverted(false);
-        shooterFollowerB.setInverted(true);
-        shooterFollowerC.setInverted(true);
+        shooterFollower.setInverted(true);
+
 
         shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
@@ -92,24 +89,8 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     private void configCurrentLimits(int currentLimitAmps) {
-        // ((TalonSRX) shooterMain).enableCurrentLimit(true);
-        // ((TalonSRX) shooterFollowerA).enableCurrentLimit(true);
-        // ((TalonSRX) shooterFollowerB).enableCurrentLimit(true);
-        // ((TalonSRX) shooterFollowerC).enableCurrentLimit(true);
-        // ((TalonSRX) shooterMain).configContinuousCurrentLimit(currentLimitAmps);
-        // ((TalonSRX) shooterFollowerA).configContinuousCurrentLimit(currentLimitAmps);
-        // ((TalonSRX) shooterFollowerB).configContinuousCurrentLimit(currentLimitAmps);
-        // ((TalonSRX) shooterFollowerC).configContinuousCurrentLimit(currentLimitAmps);
-        if (shooterMain instanceof TalonFX) {
-            ((TalonFX) shooterMain).configSupplyCurrentLimit(
-                new SupplyCurrentLimitConfiguration(true, currentLimitAmps, 0, 0)
-            );
-        }
-        if (shooterFollowerB instanceof TalonFX) {
-            ((TalonFX) shooterFollowerB).configSupplyCurrentLimit(
-                new SupplyCurrentLimitConfiguration(true, currentLimitAmps, 0, 0)
-            );
-        }
+        MotorUtil.configCurrentLimit(shooterMain, true, currentLimitAmps, 0, 0);
+        MotorUtil.configCurrentLimit(shooterFollower, true, currentLimitAmps, 0, 0);
     }
 
     @Override
@@ -137,22 +118,12 @@ public class Shooter extends Subsystem implements PidProvider {
         outputsChanged = true;
     }
 
-    public void startShooterBasedOnDistance() {
-        /* if (distance <  ) { TODO: Find correct distances
-            setVelocity(NEAR_VELOCITY);
-        } else if (< distance < ) {
-            setVelocity(MID_VELOCITY);
-        } else if (distance > ) {
-            setVelocity(MAX_VELOCITY);
-        } */
-    }
-
     public void shootFromChooser(boolean shooting) {
         setVelocity(shooting ? velocityChooser.getSelected() : 0);
     }
 
     public void startShooter() {
-        setVelocity(MID_VELOCITY);
+        setVelocity(velocityManager.getShooterVelocity(camera.getDistance()));
     }
 
     public void stopShooter() {
@@ -194,6 +165,7 @@ public class Shooter extends Subsystem implements PidProvider {
 
         velocityChooser.setDefaultOption("NEAR_VELOCITY", NEAR_VELOCITY);
         velocityChooser.addOption("MID_VELOCITY", MID_VELOCITY);
+        velocityChooser.addOption("MID_FAR_VELOCITY", MID_FAR_VELOCITY);
         velocityChooser.addOption("MAX_VELOCITY", MAX_VELOCITY);
 
         SmartDashboard.putData(velocityChooser);
