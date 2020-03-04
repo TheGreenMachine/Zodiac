@@ -20,6 +20,7 @@ public class AutoModeSelector {
         DRIVE_BY_CAMERA,
         DO_NOTHING,
         TUNE_DRIVETRAIN,
+        TURRET_TEST,
         LIVING_ROOM,
         DRIVE_STRAIGHT,
         AUTO_TRENCH_TURN_RIGHT,
@@ -57,6 +58,7 @@ public class AutoModeSelector {
 //        mModeChooser.addOption("Shop", DesiredMode.SHOP);
 //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
+        mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
         mModeChooser.addOption("6 Ball Alliance Trench", DesiredMode.SIX_BALL_ALLIANCE);
         mModeChooser.addOption("Auto Trench Turn Right", DesiredMode.AUTO_TRENCH_TURN_RIGHT);
         mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
@@ -101,6 +103,8 @@ public class AutoModeSelector {
                 return Optional.of(new DriveByCameraMode());
             case TUNE_DRIVETRAIN:
                 return Optional.of(new TuneDrivetrainMode());
+            case TURRET_TEST:
+                return Optional.of(new TurretTestMode());
             case DRIVE_STRAIGHT:
                 return (Optional.of(new DriveStraightMode()));
             case LIVING_ROOM:

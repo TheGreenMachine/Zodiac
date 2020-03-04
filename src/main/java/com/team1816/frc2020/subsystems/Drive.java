@@ -117,13 +117,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         }
         mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 10, 10);
 
-        if (mPigeon.getLastError() != ErrorCode.OK) {
-            // BadLog.createValue("PigeonErrorDetected", "true");
-            System.out.println("Error detected with Pigeon IMU - check if the sensor is present and plugged in!");
-            System.out.println("Defaulting to drive straight mode");
-            AutoModeSelector.getInstance().setHardwareFailure(true);
-        }
-
         setOpenLoop(DriveSignal.NEUTRAL);
 
         // force a CAN message across
@@ -348,8 +341,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public synchronized void setBrakeMode(boolean on) {
-        System.out.println("setBrakeMode " + on);
         if (mIsBrakeMode != on) {
+            System.out.println("setBrakeMode " + on);
             mIsBrakeMode = on;
             NeutralMode mode = on ? NeutralMode.Brake : NeutralMode.Coast;
             mRightMaster.setNeutralMode(mode);
@@ -553,6 +546,14 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         resetPigeon();
         setHeading(Rotation2d.identity());
         resetEncoders();
+        if (mPigeon.getLastError() != ErrorCode.OK) {
+            // BadLog.createValue("PigeonErrorDetected", "true");
+            System.out.println("Error detected with Pigeon IMU - check if the sensor is present and plugged in!");
+            System.out.println("Defaulting to drive straight mode");
+            AutoModeSelector.getInstance().setHardwareFailure(true);
+        } else {
+            AutoModeSelector.getInstance().setHardwareFailure(false);
+        }
     }
 
     @Override

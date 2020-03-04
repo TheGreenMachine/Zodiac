@@ -14,6 +14,7 @@ public class TurretAction implements Action {
     @Override
     public void start() {
         turret.setTurretAngle(turretAngle);
+        // turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
     }
 
     @Override

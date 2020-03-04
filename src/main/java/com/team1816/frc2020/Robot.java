@@ -176,19 +176,16 @@ public class Robot extends TimedRobot {
             actionManager = new ActionManager(
                 // Driver Gamepad
                 createAction(mControlBoard::getCollectorToggle, () -> {
-                    if (collector.isArmDown()) {
-                        collector.setDeployed(false);
-                        hopper.setSpindexer(0);
-                    } else {
-                        hopper.setSpindexer(-1);
-                        collector.setDeployed(true);
-                    }
+                    System.out.println("Collector toggled!");
+                    collector.setDeployed(!collector.isArmDown());
+                    // isArmDown is previous state of collector
+                    hopper.setSpindexer(collector.isArmDown() ? 0 : -1);
                 }),
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
 
                 createHoldAction(mControlBoard::getClimberDeploy, (pressed) -> {
-                    if ((DriverStation.getInstance().getMatchTime() > 120) ||
+                    if ((DriverStation.getInstance().getMatchTime() <= 30) ||
                         (DriverStation.getInstance().getMatchTime() == -1)) {
                         climber.setDeployed(pressed);
                     }
@@ -218,7 +215,12 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
                 createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
 
-                createScalar(mControlBoard::getClimber, power -> climber.setClimberPower(power > 0 ? power : 0)),
+                createScalar(mControlBoard::getClimber, power -> {
+                    if ((DriverStation.getInstance().getMatchTime() <= 30) ||
+                        (DriverStation.getInstance().getMatchTime() == -1)) {
+                        climber.setClimberPower(power > 0 ? power : 0);
+                    }
+                }),
 
                 createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)),
                 createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)),
@@ -238,7 +240,7 @@ public class Robot extends TimedRobot {
                     }
                     hopper.lockToShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
-
+                    collector.setIntakePow(0.2);
                 }),
                 createHoldAction(mControlBoard::getCollectorBackSpin,
                     (pressed) -> collector.setIntakePow(pressed ? 0.2 : 0))
@@ -394,9 +396,12 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {
         loopStart = Timer.getFPGATimestamp();
         try {
-            if (!resetRobotButton.get() && !mHasBeenEnabled) {
+            if (RobotController.getUserButton() && !mHasBeenEnabled) {
                 System.out.println("Zeroing Robot!");
                 mDrive.zeroSensors();
+                turret.zeroSensors();
+                mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
+                mDrive.setHeading(Rotation2d.identity());
             }
 
             // Update auto modes
@@ -433,14 +438,16 @@ public class Robot extends TimedRobot {
         if (mDriveByCameraInAuto || mAutoModeExecutor.isInterrupted()) {
             manualControl();
         }
+
+        if (Constants.kIsBadlogEnabled) {
+            logger.updateTopics();
+            logger.log();
+        }
     }
 
     @Override
     public void teleopPeriodic() {
         loopStart = Timer.getFPGATimestamp();
-
-
-        System.out.println("Match time when no match: " + DriverStation.getInstance().getMatchTime());
 
         try {
             manualControl();
