@@ -24,4 +24,4 @@ subsystems:
 constants:
     wheelDiameter: 6.32 #inches
     logTeleop: 0
-    badLogEnabled: 1
+    badLogEnabled: 0

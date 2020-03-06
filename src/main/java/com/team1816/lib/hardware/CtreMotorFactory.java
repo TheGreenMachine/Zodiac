@@ -30,10 +30,10 @@ public class CtreMotorFactory {
         public int CONTROL_FRAME_PERIOD_MS = 5;
         public int MOTION_CONTROL_FRAME_PERIOD_MS = 100;
         public int GENERAL_STATUS_FRAME_RATE_MS = 10;
-        public int FEEDBACK_STATUS_FRAME_RATE_MS = 5;
-        public int QUAD_ENCODER_STATUS_FRAME_RATE_MS = 100;
-        public int ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS = 100;
-        public int PULSE_WIDTH_STATUS_FRAME_RATE_MS = 100;
+        public int FEEDBACK_STATUS_FRAME_RATE_MS = 20;
+        public int QUAD_ENCODER_STATUS_FRAME_RATE_MS = 160;
+        public int ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS = 160;
+        public int PULSE_WIDTH_STATUS_FRAME_RATE_MS = 160;
 
         public VelocityMeasPeriod VELOCITY_MEASUREMENT_PERIOD = VelocityMeasPeriod.Period_50Ms;
         public int VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW = 1;

@@ -21,6 +21,8 @@ public class Hopper extends Subsystem {
     private final Solenoid feederFlap;
     private final IMotorControllerEnhanced spindexer;
     private final IMotorControllerEnhanced elevator;
+    private final VelocityManager velocityManager = VelocityManager.getInstance();
+    private final Camera camera = Camera.getInstance();
 
     // State
     private boolean feederFlapOut;
@@ -50,6 +52,10 @@ public class Hopper extends Subsystem {
         outputsChanged = true;
     }
 
+    public void startSpindexerBasedOnDistance() {
+        setSpindexer(velocityManager.getSpindexerOutput(camera.getDistance()));
+    }
+
     public void setElevator(double elevatorOutput) {
         this.elevatorPower = elevatorOutput;
         outputsChanged = true;
@@ -57,7 +63,11 @@ public class Hopper extends Subsystem {
 
     public void setIntake(double intakeOutput) {
         setElevator(intakeOutput);
-        setSpindexer(intakeOutput);
+        if (intakeOutput > 0) {
+            startSpindexerBasedOnDistance();
+        } else {
+            setSpindexer(0);
+        }
     }
 
     public void lockToShooter(boolean lock) {

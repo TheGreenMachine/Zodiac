@@ -28,7 +28,8 @@ public class AutoModeSelector {
         SIX_BALL_ALLIANCE,
         EIGHT_BALL_ALLIANCE,
         EIGHT_BALL_OPPOSE,
-        TEN_BALL_AUTO
+        TEN_BALL_AUTO,
+        DRIVE_STRAIGHT_SHOOT
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -62,9 +63,10 @@ public class AutoModeSelector {
         mModeChooser.addOption("6 Ball Alliance Trench", DesiredMode.SIX_BALL_ALLIANCE);
         mModeChooser.addOption("Auto Trench Turn Right", DesiredMode.AUTO_TRENCH_TURN_RIGHT);
         mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
-        mModeChooser.addOption("8 Ball Opposing Trench", DesiredMode.EIGHT_BALL_OPPOSE);
-        mModeChooser.addOption("8 Ball Alliance Trench", DesiredMode.EIGHT_BALL_ALLIANCE);
+        mModeChooser.addOption("8 Ball Opposing Trench (NOT TESTED)", DesiredMode.EIGHT_BALL_OPPOSE);
+        mModeChooser.addOption("8 Ball Alliance Trench (NOT TESTED)", DesiredMode.EIGHT_BALL_ALLIANCE);
         mModeChooser.addOption("10 Ball Trench (Not yet implemented DO NOT USE)", DesiredMode.TEN_BALL_AUTO);
+        mModeChooser.addOption("Drive Straight Shoot", DesiredMode.DRIVE_STRAIGHT_SHOOT);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
 
@@ -119,6 +121,8 @@ public class AutoModeSelector {
                 return (Optional.of(new EightBallOpposeMode()));
             case TEN_BALL_AUTO:
                 return (Optional.of(new TenBallMode()));
+            case DRIVE_STRAIGHT_SHOOT:
+                return (Optional.of(new DriveStraightShootMode()));
             default:
                 break;
         }

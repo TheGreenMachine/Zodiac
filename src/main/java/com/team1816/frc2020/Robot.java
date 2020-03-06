@@ -1,6 +1,7 @@
 package com.team1816.frc2020;
 
 import badlog.lib.BadLog;
+import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
 import com.team1816.frc2020.paths.TrajectorySet;
@@ -18,7 +19,10 @@ import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.*;
+import com.team254.lib.util.CheesyDriveHelper;
+import com.team254.lib.util.CrashTracker;
+import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -76,6 +80,7 @@ public class Robot extends TimedRobot {
 
 
     Robot() {
+        super();
         CrashTracker.logRobotConstruction();
     }
 
@@ -103,21 +108,25 @@ public class Robot extends TimedRobot {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger = BadLog.init("/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag");
 
-            BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
-            BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
-            BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
-
-
-            BadLog.createTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
-                "hide", "join:Shooter/Velocities");
-            BadLog.createTopic("Shooter/TargetVel", "NativeUnits", shooter::getTargetVelocity,
-                "hide", "join:Shooter/Velocities");
-            BadLog.createTopic("Shooter/Error", "NativeUnits", shooter::getError,
-                "hide", "join:Shooter/Velocities");
-
-            BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
-
             if (Constants.kIsBadlogEnabled) {
+                BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
+                BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
+                BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
+
+
+                BadLog.createTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
+                    "hide", "join:Shooter/Velocities");
+                BadLog.createTopic("Shooter/TargetVel", "NativeUnits", shooter::getTargetVelocity,
+                    "hide", "join:Shooter/Velocities");
+                BadLog.createTopic("Shooter/Error", "NativeUnits", shooter::getError,
+                    "hide", "join:Shooter/Velocities");
+
+                BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
+
+                BadLog.createTopic("Vision/DeltaXAngle", "Degrees", camera::getDeltaXAngle);
+                BadLog.createTopic("Vision/Distance", "inches", camera::getDistance);
+                BadLog.createTopicSubscriber("Pigeon Error", BadLog.UNITLESS, DataInferMode.DEFAULT);
+
                 DrivetrainLogger.init(mDrive);
 
                 BadLog.createValue("Drivetrain PID", mDrive.pidToString());
@@ -136,8 +145,6 @@ public class Robot extends TimedRobot {
                     "hide", "join:Tracking/Angles");
                 BadLog.createTopic("Turret/TurretAngle", "Degrees", turret::getTurretPositionDegrees,
                     "hide", "join:Tracking/Angles");
-                BadLog.createTopic("Vision/DeltaXAngle", "Degrees", camera::getDeltaXAngle);
-                BadLog.createTopic("Vision/Distance", "inches", camera::getDistance);
 
                 mDrive.setLogger(logger);
             }
@@ -178,10 +185,10 @@ public class Robot extends TimedRobot {
 
             actionManager = new ActionManager(
                 // Driver Gamepad
-                createAction(mControlBoard::getCollectorToggle, () -> {
+                createHoldAction(mControlBoard::getCollectorToggle, (collecting) -> {
                     System.out.println("Collector toggled!");
-                    collector.setDeployed(!collector.isArmDown());
-                    hopper.setSpindexer(collector.isArmDown() ? -1 : 0);
+                    collector.setDeployed(collecting);
+                    hopper.setSpindexer(collecting ? -1 : 0);
                 }),
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
@@ -214,8 +221,8 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getFieldFollowing, () -> {
                     turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
                 }),
-                createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
-                createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
+
+                createHoldAction(mControlBoard::getFeederFlapOut, hopper::setFeederFlap),
 
                 createScalar(mControlBoard::getClimber, power -> {
                     if ((DriverStation.getInstance().getMatchTime() <= 30) ||
@@ -237,12 +244,14 @@ public class Robot extends TimedRobot {
                     if (shooting) {
                         mDrive.setOpenLoop(DriveSignal.BRAKE);
                         shooter.startShooter(); // Uses ZED distance
+                        turret.lockTurret();
                     } else {
+                        turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
                         shooter.stopShooter();
                     }
                     hopper.lockToShooter(shooting);
                     hopper.setIntake(shooting ? 1 : 0);
-                    collector.setIntakePow(shooting ? 0.3 : 0);
+                    collector.setIntakePow(shooting ? 0.5 : 0);
                 }),
                 createHoldAction(mControlBoard::getCollectorBackSpin,
                     (pressed) -> collector.setIntakePow(pressed ? 0.2 : 0))
@@ -461,7 +470,7 @@ public class Robot extends TimedRobot {
             throw t;
         }
 
-        if (Constants.kIsBadlogEnabled && Constants.kIsLoggingTeleOp) {
+        if (Constants.kIsLoggingTeleOp) {
             logger.updateTopics();
             logger.log();
         }
@@ -491,7 +500,6 @@ public class Robot extends TimedRobot {
         } else if (!(shooter.getTargetVelocity() > 0)) {
             mDrive.setOpenLoop(driveSignal);
         } else {
-            System.out.println("Setting to brake mode");
             mDrive.setOpenLoop(DriveSignal.BRAKE);
         }
     }

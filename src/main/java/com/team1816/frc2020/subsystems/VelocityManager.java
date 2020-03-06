@@ -1,9 +1,16 @@
 package com.team1816.frc2020.subsystems;
 
-import java.util.List;
-import java.util.Map;
-
 public class VelocityManager {
+    private static VelocityManager INSTANCE;
+
+    public static VelocityManager getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new VelocityManager();
+        }
+        return INSTANCE;
+    }
+
+    private VelocityManager() {}
     static class Entry {
         public final double distance;
         public final double shooterVelocity;
@@ -21,7 +28,7 @@ public class VelocityManager {
     }
 
     private final Entry[] velocities = new Entry[] {
-        new Entry(167, 11_100, 1),
+        new Entry(167, 11_100, 2),
         new Entry(198, 10_400, 1),
         new Entry(223, 10_200, 1),
         new Entry(250, 9_900, 1),

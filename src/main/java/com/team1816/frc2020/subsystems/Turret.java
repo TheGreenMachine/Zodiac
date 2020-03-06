@@ -32,6 +32,7 @@ public class Turret extends Subsystem implements PidProvider {
     private final IMotorControllerEnhanced turret;
     private final Camera camera = Camera.getInstance();
     private final RobotState robotState = RobotState.getInstance();
+    private final LedManager led = LedManager.getInstance();
 
     // State
     private double turretPos;
@@ -110,12 +111,17 @@ public class Turret extends Subsystem implements PidProvider {
 
     public void setControlMode(ControlMode controlMode) {
         if (this.controlMode != controlMode) {
-            if (controlMode == ControlMode.CAMERA_FOLLOWING) {
+            if (controlMode == ControlMode.MANUAL) {
+                this.controlMode = controlMode;
+                led.indicateStatus(LedManager.RobotStatus.MANUAL_TURRET);
+            } else if (controlMode == ControlMode.CAMERA_FOLLOWING) {
                 if (Constants.kUseAutoAim) {
                     this.controlMode = controlMode;
+                    led.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
                 }
             } else {
                 this.controlMode = controlMode;
+                led.indicateStatus(LedManager.RobotStatus.ENABLED);
             }
         }
     }
@@ -168,6 +174,10 @@ public class Turret extends Subsystem implements PidProvider {
         } else {
             setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
         }
+    }
+
+    public synchronized void lockTurret() {
+        setTurretAngle(getTurretPositionDegrees());
     }
 
     public void jogLeft() {

@@ -1,7 +1,8 @@
 package com.team1816.frc2020.subsystems;
 
-import com.ctre.phoenix.motorcontrol.*;
-
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.hardware.TalonSRXChecker;
@@ -39,8 +40,9 @@ public class Shooter extends Subsystem implements PidProvider {
     private final Camera camera = Camera.getInstance();
 
     // State
-    private double shooterVelocity;
     private boolean outputsChanged;
+
+    private PeriodicIO mPeriodicIO = new PeriodicIO();
 
     // Constants
     private final double kP;
@@ -54,7 +56,7 @@ public class Shooter extends Subsystem implements PidProvider {
     public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(NAME, "velocityThreshold", 3000);
 
     private SendableChooser<Integer> velocityChooser = new SendableChooser<>();
-    private VelocityManager velocityManager = new VelocityManager();
+    private VelocityManager velocityManager = VelocityManager.getInstance();
 
     private Shooter() {
         super(NAME);
@@ -112,7 +114,7 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     public void setVelocity(double velocity) {
-        this.shooterVelocity = velocity;
+        mPeriodicIO.velocityDemand = velocity;
         outputsChanged = true;
     }
 
@@ -129,15 +131,15 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     public double getActualVelocity() {
-        return shooterMain.getSelectedSensorVelocity(0);
+        return mPeriodicIO.actualShooterVelocity;
     }
 
     public double getTargetVelocity() {
-        return shooterVelocity;
+        return mPeriodicIO.velocityDemand;
     }
 
     public double getError() {
-        return shooterMain.getClosedLoopError(0);
+        return mPeriodicIO.closedLoopError;
     }
 
     public boolean isVelocityNearTarget() {
@@ -145,12 +147,18 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     @Override
+    public void readPeriodicInputs() {
+        mPeriodicIO.actualShooterVelocity = shooterMain.getSelectedSensorVelocity(0);
+        mPeriodicIO.closedLoopError = shooterMain.getClosedLoopError(0);
+    }
+
+    @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
-            if (shooterVelocity == 0) {
+            if (mPeriodicIO.velocityDemand == 0) {
                 this.shooterMain.set(ControlMode.PercentOutput, 0); // Inertia coast to 0
             } else {
-                this.shooterMain.set(ControlMode.Velocity, shooterVelocity);
+                this.shooterMain.set(ControlMode.Velocity, mPeriodicIO.velocityDemand);
             }
             outputsChanged = false;
         }
@@ -195,5 +203,14 @@ public class Shooter extends Subsystem implements PidProvider {
             ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
         }
         return checkShooter;
+    }
+
+    public static class PeriodicIO {
+        //INPUTS
+        public double actualShooterVelocity;
+        public double closedLoopError;
+
+        //OUPUTS
+        public double velocityDemand;
     }
 }
