@@ -80,7 +80,6 @@ public class Robot extends TimedRobot {
 
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
-    private NetworkTableEntry usingVision;
 
     Robot() {
         super();
@@ -186,8 +185,6 @@ public class Robot extends TimedRobot {
 
             mAutoModeSelector.updateModeCreator();
 
-            usingVision = NetworkTableInstance.getDefault().getTable("SmartDashboard").getSubTable("Calibration").getEntry("VISION");
-
             actionManager = new ActionManager(
                 // Driver Gamepad
                 createHoldAction(mControlBoard::getCollectorToggle, (collecting) -> {
@@ -249,10 +246,8 @@ public class Robot extends TimedRobot {
                     if (pressed) {
                         prevTurretControlMode = turret.getControlMode();
                         turret.setControlMode(Turret.ControlMode.CAMERA_FOLLOWING);
-                        usingVision.setBoolean(true);
                     } else {
                         turret.setControlMode(prevTurretControlMode);
-                        usingVision.setBoolean(false);
                     }
                 }),
 
@@ -292,7 +287,7 @@ public class Robot extends TimedRobot {
             CrashTracker.logDisabledInit();
             mEnabledLooper.stop();
 
-            ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
+            ledManager.setDefaultStatus(LedManager.RobotStatus.DISABLED);
 
             // shooter
             shooter.setVelocity(0);
@@ -321,7 +316,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logAutoInit();
             mDisabledLooper.stop();
-            ledManager.indicateStatus(LedManager.RobotStatus.AUTONOMOUS);
+            ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
 
             // Robot starts forwards.
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
@@ -352,7 +347,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
-            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
+            ledManager.setDefaultStatus(LedManager.RobotStatus.ENABLED);
 
             turret.zeroSensors();
 

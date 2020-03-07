@@ -29,6 +29,7 @@ public class LedManager extends Subsystem {
 
     private int period; // ms
     private long lastWriteTime = System.currentTimeMillis();
+    private RobotStatus defaultStatus = RobotStatus.DISABLED;
 
     private LedManager() {
         super(NAME);
@@ -58,7 +59,6 @@ public class LedManager extends Subsystem {
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_3_PwmInputs0, 255, 10);
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_4_PwmInputs1, 255, 10);
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_6_PwmInputs3, 255, 10);
-
     }
 
     @Deprecated
@@ -110,8 +110,21 @@ public class LedManager extends Subsystem {
         setLedColor(status.getRed(), status.getGreen(), status.getBlue());
     }
 
+    public void indicateDefaultStatus() {
+        indicateStatus(defaultStatus);
+    }
+
     public void blinkStatus(RobotStatus status) {
         setLedColorBlink(status.getRed(), status.getGreen(), status.getBlue());
+    }
+
+    public void setDefaultStatus(RobotStatus defaultStatus) {
+        this.defaultStatus = defaultStatus;
+        indicateDefaultStatus();
+    }
+
+    public RobotStatus getDefaultStatus() {
+        return defaultStatus;
     }
 
     public int[] getLedColor() {

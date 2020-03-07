@@ -7,6 +7,8 @@ import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -42,6 +44,7 @@ public class Turret extends Subsystem implements PidProvider {
     private double turretAngleRelativeToField;
     private double followTargetTurretSetAngle;
     private ControlMode controlMode = ControlMode.MANUAL;
+    private final NetworkTableEntry usingVision;
 
     // Constants
     private static final int kPIDLoopIDx = 0;
@@ -74,6 +77,9 @@ public class Turret extends Subsystem implements PidProvider {
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
+
+        usingVision = NetworkTableInstance.getDefault().getTable("SmartDashboard").getSubTable("Calibration").getEntry("VISION");
+        usingVision.setBoolean(false);
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
@@ -112,17 +118,20 @@ public class Turret extends Subsystem implements PidProvider {
 
     public void setControlMode(ControlMode controlMode) {
         if (this.controlMode != controlMode) {
-            if (controlMode == ControlMode.MANUAL) {
-                this.controlMode = controlMode;
-                led.indicateStatus(LedManager.RobotStatus.MANUAL_TURRET);
-            } else if (controlMode == ControlMode.CAMERA_FOLLOWING) {
+            if (controlMode == ControlMode.CAMERA_FOLLOWING) {
                 if (Constants.kUseAutoAim) {
                     this.controlMode = controlMode;
+                    usingVision.setBoolean(true);
                     led.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
                 }
             } else {
                 this.controlMode = controlMode;
-                led.indicateStatus(LedManager.RobotStatus.ENABLED);
+                usingVision.setBoolean(false);
+                if (controlMode == ControlMode.MANUAL) {
+                    led.indicateStatus(LedManager.RobotStatus.MANUAL_TURRET);
+                } else {
+                    led.indicateDefaultStatus();
+                }
             }
         }
     }

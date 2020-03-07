@@ -16,9 +16,6 @@ public class ShootAction implements Action {
 
     private boolean unjam;
 
-    private NetworkTableEntry usingVision = NetworkTableInstance.getDefault().getTable("SmartDashboard").getSubTable("Calibration").getEntry("VISION");
-
-
     public ShootAction(boolean unjam) {
         this.shooter = Shooter.getInstance();
         this.hopper = Hopper.getInstance();
@@ -38,7 +35,6 @@ public class ShootAction implements Action {
         collector.setIntakePow(0.5);
         hopper.lockToShooter(true, unjam);
         hopper.setIntake(1);
-        usingVision.setBoolean(true);
     }
 
     @Override
@@ -59,6 +55,5 @@ public class ShootAction implements Action {
         collector.setIntakePow(0);
         ledManager.setCameraLed(false);
         turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
-        usingVision.setBoolean(false);
     }
 }
