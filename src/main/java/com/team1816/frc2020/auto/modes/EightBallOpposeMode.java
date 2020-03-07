@@ -35,14 +35,14 @@ public class EightBallOpposeMode extends AutoModeBase {
                         new CollectAction(false)
                     )
                 ),
-                new PrepareToShootAction(Turret.CARDINAL_WEST),
+                new PrepareToShootAction(Turret.MAX_ANGLE),
                 new ShootAction(true),
                 new ParallelAction(
                     mDriveTrajectoryB,
                     new CollectAction(true)
                 ),
                 new CollectAction(false),
-                new PrepareToShootAction(Turret.CARDINAL_WEST),
+                new PrepareToShootAction(Turret.MAX_ANGLE),
                 new ShootAction(true)
             )
         );
