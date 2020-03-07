@@ -1,27 +1,32 @@
 package com.team1816.frc2020.auto.actions;
 
-import com.team1816.frc2020.subsystems.Hopper;
-import com.team1816.frc2020.subsystems.LedManager;
-import com.team1816.frc2020.subsystems.Shooter;
-import com.team1816.frc2020.subsystems.Turret;
+import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.actions.Action;
 import com.team1816.lib.loops.AsyncTimer;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class ShootAction implements Action {
     private Shooter shooter;
     private Hopper hopper;
     private LedManager ledManager = LedManager.getInstance();
     private AsyncTimer shooterTimer;
-    private double turretAngle;
+    private Collector collector;
     private Turret turret;
 
-    public ShootAction(double turretAngle) {
+    private boolean unjam;
+
+    private NetworkTableEntry usingVision = NetworkTableInstance.getDefault().getTable("SmartDashboard").getSubTable("Calibration").getEntry("VISION");
+
+
+    public ShootAction(boolean unjam) {
         this.shooter = Shooter.getInstance();
         this.hopper = Hopper.getInstance();
         this.turret = Turret.getInstance();
         this.ledManager = LedManager.getInstance();
+        this.collector = Collector.getInstance();
         this.shooterTimer = new AsyncTimer(4, shooter::startShooter, shooter::stopShooter);
-        this.turretAngle = turretAngle;
+        this.unjam = unjam;
     }
 
     @Override
@@ -30,8 +35,10 @@ public class ShootAction implements Action {
         ledManager.setCameraLed(true);
         turret.setControlMode(Turret.ControlMode.CAMERA_FOLLOWING);
         shooterTimer.update();
-        hopper.lockToShooter(true);
+        collector.setIntakePow(0.5);
+        hopper.lockToShooter(true, unjam);
         hopper.setIntake(1);
+        usingVision.setBoolean(true);
     }
 
     @Override
@@ -47,9 +54,11 @@ public class ShootAction implements Action {
     @Override
     public void done() {
         shooter.stopShooter();
-        hopper.lockToShooter(false);
+        hopper.lockToShooter(false, true);
         hopper.setIntake(0);
+        collector.setIntakePow(0);
         ledManager.setCameraLed(false);
         turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+        usingVision.setBoolean(false);
     }
 }

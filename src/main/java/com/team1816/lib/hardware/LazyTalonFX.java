@@ -19,9 +19,6 @@ public class LazyTalonFX extends TalonFX implements ILazyMotorControllerEnhanced
     @Override
     public void set(ControlMode mode, double value) {
         if (value != mLastSet || mode != mLastControlMode) {
-            System.out.println("Writing output value to can ID " + getDeviceID() +
-                " ControlMode: " + mode +
-                " value: " + value);
             mLastSet = value;
             mLastControlMode = mode;
             super.set(mode, value);

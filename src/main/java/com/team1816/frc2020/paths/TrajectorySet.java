@@ -19,18 +19,21 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> LIVING_ROOM;
     public final Trajectory<TimedState<Pose2dWithCurvature>> SIX_BALL_ALLIANCE;
     public final Trajectory<TimedState<Pose2dWithCurvature>> AUTO_TRENCH_TURN_RIGHT;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> DRIVE_STRAIGHT_TRENCH;
 
     public final Trajectory<TimedState<Pose2dWithCurvature>> FEEDER_TO_TRENCH;
     public final Trajectory<TimedState<Pose2dWithCurvature>> TRENCH_TO_FEEDER;
     public final Trajectory<TimedState<Pose2dWithCurvature>> FIVE_BALL_AUTO_OPPOSEA;
     public final Trajectory<TimedState<Pose2dWithCurvature>> FIVE_BALL_AUTO_OPPOSEB;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_ALLIANCE;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_ALLIANCEA;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_ALLIANCEB;
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_OPPOSEA;
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_OPPOSEB;
     public final Trajectory<TimedState<Pose2dWithCurvature>> TEN_BALL_AUTO;
 
     private TrajectorySet() {
         this.DRIVE_STRAIGHT = new DriveStraight(12).generateTrajectory();
+        this.DRIVE_STRAIGHT_TRENCH = new DriveStraight(172).generateTrajectory();
         this.TUNE_DRIVETRAIN = new DriveStraight(155).generateTrajectory();
         this.LIVING_ROOM = new LivingRoomPath().generateTrajectory();
         this.SIX_BALL_ALLIANCE = new SixBallAlliancePath().generateTrajectory();
@@ -39,7 +42,8 @@ public class TrajectorySet {
         this.TRENCH_TO_FEEDER = new FeederToTrenchPath().generateReversedTrajectory();
         this.FIVE_BALL_AUTO_OPPOSEA = new DriveStraight(96).generateTrajectory();
         this.FIVE_BALL_AUTO_OPPOSEB = new FiveBallOpposingPathPartB().generateTrajectory();
-        this.EIGHT_BALL_AUTO_ALLIANCE = new EightBallAlliancePath().generateTrajectory();
+        this.EIGHT_BALL_AUTO_ALLIANCEA = new EightBallAlliancePath().generateTrajectory();
+        this.EIGHT_BALL_AUTO_ALLIANCEB = new EightBallAllianceBPath().generateTrajectory();
         this.EIGHT_BALL_AUTO_OPPOSEA = new EightBallOpposingAPath().generateTrajectory();
         this.EIGHT_BALL_AUTO_OPPOSEB = new EightBallOpposingBPath().generateTrajectory();
         this.TEN_BALL_AUTO = new TenBallOpposingPath().generateTrajectory();

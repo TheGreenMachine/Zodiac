@@ -35,8 +35,6 @@ subsystems:
         implemented: true
         talons:
             intake: 11
-        invertMotor:
-            - 11
         solenoids:
             arm: 0
         constants:
@@ -83,7 +81,7 @@ subsystems:
 pcm: 8
 constants:
     trackWidth: 25 #inches
-    maxVel: 110 #inch/s
+    maxVel: 100 #inch/s
     maxAccel: 40 #inch/s^2
     sensorPhase: 0
     kLooperDt: .030
@@ -91,6 +89,6 @@ constants:
     pathKs: 2
     verbose: 0 # O or 1
     compressorEnabled: 1 # 0 or 1
-    badLogEnabled: 1
-    logTeleOp: 1
+    badLogEnabled: 0
+    logTeleOp: 0
     useAutoAim: 1

@@ -21,7 +21,7 @@ public class Hopper extends Subsystem {
     private final Solenoid feederFlap;
     private final IMotorControllerEnhanced spindexer;
     private final IMotorControllerEnhanced elevator;
-    private final VelocityManager velocityManager = VelocityManager.getInstance();
+    private final DistanceManager distanceManager = DistanceManager.getInstance();
     private final Camera camera = Camera.getInstance();
 
     // State
@@ -33,6 +33,8 @@ public class Hopper extends Subsystem {
     private boolean lockToShooter;
     private int waitForShooterLoopCounter;
     private boolean shooterWasAtTarget;
+
+    private boolean wantUnjam;
 
     private Hopper() {
         super(NAME);
@@ -53,7 +55,7 @@ public class Hopper extends Subsystem {
     }
 
     public void startSpindexerBasedOnDistance() {
-        setSpindexer(velocityManager.getSpindexerOutput(camera.getDistance()));
+        setSpindexer(distanceManager.getSpindexerOutput(camera.getDistance()));
     }
 
     public void setElevator(double elevatorOutput) {
@@ -70,8 +72,9 @@ public class Hopper extends Subsystem {
         }
     }
 
-    public void lockToShooter(boolean lock) {
+    public void lockToShooter(boolean lock, boolean unjam) {
         this.lockToShooter = lock;
+        this.wantUnjam = unjam;
         this.waitForShooterLoopCounter = 0;
     }
 
@@ -84,7 +87,9 @@ public class Hopper extends Subsystem {
             }
 
             if (!Shooter.getInstance().isVelocityNearTarget()) {
-                this.spindexer.set(ControlMode.PercentOutput, -0.25);
+                if (wantUnjam) {
+                    this.spindexer.set(ControlMode.PercentOutput, -0.25);
+                }
                 // Shooter has not sped up yet, wait.
                 // if (shooterWasAtTarget) {
                 //     this.spindexer.set(ControlMode.PercentOutput, 0);

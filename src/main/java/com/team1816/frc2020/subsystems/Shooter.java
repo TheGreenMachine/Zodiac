@@ -56,7 +56,7 @@ public class Shooter extends Subsystem implements PidProvider {
     public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(NAME, "velocityThreshold", 3000);
 
     private SendableChooser<Integer> velocityChooser = new SendableChooser<>();
-    private VelocityManager velocityManager = VelocityManager.getInstance();
+    private DistanceManager distanceManager = DistanceManager.getInstance();
 
     private Shooter() {
         super(NAME);
@@ -123,7 +123,7 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     public void startShooter() {
-        setVelocity(velocityManager.getShooterVelocity(camera.getDistance()));
+        setVelocity(distanceManager.getShooterVelocity(camera.getDistance()));
     }
 
     public void stopShooter() {

@@ -23,6 +23,8 @@ import com.team254.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.CrashTracker;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -77,7 +79,8 @@ public class Robot extends TimedRobot {
     private AsyncTimer blinkTimer;
 
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
-
+    private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
+    private NetworkTableEntry usingVision;
 
     Robot() {
         super();
@@ -113,6 +116,15 @@ public class Robot extends TimedRobot {
                 BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
                 BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
 
+                BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
+
+                BadLog.createTopicSubscriber("Pigeon Error", BadLog.UNITLESS, DataInferMode.DEFAULT);
+
+                DrivetrainLogger.init(mDrive);
+
+                BadLog.createValue("Drivetrain PID", mDrive.pidToString());
+                BadLog.createValue("Shooter PID", shooter.pidToString());
+                BadLog.createValue("Turret PID", turret.pidToString());
 
                 BadLog.createTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
                     "hide", "join:Shooter/Velocities");
@@ -121,17 +133,8 @@ public class Robot extends TimedRobot {
                 BadLog.createTopic("Shooter/Error", "NativeUnits", shooter::getError,
                     "hide", "join:Shooter/Velocities");
 
-                BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
-
                 BadLog.createTopic("Vision/DeltaXAngle", "Degrees", camera::getDeltaXAngle);
                 BadLog.createTopic("Vision/Distance", "inches", camera::getDistance);
-                BadLog.createTopicSubscriber("Pigeon Error", BadLog.UNITLESS, DataInferMode.DEFAULT);
-
-                DrivetrainLogger.init(mDrive);
-
-                BadLog.createValue("Drivetrain PID", mDrive.pidToString());
-                BadLog.createValue("Shooter PID", shooter.pidToString());
-                BadLog.createValue("Turret PID", turret.pidToString());
 
                 BadLog.createTopic("Turret/ActPos", "NativeUnits", () -> (double) turret.getTurretPositionTicks(),
                     "hide", "join:Turret/Positions");
@@ -183,6 +186,8 @@ public class Robot extends TimedRobot {
 
             mAutoModeSelector.updateModeCreator();
 
+            usingVision = NetworkTableInstance.getDefault().getTable("SmartDashboard").getSubTable("Calibration").getEntry("VISION");
+
             actionManager = new ActionManager(
                 // Driver Gamepad
                 createHoldAction(mControlBoard::getCollectorToggle, (collecting) -> {
@@ -222,7 +227,12 @@ public class Robot extends TimedRobot {
                     turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
                 }),
 
-                createHoldAction(mControlBoard::getFeederFlapOut, hopper::setFeederFlap),
+                createHoldAction(mControlBoard::getFeederFlapOut, (feeding) -> {
+                    if (mDrive.hasPigeonResetOccurred() && !feeding) {
+                        mDrive.zeroSensors();
+                    }
+                    hopper.setFeederFlap(feeding);
+                }),
 
                 createScalar(mControlBoard::getClimber, power -> {
                     if ((DriverStation.getInstance().getMatchTime() <= 30) ||
@@ -236,7 +246,14 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getAutoHome, pressed -> {
                     ledManager.setCameraLed(pressed);
                     ledManager.indicateStatus(pressed ? LedManager.RobotStatus.SEEN_TARGET : LedManager.RobotStatus.ENABLED);
-                    turret.setControlMode(pressed ? Turret.ControlMode.CAMERA_FOLLOWING : Turret.ControlMode.FIELD_FOLLOWING);
+                    if (pressed) {
+                        prevTurretControlMode = turret.getControlMode();
+                        turret.setControlMode(Turret.ControlMode.CAMERA_FOLLOWING);
+                        usingVision.setBoolean(true);
+                    } else {
+                        turret.setControlMode(prevTurretControlMode);
+                        usingVision.setBoolean(false);
+                    }
                 }),
 
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
@@ -249,7 +266,7 @@ public class Robot extends TimedRobot {
                         turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
                         shooter.stopShooter();
                     }
-                    hopper.lockToShooter(shooting);
+                    hopper.lockToShooter(shooting, true);
                     hopper.setIntake(shooting ? 1 : 0);
                     collector.setIntakePow(shooting ? 0.5 : 0);
                 }),

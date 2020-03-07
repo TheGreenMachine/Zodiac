@@ -1,6 +1,7 @@
 package com.team1816.frc2020.auto.modes;
 
 import com.team1816.frc2020.auto.actions.CollectAction;
+import com.team1816.frc2020.auto.actions.PrepareToShootAction;
 import com.team1816.frc2020.auto.actions.ShootAction;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.Turret;
@@ -23,8 +24,6 @@ public class EightBallOpposeMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         System.out.println("Running 8 Ball Opposition Side Auto Trench Mode");
-        runAction(new WaitAction(.5));
-        // runAction(mDriveTrajectory);
         runAction(
             new SeriesAction(
                 new ParallelAction(
@@ -36,13 +35,15 @@ public class EightBallOpposeMode extends AutoModeBase {
                         new CollectAction(false)
                     )
                 ),
-                new ShootAction(Turret.CARDINAL_WEST),
+                new PrepareToShootAction(Turret.CARDINAL_WEST),
+                new ShootAction(true),
                 new ParallelAction(
                     mDriveTrajectoryB,
                     new CollectAction(true)
                 ),
                 new CollectAction(false),
-                new ShootAction(Turret.CARDINAL_WEST)
+                new PrepareToShootAction(Turret.CARDINAL_WEST),
+                new ShootAction(true)
             )
         );
     }

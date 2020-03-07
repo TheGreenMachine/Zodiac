@@ -24,7 +24,7 @@ public class DriveStraightShootMode extends AutoModeBase {
             new SeriesAction(
                 mDriveTrajectory,
                 new PrepareToShootAction(Turret.CARDINAL_SOUTH),
-                new ShootAction(Turret.CARDINAL_SOUTH)
+                new ShootAction(false)
             )
         );
     }

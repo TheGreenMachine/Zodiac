@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Kinematics;
@@ -32,8 +31,6 @@ import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -116,15 +113,15 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId"));
         }
         mPigeon.configFactoryDefault();
-        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 10, 10);
-        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 100, 10);
-        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 10, 10);
-        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_11_GyroAccum, 20, 10);
-        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 100, 10);
-        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_10_SixDeg_Quat, 100, 10);
-        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_4_Mag, 20, 10);
-        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 100, 10);
-        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 100, 10);
+//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 10, 10);
+//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 100, 10);
+//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 10, 10);
+//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_11_GyroAccum, 20, 10);
+//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 100, 10);
+//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_10_SixDeg_Quat, 100, 10);
+//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_4_Mag, 20, 10);
+//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 100, 10);
+//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 100, 10);
 
         setOpenLoop(DriveSignal.NEUTRAL);
 
@@ -202,7 +199,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         if (mPigeon.getLastError() != ErrorCode.OK) {
             ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
             System.out.println("Pigeon error detected, maybe reinitialized");
-            BadLog.publish("Pigeon Error", "Detected");
         }
         mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
         mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
@@ -573,6 +569,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         }
     }
 
+    public boolean hasPigeonResetOccurred() {
+        return mPigeon.hasResetOccurred();
+    }
+
     @Override
     public synchronized void stop() {
         setOpenLoop(DriveSignal.NEUTRAL);
@@ -681,12 +681,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         //     SmartDashboard.putNumber("Drive LTE", 0.0);
         //     SmartDashboard.putNumber("Drive CTE", 0.0);
         // }
-
-         if (getHeading() != null) {
-             Shuffleboard.getTab("Drive")
-                 .addNumber("Gyro Heading", this::getHeadingDegrees)
-                 .withWidget(BuiltInWidgets.kGyro);
-         }
     }
 
     public synchronized double getTimestamp() {

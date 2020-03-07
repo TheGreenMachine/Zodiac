@@ -33,6 +33,7 @@ public class Turret extends Subsystem implements PidProvider {
     private final Camera camera = Camera.getInstance();
     private final RobotState robotState = RobotState.getInstance();
     private final LedManager led = LedManager.getInstance();
+    private final DistanceManager distanceManager = DistanceManager.getInstance();
 
     // State
     private double turretPos;
@@ -57,7 +58,7 @@ public class Turret extends Subsystem implements PidProvider {
     public static final int TURRET_POSITION_MIN = ((int) factory.getConstant("turret", "minPos"));
     public static final int TURRET_POSITION_MAX = ((int) factory.getConstant("turret", "maxPos"));
     private static final boolean TURRET_SENSOR_PHASE = true;
-    public static final double VISION_HOMING_BIAS = 0; /* 1.75 */ // deg
+    public static final double VISION_HOMING_BIAS = 1.25; /* 1.75 */ // deg
 
     public static final double CARDINAL_SOUTH = 32.556; // deg
     public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90; // deg
@@ -83,7 +84,7 @@ public class Turret extends Subsystem implements PidProvider {
             this.zeroSensors();
 
             // Position Control
-            double peakOutput = 0.5;
+            double peakOutput = 0.75;
 
             turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
             turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
@@ -171,9 +172,10 @@ public class Turret extends Subsystem implements PidProvider {
             setTurretPosition(convertTurretDegreesToTicks(angle + 360) + TURRET_POSITION_MIN);
         } else if (angle > 360) {
             setTurretPosition(convertTurretDegreesToTicks(angle - 360) + TURRET_POSITION_MIN);
-        } else {
+        } else if (angle >= 0 && angle <= MAX_ANGLE) {
             setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
         }
+        // do nothing if angle in deadzone
     }
 
     public synchronized void lockTurret() {
@@ -258,7 +260,8 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     private void autoHome() {
-        setTurretAngleInternal(getTurretPositionDegrees() + camera.getDeltaXAngle() + VISION_HOMING_BIAS);
+        setTurretAngleInternal(getTurretPositionDegrees() +
+            camera.getDeltaXAngle() + distanceManager.getTurretBias(camera.getDistance()));
     }
 
     private void trackGyro() {

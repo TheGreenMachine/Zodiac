@@ -20,12 +20,10 @@ public class SixBallAllianceMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         System.out.println("Running Six Ball Alliance Auto Trench Mode");
-        runAction(new WaitAction(.5));
-        // runAction(mDriveTrajectory);
         runAction(
             new SeriesAction(
                 new PrepareToShootAction(Turret.CARDINAL_SOUTH),
-                new ShootAction(Turret.CARDINAL_SOUTH),
+                new ShootAction(true),
                 new ParallelAction(
                     new CollectAction(true),
                     mDriveTrajectory,
@@ -36,7 +34,8 @@ public class SixBallAllianceMode extends AutoModeBase {
                     )
                 ),
                 new CollectAction(false),
-                new ShootAction(15.2)
+                new PrepareToShootAction(15.2),
+                new ShootAction(true)
             )
         );
     }
