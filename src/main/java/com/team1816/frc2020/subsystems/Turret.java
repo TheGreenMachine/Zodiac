@@ -122,7 +122,7 @@ public class Turret extends Subsystem implements PidProvider {
                 }
             } else {
                 this.controlMode = controlMode;
-                led.indicateStatus(LedManager.RobotStatus.ENABLED);
+                led.indicateDefaultStatus();
             }
         }
     }

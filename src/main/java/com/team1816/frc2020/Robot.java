@@ -292,7 +292,7 @@ public class Robot extends TimedRobot {
             CrashTracker.logDisabledInit();
             mEnabledLooper.stop();
 
-            ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
+            ledManager.setDefaultStatus(LedManager.RobotStatus.DISABLED);
 
             // shooter
             shooter.setVelocity(0);
@@ -321,7 +321,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logAutoInit();
             mDisabledLooper.stop();
-            ledManager.indicateStatus(LedManager.RobotStatus.AUTONOMOUS);
+            ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
 
             // Robot starts forwards.
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
@@ -352,7 +352,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
-            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
+            ledManager.setDefaultStatus(LedManager.RobotStatus.ENABLED);
 
             turret.zeroSensors();
 
