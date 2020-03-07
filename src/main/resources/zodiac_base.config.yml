@@ -91,4 +91,5 @@ constants:
     compressorEnabled: 1 # 0 or 1
     badLogEnabled: 0
     logTeleOp: 0
+    logAuto: 0
     useAutoAim: 1

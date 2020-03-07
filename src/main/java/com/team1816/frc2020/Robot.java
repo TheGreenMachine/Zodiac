@@ -23,8 +23,6 @@ import com.team254.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.CrashTracker;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -110,6 +108,13 @@ public class Robot extends TimedRobot {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger = BadLog.init("/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag");
 
+            BadLog.createTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
+                "hide", "join:Shooter/Velocities");
+            BadLog.createTopic("Shooter/TargetVel", "NativeUnits", shooter::getTargetVelocity,
+                "hide", "join:Shooter/Velocities");
+            BadLog.createTopic("Shooter/Error", "NativeUnits", shooter::getError,
+                "hide", "join:Shooter/Velocities");
+
             if (Constants.kIsBadlogEnabled) {
                 BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
                 BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
@@ -124,13 +129,6 @@ public class Robot extends TimedRobot {
                 BadLog.createValue("Drivetrain PID", mDrive.pidToString());
                 BadLog.createValue("Shooter PID", shooter.pidToString());
                 BadLog.createValue("Turret PID", turret.pidToString());
-
-                BadLog.createTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
-                    "hide", "join:Shooter/Velocities");
-                BadLog.createTopic("Shooter/TargetVel", "NativeUnits", shooter::getTargetVelocity,
-                    "hide", "join:Shooter/Velocities");
-                BadLog.createTopic("Shooter/Error", "NativeUnits", shooter::getError,
-                    "hide", "join:Shooter/Velocities");
 
                 BadLog.createTopic("Vision/DeltaXAngle", "Degrees", camera::getDeltaXAngle);
                 BadLog.createTopic("Vision/Distance", "inches", camera::getDistance);
@@ -465,7 +463,7 @@ public class Robot extends TimedRobot {
             manualControl();
         }
 
-        if (Constants.kIsBadlogEnabled) {
+        if (Constants.kIsLoggingAutonomous) {
             logger.updateTopics();
             logger.log();
         }

@@ -23,5 +23,6 @@ subsystems:
         canifier: 19
 constants:
     wheelDiameter: 6.32 #inches
-    logTeleop: 0
+    logTeleop: 1
+    logAuto: 1
     badLogEnabled: 0
