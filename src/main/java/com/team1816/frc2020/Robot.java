@@ -80,7 +80,6 @@ public class Robot extends TimedRobot {
 
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
-    private NetworkTableEntry usingVision;
 
     Robot() {
         super();
@@ -186,8 +185,6 @@ public class Robot extends TimedRobot {
 
             mAutoModeSelector.updateModeCreator();
 
-            usingVision = NetworkTableInstance.getDefault().getTable("SmartDashboard").getSubTable("Calibration").getEntry("VISION");
-
             actionManager = new ActionManager(
                 // Driver Gamepad
                 createHoldAction(mControlBoard::getCollectorToggle, (collecting) -> {
@@ -249,10 +246,8 @@ public class Robot extends TimedRobot {
                     if (pressed) {
                         prevTurretControlMode = turret.getControlMode();
                         turret.setControlMode(Turret.ControlMode.CAMERA_FOLLOWING);
-                        usingVision.setBoolean(true);
                     } else {
                         turret.setControlMode(prevTurretControlMode);
-                        usingVision.setBoolean(false);
                     }
                 }),
 
