@@ -19,7 +19,7 @@ public class EightBallAlliancePath implements PathContainer {
         return List.of(
             new Pose2d(0,0, Rotation2d.fromDegrees(0)),
             new Pose2d(-140, 0, Rotation2d.fromDegrees(0)),
-            new Pose2d(-60, -60, Rotation2d.fromDegrees(-70))
+            new Pose2d(-60, -60, Rotation2d.fromDegrees(110))
         );
     }
 

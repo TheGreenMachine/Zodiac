@@ -3,27 +3,34 @@ package com.team1816.frc2020.auto.actions;
 import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.actions.Action;
 import com.team1816.lib.loops.AsyncTimer;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class ShootAction implements Action {
     private Shooter shooter;
     private Hopper hopper;
-    private LedManager ledManager = LedManager.getInstance();
+    private LedManager ledManager;
     private AsyncTimer shooterTimer;
     private Collector collector;
     private Turret turret;
 
     private boolean unjam;
 
-    public ShootAction(boolean unjam) {
+    public ShootAction(double duration, boolean unjam, double velocity) {
+        this(duration, unjam);
+        this.shooterTimer = new AsyncTimer(duration, () -> shooter.setVelocity(velocity), shooter::stopShooter);
+    }
+
+    public ShootAction(double duration, boolean unjam) {
         this.shooter = Shooter.getInstance();
         this.hopper = Hopper.getInstance();
         this.turret = Turret.getInstance();
         this.ledManager = LedManager.getInstance();
         this.collector = Collector.getInstance();
-        this.shooterTimer = new AsyncTimer(4, shooter::startShooter, shooter::stopShooter);
+        this.shooterTimer = new AsyncTimer(duration, shooter::startShooter, shooter::stopShooter);
         this.unjam = unjam;
+    }
+
+    public ShootAction(boolean unjam) {
+        this(4, unjam);
     }
 
     @Override

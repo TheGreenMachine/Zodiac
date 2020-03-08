@@ -6,6 +6,7 @@ public class PrepareToShootAction extends ParallelAction {
     public PrepareToShootAction(double turretAngle) {
         super(
             new TurretAction(turretAngle),
+        //    new AutoAimAction(),
             new RampUpShooterAction()
         );
     }

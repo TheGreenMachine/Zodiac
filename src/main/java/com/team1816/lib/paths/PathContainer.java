@@ -46,7 +46,7 @@ public interface PathContainer {
             isReversed,
             waypoints,
             Arrays.asList(new CentripetalAccelerationConstraint(kMaxCentripetalAccel)),
-            kMaxVelocity, kMaxAccel, kMaxVoltage);
+            getMaxVelocity(), kMaxAccel, kMaxVoltage);
     }
 
     private List<Pose2d> reverseWaypoints(List<Pose2d> waypoints) {
@@ -57,4 +57,8 @@ public interface PathContainer {
     }
 
     boolean isReversed();
+
+    default double getMaxVelocity() {
+        return kMaxVelocity;
+    }
 }

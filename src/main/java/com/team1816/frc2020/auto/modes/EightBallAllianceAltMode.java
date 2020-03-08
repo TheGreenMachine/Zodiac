@@ -11,16 +11,16 @@ import com.team1816.lib.auto.actions.ParallelAction;
 import com.team1816.lib.auto.actions.SeriesAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
-public class EightBallAllianceMode extends AutoModeBase {
+public class EightBallAllianceAltMode extends AutoModeBase {
     private DriveTrajectory mDriveTrajectoryA;
     private DriveTrajectory mDriveTrajectoryB;
     private DriveTrajectory mDriveTrajectoryC;
     private DriveTrajectory mDriveTrajectoryD;
 
-    public EightBallAllianceMode() {
+    public EightBallAllianceAltMode() {
         var trajectoryA = TrajectorySet.getInstance().DRIVE_STRAIGHT_TRENCH;
-        var trajectoryB = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCEA;
-        var trajectoryC = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCEB;
+        var trajectoryB = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCE_ALTA;
+        var trajectoryC = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCE_ALTB;
         var trajectoryD = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCEC;
         mDriveTrajectoryA = new DriveTrajectory(trajectoryA, true);
         mDriveTrajectoryB = new DriveTrajectory(trajectoryB, true);

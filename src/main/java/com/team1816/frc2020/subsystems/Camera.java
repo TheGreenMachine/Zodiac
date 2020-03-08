@@ -35,7 +35,7 @@ public class Camera {
                 return;
             }
             var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
-            this.deltaXAngle = Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH));
+            this.deltaXAngle = Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH)) ;
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
 
         networkTable.addEntryListener("distance", (table, key, entry, value, flags) -> {

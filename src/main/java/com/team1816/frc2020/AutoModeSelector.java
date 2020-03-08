@@ -27,6 +27,7 @@ public class AutoModeSelector {
         FIVE_BALL_OPPOSING,
         SIX_BALL_ALLIANCE,
         EIGHT_BALL_ALLIANCE,
+        EIGHT_BALL_ALLIANCE_ALT,
         EIGHT_BALL_OPPOSE,
         TEN_BALL_AUTO,
         DRIVE_STRAIGHT_SHOOT,
@@ -70,7 +71,8 @@ public class AutoModeSelector {
         // ALLIANCE
         mModeChooser.addOption("6 Ball Alliance Trench", DesiredMode.SIX_BALL_ALLIANCE);
         mModeChooser.addOption("6 Ball Alliance Straight", DesiredMode.SIX_BALL_ALLIANCE_STRAIGHT);
-        mModeChooser.addOption("8 Ball Alliance Trench (NOT TESTED)", DesiredMode.EIGHT_BALL_ALLIANCE);
+        mModeChooser.addOption("8 Ball Alliance Trench", DesiredMode.EIGHT_BALL_ALLIANCE);
+        mModeChooser.addOption("8 Ball Alliance Trench ALT (NOT TESTED)", DesiredMode.EIGHT_BALL_ALLIANCE_ALT);
 
         // OPPOSING
         mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
@@ -127,6 +129,8 @@ public class AutoModeSelector {
                 return (Optional.of(new FiveBallOpposingTrenchMode()));
             case EIGHT_BALL_ALLIANCE:
                 return (Optional.of(new EightBallAllianceMode()));
+            case EIGHT_BALL_ALLIANCE_ALT:
+                return (Optional.of(new EightBallAllianceAltMode()));
             case EIGHT_BALL_OPPOSE:
                 return (Optional.of(new EightBallOpposeMode()));
             case TEN_BALL_AUTO:

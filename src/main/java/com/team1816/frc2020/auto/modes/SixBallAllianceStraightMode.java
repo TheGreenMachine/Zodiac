@@ -11,11 +11,14 @@ import com.team1816.lib.auto.actions.SeriesAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
 public class SixBallAllianceStraightMode extends AutoModeBase {
-    public DriveTrajectory driveTrajectory;
+    public DriveTrajectory driveTrajectoryA;
+    public DriveTrajectory driveTrajectoryB;
 
     public SixBallAllianceStraightMode() {
-        var trajectory = TrajectorySet.getInstance().DRIVE_STRAIGHT_TRENCH;
-        this.driveTrajectory = new DriveTrajectory(trajectory, true);
+        var trajectoryA = TrajectorySet.getInstance().DRIVE_STRAIGHT_TRENCH;
+        var trajectoryB = TrajectorySet.getInstance().DRIVE_STRAIGHT_TRENCH_REVERSE;
+        this.driveTrajectoryA = new DriveTrajectory(trajectoryA, true);
+        this.driveTrajectoryB = new DriveTrajectory(trajectoryB, true);
     }
 
     @Override
@@ -23,14 +26,17 @@ public class SixBallAllianceStraightMode extends AutoModeBase {
         runAction(
             new SeriesAction(
                 new PrepareToShootAction(0),
-                new ShootAction( false),
+                new ShootAction( 2.5, false),
                 new ParallelAction(
                     new CollectAction(true),
-                    new PrepareToShootAction(15.2),
-                    driveTrajectory
+                    driveTrajectoryA
                 ),
                 new CollectAction(false),
-                new ShootAction(true)
+                new ParallelAction(
+                    new PrepareToShootAction(15.2),
+                    driveTrajectoryB
+                ),
+                new ShootAction(4, true, 9_300)
             )
         );
     }
