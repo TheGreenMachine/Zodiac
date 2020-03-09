@@ -10,14 +10,15 @@ let animating = false;
 
 const fieldWidth = 888; // inches
 const fieldHeight = 360; // inches
-const xOffset = 235
-;
-const yOffset = 248;
+
+const xOffset = 263; // inches
+const yOffset = 248; // inches
+
 const width = 1334; //pixels
 const height = 542; //pixels
 
-const robotWidth = 34; // inches
-const robotHeight = 36; // inches
+const robotWidth = 28; // inches
+const robotHeight = 28; // inches
 
 const waypointRadius = 7;
 const splineWidth = 2;

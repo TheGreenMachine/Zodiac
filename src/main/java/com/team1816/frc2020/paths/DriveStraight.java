@@ -9,7 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DriveStraight implements PathContainer {
-    private static int driveDistance = -60;
+    private final int driveDistance;
+    private final double maxVel;
+
+    public DriveStraight(int driveDistance, double maxVel) {
+        this.driveDistance = driveDistance;
+        this.maxVel = maxVel;
+    }
+
+    public DriveStraight(int driveDistance) {
+        this(driveDistance, PathContainer.kMaxVelocity);
+    }
+
+    public DriveStraight() {
+        this(12);
+    }
 
     @Override
     public Path buildPath() {
@@ -32,6 +46,11 @@ public class DriveStraight implements PathContainer {
 
     @Override
     public boolean isReversed() {
-        return true;
+        return driveDistance < 0;
+    }
+
+    @Override
+    public double getMaxVelocity() {
+        return maxVel;
     }
 }

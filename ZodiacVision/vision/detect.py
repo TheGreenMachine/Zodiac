@@ -25,11 +25,18 @@ class Detector:
         contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) != 0:
             c = max(contours, key=cv2.contourArea)
+            perimeter = cv2.arcLength(c, True)
             rect = cv2.boundingRect(c)
+            area = cv2.contourArea(c)
+            if area != 0:
+                ratio = perimeter / area
+            else:
+                ratio = 0
         else:
             self.nt.clearTable()
             return -1
-        if c.any():
+        print(ratio)
+        if ratio > .2:
             cx = rect[0] + (rect[2] * .5)
             cy = rect[1] + (rect[3] * .5)
             self.nt.putValue('center_x', cx)
@@ -43,7 +50,7 @@ class Detector:
             self.nt.putValue('distance', round(distance))
             return c
         self.nt.clearTable()
-
+        return -1
     def postProcess(self, frame, target):
         if target is -1:
             return frame

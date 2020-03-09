@@ -3,7 +3,8 @@ import yaml
 import pyzed.sl as sl
 from vision import *
 import time
-time.sleep(10)
+import numpy as np
+time.sleep(1)
 path = 'vision.yml'
 with open(path, 'r') as file:
     data = yaml.safe_load(file)
@@ -19,20 +20,21 @@ init_params.depth_mode = sl.DEPTH_MODE.ULTRA  # Use PERFORMANCE depth mode
 init_params.coordinate_units = sl.UNIT.INCH  # Use milliliter units (for depth measurements)
 init_params.camera_resolution = sl.RESOLUTION.VGA
 init_params.camera_fps = 100
-
+init_params.depth_maximum_distance = 400
 # Open the camera
 err = zed.open(init_params)
 if err != sl.ERROR_CODE.SUCCESS:
     exit(-1)
 image = sl.Mat()
 zed.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, data['camera']['exposure'])
-
 runtime_parameters = sl.RuntimeParameters()
 detector = detect.Detector(net)
 streamer = stream.Streamer(data['stream']['port'])
 width = int(net.yml_data['stream']['line'])
+fpsCounter = fps.FPS()
 while True:
-    fpsCounter = fps.FPS().start()
+    fpsCounter.reset()
+    fpsCounter.start()
     if net.update_exposure:
         zed.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, net.yml_data['camera']['exposure'])
         net.update_exposure = False
@@ -41,6 +43,9 @@ while True:
         # A new image is available if grab() returns SUCCESS
         zed.retrieve_image(image, sl.VIEW.RIGHT)  # Retrieve the left image
         frame = image.get_data()
+        if net.vision_use:
+            cv2.imwrite('../capture/' + time.strftime("%Y%m%d-%H%M%S") + '.png', frame)
+            net.vision_use = False
         mask = detector.preProcessFrame(frame)
         if mask.all() == -1:
             continue

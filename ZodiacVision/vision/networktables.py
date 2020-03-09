@@ -1,12 +1,14 @@
 import yaml
 import networktables as nt
 
+
 class NetworkTables:
     def __init__(self, yml_data, yml_path, ip=None):
         self.yml_data = yml_data
         self.update_exposure = False
         self.yml_path = yml_path
         self.calib_camera = False
+        self.vision_use = False
         self.line = False
         if ip is None:
             self.ip = self.yml_data['network']['nt-ip']
@@ -25,7 +27,10 @@ class NetworkTables:
         def dumpYML():
             with open(self.yml_path, "w") as f:
                 yaml.dump(self.yml_data, f)
+
         def valueChanged(table, key, value, isNew):
+            if key == "VISION":
+                self.vision_use = value
             if key == "HMIN":
                 self.yml_data['color']['lower']['H'] = value
                 dumpYML()
@@ -54,6 +59,7 @@ class NetworkTables:
                 self.line = True
             elif key == "CalibrationCamera":
                 self.calib_camera = value
+
         lower = self.yml_data['color']['lower']
         upper = self.yml_data['color']['upper']
         calibTable = nt.NetworkTables.getTable('SmartDashboard/Calibration')

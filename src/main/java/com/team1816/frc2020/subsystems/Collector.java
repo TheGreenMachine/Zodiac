@@ -2,7 +2,6 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -62,11 +61,11 @@ public class Collector extends Subsystem {
     }
 
     public void setDeployed(boolean down) {
+        isRaising = !down;
         if (down) {
             setArm(true);
             setIntakePow(1);
         } else {
-            isRaising = true;
             startTime = Timer.getFPGATimestamp();
             setArm(false);
         }
@@ -75,7 +74,7 @@ public class Collector extends Subsystem {
     @Override
     public void writePeriodicOutputs() {
         if (isRaising) {
-            if ((Timer.getFPGATimestamp() - startTime) > 2) {
+            if ((Timer.getFPGATimestamp() - startTime) > 1) {
                 System.out.println("Raising timer passed at : " + (Timer.getFPGATimestamp() - startTime));
                 setIntakePow(0);
                 isRaising = false;

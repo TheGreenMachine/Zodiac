@@ -1,6 +1,7 @@
 package com.team1816.frc2020;
 
 import badlog.lib.BadLog;
+import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
 import com.team1816.frc2020.paths.TrajectorySet;
@@ -54,6 +55,7 @@ public class Robot extends TimedRobot {
     private final Spinner spinner = Spinner.getInstance();
     private final Hopper hopper = Hopper.getInstance();
     private final Climber climber = Climber.getInstance();
+    private final Camera camera = Camera.getInstance();
 
     // button placed on the robot to allow the drive team to zero the robot right
     // before the start of a match
@@ -75,9 +77,10 @@ public class Robot extends TimedRobot {
     private AsyncTimer blinkTimer;
 
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
-
+    private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     Robot() {
+        super();
         CrashTracker.logRobotConstruction();
     }
 
@@ -105,11 +108,6 @@ public class Robot extends TimedRobot {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger = BadLog.init("/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag");
 
-            BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
-            BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
-            BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
-
-
             BadLog.createTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
                 "hide", "join:Shooter/Velocities");
             BadLog.createTopic("Shooter/TargetVel", "NativeUnits", shooter::getTargetVelocity,
@@ -117,20 +115,36 @@ public class Robot extends TimedRobot {
             BadLog.createTopic("Shooter/Error", "NativeUnits", shooter::getError,
                 "hide", "join:Shooter/Velocities");
 
-            BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
-
             if (Constants.kIsBadlogEnabled) {
+                BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
+                BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
+                BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
+
+                BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
+
+                BadLog.createTopicSubscriber("Pigeon Error", BadLog.UNITLESS, DataInferMode.DEFAULT);
+
                 DrivetrainLogger.init(mDrive);
 
                 BadLog.createValue("Drivetrain PID", mDrive.pidToString());
                 BadLog.createValue("Shooter PID", shooter.pidToString());
                 BadLog.createValue("Turret PID", turret.pidToString());
 
+                BadLog.createTopic("Vision/DeltaXAngle", "Degrees", camera::getDeltaXAngle);
+                BadLog.createTopic("Vision/Distance", "inches", camera::getDistance);
+
                 BadLog.createTopic("Turret/ActPos", "NativeUnits", () -> (double) turret.getTurretPositionTicks(),
                     "hide", "join:Turret/Positions");
                 BadLog.createTopic("Turret/TargetPos", "NativeUnits", turret::getTargetPosition,
                     "hide", "join:Turret/Positions");
                 BadLog.createTopic("Turret/ErrorPos", "NativeUnits", turret::getPositionError);
+
+                BadLog.createTopic("Turret/FieldToTurret", "Degrees", mRobotState::getLatestFieldToTurret,
+                    "hide", "join:Tracking/Angles");
+                BadLog.createTopic("Drive/HeadingRelativeToInitial", "Degrees", () -> mDrive.getHeadingRelativeToInitial().getDegrees(),
+                    "hide", "join:Tracking/Angles");
+                BadLog.createTopic("Turret/TurretAngle", "Degrees", turret::getTurretPositionDegrees,
+                    "hide", "join:Tracking/Angles");
 
                 mDrive.setLogger(logger);
             }
@@ -153,6 +167,7 @@ public class Robot extends TimedRobot {
             );
 
             mDrive.zeroSensors();
+            turret.zeroSensors();
 
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
             mSubsystemManager.registerDisabledLoops(mDisabledLooper);
@@ -170,21 +185,18 @@ public class Robot extends TimedRobot {
 
             actionManager = new ActionManager(
                 // Driver Gamepad
-                createAction(mControlBoard::getCollectorDown, () -> {
-                    hopper.setSpindexer(-1);
-                    collector.setDeployed(true);
-                }),
-                createAction(mControlBoard::getCollectorUp, () -> {
-                    collector.setDeployed(false);
-                    hopper.setSpindexer(0);
+                createHoldAction(mControlBoard::getCollectorToggle, (collecting) -> {
+                    System.out.println("Collector toggled!");
+                    collector.setDeployed(collecting);
+                    hopper.setSpindexer(collecting ? -1 : 0);
                 }),
 
                 createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
 
-                createAction(mControlBoard::getClimberDeploy, () -> {
-                    if ((DriverStation.getInstance().getMatchTime() > 120) ||
+                createHoldAction(mControlBoard::getClimberDeploy, (pressed) -> {
+                    if ((DriverStation.getInstance().getMatchTime() <= 30) ||
                         (DriverStation.getInstance().getMatchTime() == -1)) {
-                        climber.setDeployed(true);
+                        climber.setDeployed(pressed);
                     }
                 }),
                 createAction(mControlBoard::getTrenchToFeederSpline, () -> {
@@ -205,25 +217,54 @@ public class Robot extends TimedRobot {
                 // Operator Gamepad
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize),
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
-                createHoldAction(mControlBoard::getSpinnerThreeTimes,spinner::spinThreeTimes),
+                createHoldAction(mControlBoard::getSpinnerThreeTimes, spinner::spinThreeTimes),
+                createAction(mControlBoard::getFieldFollowing, () -> {
+                    turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+                }),
 
-                createAction(mControlBoard::getFeederFlapOut, () -> hopper.setFeederFlap(true)),
-                createAction(mControlBoard::getFeederFlapIn, () -> hopper.setFeederFlap(false)),
+                createHoldAction(mControlBoard::getFeederFlapOut, (feeding) -> {
+                    if (mDrive.hasPigeonResetOccurred() && !feeding) {
+                        mDrive.zeroSensors();
+                    }
+                    hopper.setFeederFlap(feeding);
+                }),
 
-                createScalar(mControlBoard::getClimber, climber::setClimberPower),
+                createScalar(mControlBoard::getClimber, power -> {
+                    if ((DriverStation.getInstance().getMatchTime() <= 30) ||
+                        (DriverStation.getInstance().getMatchTime() == -1)) {
+                        climber.setClimberPower(power > 0 ? power : 0);
+                    }
+                }),
 
-                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -0.2 : 0)),
-                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? 0.2 : 0)),
-                createAction(mControlBoard::getAutoHome, () ->
-                    turret.setAutoHomeEnabled(!turret.isAutoHomeEnabled())),
+                createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)),
+                createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)),
+                createHoldAction(mControlBoard::getAutoHome, pressed -> {
+                    ledManager.setCameraLed(pressed);
+                    ledManager.indicateStatus(pressed ? LedManager.RobotStatus.SEEN_TARGET : LedManager.RobotStatus.ENABLED);
+                    if (pressed) {
+                        prevTurretControlMode = turret.getControlMode();
+                        turret.setControlMode(Turret.ControlMode.CAMERA_FOLLOWING);
+                    } else {
+                        turret.setControlMode(prevTurretControlMode);
+                    }
+                }),
+
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
-                    shooter.setVelocity(shooting ? 11_000 : 0);
-                    hopper.lockToShooter(shooting);
-                    hopper.setIntake(shooting ? 1 : 0);
+                   // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                     if (shooting) {
                         mDrive.setOpenLoop(DriveSignal.BRAKE);
+                        shooter.startShooter(); // Uses ZED distance
+                        turret.lockTurret();
+                    } else {
+                        turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+                        shooter.stopShooter();
                     }
-                })
+                    hopper.lockToShooter(shooting, true);
+                    hopper.setIntake(shooting ? 1 : 0);
+                    collector.setIntakePow(shooting ? 0.5 : 0);
+                }),
+                createHoldAction(mControlBoard::getCollectorBackSpin,
+                    (pressed) -> collector.setIntakePow(pressed ? 0.2 : 0))
             );
 
             blinkTimer = new AsyncTimer(
@@ -244,7 +285,7 @@ public class Robot extends TimedRobot {
             CrashTracker.logDisabledInit();
             mEnabledLooper.stop();
 
-            ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
+            ledManager.setDefaultStatus(LedManager.RobotStatus.DISABLED);
 
             // shooter
             shooter.setVelocity(0);
@@ -273,7 +314,7 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logAutoInit();
             mDisabledLooper.stop();
-            ledManager.indicateStatus(LedManager.RobotStatus.AUTONOMOUS);
+            ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
 
             // Robot starts forwards.
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
@@ -284,6 +325,7 @@ public class Robot extends TimedRobot {
             mInfrastructure.setIsManualControl(true); // turn on compressor when superstructure is not moving
 
             mDrive.zeroSensors();
+            turret.zeroSensors();
 
             System.out.println("Auto init - " + mDriveByCameraInAuto);
             if (!mDriveByCameraInAuto) {
@@ -303,10 +345,9 @@ public class Robot extends TimedRobot {
         try {
             CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
-            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
+            ledManager.setDefaultStatus(LedManager.RobotStatus.ENABLED);
 
-            // shooter
-            // shooter.setVelocity(4200);
+            turret.zeroSensors();
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
@@ -316,7 +357,8 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
 
-            turret.setTurretAngle(Turret.CARDINAL_NORTH);
+            turret.setTurretAngle(Turret.CARDINAL_SOUTH);
+            turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
 
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
@@ -364,6 +406,7 @@ public class Robot extends TimedRobot {
             mSubsystemManager.outputToSmartDashboard();
             mRobotState.outputToSmartDashboard();
             mAutoModeSelector.outputToSmartDashboard();
+            mRobotStateEstimator.outputToSmartDashboard();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
@@ -374,9 +417,15 @@ public class Robot extends TimedRobot {
     public void disabledPeriodic() {
         loopStart = Timer.getFPGATimestamp();
         try {
-            if (!resetRobotButton.get() && !mHasBeenEnabled) {
+            if (RobotController.getUserButton() && !mHasBeenEnabled) {
                 System.out.println("Zeroing Robot!");
                 mDrive.zeroSensors();
+                turret.zeroSensors();
+                mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
+                mDrive.setHeading(Rotation2d.identity());
+                ledManager.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
+            } else {
+                ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
             }
 
             // Update auto modes
@@ -413,14 +462,16 @@ public class Robot extends TimedRobot {
         if (mDriveByCameraInAuto || mAutoModeExecutor.isInterrupted()) {
             manualControl();
         }
+
+        if (Constants.kIsLoggingAutonomous) {
+            logger.updateTopics();
+            logger.log();
+        }
     }
 
     @Override
     public void teleopPeriodic() {
         loopStart = Timer.getFPGATimestamp();
-
-
-        System.out.println("Match time when no match: " + DriverStation.getInstance().getMatchTime());
 
         try {
             manualControl();
@@ -429,7 +480,7 @@ public class Robot extends TimedRobot {
             throw t;
         }
 
-        if (Constants.kIsBadlogEnabled && Constants.kIsLoggingTeleOp) {
+        if (Constants.kIsLoggingTeleOp) {
             logger.updateTopics();
             logger.log();
         }
@@ -445,19 +496,21 @@ public class Robot extends TimedRobot {
         DriveSignal driveSignal;
 
         // if (arcadeDrive) {
-        //     var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
-        //     double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
-        //     double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-        //     driveSignal = new DriveSignal(left, right);
+//            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
+//            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
+//            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
+//            driveSignal = new DriveSignal(left, right);
         // } else {
-        driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, throttle == 0);
+         driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
         // }
         if (mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING) {
             if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0 || mDrive.isDoneWithTrajectory()) {
                 mDrive.setOpenLoop(driveSignal);
             }
-        } else {
+        } else if (!(shooter.getTargetVelocity() > 0)) {
             mDrive.setOpenLoop(driveSignal);
+        } else {
+            mDrive.setOpenLoop(DriveSignal.BRAKE);
         }
     }
 

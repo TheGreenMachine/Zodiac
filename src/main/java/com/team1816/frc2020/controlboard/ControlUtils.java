@@ -25,7 +25,8 @@ public class ControlUtils {
     }
 
     public static class PressAction implements ButtonAction {
-        private LatchedBoolean state = new LatchedBoolean();
+        private LatchedBoolean pressedState = new LatchedBoolean();
+        private LatchedBoolean releasedState = new LatchedBoolean();
         private BooleanSupplier input;
         private Runnable action;
 
@@ -37,11 +38,15 @@ public class ControlUtils {
         @Override
         public void update() {
             boolean inputPressed = input.getAsBoolean();
-            boolean inputJustPressed = state.update(inputPressed);
+            boolean inputJustPressed = pressedState.update(inputPressed);
+            boolean inputJustReleased = releasedState.update(!inputPressed);
 
             if (inputJustPressed) {
                 action.run();
-                state.update(false);
+
+            }
+            if (inputJustReleased) {
+                pressedState.update(false);
             }
         }
 

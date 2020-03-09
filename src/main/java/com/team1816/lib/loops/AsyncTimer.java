@@ -5,14 +5,14 @@ import edu.wpi.first.wpilibj.Timer;
 import javax.annotation.Nullable;
 
 public class AsyncTimer {
-    private long startTime;
-    private int duration;
+    private double startTime;
+    private double duration;
     private Runnable startAction;
     private Runnable endAction;
     private boolean hasStarted;
     private boolean completed;
 
-    public AsyncTimer(int duration, @Nullable Runnable startAction, Runnable endAction) {
+    public AsyncTimer(double duration, @Nullable Runnable startAction, Runnable endAction) {
         this.duration = duration;
         this.startAction = startAction;
         this.endAction = endAction;
@@ -20,7 +20,7 @@ public class AsyncTimer {
         this.completed = false;
     }
 
-    public AsyncTimer(int duration, Runnable endAction) {
+    public AsyncTimer(double duration, Runnable endAction) {
         this(duration, null, endAction);
     }
 
@@ -28,7 +28,7 @@ public class AsyncTimer {
         if (completed) return;
 
         if (!hasStarted) {
-            startTime = (long) (Timer.getFPGATimestamp()); // Timer.getFPGATimeStamp in SECONDS
+            startTime = Timer.getFPGATimestamp(); // Timer.getFPGATimeStamp in SECONDS
             if (startAction != null) {
                 startAction.run();
                 hasStarted = true;

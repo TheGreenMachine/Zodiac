@@ -22,7 +22,7 @@ public class LazyTalonSRX extends TalonSRX implements ILazyMotorControllerEnhanc
     }
 
     @Override
-    public void set(ControlMode mode, double value) {
+    public synchronized void set(ControlMode mode, double value) {
         if (value != mLastSet || mode != mLastControlMode) {
             mLastSet = value;
             mLastControlMode = mode;

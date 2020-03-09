@@ -19,17 +19,19 @@ public class AutoModeSelector {
     enum DesiredMode {
         DRIVE_BY_CAMERA,
         DO_NOTHING,
-        FRONT_THEN_SIDE_CARGO_SHIP,
         TUNE_DRIVETRAIN,
-        CROSS_AUTO_LINE,
+        TURRET_TEST,
         LIVING_ROOM,
-        SHOP,
-        PID,
         DRIVE_STRAIGHT,
-        AUTO_TRENCH,
         AUTO_TRENCH_TURN_RIGHT,
-        FEEDER_TO_TRENCH,
-        FEEDER_TO_TRENCH_REVERSED,
+        FIVE_BALL_OPPOSING,
+        SIX_BALL_ALLIANCE,
+        EIGHT_BALL_ALLIANCE,
+        EIGHT_BALL_ALLIANCE_ALT,
+        EIGHT_BALL_OPPOSE,
+        TEN_BALL_AUTO,
+        DRIVE_STRAIGHT_SHOOT,
+        SIX_BALL_ALLIANCE_STRAIGHT
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -59,10 +61,24 @@ public class AutoModeSelector {
 //        mModeChooser.addOption("Shop", DesiredMode.SHOP);
 //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
-        mModeChooser.addOption("Auto Trench", DesiredMode.AUTO_TRENCH);
+        mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
         mModeChooser.addOption("Auto Trench Turn Right", DesiredMode.AUTO_TRENCH_TURN_RIGHT);
-        mModeChooser.addOption("FeederToTrench", DesiredMode.FEEDER_TO_TRENCH);
-        mModeChooser.addOption("FeederToTrenchReversed", DesiredMode.FEEDER_TO_TRENCH_REVERSED);
+        mModeChooser.addOption("Auto Trench Turn Right", DesiredMode.AUTO_TRENCH_TURN_RIGHT);
+
+
+        mModeChooser.addOption("Drive Straight Shoot", DesiredMode.DRIVE_STRAIGHT_SHOOT);
+
+        // ALLIANCE
+        mModeChooser.addOption("6 Ball Alliance Trench", DesiredMode.SIX_BALL_ALLIANCE);
+        mModeChooser.addOption("6 Ball Alliance Straight", DesiredMode.SIX_BALL_ALLIANCE_STRAIGHT);
+        mModeChooser.addOption("8 Ball Alliance Trench", DesiredMode.EIGHT_BALL_ALLIANCE);
+        mModeChooser.addOption("8 Ball Alliance Trench ALT (NOT TESTED)", DesiredMode.EIGHT_BALL_ALLIANCE_ALT);
+
+        // OPPOSING
+        mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
+        mModeChooser.addOption("8 Ball Opposing Trench (NOT TESTED)", DesiredMode.EIGHT_BALL_OPPOSE);
+
+        mModeChooser.addOption("10 Ball Trench (Not yet implemented DO NOT USE)", DesiredMode.TEN_BALL_AUTO);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
 
@@ -72,14 +88,14 @@ public class AutoModeSelector {
 
     public void updateModeCreator() {
         DesiredMode desiredMode = mModeChooser.getSelected();
-        StartingPosition staringPosition = mStartPositionChooser.getSelected();
-        if (mCachedDesiredMode != desiredMode || staringPosition != mCachedStartingPosition) {
+        StartingPosition startingPosition = mStartPositionChooser.getSelected();
+        if (mCachedDesiredMode != desiredMode || startingPosition != mCachedStartingPosition) {
             System.out.println("Auto selection changed, updating creator: desiredMode->" + desiredMode.name()
-                    + ", starting position->" + staringPosition.name());
-            mAutoMode = getAutoModeForParams(desiredMode, staringPosition);
+                    + ", starting position->" + startingPosition.name());
+            mAutoMode = getAutoModeForParams(desiredMode, startingPosition);
         }
         mCachedDesiredMode = desiredMode;
-        mCachedStartingPosition = staringPosition;
+        mCachedStartingPosition = startingPosition;
     }
 
     private boolean startingLeft(StartingPosition position) {
@@ -101,18 +117,28 @@ public class AutoModeSelector {
                 return Optional.of(new DriveByCameraMode());
             case TUNE_DRIVETRAIN:
                 return Optional.of(new TuneDrivetrainMode());
+            case TURRET_TEST:
+                return Optional.of(new TurretTestMode());
             case DRIVE_STRAIGHT:
                 return (Optional.of(new DriveStraightMode()));
             case LIVING_ROOM:
                 return (Optional.of(new LivingRoomMode()));
-            case AUTO_TRENCH:
-                return (Optional.of(new AutoTrenchMode(false)));
-            case AUTO_TRENCH_TURN_RIGHT:
-                return (Optional.of(new AutoTrenchMode(true)));
-            case FEEDER_TO_TRENCH:
-                return (Optional.of(new FeederToTrenchMode(false)));
-            case FEEDER_TO_TRENCH_REVERSED:
-                return (Optional.of(new FeederToTrenchMode(true)));
+            case SIX_BALL_ALLIANCE:
+                return (Optional.of(new SixBallAllianceMode()));
+            case FIVE_BALL_OPPOSING:
+                return (Optional.of(new FiveBallOpposingTrenchMode()));
+            case EIGHT_BALL_ALLIANCE:
+                return (Optional.of(new EightBallAllianceMode()));
+            case EIGHT_BALL_ALLIANCE_ALT:
+                return (Optional.of(new EightBallAllianceAltMode()));
+            case EIGHT_BALL_OPPOSE:
+                return (Optional.of(new EightBallOpposeMode()));
+            case TEN_BALL_AUTO:
+                return (Optional.of(new TenBallMode()));
+            case DRIVE_STRAIGHT_SHOOT:
+                return (Optional.of(new DriveStraightShootMode()));
+            case SIX_BALL_ALLIANCE_STRAIGHT:
+                return (Optional.of(new SixBallAllianceStraightMode()));
             default:
                 break;
         }
