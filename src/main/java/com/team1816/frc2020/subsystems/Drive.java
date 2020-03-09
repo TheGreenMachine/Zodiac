@@ -113,15 +113,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId"));
         }
         mPigeon.configFactoryDefault();
-//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 10, 10);
-//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 100, 10);
-//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 10, 10);
-//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_11_GyroAccum, 20, 10);
-//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 100, 10);
-//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_10_SixDeg_Quat, 100, 10);
-//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_4_Mag, 20, 10);
-//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 100, 10);
-//        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 100, 10);
 
         setOpenLoop(DriveSignal.NEUTRAL);
 
@@ -555,7 +546,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public void zeroSensors() {
-        System.out.println("Wiping drive sensors!");
+        System.out.println("Zeroing drive sensors!");
         resetPigeon();
         setHeading(Rotation2d.identity());
         resetEncoders();
