@@ -22,7 +22,6 @@ public class FiveBallOpposingTrenchMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         System.out.println("Running Five Ball Opposition Auto Trench Mode");
-        runAction(new WaitAction(.5));
         runAction(
             new SeriesAction(
                 new ParallelAction(
@@ -34,7 +33,7 @@ public class FiveBallOpposingTrenchMode extends AutoModeBase {
                     mDriveTrajectoryB,
                     new PrepareToShootAction(Turret.CARDINAL_SOUTH)
                 ),
-                new ShootAction(Turret.CARDINAL_SOUTH)
+                new ShootAction(true)
             )
         );
     }

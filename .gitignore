@@ -2,6 +2,9 @@
 # Created by https://www.gitignore.io/api/c++,java,linux,macos,gradle,windows,eclipse,intellij+all,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=c++,java,linux,macos,gradle,windows,eclipse,intellij+all,visualstudiocode
 
+# Vision Frames
+capture/
+
 # BadLog
 *.bag
 *.bag.html

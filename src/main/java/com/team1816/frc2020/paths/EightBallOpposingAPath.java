@@ -18,8 +18,8 @@ public class EightBallOpposingAPath implements PathContainer {
         return List.of( // TODO: Needs to be tested
             new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
             new Pose2d(125, 0, Rotation2d.fromDegrees(0)),
-            new Pose2d(50, 0, Rotation2d.fromDegrees(0)),
-            new Pose2d(115, 80, Rotation2d.fromDegrees(90))
+            new Pose2d(30, 0, Rotation2d.fromDegrees(0)),
+            new Pose2d(100, 40, Rotation2d.fromDegrees(90))
         );
     }
 

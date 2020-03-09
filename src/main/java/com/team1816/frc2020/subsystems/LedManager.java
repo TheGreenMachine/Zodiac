@@ -1,6 +1,7 @@
 package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.CANifier;
+import com.ctre.phoenix.CANifierStatusFrame;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
@@ -28,11 +29,16 @@ public class LedManager extends Subsystem {
 
     private int period; // ms
     private long lastWriteTime = System.currentTimeMillis();
+    private RobotStatus defaultStatus = RobotStatus.DISABLED;
 
     private LedManager() {
         super(NAME);
         this.canifier = factory.getCanifier(NAME);
         this.cameraCanifier = factory.getCanifier("camera");
+
+        configureCanifier(canifier);
+        configureCanifier(cameraCanifier);
+
         this.ledR = 0;
         this.ledG = 0;
         this.ledB = 0;
@@ -47,6 +53,14 @@ public class LedManager extends Subsystem {
         return INSTANCE;
     }
 
+    private void configureCanifier(CANifier canifier) {
+        canifier.setStatusFramePeriod(CANifierStatusFrame.Status_1_General, 255, 10);
+        canifier.setStatusFramePeriod(CANifierStatusFrame.Status_2_General, 255, 10);
+        canifier.setStatusFramePeriod(CANifierStatusFrame.Status_3_PwmInputs0, 255, 10);
+        canifier.setStatusFramePeriod(CANifierStatusFrame.Status_4_PwmInputs1, 255, 10);
+        canifier.setStatusFramePeriod(CANifierStatusFrame.Status_6_PwmInputs3, 255, 10);
+    }
+
     @Deprecated
     public void forceSetLedColor(int r, int g, int b) {
         if (this.ledR != r || this.ledG != g || this.ledB != b) {
@@ -57,8 +71,10 @@ public class LedManager extends Subsystem {
     }
 
     public void setCameraLed(boolean cameraLedOn) {
-        this.cameraLedOn = cameraLedOn;
-        outputsChanged = true;
+        if (this.cameraLedOn != cameraLedOn) {
+            this.cameraLedOn = cameraLedOn;
+            outputsChanged = true;
+        }
     }
 
     public void setLedColor(int r, int g, int b) {
@@ -91,12 +107,24 @@ public class LedManager extends Subsystem {
 
     public void indicateStatus(RobotStatus status) {
         blinkMode = false;
-        outputsChanged = true;
         setLedColor(status.getRed(), status.getGreen(), status.getBlue());
+    }
+
+    public void indicateDefaultStatus() {
+        indicateStatus(defaultStatus);
     }
 
     public void blinkStatus(RobotStatus status) {
         setLedColorBlink(status.getRed(), status.getGreen(), status.getBlue());
+    }
+
+    public void setDefaultStatus(RobotStatus defaultStatus) {
+        this.defaultStatus = defaultStatus;
+        indicateDefaultStatus();
+    }
+
+    public RobotStatus getDefaultStatus() {
+        return defaultStatus;
     }
 
     public int[] getLedColor() {
@@ -197,7 +225,8 @@ public class LedManager extends Subsystem {
         ENDGAME(0, 0, 255), // blue
         SEEN_TARGET(255, 0, 255), // magenta
         ON_TARGET(255, 0, 20), // deep magenta
-        DRIVETRAIN_FLIPPED(255, 255, 0), // yellow
+        DRIVETRAIN_FLIPPED(255, 255, 0), // yellow,
+        MANUAL_TURRET(255, 255, 255), // white
         OFF(0, 0, 0); // off
 
         int red;

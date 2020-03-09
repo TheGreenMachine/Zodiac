@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Kinematics;
@@ -32,8 +31,6 @@ import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -115,7 +112,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         } else {
             mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId"));
         }
-        mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 10, 10);
+        mPigeon.configFactoryDefault();
 
         setOpenLoop(DriveSignal.NEUTRAL);
 
@@ -190,6 +187,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
         mPeriodicIO.left_velocity_ticks_per_100ms = mLeftMaster.getSelectedSensorVelocity(0);
         mPeriodicIO.right_velocity_ticks_per_100ms = mRightMaster.getSelectedSensorVelocity(0);
+        if (mPigeon.getLastError() != ErrorCode.OK) {
+            ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
+            System.out.println("Pigeon error detected, maybe reinitialized");
+        }
         mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
         mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
         mPeriodicIO.left_error = mLeftMaster.getClosedLoopError(0);
@@ -240,7 +241,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                                 updatePathFollower(timestamp);
                             }
                         case TRAJECTORY_FOLLOWING:
-                            System.out.println("Now setting trajectory");
                             if (Constants.kIsBadlogEnabled) {
                                 mLogger.updateTopics();
                                 mLogger.log();
@@ -359,7 +359,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         return mPeriodicIO.gyro_heading;
     }
 
-    public synchronized Rotation2d getHeadingRelativeToInitial() { return mPeriodicIO.gyro_heading_no_offset; }
+    public synchronized Rotation2d getHeadingRelativeToInitial() {
+        return mPeriodicIO.gyro_heading_no_offset;
+    }
 
     public synchronized void setHeading(Rotation2d heading) {
         System.out.println("set heading: " + heading.getDegrees());
@@ -458,6 +460,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     public synchronized void setTrajectory(TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory) {
         if (mMotionPlanner != null) {
+            System.out.println("Now setting trajectory");
             setBrakeMode(true);
             mOverrideTrajectory = false;
             mMotionPlanner.reset();
@@ -543,6 +546,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public void zeroSensors() {
+        System.out.println("Zeroing drive sensors!");
         resetPigeon();
         setHeading(Rotation2d.identity());
         resetEncoders();
@@ -554,6 +558,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         } else {
             AutoModeSelector.getInstance().setHardwareFailure(false);
         }
+    }
+
+    public boolean hasPigeonResetOccurred() {
+        return mPigeon.hasResetOccurred();
     }
 
     @Override
@@ -627,11 +635,22 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         builder.addDoubleProperty("Left Drive Distance", this::getLeftEncoderDistance, null);
         builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
         builder.addStringProperty("Drive/ControlState", () -> this.getDriveControlState().toString(), null);
+        builder.addBooleanProperty("Drive/PigeonIMU State", () -> this.mPigeon.getLastError() == ErrorCode.OK, null);
+
 
         SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
         SmartDashboard.getEntry("Drive/OpenLoopRampRate").addListener(notification -> {
             setOpenLoopRampRate(notification.value.getDouble());
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+
+        SmartDashboard.putBoolean("Drive/Zero Sensors", false);
+        SmartDashboard.getEntry("Drive/Zero Sensors").addListener(entryNotification -> {
+            if (entryNotification.value.getBoolean()) {
+                zeroSensors();
+                entryNotification.getEntry().setBoolean(false);
+            }
+        }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+
 
         // builder.addDoubleProperty("Drive/OpenLoopRampRateSetter", null, this::setOpenLoopRampRate);
         // builder.addDoubleProperty("Drive/OpenLoopRampRateValue", this::getOpenLoopRampRate, null);
@@ -653,12 +672,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         //     SmartDashboard.putNumber("Drive LTE", 0.0);
         //     SmartDashboard.putNumber("Drive CTE", 0.0);
         // }
-
-         if (getHeading() != null) {
-             Shuffleboard.getTab("Drive")
-                 .addNumber("Gyro Heading", this::getHeadingDegrees)
-                 .withWidget(BuiltInWidgets.kGyro);
-         }
     }
 
     public synchronized double getTimestamp() {

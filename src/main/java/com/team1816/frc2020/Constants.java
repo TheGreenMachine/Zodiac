@@ -75,6 +75,7 @@ public class Constants {
 
     public static final boolean kIsBadlogEnabled = factory.getConstant("badLogEnabled") > 0;
     public static final boolean kIsLoggingTeleOp = factory.getConstant("logTeleOp") > 0;
+    public static final boolean kIsLoggingAutonomous = factory.getConstant("logAuto") > 0;
 
     public static final boolean kUseAutoAim = factory.getConstant("useAutoAim") > 0;
 

@@ -7,8 +7,7 @@ import com.team254.lib.geometry.Rotation2d;
 
 import java.util.List;
 
-public class EightBallAlliancePath implements PathContainer {
-
+public class EightBallAllianceAltAPath implements PathContainer {
     @Override
     public Path buildPath() {
         return new Path();
@@ -17,9 +16,8 @@ public class EightBallAlliancePath implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         return List.of(
-            new Pose2d(0,0, Rotation2d.fromDegrees(0)),
-            new Pose2d(-140, 0, Rotation2d.fromDegrees(0)),
-            new Pose2d(-60, -60, Rotation2d.fromDegrees(110))
+            new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
+            new Pose2d(-68, -34, Rotation2d.fromDegrees(-70))
         );
     }
 
