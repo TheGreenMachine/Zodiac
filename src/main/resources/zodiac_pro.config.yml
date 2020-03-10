@@ -3,10 +3,10 @@ subsystems:
     climber:
         implemented: true
         invertMotor:
-            - 12
+            - elevator
     hopper:
         invertMotor:
-            - 5
+            - elevator
     shooter:
         falcons:
             shooterMain: 3

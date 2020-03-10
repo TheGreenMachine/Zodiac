@@ -27,58 +27,58 @@ public class RobotFactory {
         return (getSubsystem(subsystem) != null) && (getSubsystem(subsystem).implemented);
     }
 
-    public IMotorControllerEnhanced getMotor(String subsystemName, String name) { // TODO: optimize this method
+    public IMotorControllerEnhanced getMotor(String subsystemName, String name) {
+        IMotorControllerEnhanced motor = null;
+        YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
+
+        // Motor creation
         if (isImplemented(subsystemName)) {
-            YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
             if (isHardwareValid(subsystem.talons.get(name))) {
-                var motor = CtreMotorFactory.createDefaultTalon(subsystem.talons.get(name), false);
-                if (subsystem.invertMotor.contains(motor.getDeviceID())) {
-                    System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
-                    motor.setInverted(true);
-                }
-                motor.config_kP(0, getConstant(subsystemName, "kP", 0), Constants.kLongCANTimeoutMs);
-                motor.config_kI(0, getConstant(subsystemName, "kI", 0), Constants.kLongCANTimeoutMs);
-                motor.config_kD(0, getConstant(subsystemName, "kD", 0), Constants.kLongCANTimeoutMs);
-                motor.config_kF(0, getConstant(subsystemName, "kF", 0), Constants.kLongCANTimeoutMs);
-                return motor;
+                motor = CtreMotorFactory.createDefaultTalon(subsystem.talons.get(name), false);
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
-                var motor = CtreMotorFactory.createDefaultTalon(subsystem.falcons.get(name), true);
-                if (subsystem.invertMotor.contains(motor.getDeviceID())) {
-                    System.out.println("Inverting " + name + " with id " + motor.getDeviceID());
-                    motor.setInverted(true);
-                }
-                motor.config_kP(0, getConstant(subsystemName, "kP", 0), Constants.kLongCANTimeoutMs);
-                motor.config_kI(0, getConstant(subsystemName, "kI", 0), Constants.kLongCANTimeoutMs);
-                motor.config_kD(0, getConstant(subsystemName, "kD", 0), Constants.kLongCANTimeoutMs);
-                motor.config_kF(0, getConstant(subsystemName, "kF", 0), Constants.kLongCANTimeoutMs);
-                return motor;
+                motor = CtreMotorFactory.createDefaultTalon(subsystem.falcons.get(name), true);
             } // Never make the victor a master
         }
-        DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
-        return CtreMotorFactory.createGhostTalon();
+        if (motor == null) {
+            DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
+            motor = CtreMotorFactory.createGhostTalon();
+        }
+
+        // Motor configuration
+        if (subsystem.invertMotor.contains(name)) {
+            System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
+            motor.setInverted(true);
+        }
+        motor.config_kP(0, getConstant(subsystemName, "kP", 0), Constants.kLongCANTimeoutMs);
+        motor.config_kI(0, getConstant(subsystemName, "kI", 0), Constants.kLongCANTimeoutMs);
+        motor.config_kD(0, getConstant(subsystemName, "kD", 0), Constants.kLongCANTimeoutMs);
+        motor.config_kF(0, getConstant(subsystemName, "kF", 0), Constants.kLongCANTimeoutMs);
+
+        return motor;
     }
 
     public IMotorController getMotor(String subsystemName, String name, IMotorController master) { // TODO: optimize this method
+        IMotorController motor = null;
         if (isImplemented(subsystemName) && master != null) {
             YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
             if (isHardwareValid(subsystem.talons.get(name))) {
                 // Talons must be following another Talon, cannot follow a Victor.
-                var talon = CtreMotorFactory.createPermanentSlaveTalon(subsystem.talons.get(name), false, master);
-                talon.setInverted(master.getInverted());
-                return talon;
+                motor = CtreMotorFactory.createPermanentSlaveTalon(subsystem.talons.get(name), false, master);
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
-                var falcon = CtreMotorFactory.createPermanentSlaveTalon(subsystem.falcons.get(name), true, master);
-                falcon.setInverted(master.getInverted());
-                return falcon;
+                motor = CtreMotorFactory.createPermanentSlaveTalon(subsystem.falcons.get(name), true, master);
             } else if (isHardwareValid(subsystem.victors.get(name))) {
                 // Victors can follow Talons or another Victor.
-                var victor = CtreMotorFactory.createPermanentSlaveVictor(subsystem.victors.get(name), master);
-                victor.setInverted(master.getInverted());
-                return victor;
+                motor = CtreMotorFactory.createPermanentSlaveVictor(subsystem.victors.get(name), master);
             }
         }
-        DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
-        return CtreMotorFactory.createGhostTalon();
+        if (motor == null) {
+            DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
+            motor = CtreMotorFactory.createGhostTalon();
+        }
+        if (master != null) {
+            motor.setInverted(master.getInverted());
+        }
+        return motor;
     }
 
     private boolean isHardwareValid(Integer hardwareId) {

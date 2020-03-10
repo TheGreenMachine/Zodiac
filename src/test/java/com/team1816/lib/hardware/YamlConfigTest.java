@@ -75,8 +75,8 @@ public class YamlConfigTest {
             399.42, config.constants.get("activeConstant"), 0);
 
         assertEquals("PCM ID is 8", 8, config.pcm.intValue());
-        assertTrue("invertMotor for invertMotorTest subsystem contains 1 and 2",
-            config.subsystems.get("invertMotorTest").invertMotor.containsAll(List.of(1, 2)));
+        assertTrue("invertMotor for invertMotorTest subsystem contains motorA and motorB",
+            config.subsystems.get("invertMotorTest").invertMotor.containsAll(List.of("motorA", "motorB")));
     }
 
 }

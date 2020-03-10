@@ -28,7 +28,7 @@ subsystems:
             velocityThreshold: 500
     invertMotorTest:
         invertMotor:
-            - 2 # Adding to base invert array
+            - motorB # Adding to base invert array
 constants:
     overriddenConstant: 0
     activeConstant: 399.42

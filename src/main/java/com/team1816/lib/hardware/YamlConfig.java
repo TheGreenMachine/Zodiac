@@ -62,7 +62,7 @@ public class YamlConfig {
         Map<String, DoubleSolenoidConfig> doublesolenoids = new HashMap<>();
         Map<String, Double> constants = new HashMap<>();
         Integer canifier;
-        List<Integer> invertMotor = new ArrayList<>();
+        List<String> invertMotor = new ArrayList<>();
 
         @Override
         public String toString() {
