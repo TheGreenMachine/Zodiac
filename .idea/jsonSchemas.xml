@@ -16,9 +16,6 @@
                     <option name="path" value="*.config.yml" />
                     <option name="mappingKind" value="Pattern" />
                   </Item>
-                  <Item>
-                    <option name="path" value="src/main/resources/zodiac_base.config.yml" />
-                  </Item>
                 </list>
               </option>
             </SchemaInfo>
