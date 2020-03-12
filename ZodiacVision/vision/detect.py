@@ -38,7 +38,7 @@ class Detector:
         print(ratio)
         if ratio > .2:
             cx = rect[0] + (rect[2] * .5)
-            cy = rect[1] + (rect[3] * .5)
+            cy = rect[1]
             self.nt.putValue('center_x', cx)
             self.nt.putValue('center_y', cy)
 
