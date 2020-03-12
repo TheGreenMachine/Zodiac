@@ -44,7 +44,7 @@ while True:
         zed.retrieve_image(image, sl.VIEW.RIGHT)  # Retrieve the left image
         frame = image.get_data()
         if net.vision_use:
-            cv2.imwrite('../capture/' + time.strftime("%Y%m%d-%H%M%S") + '.png', frame)
+            cv2.imwrite('/home/jetson/ZodiacVision/capture/' + time.strftime("%Y%m%d-%H%M%S") + '.png', frame)
             net.vision_use = False
         mask = detector.preProcessFrame(frame)
         if mask.all() == -1:
