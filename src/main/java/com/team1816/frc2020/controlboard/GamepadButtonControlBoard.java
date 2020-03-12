@@ -94,7 +94,7 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
-    public boolean getAutoHome() {
+    public boolean getAutoAim() {
         return mController.getButton(LogitechController.Button.LB);
     }
 

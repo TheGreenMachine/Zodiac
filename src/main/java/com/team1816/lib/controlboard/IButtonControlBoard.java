@@ -23,7 +23,7 @@ public interface IButtonControlBoard {
 
     boolean getShoot();
 
-    boolean getAutoHome();
+    boolean getAutoAim();
 
     boolean getCollectorBackSpin();
 

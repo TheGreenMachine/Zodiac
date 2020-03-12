@@ -219,9 +219,8 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getSpinnerReset, spinner::initialize),
                 createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
                 createHoldAction(mControlBoard::getSpinnerThreeTimes, spinner::spinThreeTimes),
-                createAction(mControlBoard::getFieldFollowing, () -> {
-                    turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
-                }),
+                createAction(mControlBoard::getFieldFollowing, () ->
+                    turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING)),
 
                 createHoldAction(mControlBoard::getFeederFlapOut, (feeding) -> {
                     if (mDrive.hasPigeonResetOccurred() && !feeding) {
@@ -239,10 +238,11 @@ public class Robot extends TimedRobot {
 
                 createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)),
                 createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)),
-                createHoldAction(mControlBoard::getAutoHome, pressed -> {
+                createHoldAction(mControlBoard::getAutoAim, pressed -> {
                     if (pressed) {
                         prevTurretControlMode = turret.getControlMode();
                         turret.setControlMode(Turret.ControlMode.CAMERA_FOLLOWING);
+                        shooter.startShooter();
                     } else {
                         turret.setControlMode(prevTurretControlMode);
                     }
