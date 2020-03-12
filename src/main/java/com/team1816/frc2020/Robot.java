@@ -240,8 +240,6 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)),
                 createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)),
                 createHoldAction(mControlBoard::getAutoHome, pressed -> {
-                    ledManager.setCameraLed(pressed);
-                    ledManager.indicateStatus(pressed ? LedManager.RobotStatus.SEEN_TARGET : LedManager.RobotStatus.ENABLED);
                     if (pressed) {
                         prevTurretControlMode = turret.getControlMode();
                         turret.setControlMode(Turret.ControlMode.CAMERA_FOLLOWING);

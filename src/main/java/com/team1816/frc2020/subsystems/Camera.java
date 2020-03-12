@@ -2,6 +2,7 @@ package com.team1816.frc2020.subsystems;
 
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Camera {
@@ -16,10 +17,12 @@ public class Camera {
 
     // Components
     private final NetworkTable networkTable;
+    private final LedManager led = LedManager.getInstance();
 
     // State
     private double deltaXAngle;
     private double distance;
+    private final NetworkTableEntry usingVision;
 
     private double rawCenterX;
 
@@ -27,9 +30,11 @@ public class Camera {
     private static final double CAMERA_FOV = 87.0; // deg
     private static final double CAMERA_FOCAL_LENGTH = 350; // px
     private static final double VIDEO_WIDTH = 672.0; // px
+    public static final double ALLOWABLE_AIM_ERROR = 1; // deg
 
     private Camera() {
         networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+        usingVision = networkTable.getSubTable("Calibration").getEntry("VISION");
         networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
             rawCenterX = value.getDouble();
             if (value.getDouble() < 0) {
@@ -56,4 +61,9 @@ public class Camera {
     }
 
     public double getRawCenterX() { return rawCenterX; }
+
+    public void setEnabled(boolean enabled) {
+        led.setCameraLed(enabled);
+        usingVision.setBoolean(enabled);
+    }
 }
