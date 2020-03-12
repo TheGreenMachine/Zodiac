@@ -21,6 +21,8 @@ public class Camera {
     private double deltaXAngle;
     private double distance;
 
+    private double rawCenterX;
+
     // Constants
     private static final double CAMERA_FOV = 87.0; // deg
     private static final double CAMERA_FOCAL_LENGTH = 350; // px
@@ -29,13 +31,14 @@ public class Camera {
     private Camera() {
         networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
+            rawCenterX = value.getDouble();
             if (value.getDouble() < 0) {
                 // Reset deltaX to 0 if contour not detected
                 deltaXAngle = 0;
                 return;
             }
             var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
-            this.deltaXAngle = Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH)) ;
+            this.deltaXAngle = Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH)) * 0.64;
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
 
         networkTable.addEntryListener("distance", (table, key, entry, value, flags) -> {
@@ -51,4 +54,6 @@ public class Camera {
     public double getDistance() {
         return distance;
     }
+
+    public double getRawCenterX() { return rawCenterX; }
 }

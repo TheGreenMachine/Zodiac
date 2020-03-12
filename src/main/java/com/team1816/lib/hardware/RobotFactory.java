@@ -45,7 +45,7 @@ public class RobotFactory {
         }
 
         // Motor configuration
-        if (subsystem.invertMotor.contains(name)) {
+        if (subsystem != null && subsystem.invertMotor.contains(name)) {
             System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
             motor.setInverted(true);
         }

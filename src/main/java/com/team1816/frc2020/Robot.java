@@ -132,6 +132,7 @@ public class Robot extends TimedRobot {
 
                 BadLog.createTopic("Vision/DeltaXAngle", "Degrees", camera::getDeltaXAngle);
                 BadLog.createTopic("Vision/Distance", "inches", camera::getDistance);
+                BadLog.createTopic("Vision/CenterX", "pixels", camera::getRawCenterX);
 
                 BadLog.createTopic("Turret/ActPos", "NativeUnits", () -> (double) turret.getTurretPositionTicks(),
                     "hide", "join:Turret/Positions");
