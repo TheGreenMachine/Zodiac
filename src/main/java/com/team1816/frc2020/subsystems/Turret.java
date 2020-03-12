@@ -37,11 +37,8 @@ public class Turret extends Subsystem implements PidProvider {
     private final DistanceManager distanceManager = DistanceManager.getInstance();
 
     // State
-    private double turretPos;
-    private double turretSpeed;
+    private final PeriodicIO periodicIO = new PeriodicIO();
     private boolean outputsChanged;
-    private double turretAngleRelativeToField;
-    private double followTargetTurretSetAngle;
     private ControlMode controlMode = ControlMode.MANUAL;
 
     // Constants
@@ -119,7 +116,7 @@ public class Turret extends Subsystem implements PidProvider {
             turret.overrideLimitSwitchesEnable(true);
             turret.overrideSoftLimitsEnable(true);
 
-            turretAngleRelativeToField = robotState.getLatestFieldToTurret();
+            periodicIO.fieldToTurretAngle = robotState.getLatestFieldToTurret();
         }
     }
 
@@ -179,12 +176,12 @@ public class Turret extends Subsystem implements PidProvider {
 
     public void setTurretSpeed(double speed) {
         setControlMode(ControlMode.MANUAL);
-        turretSpeed = speed;
+        periodicIO.demandedSpeed = speed;
         outputsChanged = true;
     }
 
     public synchronized void setTurretPosition(double position) {
-        turretPos = position;
+        periodicIO.demandedPositionTicks = position;
         outputsChanged = true;
     }
 
@@ -226,6 +223,11 @@ public class Turret extends Subsystem implements PidProvider {
         );
     }
 
+    /**
+     * Not called using PeriodicIO since it is an expensive operation.
+     * Should NOT be called in any loop.
+     * @return the position in encoder ticks from the absolute sensor
+     */
     public int getTurretPosAbsolute() {
         if (turret instanceof TalonSRX) {
             int rawValue =
@@ -236,19 +238,19 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public double getTurretPositionTicks() {
-        return turret.getSelectedSensorPosition(kPIDLoopIDx);
+        return periodicIO.actualPositionTicks;
     }
 
     public double getTargetPosition() {
-        return turretPos;
+        return periodicIO.demandedPositionTicks;
     }
 
     public double getPositionError() {
-        return turret.getClosedLoopError(kPIDLoopIDx);
+        return periodicIO.closedLoopError;
     }
 
     public double getTurretSpeed() {
-        return turretSpeed;
+        return periodicIO.demandedSpeed;
     }
 
     public static double convertTurretDegreesToTicks(double degrees) {
@@ -259,17 +261,16 @@ public class Turret extends Subsystem implements PidProvider {
         return (ticks / TURRET_ENCODER_PPR) * 360;
     }
 
-    public double getTurretAngleRelativeToField() {
-        return turretAngleRelativeToField;
-    }
-
     public double getFollowTargetTurretSetAngle() {
-        return followTargetTurretSetAngle;
+        return periodicIO.fieldToTurretDemand;
     }
 
     @Override
     public void readPeriodicInputs() {
-        turretAngleRelativeToField = robotState.getLatestFieldToTurret();
+        periodicIO.fieldToTurretAngle = robotState.getLatestFieldToTurret();
+        periodicIO.actualPositionTicks = turret.getSelectedSensorPosition(kPIDLoopIDx);
+        periodicIO.motorPercentOutput = turret.getMotorOutputPercent();
+        periodicIO.closedLoopError = turret.getClosedLoopError(kPIDLoopIDx);
     }
 
     @Override
@@ -301,29 +302,29 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     private void trackGyro() {
-        followTargetTurretSetAngle =
-            (getTurretPositionDegrees() - turretAngleRelativeToField);
-        setTurretAngleInternal(followTargetTurretSetAngle);
+        periodicIO.fieldToTurretDemand =
+            (getTurretPositionDegrees() - periodicIO.fieldToTurretAngle);
+        setTurretAngleInternal(periodicIO.fieldToTurretDemand);
     }
 
     private void positionControl() {
         if (outputsChanged) {
-            turret.set(com.ctre.phoenix.motorcontrol.ControlMode.Position, turretPos);
+            turret.set(com.ctre.phoenix.motorcontrol.ControlMode.Position, periodicIO.demandedPositionTicks);
             outputsChanged = false;
         }
     }
 
     private void manualControl() {
         if (outputsChanged) {
-            if (turretSpeed == 0) {
+            if (periodicIO.demandedSpeed == 0) {
                 turret.set(
                     com.ctre.phoenix.motorcontrol.ControlMode.Position,
-                    getTurretPositionTicks() + 200 * turret.getMotorOutputPercent()
+                    periodicIO.actualPositionTicks + 200 * periodicIO.motorPercentOutput
                 );
             } else {
                 turret.set(
                     com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput,
-                    turretSpeed
+                    periodicIO.demandedSpeed
                 );
             }
             outputsChanged = false;
@@ -343,11 +344,7 @@ public class Turret extends Subsystem implements PidProvider {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.addDoubleProperty("Turret Degrees", this::getTurretPositionDegrees, null);
-        builder.addDoubleProperty(
-            "Turret Absolute Ticks",
-            this::getTurretPosAbsolute,
-            null
-        );
+        // builder.addDoubleProperty("Turret Absolute Ticks", this::getTurretPosAbsolute, null);
         builder.addDoubleProperty(
             "Turret Relative Ticks",
             this::getTurretPositionTicks,
@@ -364,5 +361,18 @@ public class Turret extends Subsystem implements PidProvider {
             () -> getControlMode().name(),
             null
         );
+    }
+
+    public static class PeriodicIO {
+        // Inputs
+        double fieldToTurretAngle;
+        double actualPositionTicks;
+        double closedLoopError;
+        double motorPercentOutput;
+
+        // Outputs
+        double fieldToTurretDemand;
+        double demandedPositionTicks;
+        double demandedSpeed;
     }
 }
