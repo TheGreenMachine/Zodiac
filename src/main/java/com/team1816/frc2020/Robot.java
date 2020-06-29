@@ -87,15 +87,7 @@ public class Robot extends TimedRobot {
     private static RobotFactory factory;
 
     public static RobotFactory getFactory() {
-        if (factory == null) {
-            var robotName = System.getenv("ROBOT_NAME");
-            if (robotName == null) {
-                robotName = "default";
-                DriverStation.reportWarning("ROBOT_NAME environment variable not defined, falling back to default.config.yml!", false);
-            }
-            factory = new RobotFactory(robotName);
-        }
-        return factory;
+        return RobotFactory.getInstance();
     }
 
     private Double getLastLoop() {

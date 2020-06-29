@@ -12,6 +12,19 @@ public class RobotFactory {
 
     private YamlConfig config;
     private static boolean verbose;
+    private static RobotFactory factory;
+
+    public static RobotFactory getInstance() {
+        if (factory == null) {
+            var robotName = System.getenv("ROBOT_NAME");
+            if (robotName == null) {
+                robotName = "default";
+                DriverStation.reportWarning("ROBOT_NAME environment variable not defined, falling back to default.config.yml!", false);
+            }
+            factory = new RobotFactory(robotName);
+        }
+        return factory;
+    }
 
     public RobotFactory(String configName) {
         System.out.println("Loading Config for " + configName);
@@ -23,16 +36,12 @@ public class RobotFactory {
         verbose = getConstant("verbose") >= 1;
     }
 
-    public boolean isImplemented(String subsystem) {
-        return (getSubsystem(subsystem) != null) && (getSubsystem(subsystem).implemented);
-    }
-
     public IMotorControllerEnhanced getMotor(String subsystemName, String name) {
         IMotorControllerEnhanced motor = null;
-        YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
+        var subsystem = getSubsystem(subsystemName);
 
         // Motor creation
-        if (isImplemented(subsystemName)) {
+        if (subsystem.implemented) {
             if (isHardwareValid(subsystem.talons.get(name))) {
                 motor = CtreMotorFactory.createDefaultTalon(subsystem.talons.get(name), false);
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
@@ -40,12 +49,12 @@ public class RobotFactory {
             } // Never make the victor a master
         }
         if (motor == null) {
-            DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
+            if(subsystem.implemented) DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
             motor = CtreMotorFactory.createGhostTalon();
         }
 
         // Motor configuration
-        if (subsystem != null && subsystem.invertMotor.contains(name)) {
+        if (subsystem.implemented && subsystem.invertMotor.contains(name)) {
             System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
             motor.setInverted(true);
         }
@@ -59,8 +68,8 @@ public class RobotFactory {
 
     public IMotorController getMotor(String subsystemName, String name, IMotorController master) { // TODO: optimize this method
         IMotorController motor = null;
-        if (isImplemented(subsystemName) && master != null) {
-            YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
+        var subsystem = getSubsystem(subsystemName);
+        if (subsystem.implemented && master != null) {
             if (isHardwareValid(subsystem.talons.get(name))) {
                 // Talons must be following another Talon, cannot follow a Victor.
                 motor = CtreMotorFactory.createPermanentSlaveTalon(subsystem.talons.get(name), false, master);
@@ -72,7 +81,7 @@ public class RobotFactory {
             }
         }
         if (motor == null) {
-            DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
+            if(subsystem.implemented) DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
             motor = CtreMotorFactory.createGhostTalon();
         }
         if (master != null) {
@@ -85,71 +94,80 @@ public class RobotFactory {
         return hardwareId != null && hardwareId > -1;
     }
 
-    public Solenoid getSolenoid(String subsystem, String name) {
-        Integer solenoidId = getSubsystem(subsystem).solenoids.get(name);
+    public Solenoid getSolenoid(String subsystemName, String name) {
+        var subsystem = getSubsystem(subsystemName);
+        Integer solenoidId = subsystem.solenoids.get(name);
         if (isHardwareValid(solenoidId)) {
             return new Solenoid(config.pcm, solenoidId);
         }
-        DriverStation.reportError(
-            "Solenoid " + name +
-                " not defined or invalid in config for subsystem " + subsystem, false);
+        if(subsystem.implemented) {
+            DriverStation.reportError(
+                "Solenoid " + name +
+                    " not defined or invalid in config for subsystem " + subsystem, false);
+        }
         return null;
     }
 
-    public DoubleSolenoid getDoubleSolenoid(String subsystem, String name) {
-        YamlConfig.DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystem).doublesolenoids.get(name);
+    public DoubleSolenoid getDoubleSolenoid(String subsystemName, String name) {
+        YamlConfig.DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName).doublesolenoids.get(name);
         if (solenoidConfig != null && isHardwareValid(solenoidConfig.forward) && isHardwareValid(solenoidConfig.reverse)) {
             return new DoubleSolenoid(config.pcm, solenoidConfig.forward, solenoidConfig.reverse);
         }
         DriverStation.reportError(
             "DoubleSolenoid " + name +
-                " not defined or invalid in config for subsystem " + subsystem, false);
+                " not defined or invalid in config for subsystem " + subsystemName, false);
         return null;
     }
 
-    public CANifier getCanifier(String subsystem) {
-        if (isImplemented(subsystem) && getSubsystem(subsystem).canifier != null) {
-            return new CANifier(getSubsystem(subsystem).canifier);
+    public CANifier getCanifier(String subsystemName) {
+        var subsystem = getSubsystem(subsystemName);
+        if (subsystem.implemented && subsystem.canifier != null) {
+            return new CANifier(subsystem.canifier);
         }
         DriverStation.reportError("CANifier ID not defined for subsystem "
-            + subsystem + "! CANifier will be NULL!", false);
+            + subsystemName + "! CANifier will be NULL!", false);
         return null;
     }
 
     public Double getConstant(String name) {
+        return getConstant(name,0.0);
+    }
+
+    public Double getConstant(String name, double defaultVal) {
         if (!config.constants.containsKey(name)) {
             DriverStation.reportError("Yaml constants:" + name + " missing", false);
-            return null;
+            return defaultVal;
         }
         return config.constants.get(name);
     }
 
-    public double getConstant(String subsystem, String name) {
-        return getConstant(subsystem, name, -1);
+    public double getConstant(String subsystemName, String name) {
+        return getConstant(subsystemName, name, 0.0);
     }
 
-    public double getConstant(String subsystem, String name, double defaultVal) {
-        if (getSubsystem(subsystem) == null) {
-            DriverStation.reportError("Subsystem " + subsystem + " does not exist", false);
+    public double getConstant(String subsystemName, String name, double defaultVal) {
+        if (!getSubsystem(subsystemName).implemented) {
             return defaultVal;
         }
-        if (!getSubsystem(subsystem).constants.containsKey(name)) {
-            DriverStation.reportError("Yaml " + subsystem + " constants:" + name + " missing", false);
+        if (!getSubsystem(subsystemName).constants.containsKey(name)) {
+            DriverStation.reportError("Yaml " + subsystemName + " constants:" + name + " missing", false);
             return defaultVal;
         }
-        return getSubsystem(subsystem).constants.get(name);
-    }
-
-    public YamlConfig getConfig() {
-        return config;
+        return getSubsystem(subsystemName).constants.get(name);
     }
 
     public int getPcmId() {
+        if(config.pcm == null) return -1;
         return config.pcm;
     }
 
-    public YamlConfig.SubsystemConfig getSubsystem(String subsystem) {
-        return config.subsystems.get(subsystem);
+    public YamlConfig.SubsystemConfig getSubsystem(String subsystemName) {
+        var subsystem = config.subsystems.get(subsystemName);
+        if(subsystem == null) {
+            subsystem = new YamlConfig.SubsystemConfig();
+            subsystem.implemented = false;
+        }
+        return subsystem;
     }
 
     public static boolean isVerbose() {
