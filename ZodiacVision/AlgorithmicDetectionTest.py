@@ -16,6 +16,27 @@ res = np.array([0])
 # The middle part should be close to 0 degrees, but often isn't
 # The right part usually has an angle around -60 degrees
 #
+def proc_part(part):
+    contours2, hier2 = cv2.findContours(part, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours2) > 0:
+        cont2 = contours2[0]
+
+        rect = cv2.minAreaRect(cont2)
+        (x1, y1), (x2, y2), angle = rect
+        xa = x1 + x2 / 2
+
+        # angle = math.atan2(y1 - y2, x1-x2)
+        # math.degrees(angle)
+        # print(f"RECT: {rect}")
+        print(angle)
+        box = cv2.boxPoints(rect)
+        box = np.int0(box)
+        # print(box)
+        return box, angle
+
+    return False, False
+
+
 def proc_img(mask, img):
     global res
     contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -47,9 +68,12 @@ def proc_img(mask, img):
             x2 = x + w - quarter_w
             x3 = x + w
             #
-            # cv2.rectangle(img, (x0, y0), (x1, y1), (255, 255, 0), 2)
-            # cv2.rectangle(img, (x1, y0), (x2, y1), (255, 255, 0), 2)
-            # cv2.rectangle(img, (x2, y0), (x3, y1), (255, 255, 0), 2)
+            cv2.rectangle(img, (x0, y0), (x1, y1), (255, 255, 0), 2)
+            cv2.rectangle(img, (x1, y0), (x2, y1), (255, 255, 0), 2)
+            centerX = (int(x1 + ((x2-x1) / 2)))
+            centerY = int(y0 + ((y1-y0) / 2))
+            img = cv2.line(img, (centerX, centerY), (centerX, centerY), (255, 255, 0), 5)
+            cv2.rectangle(img, (x2, y0), (x3, y1), (255, 255, 0), 2)
 
             part1 = mask[y0:y1, x0:x1]
             print('RECT1')
@@ -85,8 +109,8 @@ def proc_img(mask, img):
             # img = cv2.drawContours(img, [box3a], -1, (0, 0, 255), 2)
 
             hexes.append(cont)
-            img = cv2.line(img, (centerX, centerY), (centerX, centerY), (255, 255, 0), 5)
-            img = cv2.rectangle(img, (box1a[1][0], box1a[0][1]), (box3a[3][0],int((box3a[2][1] / 2))), (255, 255, 0), 2)
+            # img = cv2.line(img, (centerX, centerY), (centerX, centerY), (255, 255, 0), 5)
+            # img = cv2.rectangle(img, (box1a[1][0], box1a[0][1]), (box3a[3][0],int((box3a[2][1] / 2))), (255, 255, 0), 2)
             # imgx = cv2.resize(img[y:y+h, x:x+w], None, fx=4.0, fy=4.0)
             # cv2.imshow('imgx', imgx)
         # else:
