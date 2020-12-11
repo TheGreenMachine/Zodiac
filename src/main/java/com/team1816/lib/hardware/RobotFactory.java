@@ -7,9 +7,7 @@ import com.team1816.lib.hardware.components.CanifierImpl;
 import com.team1816.lib.hardware.components.GhostCanifier;
 import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.hardware.components.pcm.*;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Solenoid;
 
 import javax.annotation.Nonnull;
 
@@ -54,7 +52,7 @@ public class RobotFactory {
             } // Never make the victor a master
         }
         if (motor == null) {
-            if(subsystem.implemented) DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
+            if(subsystem.implemented) reportGhostWarning("Motor", subsystemName, name);
             motor = CtreMotorFactory.createGhostTalon();
         }
 
@@ -86,7 +84,7 @@ public class RobotFactory {
             }
         }
         if (motor == null) {
-            if(subsystem.implemented) DriverStation.reportWarning("Warning: using GhostTalonSRX for motor " + name + " on subsystem " + subsystemName, false);
+            if(subsystem.implemented) reportGhostWarning("Motor", subsystemName, name);
             motor = CtreMotorFactory.createGhostTalon();
         }
         if (master != null) {
@@ -107,10 +105,7 @@ public class RobotFactory {
             return new SolenoidImpl(config.pcm, solenoidId);
         }
         if(subsystem.implemented) {
-            DriverStation.reportWarning(
-                "Solenoid " + name
-                    + " not defined or invalid in config for subsystem " + subsystem
-                    + ", using ghost!", false);
+            reportGhostWarning("Solenoid", subsystemName, name);
         }
         return new GhostSolenoid();
     }
@@ -127,10 +122,7 @@ public class RobotFactory {
         ) {
             return new DoubleSolenoidImpl(config.pcm, solenoidConfig.forward, solenoidConfig.reverse);
         }
-        DriverStation.reportWarning(
-            "DoubleSolenoid " + name
-                + " not defined or invalid in config for subsystem " + subsystemName
-                + ", using ghost!", false);
+        reportGhostWarning("DoubleSolenoid", subsystemName, name);
         return new GhostDoubleSolenoid();
     }
 
@@ -140,8 +132,7 @@ public class RobotFactory {
         if (subsystem.implemented && isHardwareValid(subsystem.canifier)) {
             return new CanifierImpl(subsystem.canifier);
         }
-        DriverStation.reportWarning("CANifier ID not defined for subsystem "
-            + subsystemName + ", using ghost!", false);
+        reportGhostWarning("CANifier", subsystemName, "canifier");
         return new GhostCanifier();
     }
 
@@ -188,5 +179,12 @@ public class RobotFactory {
 
     public static boolean isVerbose() {
         return verbose;
+    }
+
+    private void reportGhostWarning(String type, String subsystemName, String componentName) {
+        DriverStation.reportWarning(
+            type + "  " + componentName
+                + " not defined or invalid in config for subsystem " + subsystemName
+                + ", using ghost!", false);
     }
 }
