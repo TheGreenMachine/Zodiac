@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 import java.util.ArrayList;
 import java.util.function.DoubleSupplier;
 
+@Deprecated
 public class TalonSRXChecker {
     public static class CheckerConfig {
         public double mCurrentFloor = 5;
