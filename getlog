@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-echo "ERROR: getlog is deprecated. Use logutil fetch instead."
-exit 1
