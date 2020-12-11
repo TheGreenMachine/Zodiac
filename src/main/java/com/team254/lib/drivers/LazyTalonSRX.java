@@ -2,7 +2,7 @@ package com.team254.lib.drivers;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.team1816.lib.hardware.ILazyMotorControllerEnhanced;
+import com.team1816.lib.hardware.components.motor.ILazyMotorControllerEnhanced;
 
 /**
  * This class is a thin wrapper around the CANTalon that reduces CAN bus / CPU overhead by skipping duplicate set

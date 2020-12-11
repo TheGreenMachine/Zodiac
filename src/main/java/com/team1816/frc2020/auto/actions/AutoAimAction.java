@@ -1,7 +1,6 @@
 package com.team1816.frc2020.auto.actions;
 
 import com.team1816.frc2020.subsystems.Camera;
-import com.team1816.frc2020.subsystems.LedManager;
 import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.actions.Action;
 

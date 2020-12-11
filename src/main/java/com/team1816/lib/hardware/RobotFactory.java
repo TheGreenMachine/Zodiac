@@ -1,12 +1,17 @@
 package com.team1816.lib.hardware;
 
-import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.frc2020.Constants;
+import com.team1816.lib.hardware.components.CanifierImpl;
+import com.team1816.lib.hardware.components.GhostCanifier;
+import com.team1816.lib.hardware.components.ICanifier;
+import com.team1816.lib.hardware.components.pcm.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
+
+import javax.annotation.Nonnull;
 
 public class RobotFactory {
 
@@ -94,39 +99,50 @@ public class RobotFactory {
         return hardwareId != null && hardwareId > -1;
     }
 
-    public Solenoid getSolenoid(String subsystemName, String name) {
+    @Nonnull
+    public ISolenoid getSolenoid(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
         Integer solenoidId = subsystem.solenoids.get(name);
-        if (isHardwareValid(solenoidId)) {
-            return new Solenoid(config.pcm, solenoidId);
+        if (subsystem.implemented && isHardwareValid(solenoidId)) {
+            return new SolenoidImpl(config.pcm, solenoidId);
         }
         if(subsystem.implemented) {
-            DriverStation.reportError(
-                "Solenoid " + name +
-                    " not defined or invalid in config for subsystem " + subsystem, false);
+            DriverStation.reportWarning(
+                "Solenoid " + name
+                    + " not defined or invalid in config for subsystem " + subsystem
+                    + ", using ghost!", false);
         }
-        return null;
+        return new GhostSolenoid();
     }
 
-    public DoubleSolenoid getDoubleSolenoid(String subsystemName, String name) {
-        YamlConfig.DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName).doublesolenoids.get(name);
-        if (solenoidConfig != null && isHardwareValid(solenoidConfig.forward) && isHardwareValid(solenoidConfig.reverse)) {
-            return new DoubleSolenoid(config.pcm, solenoidConfig.forward, solenoidConfig.reverse);
-        }
-        DriverStation.reportError(
-            "DoubleSolenoid " + name +
-                " not defined or invalid in config for subsystem " + subsystemName, false);
-        return null;
-    }
-
-    public CANifier getCanifier(String subsystemName) {
+    @Nonnull
+    public IDoubleSolenoid getDoubleSolenoid(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
-        if (subsystem.implemented && subsystem.canifier != null) {
-            return new CANifier(subsystem.canifier);
+        YamlConfig.DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName).doublesolenoids.get(name);
+        if (
+            subsystem.implemented
+            && solenoidConfig != null
+            && isHardwareValid(solenoidConfig.forward)
+            && isHardwareValid(solenoidConfig.reverse)
+        ) {
+            return new DoubleSolenoidImpl(config.pcm, solenoidConfig.forward, solenoidConfig.reverse);
         }
-        DriverStation.reportError("CANifier ID not defined for subsystem "
-            + subsystemName + "! CANifier will be NULL!", false);
-        return null;
+        DriverStation.reportWarning(
+            "DoubleSolenoid " + name
+                + " not defined or invalid in config for subsystem " + subsystemName
+                + ", using ghost!", false);
+        return new GhostDoubleSolenoid();
+    }
+
+    @Nonnull
+    public ICanifier getCanifier(String subsystemName) {
+        var subsystem = getSubsystem(subsystemName);
+        if (subsystem.implemented && isHardwareValid(subsystem.canifier)) {
+            return new CanifierImpl(subsystem.canifier);
+        }
+        DriverStation.reportWarning("CANifier ID not defined for subsystem "
+            + subsystemName + ", using ghost!", false);
+        return new GhostCanifier();
     }
 
     public Double getConstant(String name) {

@@ -2,6 +2,7 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifierStatusFrame;
+import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
@@ -14,8 +15,8 @@ public class LedManager extends Subsystem {
     private static LedManager INSTANCE;
 
     // Components
-    private final CANifier canifier;
-    private final CANifier cameraCanifier;
+    private final ICanifier canifier;
+    private final ICanifier cameraCanifier;
 
     // State
     private boolean blinkMode;
@@ -53,7 +54,7 @@ public class LedManager extends Subsystem {
         return INSTANCE;
     }
 
-    private void configureCanifier(CANifier canifier) {
+    private void configureCanifier(ICanifier canifier) {
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_1_General, 255, 10);
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_2_General, 255, 10);
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_3_PwmInputs0, 255, 10);

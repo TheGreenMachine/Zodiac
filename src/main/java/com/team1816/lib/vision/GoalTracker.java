@@ -1,13 +1,13 @@
 package com.team1816.lib.vision;
 
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import com.team1816.frc2020.Constants;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.vision.GoalTrack;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * This is used in the event that multiple goals are detected to judge all goals based on timestamp, stability, and

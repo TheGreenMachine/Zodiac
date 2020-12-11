@@ -1,4 +1,4 @@
-package com.team1816.lib.hardware;
+package com.team1816.lib.hardware.components.motor;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.ParamEnum;
