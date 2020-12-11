@@ -1,6 +1,5 @@
 package com.team1816.frc2020;
 
-import com.team1816.frc2020.subsystems.Turret;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;

@@ -1,12 +1,16 @@
 package com.team1816.lib.hardware;
 
-import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.frc2020.Constants;
+import com.team1816.lib.hardware.components.CanifierImpl;
+import com.team1816.lib.hardware.components.GhostCanifier;
+import com.team1816.lib.hardware.components.ICanifier;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
+
+import javax.annotation.Nonnull;
 
 public class RobotFactory {
 
@@ -119,14 +123,15 @@ public class RobotFactory {
         return null;
     }
 
-    public CANifier getCanifier(String subsystemName) {
+    @Nonnull
+    public ICanifier getCanifier(String subsystemName) {
         var subsystem = getSubsystem(subsystemName);
-        if (subsystem.implemented && subsystem.canifier != null) {
-            return new CANifier(subsystem.canifier);
+        if (subsystem.implemented && isHardwareValid(subsystem.canifier)) {
+            return new CanifierImpl(subsystem.canifier);
         }
         DriverStation.reportError("CANifier ID not defined for subsystem "
-            + subsystemName + "! CANifier will be NULL!", false);
-        return null;
+            + subsystemName + "! Using GhostCanifier!", false);
+        return new GhostCanifier();
     }
 
     public Double getConstant(String name) {

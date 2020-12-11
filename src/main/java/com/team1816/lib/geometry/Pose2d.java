@@ -1,8 +1,6 @@
 package com.team1816.lib.geometry;
 
 
-import com.team1816.lib.geometry.Translation2d;
-
 import com.team254.lib.util.Util;
 
 /**

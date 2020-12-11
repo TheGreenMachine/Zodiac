@@ -6,7 +6,10 @@ import com.team1816.frc2020.auto.actions.ShootAction;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.AutoModeEndedException;
-import com.team1816.lib.auto.actions.*;
+import com.team1816.lib.auto.actions.DriveTrajectory;
+import com.team1816.lib.auto.actions.ParallelAction;
+import com.team1816.lib.auto.actions.SeriesAction;
+import com.team1816.lib.auto.actions.WaitUntilInsideRegion;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team254.lib.geometry.Translation2d;
 
