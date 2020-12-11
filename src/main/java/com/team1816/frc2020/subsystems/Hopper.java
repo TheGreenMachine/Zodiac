@@ -2,8 +2,8 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
-import edu.wpi.first.wpilibj.Solenoid;
 
 public class Hopper extends Subsystem {
     private static final String NAME = "hopper";
@@ -18,7 +18,7 @@ public class Hopper extends Subsystem {
     }
 
     // Components
-    private final Solenoid feederFlap;
+    private final ISolenoid feederFlap;
     private final IMotorControllerEnhanced spindexer;
     private final IMotorControllerEnhanced elevator;
     private final DistanceManager distanceManager = DistanceManager.getInstance();
