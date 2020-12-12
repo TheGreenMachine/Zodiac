@@ -8,9 +8,6 @@ import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
-import edu.wpi.first.networktables.EntryListenerFlags;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,11 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Shooter extends Subsystem implements PidProvider {
     private static final String NAME = "shooter";
     private static Shooter INSTANCE;
-
-    private LedManager ledManager = LedManager.getInstance();
-
-    private NetworkTable networkTable;
-    private double distance;
 
     public static Shooter getInstance() {
         if (INSTANCE == null) {
@@ -36,6 +28,7 @@ public class Shooter extends Subsystem implements PidProvider {
     private final IMotorControllerEnhanced shooterMain;
     private final IMotorControllerEnhanced shooterFollower;
     private final Camera camera = Camera.getInstance();
+    private final LedManager ledManager = LedManager.getInstance();
 
     // State
     private boolean outputsChanged;
