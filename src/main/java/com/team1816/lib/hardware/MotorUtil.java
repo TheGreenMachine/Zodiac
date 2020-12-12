@@ -34,4 +34,14 @@ public class MotorUtil {
             ((TalonSRX) motor).configSupplyCurrentLimit(limitConfig);
         }
     }
+
+    public static double getSupplyCurrent(IMotorControllerEnhanced motor) {
+        // If only CTRE had these methods in the interface...
+        if (motor instanceof TalonFX) {
+            return ((TalonFX) motor).getSupplyCurrent();
+        } else if (motor instanceof TalonSRX) {
+            return ((TalonSRX) motor).getSupplyCurrent();
+        }
+        return 0;
+    }
 }

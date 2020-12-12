@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.DoubleSupplier;
 
-@Deprecated
-public class TalonSRXChecker {
+public class EnhancedMotorChecker {
     public static class CheckerConfig {
         public double mCurrentFloor = 5;
         public double mRPMFloor = 2000;
@@ -28,7 +28,7 @@ public class TalonSRXChecker {
         public static CheckerConfig getForSubsystemMotor(Subsystem subsystem, IMotorControllerEnhanced motor) {
             var name = subsystem.getName();
             var factory = Robot.getFactory();
-            return new TalonSRXChecker.CheckerConfig() {
+            return new EnhancedMotorChecker.CheckerConfig() {
                 {
                     mCurrentFloor = factory.getConstant(name,"currentFloorCheck");
                     mRPMFloor = factory.getConstant(name,"rpmFloorCheck");
@@ -40,58 +40,52 @@ public class TalonSRXChecker {
         }
     }
 
-    public static class TalonSRXConfig {
-        public String mName;
-        public IMotorControllerEnhanced mTalon;
+    public static class NamedMotor {
+        public String name;
+        public IMotorControllerEnhanced motor;
 
-        public TalonSRXConfig(String name, IMotorControllerEnhanced talon) {
-            mName = name;
-            mTalon = talon;
+        public NamedMotor(String name, IMotorControllerEnhanced motor) {
+            this.name = name;
+            this.motor = motor;
         }
     }
 
-    private static class StoredTalonSRXConfiguration {
-        public ControlMode mMode;
-        public double mSetValue;
-    }
-
-    public static boolean checkMotors(Subsystem subsystem, ArrayList<TalonSRXConfig> talonsToCheck,
-                                      CheckerConfig checkerConfig) {
+    public static boolean checkMotors(Subsystem subsystem,
+                                      CheckerConfig checkerConfig,
+                                      NamedMotor... motorsToCheck) {
         boolean failure = false;
         System.out.println("////////////////////////////////////////////////");
-        System.out.println("Checking subsystem " + subsystem.getClass() + " for " + talonsToCheck.size() + " talons.");
+        System.out.println("Checking subsystem " + subsystem.getClass() + " for " + motorsToCheck.length + " motors.");
 
-        ArrayList<Double> currents = new ArrayList<>();
-        ArrayList<Double> rpms = new ArrayList<>();
-        ArrayList<StoredTalonSRXConfiguration> storedConfigurations = new ArrayList<>();
+        List<Double> currents = new ArrayList<>();
+        List<Double> rpms = new ArrayList<>();
+        List<ControlMode> storedControlModes = new ArrayList<>();
 
-        // Record previous configuration for all talons.
-        for (TalonSRXConfig config : talonsToCheck) {
-            if (config.mTalon.getDeviceID() < 0)
+        // Record previous configuration for all motors.
+        for (NamedMotor config : motorsToCheck) {
+            if (config.motor.getDeviceID() < 0)
                 continue;
-            IMotorControllerEnhanced talon = config.mTalon;
+            IMotorControllerEnhanced motor = config.motor;
 
-            StoredTalonSRXConfiguration configuration = new StoredTalonSRXConfiguration();
-            configuration.mMode = talon.getControlMode();
-            storedConfigurations.add(configuration);
+            storedControlModes.add(motor.getControlMode());
 
             // Now set to disabled.
-            talon.set(ControlMode.PercentOutput, 0.0);
+            motor.set(ControlMode.PercentOutput, 0.0);
         }
 
-        for (TalonSRXConfig config : talonsToCheck) {
-            System.out.println("Checking: " + config.mName);
+        for (NamedMotor config : motorsToCheck) {
+            System.out.println("Checking: " + config.name);
 
-            if (config.mTalon.getDeviceID() < 0) {
-                System.out.println("Talon Disabled Checks Skipped!!");
+            if (config.motor.getDeviceID() < 0) {
+                System.out.println("Motor Disabled, Checks Skipped!!");
                 continue;
             }
 
-            config.mTalon.set(ControlMode.PercentOutput, checkerConfig.mRunOutputPercentage);
+            config.motor.set(ControlMode.PercentOutput, checkerConfig.mRunOutputPercentage);
             Timer.delay(checkerConfig.mRunTimeSec);
 
             // Now poll the interesting information.
-            double current = config.mTalon.getOutputCurrent();
+            double current = MotorUtil.getSupplyCurrent(config.motor);
             currents.add(current);
             System.out.print("Current: " + current);
 
@@ -103,18 +97,18 @@ public class TalonSRXChecker {
             }
             System.out.print('\n');
 
-            config.mTalon.set(ControlMode.PercentOutput, 0.0);
+            config.motor.set(ControlMode.PercentOutput, 0.0);
 
             // And perform checks.
             if (current < checkerConfig.mCurrentFloor) {
                 DriverStation.reportError(
-                    config.mName + " has failed current floor check vs " + checkerConfig.mCurrentFloor + "!!!!!!!!!!!!", false);
+                    config.name + " has failed current floor check vs " + checkerConfig.mCurrentFloor + "!!!!!!!!!!!!", false);
                 failure = true;
             }
             if (checkerConfig.mRPMSupplier != null) {
                 if (rpm < checkerConfig.mRPMFloor) {
                     DriverStation.reportError(
-                        config.mName + " has failed rpm floor check vs " + checkerConfig.mRPMFloor + "!!!!!!!!!!!!!", false);
+                        config.name + " has failed rpm floor check vs " + checkerConfig.mRPMFloor + "!!!!!!!!!!!!!", false);
                     failure = true;
                 }
             }
@@ -143,10 +137,10 @@ public class TalonSRXChecker {
         }
 
         // Restore Talon configurations
-        for (int i = 0; i < talonsToCheck.size(); ++i) {
-            IMotorControllerEnhanced talon = talonsToCheck.get(i).mTalon;
-            if (talon.getDeviceID() >= 0) {
-                talon.set(storedConfigurations.get(i).mMode, 0);
+        for (int i = 0; i < motorsToCheck.length; ++i) {
+            IMotorControllerEnhanced motor = motorsToCheck[i].motor;
+            if (motor.getDeviceID() >= 0) {
+                motor.set(storedControlModes.get(i), 0);
             }
         }
 

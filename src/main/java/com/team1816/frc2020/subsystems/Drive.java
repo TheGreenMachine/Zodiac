@@ -13,7 +13,7 @@ import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Kinematics;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.planners.DriveMotionPlanner;
-import com.team1816.lib.hardware.TalonSRXChecker;
+import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
@@ -33,8 +33,6 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.util.ArrayList;
 
 public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider {
     private static Drive mInstance;
@@ -576,18 +574,17 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
 //        Timer.delay(3);
 
-        boolean leftSide = TalonSRXChecker.checkMotors(this,
-            new ArrayList<>() {
-                {
-                    add(new TalonSRXChecker.TalonSRXConfig("left_master", mLeftMaster));
-                }
-            }, getTalonCheckerConfig(mLeftMaster));
-        boolean rightSide = TalonSRXChecker.checkMotors(this,
-            new ArrayList<>() {
-                {
-                    add(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster));
-                }
-            }, getTalonCheckerConfig(mRightMaster));
+        boolean leftSide = EnhancedMotorChecker.checkMotors(
+            this,
+            getTalonCheckerConfig(mLeftMaster),
+            new EnhancedMotorChecker.NamedMotor("left_master", mLeftMaster)
+        );
+        boolean rightSide = EnhancedMotorChecker.checkMotors(
+            this,
+            getTalonCheckerConfig(mRightMaster),
+            new EnhancedMotorChecker.NamedMotor("right_master", mRightMaster)
+        );
+
         boolean checkPigeon = mPigeon == null;
 
         System.out.println(leftSide && rightSide && checkPigeon);
@@ -600,8 +597,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         return leftSide && rightSide;
     }
 
-    private TalonSRXChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
-        return TalonSRXChecker.CheckerConfig.getForSubsystemMotor(this, talon);
+    private EnhancedMotorChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
+        return EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, talon);
     }
 
     @Override

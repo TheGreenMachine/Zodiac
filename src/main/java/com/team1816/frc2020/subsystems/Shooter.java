@@ -4,8 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1816.frc2020.Constants;
+import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.hardware.MotorUtil;
-import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.networktables.EntryListenerFlags;
@@ -14,8 +14,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.util.ArrayList;
 
 public class Shooter extends Subsystem implements PidProvider {
     private static final String NAME = "shooter";
@@ -79,13 +77,6 @@ public class Shooter extends Subsystem implements PidProvider {
 
         shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
-
-        networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
-
-        networkTable.addEntryListener("distance", (table, key, entry, value, flags) -> {
-            distance = value.getDouble();
-        },EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
-
     }
 
     private void configCurrentLimits(int currentLimitAmps) {
@@ -182,18 +173,14 @@ public class Shooter extends Subsystem implements PidProvider {
 
     }
 
-    private TalonSRXChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
-        return TalonSRXChecker.CheckerConfig.getForSubsystemMotor(this, talon);
+    private EnhancedMotorChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
+        return EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, talon);
     }
 
     @Override
     public boolean checkSystem() {
-        boolean checkShooter = TalonSRXChecker.checkMotors(this,
-            new ArrayList<>() {
-                {
-                    add(new TalonSRXChecker.TalonSRXConfig("shooterMain", shooterMain));
-                }
-            }, getTalonCheckerConfig(shooterMain));
+        boolean checkShooter = EnhancedMotorChecker.checkMotors(this, getTalonCheckerConfig(shooterMain),
+            new EnhancedMotorChecker.NamedMotor("shooterMain", shooterMain));
 
         System.out.println(checkShooter);
         if (checkShooter){
