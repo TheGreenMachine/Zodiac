@@ -87,7 +87,7 @@ constants:
     kLooperDt: .030
     kTrackScrubFactor: 1.0
     pathKs: 2
-    verbose: 0 # O or 1
+    verbose: 0 # 0 or 1
     compressorEnabled: 1 # 0 or 1
     badLogEnabled: 0
     logTeleOp: 0

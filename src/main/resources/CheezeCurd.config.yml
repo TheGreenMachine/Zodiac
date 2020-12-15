@@ -1,6 +1,31 @@
-$extends: zodiac_base
 subsystems:
+    drivetrain:
+        implemented: true
+        talons:
+            leftMain: 2
+            leftSlaveOne: -1
+            leftSlaveTwo: -1
+            rightMain: 1
+            rightSlaveOne: -1
+            rightSlaveTwo: -1
+        invertMotor:
+            - 2
+        constants:
+            pigeonId: 13
+            pigeonOnTalon: 0
+            kP: 1.6
+            kI: .001
+            kD: 15
+            kF: 0.5383998
+            iZone: 30
+            encPPR: 4096 # CTRE mag encoder
+            currentFloorCheck: .3
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 750
+            rpmEpsilonCheck: 60
     climber:
+        implemented: false
+    collector:
         implemented: false
     hopper:
         implemented: false
@@ -10,13 +35,25 @@ subsystems:
         implemented: true
         talons:
             turret: 3
+        constants:
+            encPPR: 4096 # CTRE MagEncoder
     ledmanager:
-        implemented: false
-        canifier: 7
+        implemented: true
+        canifier: 12
     camera:
         implemented: false
-        canifier: 19
+pcm: -1
 constants:
+    wheelDiameter: 4.058 # inches
+    trackWidth: 15.75 # inches
+    maxVel: 30 # inches/s
+    maxAccel: 50 # inches/s^2
+    sensorPhase: 0
+    kLooperDt: .030
+    kTrackScrubFactor: 1.0
+    compressorEnabled: 1
+    pathKs: .0125
+    verbose: 0
     logTeleop: 1
     logAuto: 1
     badLogEnabled: 1
