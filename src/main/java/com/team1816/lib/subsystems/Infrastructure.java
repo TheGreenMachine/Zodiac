@@ -1,11 +1,9 @@
 package com.team1816.lib.subsystems;
 
-import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.subsystems.Superstructure;
 import com.team1816.lib.hardware.components.pcm.ICompressor;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
@@ -23,9 +21,7 @@ public class Infrastructure extends Subsystem {
 
     private Infrastructure() {
         super("Infrastructure");
-        if (Constants.kPCMId >= 0) {
-            mCompressor = factory.getCompressor();
-        }
+        mCompressor = factory.getCompressor();
     }
 
     public static Infrastructure getInstance() {
