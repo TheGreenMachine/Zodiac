@@ -86,7 +86,7 @@ public class YamlConfig {
                 result.implemented = active.implemented;
             }
             else
-                {
+            {
                 result.implemented = base.implemented;
             }
             mergeMap(result.talons, active.talons, base.talons);
