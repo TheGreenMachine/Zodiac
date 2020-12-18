@@ -101,7 +101,7 @@ public class RobotFactory {
     public ISolenoid getSolenoid(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
         Integer solenoidId = subsystem.solenoids.get(name);
-        if (subsystem.implemented && isHardwareValid(solenoidId)) {
+        if (subsystem.implemented && isHardwareValid(solenoidId) && isPcmEnabled()) {
             return new SolenoidImpl(config.pcm, solenoidId);
         }
         if(subsystem.implemented) {
@@ -119,6 +119,7 @@ public class RobotFactory {
             && solenoidConfig != null
             && isHardwareValid(solenoidConfig.forward)
             && isHardwareValid(solenoidConfig.reverse)
+            && isPcmEnabled()
         ) {
             return new DoubleSolenoidImpl(config.pcm, solenoidConfig.forward, solenoidConfig.reverse);
         }
@@ -134,6 +135,14 @@ public class RobotFactory {
         }
         reportGhostWarning("CANifier", subsystemName, "canifier");
         return new GhostCanifier();
+    }
+
+    public ICompressor getCompressor() {
+        if (isPcmEnabled()) {
+            return new CompressorImpl(getPcmId());
+        }
+        reportGhostWarning("Compressor", "ROOT", "on PCM ID " + getPcmId());
+        return new GhostCompressor();
     }
 
     public Double getConstant(String name) {
@@ -166,6 +175,10 @@ public class RobotFactory {
     public int getPcmId() {
         if(config.pcm == null) return -1;
         return config.pcm;
+    }
+
+    public boolean isPcmEnabled() {
+        return getPcmId() > -1;
     }
 
     public YamlConfig.SubsystemConfig getSubsystem(String subsystemName) {

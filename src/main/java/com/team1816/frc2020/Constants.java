@@ -10,7 +10,6 @@ public class Constants {
     public static final double kDriveWheelDiameterInches = factory.getConstant("wheelDiameter");
 
     public static double kTrackScrubFactor = factory.getConstant("kTrackScrubFactor");
-    public static int kPCMId = factory.getPcmId();
     public static final int kCANTimeoutMs = 10; // use for important on the fly updates
     public static final int kLongCANTimeoutMs = 100; // use for constructors
 
