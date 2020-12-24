@@ -24,6 +24,14 @@ jobs:
             -   id: tests
                 name: Run JUnit tests
                 run: ./gradlew test
+                continue-on-error: true
+            -   name: JUnit Report
+                uses: mikepenz/action-junit-report@v1.1.1
+                with:
+                    report_paths: 'build/test-results/test/TEST-*.xml'
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
+                    check_name: 'Unit Tests (JUnit)'
+
     spotless_check:
         name: Style (Spotless)
         runs-on: ubuntu-latest
