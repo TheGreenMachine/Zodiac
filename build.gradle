@@ -3,6 +3,7 @@ plugins {
     id "idea"
     id "eclipse"
     id "edu.wpi.first.GradleRIO" version "2021.1.2"
+    id "com.diffplug.spotless" version "5.8.2"
 }
 
 def ROBOT_MAIN_CLASS = "com.team1816.frc2020.Main"
@@ -69,6 +70,17 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:3.6.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest:2.1'
+}
+
+spotless {
+    java {
+        target 'src/*/java/com/team1816/**/*.java'
+        importOrder()
+        removeUnusedImports()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 test {

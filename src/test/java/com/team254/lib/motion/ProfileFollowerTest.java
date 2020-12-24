@@ -95,6 +95,9 @@ public class ProfileFollowerTest {
 
     @Test
     public void testStationaryToStationaryFeedbackFast() {
+        // TODO: Hmm... why does this test fail? All other tests in this class pass.
+        // Must be ScaledDynamics as it's the only difference from the other tests.
+        // Final State is very close position wise but still has a high velocity (should be close to 0)
         MotionProfileConstraints constraints = new MotionProfileConstraints(10.0, 10.0);
         MotionProfileGoal goal = new MotionProfileGoal(100.0, 0.0, CompletionBehavior.OVERSHOOT, 1.0, 1.0);
         MotionState start_state = new MotionState(0.0, 0.0, 0.0, 0.0);
