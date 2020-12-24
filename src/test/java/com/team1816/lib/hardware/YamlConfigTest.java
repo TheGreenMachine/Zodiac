@@ -1,11 +1,16 @@
 package com.team1816.lib.hardware;
 
+import com.team1816.lib.hardware.YamlConfig.SubsystemConfig;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class YamlConfigTest {
 
@@ -14,9 +19,9 @@ public class YamlConfigTest {
         InputStream baseConfigFile = getClass().getClassLoader().getResourceAsStream("test_base.config.yml");
         InputStream activeConfigFile = getClass().getClassLoader().getResourceAsStream("test_active.config.yml");
 
-        YamlConfig.SubsystemConfig base = YamlConfig.loadRaw(baseConfigFile).subsystems.get("turret");
-        YamlConfig.SubsystemConfig active = YamlConfig.loadRaw(activeConfigFile).subsystems.get("turret");
-        YamlConfig.SubsystemConfig result = YamlConfig.SubsystemConfig.merge(active, base);
+        SubsystemConfig base = YamlConfig.loadRaw(baseConfigFile).subsystems.get("turret");
+        SubsystemConfig active = YamlConfig.loadRaw(activeConfigFile).subsystems.get("turret");
+        SubsystemConfig result = SubsystemConfig.merge(active, base);
         System.out.println(result);
 
         assertEquals("Base constant kP == 2.83", 2.83, result.constants.get("kP"), 0);
@@ -46,6 +51,62 @@ public class YamlConfigTest {
         YamlConfig result = YamlConfig.merge(active, base);
 
         verifyMergedConfig(result);
+    }
+
+    @Test
+    public void merged_implementedInherited_true() {
+        SubsystemConfig base = new SubsystemConfig();
+        base.implemented = true;
+
+        SubsystemConfig active = new SubsystemConfig();
+        active.implemented = null;
+
+        SubsystemConfig merged = SubsystemConfig.merge(active, base);
+        assertTrue("base == true", base.implemented);
+        assertNull("active == null", active.implemented);
+        assertTrue("merged == true", merged.implemented);
+    }
+
+    @Test
+    public void merged_implementedInherited_false() {
+        SubsystemConfig base = new SubsystemConfig();
+        base.implemented = false;
+
+        SubsystemConfig active = new SubsystemConfig();
+        active.implemented = null;
+
+        SubsystemConfig merged = SubsystemConfig.merge(active, base);
+        assertFalse("base == false", base.implemented);
+        assertNull("active == null", active.implemented);
+        assertFalse("merged == false", merged.implemented);
+    }
+
+    @Test
+    public void merged_implementedOverridden_true() {
+        SubsystemConfig base = new SubsystemConfig();
+        base.implemented = false;
+
+        SubsystemConfig active = new SubsystemConfig();
+        active.implemented = true;
+
+        SubsystemConfig merged = SubsystemConfig.merge(active, base);
+        assertFalse("base == false", base.implemented);
+        assertTrue("active == true", active.implemented);
+        assertTrue("merged == true", merged.implemented);
+    }
+
+    @Test
+    public void merged_implementedOverridden_false() {
+        SubsystemConfig base = new SubsystemConfig();
+        base.implemented = true;
+
+        SubsystemConfig active = new SubsystemConfig();
+        active.implemented = false;
+
+        SubsystemConfig merged = SubsystemConfig.merge(active, base);
+        assertTrue("base == true", base.implemented);
+        assertFalse("active == false", active.implemented);
+        assertFalse("merged == false", merged.implemented);
     }
 
     @Test
