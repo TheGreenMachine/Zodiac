@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
  * Action to wait for a given amount of time To use this Action, call runAction(new WaitAction(your_time))
  */
 public class WaitAction implements Action {
+
     private final double mTimeToWait;
     private double mStartTime;
 

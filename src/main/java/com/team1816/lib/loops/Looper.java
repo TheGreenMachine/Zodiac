@@ -5,7 +5,6 @@ import com.team254.lib.util.CrashTrackingRunnable;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +13,7 @@ import java.util.List;
  * powers up and stopped after the match.
  */
 public class Looper implements ILooper {
+
     public final double kPeriod = Constants.kLooperDt;
 
     private boolean mRunning;
@@ -92,7 +92,7 @@ public class Looper implements ILooper {
     }
 
     public double getLastLoop() {
-        if(!mRunning) return 0;
+        if (!mRunning) return 0;
         return mDT * 1000; // Convert to ms
     }
 }

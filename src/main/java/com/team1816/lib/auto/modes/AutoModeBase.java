@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
  * routines that do actions).
  */
 public abstract class AutoModeBase {
+
     protected final double mUpdateRate = 1.0 / 50.0;
     protected boolean mActive = false;
     protected boolean mIsInterrupted = false;
@@ -22,7 +23,10 @@ public abstract class AutoModeBase {
         try {
             routine();
         } catch (AutoModeEndedException e) {
-            DriverStation.reportError("AUTO MODE DONE!!!! ENDED EARLY!!!!", false);
+            DriverStation.reportError(
+                "AUTO MODE DONE!!!! ENDED EARLY!!!!",
+                false
+            );
             return;
         }
 
@@ -93,7 +97,6 @@ public abstract class AutoModeBase {
         }
 
         action.done();
-
     }
 
     public boolean getIsInterrupted() {

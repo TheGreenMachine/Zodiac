@@ -6,6 +6,7 @@ import com.team1816.lib.controlboard.IDriveControlBoard;
 import com.team1816.lib.controlboard.LogitechController;
 
 public class GamepadDriveControlBoard implements IDriveControlBoard {
+
     private static GamepadDriveControlBoard mInstance = null;
 
     public static GamepadDriveControlBoard getInstance() {
@@ -24,12 +25,18 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public double getThrottle() {
-        return mController.getJoystick(LogitechController.Side.LEFT, LogitechController.Axis.Y);
+        return mController.getJoystick(
+            LogitechController.Side.LEFT,
+            LogitechController.Axis.Y
+        );
     }
 
     @Override
     public double getTurn() {
-        return mController.getJoystick(LogitechController.Side.RIGHT, LogitechController.Axis.X);
+        return mController.getJoystick(
+            LogitechController.Side.RIGHT,
+            LogitechController.Axis.X
+        );
     }
 
     @Override

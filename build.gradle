@@ -77,7 +77,11 @@ spotless {
         target 'src/*/java/com/team1816/**/*.java'
         importOrder()
         removeUnusedImports()
-        indentWithSpaces(4)
+        prettier(['prettier': '2.2.1', 'prettier-plugin-java': '1.0.1'])
+            .config([
+                'parser': 'java',
+                'tabWidth': 4
+            ])
         trimTrailingWhitespace()
         endWithNewline()
     }

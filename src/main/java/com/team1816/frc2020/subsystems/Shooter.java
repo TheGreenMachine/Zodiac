@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Shooter extends Subsystem implements PidProvider {
+
     private static final String NAME = "shooter";
     private static Shooter INSTANCE;
 
@@ -41,19 +42,27 @@ public class Shooter extends Subsystem implements PidProvider {
     private final double kD;
     private final double kF;
     public static final int MAX_VELOCITY = 11_800; // Far
-    public static final int NEAR_VELOCITY = 11_100;  // Initiation line
+    public static final int NEAR_VELOCITY = 11_100; // Initiation line
     public static final int MID_VELOCITY = 9_900; // Trench this also worked from initiation
     public static final int MID_FAR_VELOCITY = 11_200;
-    public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(NAME, "velocityThreshold", 3000);
+    public static final int VELOCITY_THRESHOLD = (int) factory.getConstant(
+        NAME,
+        "velocityThreshold",
+        3000
+    );
 
     private SendableChooser<Integer> velocityChooser = new SendableChooser<>();
     private DistanceManager distanceManager = DistanceManager.getInstance();
 
     private Shooter() {
         super(NAME);
-
         this.shooterMain = factory.getMotor(NAME, "shooterMain");
-        this.shooterFollower = (IMotorControllerEnhanced) factory.getMotor(NAME, "shooterFollower", shooterMain);
+        this.shooterFollower =
+            (IMotorControllerEnhanced) factory.getMotor(
+                NAME,
+                "shooterFollower",
+                shooterMain
+            );
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
@@ -63,7 +72,7 @@ public class Shooter extends Subsystem implements PidProvider {
         shooterMain.setNeutralMode(NeutralMode.Coast);
         shooterFollower.setNeutralMode(NeutralMode.Coast);
 
-        configCurrentLimits(40 /* amps */);
+        configCurrentLimits(40/* amps */);
 
         shooterMain.setInverted(false);
         shooterFollower.setInverted(true);
@@ -74,7 +83,13 @@ public class Shooter extends Subsystem implements PidProvider {
 
     private void configCurrentLimits(int currentLimitAmps) {
         MotorUtil.configCurrentLimit(shooterMain, true, currentLimitAmps, 0, 0);
-        MotorUtil.configCurrentLimit(shooterFollower, true, currentLimitAmps, 0, 0);
+        MotorUtil.configCurrentLimit(
+            shooterFollower,
+            true,
+            currentLimitAmps,
+            0,
+            0
+        );
     }
 
     @Override
@@ -132,7 +147,8 @@ public class Shooter extends Subsystem implements PidProvider {
 
     @Override
     public void readPeriodicInputs() {
-        mPeriodicIO.actualShooterVelocity = shooterMain.getSelectedSensorVelocity(0);
+        mPeriodicIO.actualShooterVelocity =
+            shooterMain.getSelectedSensorVelocity(0);
         mPeriodicIO.closedLoopError = shooterMain.getClosedLoopError(0);
     }
 
@@ -142,7 +158,10 @@ public class Shooter extends Subsystem implements PidProvider {
             if (mPeriodicIO.velocityDemand == 0) {
                 this.shooterMain.set(ControlMode.PercentOutput, 0); // Inertia coast to 0
             } else {
-                this.shooterMain.set(ControlMode.Velocity, mPeriodicIO.velocityDemand);
+                this.shooterMain.set(
+                        ControlMode.Velocity,
+                        mPeriodicIO.velocityDemand
+                    );
             }
             outputsChanged = false;
         }
@@ -150,8 +169,16 @@ public class Shooter extends Subsystem implements PidProvider {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addBooleanProperty("Shooter/IsAtSpeed", this::isVelocityNearTarget, null);
-        builder.addDoubleProperty("Shooter/ShooterVelocity", this::getActualVelocity, this::setVelocity);
+        builder.addBooleanProperty(
+            "Shooter/IsAtSpeed",
+            this::isVelocityNearTarget,
+            null
+        );
+        builder.addDoubleProperty(
+            "Shooter/ShooterVelocity",
+            this::getActualVelocity,
+            this::setVelocity
+        );
 
         velocityChooser.setDefaultOption("NEAR_VELOCITY", NEAR_VELOCITY);
         velocityChooser.addOption("MID_VELOCITY", MID_VELOCITY);
@@ -162,30 +189,36 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     @Override
-    public void stop() {
+    public void stop() {}
 
-    }
-
-    private EnhancedMotorChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
-        return EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, talon);
+    private EnhancedMotorChecker.CheckerConfig getTalonCheckerConfig(
+        IMotorControllerEnhanced talon
+    ) {
+        return EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(
+            this,
+            talon
+        );
     }
 
     @Override
     public boolean checkSystem() {
-        boolean checkShooter = EnhancedMotorChecker.checkMotors(this, getTalonCheckerConfig(shooterMain),
-            new EnhancedMotorChecker.NamedMotor("shooterMain", shooterMain));
+        boolean checkShooter = EnhancedMotorChecker.checkMotors(
+            this,
+            getTalonCheckerConfig(shooterMain),
+            new EnhancedMotorChecker.NamedMotor("shooterMain", shooterMain)
+        );
 
         System.out.println(checkShooter);
-        if (checkShooter){
+        if (checkShooter) {
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
-        }
-        else {
+        } else {
             ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
         }
         return checkShooter;
     }
 
     public static class PeriodicIO {
+
         //INPUTS
         public double actualShooterVelocity;
         public double closedLoopError;

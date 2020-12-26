@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ActionManager {
+
     private List<ControlUtils.ButtonAction> actions;
 
     public ActionManager(ControlUtils.ButtonAction... actions) {

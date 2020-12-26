@@ -3,6 +3,7 @@ package com.team1816.lib.hardware.components.pcm;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class GhostSolenoid implements ISolenoid {
+
     // State
     private boolean on;
 
@@ -30,7 +31,5 @@ public class GhostSolenoid implements ISolenoid {
     }
 
     @Override
-    public void close() throws Exception {
-
-    }
+    public void close() throws Exception {}
 }

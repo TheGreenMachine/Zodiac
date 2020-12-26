@@ -1,22 +1,31 @@
 package com.team1816.frc2020.controlboard;
 
 import com.team254.lib.util.LatchedBoolean;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
 public class ControlUtils {
-    public static PressAction createAction(BooleanSupplier input, Runnable action) {
+
+    public static PressAction createAction(
+        BooleanSupplier input,
+        Runnable action
+    ) {
         return new PressAction(input, action);
     }
 
-    public static HoldAction createHoldAction(BooleanSupplier input, Consumer<Boolean> action) {
+    public static HoldAction createHoldAction(
+        BooleanSupplier input,
+        Consumer<Boolean> action
+    ) {
         return new HoldAction(input, action);
     }
 
-    public static ScalarAction createScalar(DoubleSupplier input, DoubleConsumer output) {
+    public static ScalarAction createScalar(
+        DoubleSupplier input,
+        DoubleConsumer output
+    ) {
         return new ScalarAction(input, output);
     }
 
@@ -25,6 +34,7 @@ public class ControlUtils {
     }
 
     public static class PressAction implements ButtonAction {
+
         private LatchedBoolean pressedState = new LatchedBoolean();
         private LatchedBoolean releasedState = new LatchedBoolean();
         private BooleanSupplier input;
@@ -43,17 +53,15 @@ public class ControlUtils {
 
             if (inputJustPressed) {
                 action.run();
-
             }
             if (inputJustReleased) {
                 pressedState.update(false);
             }
         }
-
-
     }
 
     public static class HoldAction implements ButtonAction {
+
         private BooleanSupplier input;
         private Consumer<Boolean> action;
         private LatchedBoolean pressedState = new LatchedBoolean();
@@ -76,10 +84,10 @@ public class ControlUtils {
                 action.accept(false);
             }
         }
-
     }
 
     public static class ScalarAction implements ButtonAction {
+
         private DoubleSupplier input;
         private DoubleConsumer action;
 

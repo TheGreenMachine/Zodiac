@@ -1,12 +1,25 @@
 package com.team1816.frc2020.states;
 
 public class LEDState {
+
     public static final LEDState kOff = new LEDState(0.0, 0.0, 0.0);
 
-    public static final LEDState kIntakeIntakingDisc = new LEDState(0.0, 1.0, 0.0);
-    public static final LEDState kIntakeIntakingCargo = new LEDState(1.0, 1.0, 1.0);
+    public static final LEDState kIntakeIntakingDisc = new LEDState(
+        0.0,
+        1.0,
+        0.0
+    );
+    public static final LEDState kIntakeIntakingCargo = new LEDState(
+        1.0,
+        1.0,
+        1.0
+    );
 
-    public static final LEDState kIntakeExhuasting = new LEDState(1.0, 0.0, 0.0);
+    public static final LEDState kIntakeExhuasting = new LEDState(
+        1.0,
+        0.0,
+        0.0
+    );
 
     public static final LEDState kRobotZeroed = new LEDState(0.0, 1.0, 0.0);
     public static final LEDState kFault = new LEDState(0.0, 0.0, 1.0);

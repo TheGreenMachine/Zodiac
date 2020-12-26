@@ -9,44 +9,36 @@ import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.sensors.CANCoder;
 
 public class GhostTalonSRX implements IMotorControllerEnhanced {
+
     private SensorCollection sensorCollection = new SensorCollection(
         new BaseTalon(0, "Talon SRX") {}
     );
 
     @Override
-    public void set(ControlMode Mode, double demand) {
-
-    }
+    public void set(ControlMode Mode, double demand) {}
 
     @Override
-    public void set(ControlMode Mode, double demand0, double demand1) {
-
-    }
+    public void set(ControlMode Mode, double demand0, double demand1) {}
 
     @Override
-    public void set(ControlMode Mode, double demand0, DemandType demand1Type, double demand1) {
-
-    }
-
-    @Override
-    public void neutralOutput() {
-
-    }
+    public void set(
+        ControlMode Mode,
+        double demand0,
+        DemandType demand1Type,
+        double demand1
+    ) {}
 
     @Override
-    public void setNeutralMode(NeutralMode neutralMode) {
-
-    }
+    public void neutralOutput() {}
 
     @Override
-    public void setSensorPhase(boolean PhaseSensor) {
-
-    }
+    public void setNeutralMode(NeutralMode neutralMode) {}
 
     @Override
-    public void setInverted(boolean invert) {
+    public void setSensorPhase(boolean PhaseSensor) {}
 
-    }
+    @Override
+    public void setInverted(boolean invert) {}
 
     @Override
     public boolean getInverted() {
@@ -54,12 +46,18 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configOpenloopRamp(double secondsFromNeutralToFull, int timeoutMs) {
+    public ErrorCode configOpenloopRamp(
+        double secondsFromNeutralToFull,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configClosedloopRamp(double secondsFromNeutralToFull, int timeoutMs) {
+    public ErrorCode configClosedloopRamp(
+        double secondsFromNeutralToFull,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
@@ -74,33 +72,47 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configNominalOutputForward(double percentOut, int timeoutMs) {
+    public ErrorCode configNominalOutputForward(
+        double percentOut,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configNominalOutputReverse(double percentOut, int timeoutMs) {
+    public ErrorCode configNominalOutputReverse(
+        double percentOut,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configNeutralDeadband(double percentDeadband, int timeoutMs) {
+    public ErrorCode configNeutralDeadband(
+        double percentDeadband,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configVoltageCompSaturation(double voltage, int timeoutMs) {
+    public ErrorCode configVoltageCompSaturation(
+        double voltage,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configVoltageMeasurementFilter(int filterWindowSamples, int timeoutMs) {
+    public ErrorCode configVoltageMeasurementFilter(
+        int filterWindowSamples,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public void enableVoltageCompensation(boolean enable) {
-    }
+    public void enableVoltageCompensation(boolean enable) {}
 
     @Override
     public double getBusVoltage() {
@@ -128,27 +140,48 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configSelectedFeedbackSensor(RemoteFeedbackDevice feedbackDevice, int pidIdx, int timeoutMs) {
+    public ErrorCode configSelectedFeedbackSensor(
+        RemoteFeedbackDevice feedbackDevice,
+        int pidIdx,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configSelectedFeedbackCoefficient(double coefficient, int pidIdx, int timeoutMs) {
+    public ErrorCode configSelectedFeedbackCoefficient(
+        double coefficient,
+        int pidIdx,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configRemoteFeedbackFilter(int deviceID, RemoteSensorSource remoteSensorSource, int remoteOrdinal, int timeoutMs) {
+    public ErrorCode configRemoteFeedbackFilter(
+        int deviceID,
+        RemoteSensorSource remoteSensorSource,
+        int remoteOrdinal,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configRemoteFeedbackFilter(CANCoder canCoderRef, int remoteOrdinal, int timeoutMs) {
+    public ErrorCode configRemoteFeedbackFilter(
+        CANCoder canCoderRef,
+        int remoteOrdinal,
+        int timeoutMs
+    ) {
         return null;
     }
 
     @Override
-    public ErrorCode configSensorTerm(SensorTerm sensorTerm, FeedbackDevice feedbackDevice, int timeoutMs) {
+    public ErrorCode configSensorTerm(
+        SensorTerm sensorTerm,
+        FeedbackDevice feedbackDevice,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
@@ -163,7 +196,11 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode setSelectedSensorPosition(int sensorPos, int pidIdx, int timeoutMs) {
+    public ErrorCode setSelectedSensorPosition(
+        int sensorPos,
+        int pidIdx,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
@@ -173,7 +210,11 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode setStatusFramePeriod(StatusFrame frame, int periodMs, int timeoutMs) {
+    public ErrorCode setStatusFramePeriod(
+        StatusFrame frame,
+        int periodMs,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
@@ -183,44 +224,62 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configForwardLimitSwitchSource(RemoteLimitSwitchSource type, LimitSwitchNormal normalOpenOrClose, int deviceID, int timeoutMs) {
+    public ErrorCode configForwardLimitSwitchSource(
+        RemoteLimitSwitchSource type,
+        LimitSwitchNormal normalOpenOrClose,
+        int deviceID,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configReverseLimitSwitchSource(RemoteLimitSwitchSource type, LimitSwitchNormal normalOpenOrClose, int deviceID, int timeoutMs) {
+    public ErrorCode configReverseLimitSwitchSource(
+        RemoteLimitSwitchSource type,
+        LimitSwitchNormal normalOpenOrClose,
+        int deviceID,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public void overrideLimitSwitchesEnable(boolean enable) {
-
-    }
+    public void overrideLimitSwitchesEnable(boolean enable) {}
 
     @Override
-    public ErrorCode configForwardSoftLimitThreshold(int forwardSensorLimit, int timeoutMs) {
+    public ErrorCode configForwardSoftLimitThreshold(
+        int forwardSensorLimit,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configReverseSoftLimitThreshold(int reverseSensorLimit, int timeoutMs) {
+    public ErrorCode configReverseSoftLimitThreshold(
+        int reverseSensorLimit,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configForwardSoftLimitEnable(boolean enable, int timeoutMs) {
+    public ErrorCode configForwardSoftLimitEnable(
+        boolean enable,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configReverseSoftLimitEnable(boolean enable, int timeoutMs) {
+    public ErrorCode configReverseSoftLimitEnable(
+        boolean enable,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public void overrideSoftLimitsEnable(boolean enable) {
-
-    }
+    public void overrideSoftLimitsEnable(boolean enable) {}
 
     @Override
     public ErrorCode config_kP(int slotIdx, double value, int timeoutMs) {
@@ -243,27 +302,47 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode config_IntegralZone(int slotIdx, int izone, int timeoutMs) {
+    public ErrorCode config_IntegralZone(
+        int slotIdx,
+        int izone,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configAllowableClosedloopError(int slotIdx, int allowableCloseLoopError, int timeoutMs) {
+    public ErrorCode configAllowableClosedloopError(
+        int slotIdx,
+        int allowableCloseLoopError,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configMaxIntegralAccumulator(int slotIdx, double iaccum, int timeoutMs) {
+    public ErrorCode configMaxIntegralAccumulator(
+        int slotIdx,
+        double iaccum,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configClosedLoopPeakOutput(int slotIdx, double percentOut, int timeoutMs) {
+    public ErrorCode configClosedLoopPeakOutput(
+        int slotIdx,
+        double percentOut,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configClosedLoopPeriod(int slotIdx, int loopTimeMs, int timeoutMs) {
+    public ErrorCode configClosedLoopPeriod(
+        int slotIdx,
+        int loopTimeMs,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
@@ -273,7 +352,11 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode setIntegralAccumulator(double iaccum, int pidIdx, int timeoutMs) {
+    public ErrorCode setIntegralAccumulator(
+        double iaccum,
+        int pidIdx,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
@@ -293,9 +376,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public void selectProfileSlot(int slotIdx, int pidIdx) {
-
-    }
+    public void selectProfileSlot(int slotIdx, int pidIdx) {}
 
     @Override
     public double getClosedLoopTarget(int pidIdx) {
@@ -318,22 +399,34 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configMotionCruiseVelocity(int sensorUnitsPer100ms, int timeoutMs) {
+    public ErrorCode configMotionCruiseVelocity(
+        int sensorUnitsPer100ms,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configMotionAcceleration(int sensorUnitsPer100msPerSec, int timeoutMs) {
+    public ErrorCode configMotionAcceleration(
+        int sensorUnitsPer100msPerSec,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configMotionSCurveStrength(int curveStrength, int timeoutMs) {
-      return ErrorCode.OK;
+    public ErrorCode configMotionSCurveStrength(
+        int curveStrength,
+        int timeoutMs
+    ) {
+        return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configMotionProfileTrajectoryPeriod(int baseTrajDurationMs, int timeoutMs) {
+    public ErrorCode configMotionProfileTrajectoryPeriod(
+        int baseTrajDurationMs,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
@@ -358,9 +451,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public void processMotionProfileBuffer() {
-
-    }
+    public void processMotionProfileBuffer() {}
 
     @Override
     public ErrorCode getMotionProfileStatus(MotionProfileStatus statusToFill) {
@@ -408,7 +499,11 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configSetCustomParam(int newValue, int paramIndex, int timeoutMs) {
+    public ErrorCode configSetCustomParam(
+        int newValue,
+        int paramIndex,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
@@ -418,22 +513,42 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configSetParameter(ParamEnum param, double value, int subValue, int ordinal, int timeoutMs) {
+    public ErrorCode configSetParameter(
+        ParamEnum param,
+        double value,
+        int subValue,
+        int ordinal,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configSetParameter(int param, double value, int subValue, int ordinal, int timeoutMs) {
+    public ErrorCode configSetParameter(
+        int param,
+        double value,
+        int subValue,
+        int ordinal,
+        int timeoutMs
+    ) {
         return null;
     }
 
     @Override
-    public double configGetParameter(ParamEnum paramEnum, int ordinal, int timeoutMs) {
+    public double configGetParameter(
+        ParamEnum paramEnum,
+        int ordinal,
+        int timeoutMs
+    ) {
         return 0;
     }
 
     @Override
-    public double configGetParameter(int paramEnum, int ordinal, int timeoutMs) {
+    public double configGetParameter(
+        int paramEnum,
+        int ordinal,
+        int timeoutMs
+    ) {
         return 0;
     }
 
@@ -453,22 +568,26 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public void follow(IMotorController masterToFollow) {
-
-    }
+    public void follow(IMotorController masterToFollow) {}
 
     @Override
-    public void valueUpdated() {
-
-    }
+    public void valueUpdated() {}
 
     @Override
-    public ErrorCode configSelectedFeedbackSensor(FeedbackDevice feedbackDevice, int pidIdx, int timeoutMs) {
+    public ErrorCode configSelectedFeedbackSensor(
+        FeedbackDevice feedbackDevice,
+        int pidIdx,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode setStatusFramePeriod(StatusFrameEnhanced frame, int periodMs, int timeoutMs) {
+    public ErrorCode setStatusFramePeriod(
+        StatusFrameEnhanced frame,
+        int periodMs,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
@@ -478,27 +597,40 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configVelocityMeasurementPeriod(VelocityMeasPeriod period, int timeoutMs) {
+    public ErrorCode configVelocityMeasurementPeriod(
+        VelocityMeasPeriod period,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configVelocityMeasurementWindow(int windowSize, int timeoutMs) {
+    public ErrorCode configVelocityMeasurementWindow(
+        int windowSize,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configForwardLimitSwitchSource(LimitSwitchSource type, LimitSwitchNormal normalOpenOrClose, int timeoutMs) {
+    public ErrorCode configForwardLimitSwitchSource(
+        LimitSwitchSource type,
+        LimitSwitchNormal normalOpenOrClose,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configReverseLimitSwitchSource(LimitSwitchSource type, LimitSwitchNormal normalOpenOrClose, int timeoutMs) {
+    public ErrorCode configReverseLimitSwitchSource(
+        LimitSwitchSource type,
+        LimitSwitchNormal normalOpenOrClose,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     public SensorCollection getSensorCollection() {
         return sensorCollection;
     }
-
 }

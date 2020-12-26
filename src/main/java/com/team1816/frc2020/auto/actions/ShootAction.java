@@ -5,6 +5,7 @@ import com.team1816.lib.auto.actions.Action;
 import com.team1816.lib.loops.AsyncTimer;
 
 public class ShootAction implements Action {
+
     private Shooter shooter;
     private Hopper hopper;
     private LedManager ledManager;
@@ -16,7 +17,12 @@ public class ShootAction implements Action {
 
     public ShootAction(double duration, boolean unjam, double velocity) {
         this(duration, unjam);
-        this.shooterTimer = new AsyncTimer(duration, () -> shooter.setVelocity(velocity), shooter::stopShooter);
+        this.shooterTimer =
+            new AsyncTimer(
+                duration,
+                () -> shooter.setVelocity(velocity),
+                shooter::stopShooter
+            );
     }
 
     public ShootAction(double duration, boolean unjam) {
@@ -25,7 +31,12 @@ public class ShootAction implements Action {
         this.turret = Turret.getInstance();
         this.ledManager = LedManager.getInstance();
         this.collector = Collector.getInstance();
-        this.shooterTimer = new AsyncTimer(duration, shooter::startShooter, shooter::stopShooter);
+        this.shooterTimer =
+            new AsyncTimer(
+                duration,
+                shooter::startShooter,
+                shooter::stopShooter
+            );
         this.unjam = unjam;
     }
 

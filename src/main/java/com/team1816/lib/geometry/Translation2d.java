@@ -1,10 +1,10 @@
 package com.team1816.lib.geometry;
 
 import com.team254.lib.util.Util;
-
 import java.text.DecimalFormat;
 
 public class Translation2d implements ITranslation2d<Translation2d> {
+
     protected static final Translation2d kIdentity = new Translation2d();
 
     public static Translation2d identity() {
@@ -72,7 +72,10 @@ public class Translation2d implements ITranslation2d<Translation2d> {
      * @return This translation rotated by rotation.
      */
     public Translation2d rotateBy(final Rotation2d rotation) {
-        return new Translation2d(x_ * rotation.cos() - y_ * rotation.sin(), x_ * rotation.sin() + y_ * rotation.cos());
+        return new Translation2d(
+            x_ * rotation.cos() - y_ * rotation.sin(),
+            x_ * rotation.sin() + y_ * rotation.cos()
+        );
     }
 
     public Rotation2d direction() {
@@ -99,7 +102,10 @@ public class Translation2d implements ITranslation2d<Translation2d> {
     }
 
     public Translation2d extrapolate(final Translation2d other, double x) {
-        return new Translation2d(x * (other.x_ - x_) + x_, x * (other.y_ - y_) + y_);
+        return new Translation2d(
+            x * (other.x_ - x_) + x_,
+            x * (other.y_ - y_) + y_
+        );
     }
 
     public Translation2d scale(double s) {
@@ -107,7 +113,10 @@ public class Translation2d implements ITranslation2d<Translation2d> {
     }
 
     public boolean epsilonEquals(final Translation2d other, double epsilon) {
-        return Util.epsilonEquals(x(), other.x(), epsilon) && Util.epsilonEquals(y(), other.y(), epsilon);
+        return (
+            Util.epsilonEquals(x(), other.x(), epsilon) &&
+            Util.epsilonEquals(y(), other.y(), epsilon)
+        );
     }
 
     @Override
@@ -126,7 +135,10 @@ public class Translation2d implements ITranslation2d<Translation2d> {
         return a.x_ * b.x_ + a.y_ * b.y_;
     }
 
-    public static Rotation2d getAngle(final Translation2d a, final Translation2d b) {
+    public static Rotation2d getAngle(
+        final Translation2d a,
+        final Translation2d b
+    ) {
         double cos_angle = dot(a, b) / (a.norm() * b.norm());
         if (Double.isNaN(cos_angle)) {
             return new Rotation2d();
@@ -157,4 +169,3 @@ public class Translation2d implements ITranslation2d<Translation2d> {
         return this;
     }
 }
-

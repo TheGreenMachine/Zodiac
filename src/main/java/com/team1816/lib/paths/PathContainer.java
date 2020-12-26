@@ -9,7 +9,6 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
  * whether or not the robot should drive in reverse along the path.
  */
 public interface PathContainer {
-
     // velocities are in/sec
     double kMaxVelocity = Robot.getFactory().getConstant("maxVel");
     double kMaxAccel = Robot.getFactory().getConstant("maxAccel");
@@ -36,23 +34,42 @@ public interface PathContainer {
 
     default Trajectory<TimedState<Pose2dWithCurvature>> generateReversedTrajectory() {
         return TrajectoryUtil.mirrorTimed(
-            generateBaseTrajectory(!isReversed(), reverseWaypoints(buildWaypoints()))
+            generateBaseTrajectory(
+                !isReversed(),
+                reverseWaypoints(buildWaypoints())
+            )
         );
     }
 
     private Trajectory<TimedState<Pose2dWithCurvature>> generateBaseTrajectory(
-        boolean isReversed, List<Pose2d> waypoints) {
-        return DriveMotionPlanner.getInstance().generateTrajectory(
-            isReversed,
-            waypoints,
-            Arrays.asList(new CentripetalAccelerationConstraint(kMaxCentripetalAccel)),
-            getMaxVelocity(), kMaxAccel, kMaxVoltage);
+        boolean isReversed,
+        List<Pose2d> waypoints
+    ) {
+        return DriveMotionPlanner
+            .getInstance()
+            .generateTrajectory(
+                isReversed,
+                waypoints,
+                Arrays.asList(
+                    new CentripetalAccelerationConstraint(kMaxCentripetalAccel)
+                ),
+                getMaxVelocity(),
+                kMaxAccel,
+                kMaxVoltage
+            );
     }
 
     private List<Pose2d> reverseWaypoints(List<Pose2d> waypoints) {
         return waypoints
             .stream()
-            .map(pose -> new Pose2d(-pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation()))
+            .map(
+                pose ->
+                    new Pose2d(
+                        -pose.getTranslation().x(),
+                        pose.getTranslation().y(),
+                        pose.getRotation()
+                    )
+            )
             .collect(Collectors.toList());
     }
 

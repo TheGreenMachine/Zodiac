@@ -1,7 +1,6 @@
 package com.team1816.lib.geometry;
 
 import com.team254.lib.util.Util;
-
 import java.text.DecimalFormat;
 
 public class Displacement1d implements State<Displacement1d> {
@@ -22,7 +21,9 @@ public class Displacement1d implements State<Displacement1d> {
 
     @Override
     public Displacement1d interpolate(final Displacement1d other, double x) {
-        return new Displacement1d(Util.interpolate(displacement_, other.displacement_, x));
+        return new Displacement1d(
+            Util.interpolate(displacement_, other.displacement_, x)
+        );
     }
 
     @Override
@@ -51,4 +52,3 @@ public class Displacement1d implements State<Displacement1d> {
         return fmt.format(x());
     }
 }
-
