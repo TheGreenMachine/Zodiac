@@ -65,10 +65,7 @@ public class CtreMotorFactory {
     }
 
     // Create a CANTalon with the default (out of the box) configuration.
-    public static IMotorControllerEnhanced createDefaultTalon(
-        int id,
-        boolean isFalcon
-    ) {
+    public static IMotorControllerEnhanced createDefaultTalon(int id, boolean isFalcon) {
         return createTalon(id, kDefaultConfiguration, isFalcon);
     }
 
@@ -209,9 +206,7 @@ public class CtreMotorFactory {
         motor.configFactoryDefault();
         motor.set(ControlMode.PercentOutput, 0.0);
 
-        motor.changeMotionControlFramePeriod(
-            config.MOTION_CONTROL_FRAME_PERIOD_MS
-        );
+        motor.changeMotionControlFramePeriod(config.MOTION_CONTROL_FRAME_PERIOD_MS);
         motor.clearMotionProfileHasUnderrun(kTimeoutMs);
         motor.clearMotionProfileTrajectories();
 
@@ -225,20 +220,8 @@ public class CtreMotorFactory {
         motor.overrideLimitSwitchesEnable(config.ENABLE_LIMIT_SWITCH);
 
         // Turn off re-zeroing by default.
-        motor.configSetParameter(
-            ParamEnum.eClearPositionOnLimitF,
-            0,
-            0,
-            0,
-            kTimeoutMs
-        );
-        motor.configSetParameter(
-            ParamEnum.eClearPositionOnLimitR,
-            0,
-            0,
-            0,
-            kTimeoutMs
-        );
+        motor.configSetParameter(ParamEnum.eClearPositionOnLimitF, 0, 0, 0, kTimeoutMs);
+        motor.configSetParameter(ParamEnum.eClearPositionOnLimitR, 0, 0, 0, kTimeoutMs);
 
         motor.configNominalOutputForward(0, kTimeoutMs);
         motor.configNominalOutputReverse(0, kTimeoutMs);
@@ -249,23 +232,11 @@ public class CtreMotorFactory {
 
         motor.setNeutralMode(config.NEUTRAL_MODE);
 
-        motor.configForwardSoftLimitThreshold(
-            config.FORWARD_SOFT_LIMIT,
-            kTimeoutMs
-        );
-        motor.configForwardSoftLimitEnable(
-            config.ENABLE_SOFT_LIMIT,
-            kTimeoutMs
-        );
+        motor.configForwardSoftLimitThreshold(config.FORWARD_SOFT_LIMIT, kTimeoutMs);
+        motor.configForwardSoftLimitEnable(config.ENABLE_SOFT_LIMIT, kTimeoutMs);
 
-        motor.configReverseSoftLimitThreshold(
-            config.REVERSE_SOFT_LIMIT,
-            kTimeoutMs
-        );
-        motor.configReverseSoftLimitEnable(
-            config.ENABLE_SOFT_LIMIT,
-            kTimeoutMs
-        );
+        motor.configReverseSoftLimitThreshold(config.REVERSE_SOFT_LIMIT, kTimeoutMs);
+        motor.configReverseSoftLimitEnable(config.ENABLE_SOFT_LIMIT, kTimeoutMs);
         motor.overrideSoftLimitsEnable(config.ENABLE_SOFT_LIMIT);
 
         motor.setInverted(config.INVERTED);

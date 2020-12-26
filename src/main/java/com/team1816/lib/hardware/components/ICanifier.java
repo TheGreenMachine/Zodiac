@@ -13,8 +13,5 @@ public interface ICanifier {
         int timeoutMs
     );
 
-    ErrorCode setStatusFramePeriod(
-        CANifierStatusFrame statusFrame,
-        int periodMs
-    );
+    ErrorCode setStatusFramePeriod(CANifierStatusFrame statusFrame, int periodMs);
 }

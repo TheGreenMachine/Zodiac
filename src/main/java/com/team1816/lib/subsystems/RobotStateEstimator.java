@@ -52,18 +52,13 @@ public class RobotStateEstimator extends Subsystem {
         public synchronized void onLoop(double timestamp) {
             if (prev_heading_ == null) {
                 prev_heading_ =
-                    mRobotState
-                        .getLatestFieldToVehicle()
-                        .getValue()
-                        .getRotation();
+                    mRobotState.getLatestFieldToVehicle().getValue().getRotation();
             }
             final double dt = timestamp - prev_timestamp_;
             final double left_distance = mDrive.getLeftEncoderDistance();
             final double right_distance = mDrive.getRightEncoderDistance();
-            final double delta_left =
-                left_distance - left_encoder_prev_distance_;
-            final double delta_right =
-                right_distance - right_encoder_prev_distance_;
+            final double delta_left = left_distance - left_encoder_prev_distance_;
+            final double delta_right = right_distance - right_encoder_prev_distance_;
             final Rotation2d gyro_angle = mDrive.getHeading();
             final Rotation2d gyro_angle_relative_to_initial = mDrive.getHeadingRelativeToInitial();
 
@@ -102,9 +97,7 @@ public class RobotStateEstimator extends Subsystem {
                 measured_velocity,
                 predicted_velocity
             );
-            mRobotState.setHeadingRelativeToInitial(
-                gyro_angle_relative_to_initial
-            );
+            mRobotState.setHeadingRelativeToInitial(gyro_angle_relative_to_initial);
             mRobotState.addVehicleToTurretObservation(timestamp, turret_angle);
             left_encoder_prev_distance_ = left_distance;
             right_encoder_prev_distance_ = right_distance;
@@ -136,9 +129,7 @@ public class RobotStateEstimator extends Subsystem {
         ); // - Turret.CARDINAL_NORTH);
         SmartDashboard.putNumber(
             "test num",
-            new Rotation2d()
-                .fromDegrees(turret.getTurretPositionDegrees())
-                .getDegrees()
+            new Rotation2d().fromDegrees(turret.getTurretPositionDegrees()).getDegrees()
         );
     }
 }

@@ -102,10 +102,7 @@ public class Translation2d implements ITranslation2d<Translation2d> {
     }
 
     public Translation2d extrapolate(final Translation2d other, double x) {
-        return new Translation2d(
-            x * (other.x_ - x_) + x_,
-            x * (other.y_ - y_) + y_
-        );
+        return new Translation2d(x * (other.x_ - x_) + x_, x * (other.y_ - y_) + y_);
     }
 
     public Translation2d scale(double s) {
@@ -135,10 +132,7 @@ public class Translation2d implements ITranslation2d<Translation2d> {
         return a.x_ * b.x_ + a.y_ * b.y_;
     }
 
-    public static Rotation2d getAngle(
-        final Translation2d a,
-        final Translation2d b
-    ) {
+    public static Rotation2d getAngle(final Translation2d a, final Translation2d b) {
         double cos_angle = dot(a, b) / (a.norm() * b.norm());
         if (Double.isNaN(cos_angle)) {
             return new Rotation2d();

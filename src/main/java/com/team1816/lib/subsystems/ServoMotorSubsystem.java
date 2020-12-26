@@ -83,9 +83,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
     protected final int mForwardSoftLimitTicks;
     protected final int mReverseSoftLimitTicks;
 
-    protected ServoMotorSubsystem(
-        final ServoMotorSubsystemConstants constants
-    ) {
+    protected ServoMotorSubsystem(final ServoMotorSubsystemConstants constants) {
         super("ServoMotorSubsystem");
         mConstants = constants;
         mMaster =
@@ -118,10 +116,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
         );
 
         MotorUtil.checkError(
-            mMaster.configForwardSoftLimitEnable(
-                true,
-                Constants.kLongCANTimeoutMs
-            ),
+            mMaster.configForwardSoftLimitEnable(true, Constants.kLongCANTimeoutMs),
             mConstants.kName + ": Could not enable forward soft limit: "
         );
 
@@ -139,20 +134,13 @@ public abstract class ServoMotorSubsystem extends Subsystem {
         );
 
         MotorUtil.checkError(
-            mMaster.configReverseSoftLimitEnable(
-                true,
-                Constants.kLongCANTimeoutMs
-            ),
+            mMaster.configReverseSoftLimitEnable(true, Constants.kLongCANTimeoutMs),
             mConstants.kName + ": Could not enable reverse soft limit: "
         );
 
         MotorUtil.checkError(
-            mMaster.configVoltageCompSaturation(
-                12.0,
-                Constants.kLongCANTimeoutMs
-            ),
-            mConstants.kName +
-            ": Could not set voltage compensation saturation: "
+            mMaster.configVoltageCompSaturation(12.0, Constants.kLongCANTimeoutMs),
+            mConstants.kName + ": Could not set voltage compensation saturation: "
         );
 
         MotorUtil.checkError(
@@ -298,10 +286,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
         );
 
         MotorUtil.checkError(
-            mMaster.configOpenloopRamp(
-                mConstants.kRampRate,
-                Constants.kLongCANTimeoutMs
-            ),
+            mMaster.configOpenloopRamp(mConstants.kRampRate, Constants.kLongCANTimeoutMs),
             mConstants.kName + ": Could not set voltage ramp rate: "
         );
 
@@ -352,16 +337,8 @@ public abstract class ServoMotorSubsystem extends Subsystem {
         mMaster.setInverted(mConstants.kMasterConstants.invert_motor);
         mMaster.setSensorPhase(mConstants.kMasterConstants.invert_sensor_phase);
         mMaster.setNeutralMode(NeutralMode.Brake);
-        mMaster.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_2_Feedback0,
-            10,
-            20
-        );
-        mMaster.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_10_MotionMagic,
-            10,
-            20
-        );
+        mMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10, 20);
+        mMaster.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, 20);
         mMaster.setStatusFramePeriod(
             StatusFrameEnhanced.Status_8_PulseWidth,
             mConstants.kStastusFrame8UpdateRate,
@@ -439,10 +416,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
         mPeriodicIO.timestamp = Timer.getFPGATimestamp();
 
         if (mMaster.hasResetOccurred()) {
-            DriverStation.reportError(
-                mConstants.kName + ": Talon Reset! ",
-                false
-            );
+            DriverStation.reportError(mConstants.kName + ": Talon Reset! ", false);
             mPeriodicIO.reset_occured = true;
             return;
         } else {
@@ -461,20 +435,14 @@ public abstract class ServoMotorSubsystem extends Subsystem {
             mPeriodicIO.active_trajectory_position =
                 mMaster.getActiveTrajectoryPosition();
 
-            if (
-                mPeriodicIO.active_trajectory_position < mReverseSoftLimitTicks
-            ) {
+            if (mPeriodicIO.active_trajectory_position < mReverseSoftLimitTicks) {
                 DriverStation.reportError(
-                    mConstants.kName +
-                    ": Active trajectory past reverse soft limit!",
+                    mConstants.kName + ": Active trajectory past reverse soft limit!",
                     false
                 );
-            } else if (
-                mPeriodicIO.active_trajectory_position > mForwardSoftLimitTicks
-            ) {
+            } else if (mPeriodicIO.active_trajectory_position > mForwardSoftLimitTicks) {
                 DriverStation.reportError(
-                    mConstants.kName +
-                    ": Active trajectory past forward soft limit!",
+                    mConstants.kName + ": Active trajectory past forward soft limit!",
                     false
                 );
             }
@@ -496,9 +464,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
             } else {
                 // Mechanism is accelerating.
                 mPeriodicIO.active_trajectory_acceleration =
-                    Math.signum(
-                        newVel - mPeriodicIO.active_trajectory_velocity
-                    ) *
+                    Math.signum(newVel - mPeriodicIO.active_trajectory_velocity) *
                     mConstants.kAcceleration;
             }
             mPeriodicIO.active_trajectory_velocity = newVel;
@@ -516,10 +482,8 @@ public abstract class ServoMotorSubsystem extends Subsystem {
         mPeriodicIO.output_voltage = mMaster.getMotorOutputVoltage();
         mPeriodicIO.output_percent = mMaster.getMotorOutputPercent();
         mPeriodicIO.position_ticks = mMaster.getSelectedSensorPosition(0);
-        mPeriodicIO.position_units =
-            ticksToHomedUnits(mPeriodicIO.position_ticks);
-        mPeriodicIO.velocity_ticks_per_100ms =
-            mMaster.getSelectedSensorVelocity(0);
+        mPeriodicIO.position_units = ticksToHomedUnits(mPeriodicIO.position_ticks);
+        mPeriodicIO.velocity_ticks_per_100ms = mMaster.getSelectedSensorVelocity(0);
 
         if (mConstants.kRecoverPositionOnReset) {
             mPeriodicIO.absolute_pulse_position =
@@ -549,9 +513,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
     }
 
     protected int getAbsoluteEncoderRawPosition(int pulseWidthPosition) {
-        int abs_raw_no_rollover = mMaster
-            .getSensorCollection()
-            .getPulseWidthPosition();
+        int abs_raw_no_rollover = mMaster.getSensorCollection().getPulseWidthPosition();
         int abs_raw_with_rollover = abs_raw_no_rollover % 4096;
         return (
             abs_raw_with_rollover +
@@ -639,8 +601,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
                     for (TalonSRX slave : mSlaves) {
                         if (slave.hasResetOccurred()) {
                             System.out.println(
-                                mConstants.kName +
-                                ": Slave Talon reset occurred"
+                                mConstants.kName + ": Slave Talon reset occurred"
                             );
                         }
                     }
@@ -695,10 +656,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
             : Double.NaN;
     }
 
-    public synchronized void setSetpointMotionMagic(
-        double units,
-        double feedforward_v
-    ) {
+    public synchronized void setSetpointMotionMagic(double units, double feedforward_v) {
         mPeriodicIO.demand = constrainTicks(homeAwareUnitsToTicks(units));
         mPeriodicIO.feedforward =
             unitsPerSecondToTicksPer100ms(feedforward_v) *
@@ -714,14 +672,9 @@ public abstract class ServoMotorSubsystem extends Subsystem {
         setSetpointMotionMagic(units, 0.0);
     }
 
-    public synchronized void setSetpointPositionPID(
-        double units,
-        double feedforward_v
-    ) {
+    public synchronized void setSetpointPositionPID(double units, double feedforward_v) {
         mPeriodicIO.demand = constrainTicks(homeAwareUnitsToTicks(units));
-        double feedforward_ticks_per_100ms = unitsPerSecondToTicksPer100ms(
-            feedforward_v
-        );
+        double feedforward_ticks_per_100ms = unitsPerSecondToTicksPer100ms(feedforward_v);
         mPeriodicIO.feedforward =
             feedforward_ticks_per_100ms *
             (mConstants.kKf + mConstants.kKd / 100.0) /
@@ -783,11 +736,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
     }
 
     protected double constrainTicks(double ticks) {
-        return Util.limit(
-            ticks,
-            mReverseSoftLimitTicks,
-            mForwardSoftLimitTicks
-        );
+        return Util.limit(ticks, mReverseSoftLimitTicks, mForwardSoftLimitTicks);
     }
 
     protected double ticksPer100msToUnitsPerSecond(double ticks_per_100ms) {
@@ -810,14 +759,10 @@ public abstract class ServoMotorSubsystem extends Subsystem {
     }
 
     public synchronized double getActiveTrajectoryVelocityUnitsPerSec() {
-        return ticksPer100msToUnitsPerSecond(
-            mPeriodicIO.active_trajectory_velocity
-        );
+        return ticksPer100msToUnitsPerSecond(mPeriodicIO.active_trajectory_velocity);
     }
 
-    public synchronized double getPredictedPositionUnits(
-        double lookahead_secs
-    ) {
+    public synchronized double getPredictedPositionUnits(double lookahead_secs) {
         if (mMaster.getControlMode() != ControlMode.MotionMagic) {
             return getPosition();
         }
@@ -832,15 +777,9 @@ public abstract class ServoMotorSubsystem extends Subsystem {
             lookahead_secs
         );
         if (mPeriodicIO.demand >= mPeriodicIO.active_trajectory_position) {
-            return Math.min(
-                predicted_units,
-                ticksToHomedUnits(mPeriodicIO.demand)
-            );
+            return Math.min(predicted_units, ticksToHomedUnits(mPeriodicIO.demand));
         } else {
-            return Math.max(
-                predicted_units,
-                ticksToHomedUnits(mPeriodicIO.demand)
-            );
+            return Math.max(predicted_units, ticksToHomedUnits(mPeriodicIO.demand));
         }
     }
 

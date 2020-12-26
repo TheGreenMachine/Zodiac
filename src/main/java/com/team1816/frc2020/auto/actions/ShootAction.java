@@ -32,11 +32,7 @@ public class ShootAction implements Action {
         this.ledManager = LedManager.getInstance();
         this.collector = Collector.getInstance();
         this.shooterTimer =
-            new AsyncTimer(
-                duration,
-                shooter::startShooter,
-                shooter::stopShooter
-            );
+            new AsyncTimer(duration, shooter::startShooter, shooter::stopShooter);
         this.unjam = unjam;
     }
 

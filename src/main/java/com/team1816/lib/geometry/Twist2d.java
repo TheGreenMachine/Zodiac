@@ -32,9 +32,7 @@ public class Twist2d {
     }
 
     public double curvature() {
-        if (
-            Math.abs(dtheta) < Util.kEpsilon && norm() < Util.kEpsilon
-        ) return 0.0;
+        if (Math.abs(dtheta) < Util.kEpsilon && norm() < Util.kEpsilon) return 0.0;
         return dtheta / norm();
     }
 

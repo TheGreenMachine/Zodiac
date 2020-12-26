@@ -103,10 +103,7 @@ public class RobotState {
         );
     }
 
-    public synchronized void reset(
-        double start_time,
-        Pose2d initial_field_to_vehicle
-    ) {
+    public synchronized void reset(double start_time, Pose2d initial_field_to_vehicle) {
         field_to_vehicle_ = new InterpolatingTreeMap<>(kObservationBufferSize);
         field_to_vehicle_.put(
             new InterpolatingDouble(start_time),
@@ -119,11 +116,7 @@ public class RobotState {
     }
 
     public synchronized void reset() {
-        reset(
-            Timer.getFPGATimestamp(),
-            Pose2d.identity(),
-            Rotation2d.identity()
-        );
+        reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
     }
 
     /**
@@ -154,15 +147,11 @@ public class RobotState {
     }
 
     public synchronized Pose2d getFieldToVehicle(double timestamp) {
-        return field_to_vehicle_.getInterpolated(
-            new InterpolatingDouble(timestamp)
-        );
+        return field_to_vehicle_.getInterpolated(new InterpolatingDouble(timestamp));
     }
 
     public synchronized Rotation2d getVehicleToTurret(double timestamp) {
-        return vehicle_to_turret_.getInterpolated(
-            new InterpolatingDouble(timestamp)
-        );
+        return vehicle_to_turret_.getInterpolated(new InterpolatingDouble(timestamp));
     }
 
     public synchronized Pose2d getFieldToTurret(double timestamp) {
@@ -178,14 +167,10 @@ public class RobotState {
         return vehicle_to_turret_.lastEntry();
     }
 
-    public synchronized Pose2d getPredictedFieldToVehicle(
-        double lookahead_time
-    ) {
+    public synchronized Pose2d getPredictedFieldToVehicle(double lookahead_time) {
         return getLatestFieldToVehicle()
             .getValue()
-            .transformBy(
-                Pose2d.exp(vehicle_velocity_predicted_.scaled(lookahead_time))
-            );
+            .transformBy(Pose2d.exp(vehicle_velocity_predicted_.scaled(lookahead_time)));
     }
 
     public synchronized void addFieldToVehicleObservation(
@@ -290,9 +275,7 @@ public class RobotState {
     };
 
     public synchronized Pose2d getFieldToVisionTarget(boolean highTarget) {
-        GoalTracker tracker = highTarget
-            ? vision_target_high_
-            : vision_target_low_;
+        GoalTracker tracker = highTarget ? vision_target_high_ : vision_target_low_;
 
         if (!tracker.hasTracks()) {
             return null;
@@ -300,8 +283,7 @@ public class RobotState {
 
         Pose2d fieldToTarget = tracker.getTracks().get(0).field_to_target;
 
-        double normalPositive =
-            (fieldToTarget.getRotation().getDegrees() + 360) % 360;
+        double normalPositive = (fieldToTarget.getRotation().getDegrees() + 360) % 360;
         double normalClamped = kPossibleTargetNormals[0];
         for (double possible : kPossibleTargetNormals) {
             if (
@@ -328,9 +310,7 @@ public class RobotState {
             return null;
         }
 
-        return getFieldToVehicle(timestamp)
-            .inverse()
-            .transformBy(fieldToVisionTarget);
+        return getFieldToVehicle(timestamp).inverse().transformBy(fieldToVisionTarget);
     }
 
     public synchronized Optional<AimingParameters> getAimingParameters(
@@ -338,9 +318,7 @@ public class RobotState {
         int prev_track_id,
         double max_track_age
     ) {
-        GoalTracker tracker = highTarget
-            ? vision_target_high_
-            : vision_target_low_;
+        GoalTracker tracker = highTarget ? vision_target_high_ : vision_target_low_;
         List<GoalTracker.TrackReport> reports = tracker.getTracks();
 
         if (reports.isEmpty()) {
@@ -398,10 +376,7 @@ public class RobotState {
     }
 
     public synchronized void outputToSmartDashboard() {
-        SmartDashboard.putString(
-            "Robot Velocity",
-            getMeasuredVelocity().toString()
-        );
+        SmartDashboard.putString("Robot Velocity", getMeasuredVelocity().toString());
         SmartDashboard.putNumber("Estimated Pose X", getEstimatedX());
         SmartDashboard.putNumber("Estimated Pose Y", getEstimatedY());
 

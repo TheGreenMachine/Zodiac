@@ -29,12 +29,7 @@ public class YamlConfigTest {
         );
         System.out.println(result);
 
-        assertEquals(
-            "Base constant kP == 2.83",
-            2.83,
-            result.constants.get("kP"),
-            0
-        );
+        assertEquals("Base constant kP == 2.83", 2.83, result.constants.get("kP"), 0);
         assertEquals(
             "Overridden constant minPos == -374",
             -374,
@@ -55,21 +50,16 @@ public class YamlConfigTest {
     }
 
     @Test(expected = ConfigIsAbstractException.class)
-    public void loadFromBase_throwsIfAbstract()
-        throws ConfigIsAbstractException {
+    public void loadFromBase_throwsIfAbstract() throws ConfigIsAbstractException {
         YamlConfig.loadFrom(
-            getClass()
-                .getClassLoader()
-                .getResourceAsStream("test_base.config.yml")
+            getClass().getClassLoader().getResourceAsStream("test_base.config.yml")
         );
     }
 
     @Test
     public void loadFromActive_doesNotThrow() throws ConfigIsAbstractException {
         YamlConfig.loadFrom(
-            getClass()
-                .getClassLoader()
-                .getResourceAsStream("test_active.config.yml")
+            getClass().getClassLoader().getResourceAsStream("test_active.config.yml")
         );
     }
 
@@ -90,8 +80,7 @@ public class YamlConfigTest {
     }
 
     @Test
-    public void yamlConfig_autoMerge_ifExtends()
-        throws ConfigIsAbstractException {
+    public void yamlConfig_autoMerge_ifExtends() throws ConfigIsAbstractException {
         var configFile = getClass()
             .getClassLoader()
             .getResourceAsStream("test_active.config.yml");

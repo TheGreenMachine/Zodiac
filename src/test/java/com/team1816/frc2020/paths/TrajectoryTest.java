@@ -40,11 +40,7 @@ public class TrajectoryTest {
             TimedState<Pose2dWithCurvature> right_state = right_iterator.getState();
 
             assertEquals(left_state.t(), right_state.t(), kTestEpsilon);
-            assertEquals(
-                left_state.velocity(),
-                right_state.velocity(),
-                kTestEpsilon
-            );
+            assertEquals(left_state.velocity(), right_state.velocity(), kTestEpsilon);
             assertEquals(
                 left_state.acceleration(),
                 right_state.acceleration(),
@@ -52,14 +48,10 @@ public class TrajectoryTest {
             );
 
             assertTrue(
-                (shouldBeReversed ? -1.0 : 1.0) *
-                left_state.velocity() >=
-                -kTestEpsilon
+                (shouldBeReversed ? -1.0 : 1.0) * left_state.velocity() >= -kTestEpsilon
             );
             assertTrue(
-                (shouldBeReversed ? -1.0 : 1.0) *
-                right_state.velocity() >=
-                -kTestEpsilon
+                (shouldBeReversed ? -1.0 : 1.0) * right_state.velocity() >= -kTestEpsilon
             );
 
             if (prev_left != null && prev_right != null) {
@@ -79,12 +71,8 @@ public class TrajectoryTest {
                         .inverse()
                         .transformBy(right_state.state().getPose())
                 );
-                assertTrue(
-                    Math.abs(left_change.dtheta) < kMaxReasonableChangeInAngle
-                );
-                assertTrue(
-                    Math.abs(right_change.dtheta) < kMaxReasonableChangeInAngle
-                );
+                assertTrue(Math.abs(left_change.dtheta) < kMaxReasonableChangeInAngle);
+                assertTrue(Math.abs(right_change.dtheta) < kMaxReasonableChangeInAngle);
                 if (
                     !Util.epsilonEquals(left_change.dtheta, 0.0) ||
                     !Util.epsilonEquals(right_change.dtheta, 0.0)
@@ -174,9 +162,7 @@ public class TrajectoryTest {
             TimedState<Pose2dWithCurvature> left_state = iterator.getState();
 
             assertTrue(
-                (shouldBeReversed ? -1.0 : 1.0) *
-                left_state.velocity() >=
-                -kTestEpsilon
+                (shouldBeReversed ? -1.0 : 1.0) * left_state.velocity() >= -kTestEpsilon
             );
 
             if (prev_left != null) {
@@ -190,9 +176,7 @@ public class TrajectoryTest {
                         .transformBy(left_state.state().getPose())
                 );
 
-                assertTrue(
-                    Math.abs(left_change.dtheta) < kMaxReasonableChangeInAngle
-                );
+                assertTrue(Math.abs(left_change.dtheta) < kMaxReasonableChangeInAngle);
 
                 if (!Util.epsilonEquals(left_change.dtheta, 0.0)) {
                     // Could be a curvature sign change between prev and now, so just check that either matches our

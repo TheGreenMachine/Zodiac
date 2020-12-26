@@ -12,10 +12,7 @@ public class TuneDrivetrainMode extends AutoModeBase {
 
     public TuneDrivetrainMode() {
         trajectory =
-            new DriveTrajectory(
-                TrajectorySet.getInstance().TUNE_DRIVETRAIN,
-                true
-            );
+            new DriveTrajectory(TrajectorySet.getInstance().TUNE_DRIVETRAIN, true);
     }
 
     @Override

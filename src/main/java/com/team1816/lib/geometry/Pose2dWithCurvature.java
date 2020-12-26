@@ -103,10 +103,7 @@ public class Pose2dWithCurvature
     }
 
     @Override
-    public Pose2dWithCurvature interpolate(
-        final Pose2dWithCurvature other,
-        double x
-    ) {
+    public Pose2dWithCurvature interpolate(final Pose2dWithCurvature other, double x) {
         return new Pose2dWithCurvature(
             getPose().interpolate(other.getPose(), x),
             Util.interpolate(getCurvature(), other.getCurvature(), x),

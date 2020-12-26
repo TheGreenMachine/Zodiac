@@ -36,21 +36,14 @@ public interface TimedLEDState {
         LEDState mStateTwo = new LEDState(0.0, 0.0, 0.0);
         double mDuration;
 
-        public BlinkingLEDState(
-            LEDState stateOne,
-            LEDState stateTwo,
-            double duration
-        ) {
+        public BlinkingLEDState(LEDState stateOne, LEDState stateTwo, double duration) {
             mStateOne.copyFrom(stateOne);
             mStateTwo.copyFrom(stateTwo);
             mDuration = duration;
         }
 
         @Override
-        public void getCurrentLEDState(
-            LEDState desiredState,
-            double timestamp
-        ) {
+        public void getCurrentLEDState(LEDState desiredState, double timestamp) {
             if ((int) (timestamp / mDuration) % 2 == 0) {
                 desiredState.copyFrom(mStateOne);
             } else {
@@ -61,9 +54,7 @@ public interface TimedLEDState {
 
     class StaticLEDState implements TimedLEDState {
 
-        public static StaticLEDState kStaticOff = new StaticLEDState(
-            LEDState.kOff
-        );
+        public static StaticLEDState kStaticOff = new StaticLEDState(LEDState.kOff);
         public static StaticLEDState kIntakingDisc = new StaticLEDState(
             LEDState.kIntakeIntakingDisc
         );
@@ -92,10 +83,7 @@ public interface TimedLEDState {
         }
 
         @Override
-        public void getCurrentLEDState(
-            LEDState desiredState,
-            double timestamp
-        ) {
+        public void getCurrentLEDState(LEDState desiredState, double timestamp) {
             desiredState.copyFrom(mStaticState);
         }
     }

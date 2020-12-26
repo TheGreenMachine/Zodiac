@@ -59,9 +59,7 @@ public class Robot extends TimedRobot {
 
     // button placed on the robot to allow the drive team to zero the robot right
     // before the start of a match
-    DigitalInput resetRobotButton = new DigitalInput(
-        Constants.kResetButtonChannel
-    );
+    DigitalInput resetRobotButton = new DigitalInput(Constants.kResetButtonChannel);
 
     private boolean mHasBeenEnabled = false;
 
@@ -79,8 +77,7 @@ public class Robot extends TimedRobot {
     private AsyncTimer blinkTimer;
 
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
-    private Turret.ControlMode prevTurretControlMode =
-        Turret.ControlMode.FIELD_FOLLOWING;
+    private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     Robot() {
         super();
@@ -103,11 +100,7 @@ public class Robot extends TimedRobot {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger =
                 BadLog.init(
-                    "/home/lvuser/" +
-                    System.getenv("ROBOT_NAME") +
-                    "_" +
-                    logFile +
-                    ".bag"
+                    "/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag"
                 );
 
             BadLog.createTopic(
@@ -174,16 +167,8 @@ public class Robot extends TimedRobot {
                     "Degrees",
                     camera::getDeltaXAngle
                 );
-                BadLog.createTopic(
-                    "Vision/Distance",
-                    "inches",
-                    camera::getDistance
-                );
-                BadLog.createTopic(
-                    "Vision/CenterX",
-                    "pixels",
-                    camera::getRawCenterX
-                );
+                BadLog.createTopic("Vision/Distance", "inches", camera::getDistance);
+                BadLog.createTopic("Vision/CenterX", "pixels", camera::getRawCenterX);
 
                 BadLog.createTopic(
                     "Turret/ActPos",
@@ -287,18 +272,8 @@ public class Robot extends TimedRobot {
                         mControlBoard::getClimberDeploy,
                         pressed -> {
                             if (
-                                (
-                                    DriverStation
-                                        .getInstance()
-                                        .getMatchTime() <=
-                                    30
-                                ) ||
-                                (
-                                    DriverStation
-                                        .getInstance()
-                                        .getMatchTime() ==
-                                    -1
-                                )
+                                (DriverStation.getInstance().getMatchTime() <= 30) ||
+                                (DriverStation.getInstance().getMatchTime() == -1)
                             ) {
                                 climber.setDeployed(pressed);
                             }
@@ -308,10 +283,7 @@ public class Robot extends TimedRobot {
                         mControlBoard::getTrenchToFeederSpline,
                         () -> {
                             System.out.println("STARTING TRENCH TO FEEDER");
-                            SmartDashboard.putString(
-                                "Teleop Spline",
-                                "TRENCH TO FEEDER"
-                            );
+                            SmartDashboard.putString("Teleop Spline", "TRENCH TO FEEDER");
                             var trajectory = new DriveTrajectory(
                                 TrajectorySet.getInstance().TRENCH_TO_FEEDER,
                                 true
@@ -323,10 +295,7 @@ public class Robot extends TimedRobot {
                         mControlBoard::getFeederToTrenchSpline,
                         () -> {
                             System.out.println("STARTING FEEDER TO TRENCH");
-                            SmartDashboard.putString(
-                                "Teleop Spline",
-                                "FEEDER TO TRENCH"
-                            );
+                            SmartDashboard.putString("Teleop Spline", "FEEDER TO TRENCH");
                             turret.setTurretAngle(Turret.CARDINAL_SOUTH);
                             var trajectory = new DriveTrajectory(
                                 TrajectorySet.getInstance().FEEDER_TO_TRENCH,
@@ -335,29 +304,17 @@ public class Robot extends TimedRobot {
                             trajectory.start();
                         }
                     ),
-                    createHoldAction(
-                        mControlBoard::getSlowMode,
-                        mDrive::setSlowMode
-                    ),
+                    createHoldAction(mControlBoard::getSlowMode, mDrive::setSlowMode),
                     // Operator Gamepad
-                    createAction(
-                        mControlBoard::getSpinnerReset,
-                        spinner::initialize
-                    ),
-                    createHoldAction(
-                        mControlBoard::getSpinnerColor,
-                        spinner::goToColor
-                    ),
+                    createAction(mControlBoard::getSpinnerReset, spinner::initialize),
+                    createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
                     createHoldAction(
                         mControlBoard::getSpinnerThreeTimes,
                         spinner::spinThreeTimes
                     ),
                     createAction(
                         mControlBoard::getFieldFollowing,
-                        () ->
-                            turret.setControlMode(
-                                Turret.ControlMode.FIELD_FOLLOWING
-                            )
+                        () -> turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING)
                     ),
                     createHoldAction(
                         mControlBoard::getFeederFlapOut,
@@ -372,18 +329,8 @@ public class Robot extends TimedRobot {
                         mControlBoard::getClimber,
                         power -> {
                             if (
-                                (
-                                    DriverStation
-                                        .getInstance()
-                                        .getMatchTime() <=
-                                    30
-                                ) ||
-                                (
-                                    DriverStation
-                                        .getInstance()
-                                        .getMatchTime() ==
-                                    -1
-                                )
+                                (DriverStation.getInstance().getMatchTime() <= 30) ||
+                                (DriverStation.getInstance().getMatchTime() == -1)
                             ) {
                                 climber.setClimberPower(power > 0 ? power : 0);
                             }
@@ -392,16 +339,12 @@ public class Robot extends TimedRobot {
                     createHoldAction(
                         mControlBoard::getTurretJogLeft,
                         moving ->
-                            turret.setTurretSpeed(
-                                moving ? -Turret.TURRET_JOG_SPEED : 0
-                            )
+                            turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)
                     ),
                     createHoldAction(
                         mControlBoard::getTurretJogRight,
                         moving ->
-                            turret.setTurretSpeed(
-                                moving ? Turret.TURRET_JOG_SPEED : 0
-                            )
+                            turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)
                     ),
                     createHoldAction(
                         mControlBoard::getAutoAim,
@@ -426,9 +369,7 @@ public class Robot extends TimedRobot {
                                 shooter.startShooter(); // Uses ZED distance
                                 turret.lockTurret();
                             } else {
-                                turret.setControlMode(
-                                    Turret.ControlMode.FIELD_FOLLOWING
-                                );
+                                turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
                                 shooter.stopShooter();
                             }
                             hopper.lockToShooter(shooting, true);
@@ -615,8 +556,7 @@ public class Robot extends TimedRobot {
             Optional<AutoModeBase> autoMode = mAutoModeSelector.getAutoMode();
             mDriveByCameraInAuto = mAutoModeSelector.isDriveByCamera();
             if (
-                autoMode.isPresent() &&
-                autoMode.get() != mAutoModeExecutor.getAutoMode()
+                autoMode.isPresent() && autoMode.get() != mAutoModeExecutor.getAutoMode()
             ) {
                 System.out.println(
                     "Set auto mode to: " + autoMode.get().getClass().toString()
@@ -690,8 +630,7 @@ public class Robot extends TimedRobot {
         driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
         // }
         if (
-            mDrive.getDriveControlState() ==
-            Drive.DriveControlState.TRAJECTORY_FOLLOWING
+            mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING
         ) {
             if (
                 driveSignal.getLeft() != 0 ||

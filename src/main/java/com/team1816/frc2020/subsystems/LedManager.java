@@ -56,48 +56,19 @@ public class LedManager extends Subsystem {
     }
 
     private void configureCanifier(ICanifier canifier) {
-        canifier.setStatusFramePeriod(
-            CANifierStatusFrame.Status_1_General,
-            255,
-            10
-        );
-        canifier.setStatusFramePeriod(
-            CANifierStatusFrame.Status_2_General,
-            255,
-            10
-        );
-        canifier.setStatusFramePeriod(
-            CANifierStatusFrame.Status_3_PwmInputs0,
-            255,
-            10
-        );
-        canifier.setStatusFramePeriod(
-            CANifierStatusFrame.Status_4_PwmInputs1,
-            255,
-            10
-        );
-        canifier.setStatusFramePeriod(
-            CANifierStatusFrame.Status_6_PwmInputs3,
-            255,
-            10
-        );
+        canifier.setStatusFramePeriod(CANifierStatusFrame.Status_1_General, 255, 10);
+        canifier.setStatusFramePeriod(CANifierStatusFrame.Status_2_General, 255, 10);
+        canifier.setStatusFramePeriod(CANifierStatusFrame.Status_3_PwmInputs0, 255, 10);
+        canifier.setStatusFramePeriod(CANifierStatusFrame.Status_4_PwmInputs1, 255, 10);
+        canifier.setStatusFramePeriod(CANifierStatusFrame.Status_6_PwmInputs3, 255, 10);
     }
 
     @Deprecated
     public void forceSetLedColor(int r, int g, int b) {
         if (this.ledR != r || this.ledG != g || this.ledB != b) {
-            canifier.setLEDOutput(
-                (ledG / 255.0),
-                CANifier.LEDChannel.LEDChannelA
-            );
-            canifier.setLEDOutput(
-                (ledR / 255.0),
-                CANifier.LEDChannel.LEDChannelB
-            );
-            canifier.setLEDOutput(
-                (ledB / 255.0),
-                CANifier.LEDChannel.LEDChannelC
-            );
+            canifier.setLEDOutput((ledG / 255.0), CANifier.LEDChannel.LEDChannelA);
+            canifier.setLEDOutput((ledR / 255.0), CANifier.LEDChannel.LEDChannelB);
+            canifier.setLEDOutput((ledB / 255.0), CANifier.LEDChannel.LEDChannelC);
         }
     }
 
@@ -188,9 +159,7 @@ public class LedManager extends Subsystem {
         }
         if (canifier != null) {
             if (blinkMode) {
-                if (
-                    System.currentTimeMillis() >= lastWriteTime + (period / 2)
-                ) {
+                if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
                     if (blinkLedOn) {
                         writeLedHardware(0, 0, 0);
                         blinkLedOn = false;

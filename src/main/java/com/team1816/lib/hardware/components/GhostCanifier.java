@@ -7,10 +7,7 @@ import com.ctre.phoenix.ErrorCode;
 public class GhostCanifier implements ICanifier {
 
     @Override
-    public void setLEDOutput(
-        double percentOutput,
-        CANifier.LEDChannel ledChannel
-    ) {
+    public void setLEDOutput(double percentOutput, CANifier.LEDChannel ledChannel) {
         // no-op
     }
 
@@ -24,10 +21,7 @@ public class GhostCanifier implements ICanifier {
     }
 
     @Override
-    public ErrorCode setStatusFramePeriod(
-        CANifierStatusFrame statusFrame,
-        int periodMs
-    ) {
+    public ErrorCode setStatusFramePeriod(CANifierStatusFrame statusFrame, int periodMs) {
         return ErrorCode.OK;
     }
 }

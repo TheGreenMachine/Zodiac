@@ -83,13 +83,7 @@ public class Shooter extends Subsystem implements PidProvider {
 
     private void configCurrentLimits(int currentLimitAmps) {
         MotorUtil.configCurrentLimit(shooterMain, true, currentLimitAmps, 0, 0);
-        MotorUtil.configCurrentLimit(
-            shooterFollower,
-            true,
-            currentLimitAmps,
-            0,
-            0
-        );
+        MotorUtil.configCurrentLimit(shooterFollower, true, currentLimitAmps, 0, 0);
     }
 
     @Override
@@ -147,8 +141,7 @@ public class Shooter extends Subsystem implements PidProvider {
 
     @Override
     public void readPeriodicInputs() {
-        mPeriodicIO.actualShooterVelocity =
-            shooterMain.getSelectedSensorVelocity(0);
+        mPeriodicIO.actualShooterVelocity = shooterMain.getSelectedSensorVelocity(0);
         mPeriodicIO.closedLoopError = shooterMain.getClosedLoopError(0);
     }
 
@@ -158,10 +151,7 @@ public class Shooter extends Subsystem implements PidProvider {
             if (mPeriodicIO.velocityDemand == 0) {
                 this.shooterMain.set(ControlMode.PercentOutput, 0); // Inertia coast to 0
             } else {
-                this.shooterMain.set(
-                        ControlMode.Velocity,
-                        mPeriodicIO.velocityDemand
-                    );
+                this.shooterMain.set(ControlMode.Velocity, mPeriodicIO.velocityDemand);
             }
             outputsChanged = false;
         }
@@ -169,11 +159,7 @@ public class Shooter extends Subsystem implements PidProvider {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addBooleanProperty(
-            "Shooter/IsAtSpeed",
-            this::isVelocityNearTarget,
-            null
-        );
+        builder.addBooleanProperty("Shooter/IsAtSpeed", this::isVelocityNearTarget, null);
         builder.addDoubleProperty(
             "Shooter/ShooterVelocity",
             this::getActualVelocity,
@@ -194,10 +180,7 @@ public class Shooter extends Subsystem implements PidProvider {
     private EnhancedMotorChecker.CheckerConfig getTalonCheckerConfig(
         IMotorControllerEnhanced talon
     ) {
-        return EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(
-            this,
-            talon
-        );
+        return EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, talon);
     }
 
     @Override

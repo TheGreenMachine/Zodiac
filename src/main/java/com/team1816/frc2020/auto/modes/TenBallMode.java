@@ -17,8 +17,6 @@ public class TenBallMode extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        System.out.println(
-            "Running Ten Ball Auto Trench Mode (Not yet implemented)"
-        );
+        System.out.println("Running Ten Ball Auto Trench Mode (Not yet implemented)");
     }
 }

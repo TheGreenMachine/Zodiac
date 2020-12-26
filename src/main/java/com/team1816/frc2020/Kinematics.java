@@ -24,15 +24,8 @@ public class Kinematics {
     ) {
         double delta_rotation =
             (right_wheel_delta - left_wheel_delta) /
-            (
-                Constants.kDriveWheelTrackWidthInches *
-                Constants.kTrackScrubFactor
-            );
-        return forwardKinematics(
-            left_wheel_delta,
-            right_wheel_delta,
-            delta_rotation
-        );
+            (Constants.kDriveWheelTrackWidthInches * Constants.kTrackScrubFactor);
+        return forwardKinematics(left_wheel_delta, right_wheel_delta, delta_rotation);
     }
 
     public static Twist2d forwardKinematics(

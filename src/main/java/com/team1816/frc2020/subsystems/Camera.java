@@ -34,10 +34,8 @@ public class Camera {
     public static final double ALLOWABLE_AIM_ERROR = 1; // deg
 
     private Camera() {
-        networkTable =
-            NetworkTableInstance.getDefault().getTable("SmartDashboard");
-        usingVision =
-            networkTable.getSubTable("Calibration").getEntry("VISION");
+        networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
+        usingVision = networkTable.getSubTable("Calibration").getEntry("VISION");
         networkTable.addEntryListener(
             "center_x",
             (table, key, entry, value, flags) -> {
@@ -49,10 +47,7 @@ public class Camera {
                 }
                 var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
                 this.deltaXAngle =
-                    Math.toDegrees(
-                        Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH)
-                    ) *
-                    0.64;
+                    Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH)) * 0.64;
             },
             EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
         );

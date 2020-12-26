@@ -23,9 +23,7 @@ public class PathBuilder {
 
     public static Path buildPathFromWaypoints(List<Waypoint> w) {
         Path p = new Path();
-        if (w.size() < 2) throw new Error(
-            "Path must contain at least 2 waypoints"
-        );
+        if (w.size() < 2) throw new Error("Path must contain at least 2 waypoints");
         int i = 0;
         if (w.size() > 2) {
             do {
@@ -121,8 +119,7 @@ public class PathBuilder {
             this.b = b;
             slope = new Translation2d(a.position, b.position);
             speed = b.speed;
-            start =
-                a.position.translateBy(slope.scale(a.radius / slope.norm()));
+            start = a.position.translateBy(slope.scale(a.radius / slope.norm()));
             end = b.position.translateBy(slope.scale(-b.radius / slope.norm()));
         }
 

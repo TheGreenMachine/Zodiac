@@ -46,10 +46,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configOpenloopRamp(
-        double secondsFromNeutralToFull,
-        int timeoutMs
-    ) {
+    public ErrorCode configOpenloopRamp(double secondsFromNeutralToFull, int timeoutMs) {
         return ErrorCode.OK;
     }
 
@@ -72,34 +69,22 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configNominalOutputForward(
-        double percentOut,
-        int timeoutMs
-    ) {
+    public ErrorCode configNominalOutputForward(double percentOut, int timeoutMs) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configNominalOutputReverse(
-        double percentOut,
-        int timeoutMs
-    ) {
+    public ErrorCode configNominalOutputReverse(double percentOut, int timeoutMs) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configNeutralDeadband(
-        double percentDeadband,
-        int timeoutMs
-    ) {
+    public ErrorCode configNeutralDeadband(double percentDeadband, int timeoutMs) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configVoltageCompSaturation(
-        double voltage,
-        int timeoutMs
-    ) {
+    public ErrorCode configVoltageCompSaturation(double voltage, int timeoutMs) {
         return ErrorCode.OK;
     }
 
@@ -196,11 +181,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode setSelectedSensorPosition(
-        int sensorPos,
-        int pidIdx,
-        int timeoutMs
-    ) {
+    public ErrorCode setSelectedSensorPosition(int sensorPos, int pidIdx, int timeoutMs) {
         return ErrorCode.OK;
     }
 
@@ -263,18 +244,12 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configForwardSoftLimitEnable(
-        boolean enable,
-        int timeoutMs
-    ) {
+    public ErrorCode configForwardSoftLimitEnable(boolean enable, int timeoutMs) {
         return ErrorCode.OK;
     }
 
     @Override
-    public ErrorCode configReverseSoftLimitEnable(
-        boolean enable,
-        int timeoutMs
-    ) {
+    public ErrorCode configReverseSoftLimitEnable(boolean enable, int timeoutMs) {
         return ErrorCode.OK;
     }
 
@@ -302,11 +277,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode config_IntegralZone(
-        int slotIdx,
-        int izone,
-        int timeoutMs
-    ) {
+    public ErrorCode config_IntegralZone(int slotIdx, int izone, int timeoutMs) {
         return ErrorCode.OK;
     }
 
@@ -338,11 +309,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configClosedLoopPeriod(
-        int slotIdx,
-        int loopTimeMs,
-        int timeoutMs
-    ) {
+    public ErrorCode configClosedLoopPeriod(int slotIdx, int loopTimeMs, int timeoutMs) {
         return ErrorCode.OK;
     }
 
@@ -352,11 +319,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode setIntegralAccumulator(
-        double iaccum,
-        int pidIdx,
-        int timeoutMs
-    ) {
+    public ErrorCode setIntegralAccumulator(double iaccum, int pidIdx, int timeoutMs) {
         return ErrorCode.OK;
     }
 
@@ -399,10 +362,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configMotionCruiseVelocity(
-        int sensorUnitsPer100ms,
-        int timeoutMs
-    ) {
+    public ErrorCode configMotionCruiseVelocity(int sensorUnitsPer100ms, int timeoutMs) {
         return ErrorCode.OK;
     }
 
@@ -415,10 +375,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configMotionSCurveStrength(
-        int curveStrength,
-        int timeoutMs
-    ) {
+    public ErrorCode configMotionSCurveStrength(int curveStrength, int timeoutMs) {
         return ErrorCode.OK;
     }
 
@@ -499,11 +456,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configSetCustomParam(
-        int newValue,
-        int paramIndex,
-        int timeoutMs
-    ) {
+    public ErrorCode configSetCustomParam(int newValue, int paramIndex, int timeoutMs) {
         return ErrorCode.OK;
     }
 
@@ -535,20 +488,12 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public double configGetParameter(
-        ParamEnum paramEnum,
-        int ordinal,
-        int timeoutMs
-    ) {
+    public double configGetParameter(ParamEnum paramEnum, int ordinal, int timeoutMs) {
         return 0;
     }
 
     @Override
-    public double configGetParameter(
-        int paramEnum,
-        int ordinal,
-        int timeoutMs
-    ) {
+    public double configGetParameter(int paramEnum, int ordinal, int timeoutMs) {
         return 0;
     }
 
@@ -605,10 +550,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configVelocityMeasurementWindow(
-        int windowSize,
-        int timeoutMs
-    ) {
+    public ErrorCode configVelocityMeasurementWindow(int windowSize, int timeoutMs) {
         return ErrorCode.OK;
     }
 

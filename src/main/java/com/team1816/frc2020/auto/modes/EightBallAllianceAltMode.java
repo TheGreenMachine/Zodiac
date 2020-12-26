@@ -20,10 +20,8 @@ public class EightBallAllianceAltMode extends AutoModeBase {
 
     public EightBallAllianceAltMode() {
         var trajectoryA = TrajectorySet.getInstance().DRIVE_STRAIGHT_TRENCH;
-        var trajectoryB = TrajectorySet.getInstance()
-            .EIGHT_BALL_AUTO_ALLIANCE_ALTA;
-        var trajectoryC = TrajectorySet.getInstance()
-            .EIGHT_BALL_AUTO_ALLIANCE_ALTB;
+        var trajectoryB = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCE_ALTA;
+        var trajectoryC = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCE_ALTB;
         var trajectoryD = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCEC;
         mDriveTrajectoryA = new DriveTrajectory(trajectoryA, true);
         mDriveTrajectoryB = new DriveTrajectory(trajectoryB, true);

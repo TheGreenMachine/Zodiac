@@ -153,10 +153,7 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
         if (hasRadians() && other.hasRadians()) {
             return (
                 Util.epsilonEquals(radians_, other.radians_) ||
-                Util.epsilonEquals(
-                    radians_,
-                    WrapRadians(other.radians_ + Math.PI)
-                )
+                Util.epsilonEquals(radians_, WrapRadians(other.radians_ + Math.PI))
             );
         } else if (hasTrig() && other.hasTrig()) {
             return (
@@ -167,10 +164,7 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
             // Use public, checked version.
             return (
                 Util.epsilonEquals(getRadians(), other.getRadians()) ||
-                Util.epsilonEquals(
-                    radians_,
-                    WrapRadians(other.radians_ + Math.PI)
-                )
+                Util.epsilonEquals(radians_, WrapRadians(other.radians_ + Math.PI))
             );
         }
     }

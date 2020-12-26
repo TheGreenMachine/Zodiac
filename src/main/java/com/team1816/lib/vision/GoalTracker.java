@@ -86,16 +86,12 @@ public class GoalTracker {
                     ) /
                     Constants.kMaxGoalTrackAge
                 );
-            double switching_score =
-                (report.id == mLastTrackId ? mSwitchingWeight : 0);
+            double switching_score = (report.id == mLastTrackId ? mSwitchingWeight : 0);
             return stability_score + age_score + switching_score;
         }
 
         @Override
-        public int compare(
-            GoalTracker.TrackReport o1,
-            GoalTracker.TrackReport o2
-        ) {
+        public int compare(GoalTracker.TrackReport o1, GoalTracker.TrackReport o2) {
             double diff = score(o1) - score(o2);
             // Greater than 0 if o1 is better than o2
             if (diff < 0) {
@@ -117,10 +113,7 @@ public class GoalTracker {
         mCurrentTracks.clear();
     }
 
-    public synchronized void update(
-        double timestamp,
-        List<Pose2d> field_to_goals
-    ) {
+    public synchronized void update(double timestamp, List<Pose2d> field_to_goals) {
         // Try to update existing tracks
         for (Pose2d target : field_to_goals) {
             boolean hasUpdatedTrack = false;
@@ -136,9 +129,7 @@ public class GoalTracker {
             if (!hasUpdatedTrack) {
                 // Add a new track.
                 // System.out.println("Created new track");
-                mCurrentTracks.add(
-                    GoalTrack.makeNewTrack(timestamp, target, mNextId)
-                );
+                mCurrentTracks.add(GoalTrack.makeNewTrack(timestamp, target, mNextId));
                 ++mNextId;
             }
         }

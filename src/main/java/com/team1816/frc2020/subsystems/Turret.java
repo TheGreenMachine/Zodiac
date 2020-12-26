@@ -98,10 +98,7 @@ public class Turret extends Subsystem implements PidProvider {
             turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
             turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
             turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
-            turret.configPeakOutputReverse(
-                -peakOutput,
-                Constants.kCANTimeoutMs
-            );
+            turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
             turret.configAllowableClosedloopError(
                 kPIDLoopIDx,
                 ALLOWABLE_ERROR_TICKS,
@@ -206,9 +203,7 @@ public class Turret extends Subsystem implements PidProvider {
                 convertTurretDegreesToTicks(angle - 360) + TURRET_POSITION_MIN
             );
         } else if (angle >= 0 && angle <= MAX_ANGLE) {
-            setTurretPosition(
-                convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN
-            );
+            setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
         }
         // do nothing if angle in deadzone
     }
@@ -234,9 +229,7 @@ public class Turret extends Subsystem implements PidProvider {
     public int getTurretPosAbsolute() {
         if (turret instanceof TalonSRX) {
             int rawValue =
-                ((TalonSRX) turret).getSensorCollection()
-                    .getPulseWidthPosition() &
-                0xFFF;
+                ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & 0xFFF;
             return (TURRET_SENSOR_PHASE ? -1 : 1) * rawValue;
         }
         return 0;
@@ -315,10 +308,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     private void positionControl() {
         if (outputsChanged) {
-            turret.set(
-                com.ctre.phoenix.motorcontrol.ControlMode.Position,
-                turretPos
-            );
+            turret.set(com.ctre.phoenix.motorcontrol.ControlMode.Position, turretPos);
             outputsChanged = false;
         }
     }
@@ -328,9 +318,7 @@ public class Turret extends Subsystem implements PidProvider {
             if (turretSpeed == 0) {
                 turret.set(
                     com.ctre.phoenix.motorcontrol.ControlMode.Position,
-                    getTurretPositionTicks() +
-                    200 *
-                    turret.getMotorOutputPercent()
+                    getTurretPositionTicks() + 200 * turret.getMotorOutputPercent()
                 );
             } else {
                 turret.set(
@@ -354,11 +342,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty(
-            "Turret Degrees",
-            this::getTurretPositionDegrees,
-            null
-        );
+        builder.addDoubleProperty("Turret Degrees", this::getTurretPositionDegrees, null);
         builder.addDoubleProperty(
             "Turret Absolute Ticks",
             this::getTurretPosAbsolute,

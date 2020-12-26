@@ -3,9 +3,7 @@ package com.team1816.lib.hardware.components.motor;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-public class LazyTalonFX
-    extends TalonFX
-    implements ILazyMotorControllerEnhanced {
+public class LazyTalonFX extends TalonFX implements ILazyMotorControllerEnhanced {
 
     protected double mLastSet = Double.NaN;
     protected ControlMode mLastControlMode = null;

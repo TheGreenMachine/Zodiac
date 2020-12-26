@@ -33,9 +33,7 @@ public class YamlConfig {
             throw new ConfigIsAbstractException();
         }
 
-        if (
-            loadedConfig.$extends != null && !loadedConfig.$extends.equals("")
-        ) {
+        if (loadedConfig.$extends != null && !loadedConfig.$extends.equals("")) {
             var baseConfigFile =
                 YamlConfig.class.getClassLoader()
                     .getResourceAsStream(loadedConfig.$extends + ".config.yml");
@@ -123,8 +121,7 @@ public class YamlConfig {
             );
             result.invertMotor.addAll(base.invertMotor);
             result.invertMotor.addAll(active.invertMotor);
-            result.canifier =
-                active.canifier != null ? active.canifier : base.canifier;
+            result.canifier = active.canifier != null ? active.canifier : base.canifier;
             mergeMap(result.constants, active.constants, base.constants);
 
             return result;
@@ -138,11 +135,7 @@ public class YamlConfig {
 
         @Override
         public String toString() {
-            return String.format(
-                "{ forward = %d, reverse = %d }",
-                forward,
-                reverse
-            );
+            return String.format("{ forward = %d, reverse = %d }", forward, reverse);
         }
     }
 
@@ -168,11 +161,7 @@ public class YamlConfig {
         // using SubsystemConfig::merge to resolve conflicts.
         active.subsystems.forEach(
             (key, value) ->
-                result.subsystems.merge(
-                    key,
-                    value,
-                    (b, a) -> SubsystemConfig.merge(a, b)
-                )
+                result.subsystems.merge(key, value, (b, a) -> SubsystemConfig.merge(a, b))
         );
         mergeMap(result.constants, active.constants, base.constants);
         result.pcm = active.pcm != null ? active.pcm : base.pcm;

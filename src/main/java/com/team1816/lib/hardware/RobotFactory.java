@@ -41,18 +41,12 @@ public class RobotFactory {
                         .getResourceAsStream(configName + ".config.yml")
                 );
         } catch (ConfigIsAbstractException e) {
-            DriverStation.reportError(
-                "Yaml Config was abstract!",
-                e.getStackTrace()
-            );
+            DriverStation.reportError("Yaml Config was abstract!", e.getStackTrace());
         }
         verbose = getConstant("verbose") >= 1;
     }
 
-    public IMotorControllerEnhanced getMotor(
-        String subsystemName,
-        String name
-    ) {
+    public IMotorControllerEnhanced getMotor(String subsystemName, String name) {
         IMotorControllerEnhanced motor = null;
         var subsystem = getSubsystem(subsystemName);
 
@@ -73,19 +67,13 @@ public class RobotFactory {
             } // Never make the victor a master
         }
         if (motor == null) {
-            if (subsystem.implemented) reportGhostWarning(
-                "Motor",
-                subsystemName,
-                name
-            );
+            if (subsystem.implemented) reportGhostWarning("Motor", subsystemName, name);
             motor = CtreMotorFactory.createGhostTalon();
         }
 
         // Motor configuration
         if (subsystem.implemented && subsystem.invertMotor.contains(name)) {
-            System.out.println(
-                "Inverting " + name + " with ID " + motor.getDeviceID()
-            );
+            System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
             motor.setInverted(true);
         }
         motor.config_kP(
@@ -145,11 +133,7 @@ public class RobotFactory {
             }
         }
         if (motor == null) {
-            if (subsystem.implemented) reportGhostWarning(
-                "Motor",
-                subsystemName,
-                name
-            );
+            if (subsystem.implemented) reportGhostWarning("Motor", subsystemName, name);
             motor = CtreMotorFactory.createGhostTalon();
         }
         if (master != null) {
@@ -166,11 +150,7 @@ public class RobotFactory {
     public ISolenoid getSolenoid(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
         Integer solenoidId = subsystem.solenoids.get(name);
-        if (
-            subsystem.implemented &&
-            isHardwareValid(solenoidId) &&
-            isPcmEnabled()
-        ) {
+        if (subsystem.implemented && isHardwareValid(solenoidId) && isPcmEnabled()) {
             return new SolenoidImpl(config.pcm, solenoidId);
         }
         if (subsystem.implemented) {
@@ -180,14 +160,9 @@ public class RobotFactory {
     }
 
     @Nonnull
-    public IDoubleSolenoid getDoubleSolenoid(
-        String subsystemName,
-        String name
-    ) {
+    public IDoubleSolenoid getDoubleSolenoid(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
-        YamlConfig.DoubleSolenoidConfig solenoidConfig = getSubsystem(
-            subsystemName
-        )
+        YamlConfig.DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName)
             .doublesolenoids.get(name);
         if (
             subsystem.implemented &&
@@ -230,10 +205,7 @@ public class RobotFactory {
 
     public Double getConstant(String name, double defaultVal) {
         if (!config.constants.containsKey(name)) {
-            DriverStation.reportError(
-                "Yaml constants:" + name + " missing",
-                false
-            );
+            DriverStation.reportError("Yaml constants:" + name + " missing", false);
             return defaultVal;
         }
         return config.constants.get(name);
@@ -243,11 +215,7 @@ public class RobotFactory {
         return getConstant(subsystemName, name, 0.0);
     }
 
-    public double getConstant(
-        String subsystemName,
-        String name,
-        double defaultVal
-    ) {
+    public double getConstant(String subsystemName, String name, double defaultVal) {
         if (!getSubsystem(subsystemName).implemented) {
             return defaultVal;
         }

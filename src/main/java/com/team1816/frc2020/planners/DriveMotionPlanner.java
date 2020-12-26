@@ -68,9 +68,7 @@ public class DriveMotionPlanner implements CSVWritable {
                 Constants.kRobotLinearInertia,
                 Constants.kRobotAngularInertia,
                 Constants.kRobotAngularDrag,
-                Units.inches_to_meters(
-                    Constants.kDriveWheelDiameterInches / 2.0
-                ),
+                Units.inches_to_meters(Constants.kDriveWheelDiameterInches / 2.0),
                 Units.inches_to_meters(
                     Constants.kDriveWheelTrackWidthInches /
                     2.0 *
@@ -87,14 +85,10 @@ public class DriveMotionPlanner implements CSVWritable {
         mCurrentTrajectory = trajectory;
         mSetpoint = trajectory.getState();
         for (int i = 0; i < trajectory.trajectory().length(); ++i) {
-            if (
-                trajectory.trajectory().getState(i).velocity() > Util.kEpsilon
-            ) {
+            if (trajectory.trajectory().getState(i).velocity() > Util.kEpsilon) {
                 mIsReversed = false;
                 break;
-            } else if (
-                trajectory.trajectory().getState(i).velocity() < -Util.kEpsilon
-            ) {
+            } else if (trajectory.trajectory().getState(i).velocity() < -Util.kEpsilon) {
                 mIsReversed = true;
                 break;
             }
@@ -156,9 +150,7 @@ public class DriveMotionPlanner implements CSVWritable {
         );
 
         if (reversed) {
-            List<Pose2dWithCurvature> flipped = new ArrayList<>(
-                trajectory.length()
-            );
+            List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
             for (int i = 0; i < trajectory.length(); ++i) {
                 flipped.add(
                     new Pose2dWithCurvature(
@@ -182,9 +174,7 @@ public class DriveMotionPlanner implements CSVWritable {
             all_constraints.addAll(constraints);
         }
         // Generate the timed trajectory.
-        System.out.println(
-            "TrajectoryGenerator reversed condition: " + reversed
-        );
+        System.out.println("TrajectoryGenerator reversed condition: " + reversed);
         System.out.println("################### START OF A BUNCH OF PRINTS:");
         System.out.println(
             "start_Vel:" +
@@ -336,8 +326,7 @@ public class DriveMotionPlanner implements CSVWritable {
             mCurrentTrajectory.getRemainingProgress() > lookahead_time
         ) {
             lookahead_time += kLookaheadSearchDt;
-            lookahead_state =
-                mCurrentTrajectory.preview(lookahead_time).state();
+            lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
             actual_lookahead_distance =
                 mSetpoint.state().distance(lookahead_state.state());
         }
@@ -386,13 +375,11 @@ public class DriveMotionPlanner implements CSVWritable {
             adjusted_velocity.linear = 0.0;
             adjusted_velocity.angular = dynamics.chassis_velocity.angular;
         } else {
-            adjusted_velocity.angular =
-                curvature * dynamics.chassis_velocity.linear;
+            adjusted_velocity.angular = curvature * dynamics.chassis_velocity.linear;
         }
 
         dynamics.chassis_velocity = adjusted_velocity;
-        dynamics.wheel_velocity =
-            mModel.solveInverseKinematics(adjusted_velocity);
+        dynamics.wheel_velocity = mModel.solveInverseKinematics(adjusted_velocity);
         return new Output(
             dynamics.wheel_velocity.left,
             dynamics.wheel_velocity.right,
@@ -425,11 +412,7 @@ public class DriveMotionPlanner implements CSVWritable {
 
         // Compute error components.
         final double angle_error_rads = mError.getRotation().getRadians();
-        final double sin_x_over_x = Util.epsilonEquals(
-                angle_error_rads,
-                0.0,
-                1E-2
-            )
+        final double sin_x_over_x = Util.epsilonEquals(angle_error_rads, 0.0, 1E-2)
             ? 1.0
             : mError.getRotation().sin() / angle_error_rads;
         final DifferentialDrive.ChassisState adjusted_velocity = new DifferentialDrive.ChassisState(
@@ -448,19 +431,16 @@ public class DriveMotionPlanner implements CSVWritable {
 
         // Compute adjusted left and right wheel velocities.
         dynamics.chassis_velocity = adjusted_velocity;
-        dynamics.wheel_velocity =
-            mModel.solveInverseKinematics(adjusted_velocity);
+        dynamics.wheel_velocity = mModel.solveInverseKinematics(adjusted_velocity);
 
         dynamics.chassis_acceleration.linear =
             mDt == 0
                 ? 0.0
-                : (dynamics.chassis_velocity.linear - prev_velocity_.linear) /
-                mDt;
+                : (dynamics.chassis_velocity.linear - prev_velocity_.linear) / mDt;
         dynamics.chassis_acceleration.angular =
             mDt == 0
                 ? 0.0
-                : (dynamics.chassis_velocity.angular - prev_velocity_.angular) /
-                mDt;
+                : (dynamics.chassis_velocity.angular - prev_velocity_.angular) / mDt;
 
         prev_velocity_ = dynamics.chassis_velocity;
 
@@ -483,10 +463,7 @@ public class DriveMotionPlanner implements CSVWritable {
     public Output update(double timestamp, Pose2d current_state) {
         if (mCurrentTrajectory == null) return new Output();
 
-        if (
-            mCurrentTrajectory.getProgress() == 0.0 &&
-            !Double.isFinite(mLastTime)
-        ) {
+        if (mCurrentTrajectory.getProgress() == 0.0 && !Double.isFinite(mLastTime)) {
             mLastTime = timestamp;
         }
 
@@ -499,9 +476,7 @@ public class DriveMotionPlanner implements CSVWritable {
 
         if (!mCurrentTrajectory.isDone()) {
             // Generate feedforward voltages.
-            final double velocity_m = Units.inches_to_meters(
-                mSetpoint.velocity()
-            );
+            final double velocity_m = Units.inches_to_meters(mSetpoint.velocity());
             final double curvature_m = Units.meters_to_inches(
                 mSetpoint.state().getCurvature()
             );
@@ -512,10 +487,7 @@ public class DriveMotionPlanner implements CSVWritable {
                 mSetpoint.acceleration()
             );
             final DifferentialDrive.DriveDynamics dynamics = mModel.solveInverseDynamics(
-                new DifferentialDrive.ChassisState(
-                    velocity_m,
-                    velocity_m * curvature_m
-                ),
+                new DifferentialDrive.ChassisState(velocity_m, velocity_m * curvature_m),
                 new DifferentialDrive.ChassisState(
                     acceleration_m,
                     acceleration_m *
@@ -525,10 +497,7 @@ public class DriveMotionPlanner implements CSVWritable {
                     dcurvature_ds_m
                 )
             );
-            mError =
-                current_state
-                    .inverse()
-                    .transformBy(mSetpoint.state().getPose());
+            mError = current_state.inverse().transformBy(mSetpoint.state().getPose());
 
             if (mFollowerType == FollowerType.FEEDFORWARD_ONLY) {
                 mOutput =

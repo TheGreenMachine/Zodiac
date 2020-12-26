@@ -17,8 +17,7 @@ public class SixBallAllianceStraightMode extends AutoModeBase {
 
     public SixBallAllianceStraightMode() {
         var trajectoryA = TrajectorySet.getInstance().DRIVE_STRAIGHT_TRENCH;
-        var trajectoryB = TrajectorySet.getInstance()
-            .DRIVE_STRAIGHT_TRENCH_REVERSE;
+        var trajectoryB = TrajectorySet.getInstance().DRIVE_STRAIGHT_TRENCH_REVERSE;
         this.driveTrajectoryA = new DriveTrajectory(trajectoryA, true);
         this.driveTrajectoryB = new DriveTrajectory(trajectoryB, true);
     }
@@ -31,10 +30,7 @@ public class SixBallAllianceStraightMode extends AutoModeBase {
                 new ShootAction(2.5, false),
                 new ParallelAction(new CollectAction(true), driveTrajectoryA),
                 new CollectAction(false),
-                new ParallelAction(
-                    new PrepareToShootAction(15.2),
-                    driveTrajectoryB
-                ),
+                new ParallelAction(new PrepareToShootAction(15.2), driveTrajectoryB),
                 new ShootAction(4, true, 9_300)
             )
         );

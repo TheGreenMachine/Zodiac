@@ -8,10 +8,7 @@ import java.util.function.DoubleSupplier;
 
 public class ControlUtils {
 
-    public static PressAction createAction(
-        BooleanSupplier input,
-        Runnable action
-    ) {
+    public static PressAction createAction(BooleanSupplier input, Runnable action) {
         return new PressAction(input, action);
     }
 
@@ -22,10 +19,7 @@ public class ControlUtils {
         return new HoldAction(input, action);
     }
 
-    public static ScalarAction createScalar(
-        DoubleSupplier input,
-        DoubleConsumer output
-    ) {
+    public static ScalarAction createScalar(DoubleSupplier input, DoubleConsumer output) {
         return new ScalarAction(input, output);
     }
 

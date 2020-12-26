@@ -23,10 +23,7 @@ public abstract class AutoModeBase {
         try {
             routine();
         } catch (AutoModeEndedException e) {
-            DriverStation.reportError(
-                "AUTO MODE DONE!!!! ENDED EARLY!!!!",
-                false
-            );
+            DriverStation.reportError("AUTO MODE DONE!!!! ENDED EARLY!!!!", false);
             return;
         }
 

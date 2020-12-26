@@ -47,9 +47,7 @@ public class DriveTrajectory implements Action {
     @Override
     public void start() {
         System.out.println(
-            "Starting trajectory! (length=" +
-            mTrajectory.getRemainingProgress() +
-            ")"
+            "Starting trajectory! (length=" + mTrajectory.getRemainingProgress() + ")"
         );
         if (mResetPose) {
             var pose = mTrajectory.getState().state().getPose();

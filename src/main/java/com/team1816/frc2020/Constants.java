@@ -14,14 +14,11 @@ public class Constants {
         "wheelDiameter"
     );
 
-    public static double kTrackScrubFactor = factory.getConstant(
-        "kTrackScrubFactor"
-    );
+    public static double kTrackScrubFactor = factory.getConstant("kTrackScrubFactor");
     public static final int kCANTimeoutMs = 10; // use for important on the fly updates
     public static final int kLongCANTimeoutMs = 100; // use for constructors
 
-    public static final double kDriveWheelRadiusInches =
-        kDriveWheelDiameterInches / 2.0;
+    public static final double kDriveWheelRadiusInches = kDriveWheelDiameterInches / 2.0;
     public static final double kOpenLoopRampRate = factory.getConstant(
         "drivetrain",
         "openLoopRampRate"
@@ -49,9 +46,7 @@ public class Constants {
     public static final double kMinLookAhead = 12.0; // inches
     public static final double kMinLookAheadSpeed = 12.0; // inches per second
     public static final double kMaxLookAhead = 48.0; // inches
-    public static final double kMaxLookAheadSpeed = factory.getConstant(
-        "maxVel"
-    ); // inches per second
+    public static final double kMaxLookAheadSpeed = factory.getConstant("maxVel"); // inches per second
     public static final double kDeltaLookAhead = kMaxLookAhead - kMinLookAhead;
     public static final double kDeltaLookAheadSpeed =
         kMaxLookAheadSpeed - kMinLookAheadSpeed;
@@ -69,12 +64,8 @@ public class Constants {
     public static final double kPathFollowingGoalVelTolerance = 12.0;
     public static final double kPathStopSteeringDistance = 12.0;
     public static double kCameraFrameRate = 30;
-    public static final double kPathFollowingMaxAccel = factory.getConstant(
-        "maxAccel"
-    );
-    public static final double kPathFollowingMaxVel = factory.getConstant(
-        "maxVel"
-    );
+    public static final double kPathFollowingMaxAccel = factory.getConstant("maxAccel");
+    public static final double kPathFollowingMaxVel = factory.getConstant("maxVel");
 
     // Trajectory Generator constants
 
@@ -94,20 +85,15 @@ public class Constants {
     public static final double kPathFollowingProfileKv = 0; // % throttle per inch/s of error
     public static final double kPathFollowingProfileKffv = 1.0; // % throttle per inch/s
     public static final double kPathFollowingProfileKffa = 0; // % throttle per inch/s^2
-    public static final double kPathFollowingProfileKs = factory.getConstant(
-        "pathKs"
-    );
+    public static final double kPathFollowingProfileKs = factory.getConstant("pathKs");
 
     // % throttle required to break static friction
     public static final boolean kIsBadlogEnabled =
         factory.getConstant("badLogEnabled") > 0;
-    public static final boolean kIsLoggingTeleOp =
-        factory.getConstant("logTeleOp") > 0;
-    public static final boolean kIsLoggingAutonomous =
-        factory.getConstant("logAuto") > 0;
+    public static final boolean kIsLoggingTeleOp = factory.getConstant("logTeleOp") > 0;
+    public static final boolean kIsLoggingAutonomous = factory.getConstant("logAuto") > 0;
 
-    public static final boolean kUseAutoAim =
-        factory.getConstant("useAutoAim") > 0;
+    public static final boolean kUseAutoAim = factory.getConstant("useAutoAim") > 0;
     // Do not change anything after this line unless you rewire the robot and
     // update the spreadsheet!
     // Port assignments should match up with the spreadsheet here:

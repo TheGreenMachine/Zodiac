@@ -34,11 +34,9 @@ public class EnhancedMotorChecker {
             var factory = Robot.getFactory();
             return new EnhancedMotorChecker.CheckerConfig() {
                 {
-                    mCurrentFloor =
-                        factory.getConstant(name, "currentFloorCheck");
+                    mCurrentFloor = factory.getConstant(name, "currentFloorCheck");
                     mRPMFloor = factory.getConstant(name, "rpmFloorCheck");
-                    mCurrentEpsilon =
-                        factory.getConstant(name, "currentEpsilonCheck");
+                    mCurrentEpsilon = factory.getConstant(name, "currentEpsilonCheck");
                     mRPMEpsilon = factory.getConstant(name, "rpmEpsilonCheck");
                     mRPMSupplier = () -> motor.getSelectedSensorVelocity(0);
                 }
@@ -152,13 +150,7 @@ public class EnhancedMotorChecker {
                 .average()
                 .getAsDouble();
 
-            if (
-                !Util.allCloseTo(
-                    currents,
-                    average,
-                    checkerConfig.mCurrentEpsilon
-                )
-            ) {
+            if (!Util.allCloseTo(currents, average, checkerConfig.mCurrentEpsilon)) {
                 DriverStation.reportError("Currents varied!!!!!!!!!!!", false);
                 failure = true;
             }
