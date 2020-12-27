@@ -81,7 +81,7 @@ public class YamlConfig {
 
         public static SubsystemConfig merge(SubsystemConfig active, SubsystemConfig base) {
             var result = new SubsystemConfig();
-            if(active.implemented = true)
+            if(active.implemented == true)
             {
                 result.implemented = active.implemented;
             }
