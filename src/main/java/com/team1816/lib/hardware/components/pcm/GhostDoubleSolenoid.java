@@ -1,34 +1,43 @@
 package com.team1816.lib.hardware.components.pcm;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class GhostDoubleSolenoid implements IDoubleSolenoid {
     // State
-    private DoubleSolenoid.Value value;
+    private Value value;
 
     @Override
-    public DoubleSolenoid.Value get() {
+    public Value get() {
         return value;
     }
 
     @Override
-    public void set(DoubleSolenoid.Value value) {
+    public void set(Value value) {
         this.value = value;
+    }
+
+    @Override
+    public void toggle() {
+        if (value == Value.kForward) {
+            set(Value.kReverse);
+        } else if (value == Value.kReverse) {
+            set(Value.kForward);
+        }
     }
 
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Double Solenoid");
         builder.setActuator(true);
-        builder.setSafeState(() -> set(DoubleSolenoid.Value.kOff));
+        builder.setSafeState(() -> set(Value.kOff));
         builder.addStringProperty("Value", () -> get().name().substring(1), value -> {
             if ("Forward".equals(value)) {
-                set(DoubleSolenoid.Value.kForward);
+                set(Value.kForward);
             } else if ("Reverse".equals(value)) {
-                set(DoubleSolenoid.Value.kReverse);
+                set(Value.kReverse);
             } else {
-                set(DoubleSolenoid.Value.kOff);
+                set(Value.kOff);
             }
         });
     }

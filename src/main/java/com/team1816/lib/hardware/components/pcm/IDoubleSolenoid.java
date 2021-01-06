@@ -6,4 +6,5 @@ import edu.wpi.first.wpilibj.Sendable;
 public interface IDoubleSolenoid extends Sendable, AutoCloseable {
     DoubleSolenoid.Value get();
     void set(final DoubleSolenoid.Value value);
+    void toggle();
 }

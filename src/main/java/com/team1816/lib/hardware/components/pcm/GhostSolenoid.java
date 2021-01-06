@@ -17,6 +17,11 @@ public class GhostSolenoid implements ISolenoid {
     }
 
     @Override
+    public void toggle() {
+        set(!get());
+    }
+
+    @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Solenoid");
         builder.setActuator(true);
