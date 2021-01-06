@@ -11,11 +11,8 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.Util;
-import org.junit.Ignore;
 import org.junit.Test;
 
-// @RunWith(JUnit4.class)
-@Ignore // FIXME: Remove ignored test once WPILib 2021 comes out
 public class TrajectoryTest {
 
     public static final double kTestEpsilon = 1e-5;

@@ -2,10 +2,8 @@ package com.team254.lib.util;
 
 import edu.wpi.first.wpilibj.Timer;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore // FIXME: Re-include test once WPILib 2021 is released
 public class MultiTriggerTest {
     @Test
     public void test() {
