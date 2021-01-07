@@ -8,6 +8,7 @@ import java.util.List;
  * Executes one action at a time. Useful as a member of {@link ParallelAction}
  */
 public class SeriesAction implements Action {
+
     private Action mCurrentAction;
     private final ArrayList<Action> mRemainingActions;
 

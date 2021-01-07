@@ -6,11 +6,15 @@ import com.team1816.frc2020.auto.actions.ShootAction;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.AutoModeEndedException;
-import com.team1816.lib.auto.actions.*;
+import com.team1816.lib.auto.actions.DriveTrajectory;
+import com.team1816.lib.auto.actions.ParallelAction;
+import com.team1816.lib.auto.actions.SeriesAction;
+import com.team1816.lib.auto.actions.WaitUntilInsideRegion;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team254.lib.geometry.Translation2d;
 
 public class EightBallOpposeMode extends AutoModeBase {
+
     private DriveTrajectory mDriveTrajectoryA;
     private DriveTrajectory mDriveTrajectoryB;
 
@@ -29,18 +33,21 @@ public class EightBallOpposeMode extends AutoModeBase {
                 new ParallelAction(
                     mDriveTrajectoryA,
                     new SeriesAction(
-                        new WaitUntilInsideRegion(new Translation2d(70, 0), new Translation2d(125, 0)),
+                        new WaitUntilInsideRegion(
+                            new Translation2d(70, 0),
+                            new Translation2d(125, 0)
+                        ),
                         new CollectAction(true),
-                        new WaitUntilInsideRegion(new Translation2d(50, 0), new Translation2d(70,0)),
+                        new WaitUntilInsideRegion(
+                            new Translation2d(50, 0),
+                            new Translation2d(70, 0)
+                        ),
                         new CollectAction(false)
                     )
                 ),
                 new PrepareToShootAction(Turret.MAX_ANGLE),
                 new ShootAction(true),
-                new ParallelAction(
-                    mDriveTrajectoryB,
-                    new CollectAction(true)
-                ),
+                new ParallelAction(mDriveTrajectoryB, new CollectAction(true)),
                 new CollectAction(false),
                 new PrepareToShootAction(Turret.MAX_ANGLE),
                 new ShootAction(true)

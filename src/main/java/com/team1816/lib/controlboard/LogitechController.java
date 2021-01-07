@@ -17,7 +17,16 @@ public class LogitechController extends Controller {
     }
 
     public enum Button implements Controller.Button {
-        A(2), B(3), X(1), Y(4), LB(5), RB(6), BACK(9), START(10), L_JOYSTICK(11), R_JOYSTICK(12);
+        A(2),
+        B(3),
+        X(1),
+        Y(4),
+        LB(5),
+        RB(6),
+        BACK(9),
+        START(10),
+        L_JOYSTICK(11),
+        R_JOYSTICK(12);
 
         public final int id;
 

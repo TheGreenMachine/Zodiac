@@ -1,14 +1,13 @@
 package com.team1816.frc2020.paths;
 
-import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.paths.PathContainer;
 import com.team254.lib.control.Path;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-
 import java.util.List;
 
 public class FiveBallOpposingPathPartB implements PathContainer {
+
     @Override
     public Path buildPath() {
         return new Path();

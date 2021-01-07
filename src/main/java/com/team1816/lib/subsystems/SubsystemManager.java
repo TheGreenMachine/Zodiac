@@ -3,7 +3,6 @@ package com.team1816.lib.subsystems;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.loops.Looper;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.List;
  * Used to reset, start, stop, and update all subsystems at once
  */
 public class SubsystemManager implements ILooper {
+
     public static SubsystemManager mInstance = null;
 
     private List<Subsystem> mAllSubsystems;
@@ -55,6 +55,7 @@ public class SubsystemManager implements ILooper {
     }
 
     private class EnabledLoop implements Loop {
+
         @Override
         public void onStart(double timestamp) {
             mLoops.forEach(l -> l.onStart(timestamp));
@@ -74,6 +75,7 @@ public class SubsystemManager implements ILooper {
     }
 
     private class DisabledLoop implements Loop {
+
         @Override
         public void onStart(double timestamp) {}
 

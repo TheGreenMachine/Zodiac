@@ -5,6 +5,7 @@ import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.controlboard.IDriveControlBoard;
 
 public class ControlBoard implements IControlBoard {
+
     private static ControlBoard mInstance = null;
 
     public static ControlBoard getInstance() {
@@ -81,7 +82,6 @@ public class ControlBoard implements IControlBoard {
     public int getDriverClimber() {
         return mDriveControlBoard.getDriverClimber();
     }
-
 
     // Button Control Board
     @Override

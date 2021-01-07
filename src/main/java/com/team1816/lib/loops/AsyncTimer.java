@@ -1,10 +1,10 @@
 package com.team1816.lib.loops;
 
 import edu.wpi.first.wpilibj.Timer;
-
 import javax.annotation.Nullable;
 
 public class AsyncTimer {
+
     private double startTime;
     private double duration;
     private Runnable startAction;
@@ -12,7 +12,11 @@ public class AsyncTimer {
     private boolean hasStarted;
     private boolean completed;
 
-    public AsyncTimer(double duration, @Nullable Runnable startAction, Runnable endAction) {
+    public AsyncTimer(
+        double duration,
+        @Nullable Runnable startAction,
+        Runnable endAction
+    ) {
         this.duration = duration;
         this.startAction = startAction;
         this.endAction = endAction;

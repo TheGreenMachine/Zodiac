@@ -4,14 +4,17 @@ import com.team1816.frc2020.Constants;
 import edu.wpi.first.wpilibj.Joystick;
 
 public abstract class Controller {
+
     protected final Joystick mController;
 
     public enum Side {
-        LEFT, RIGHT
+        LEFT,
+        RIGHT,
     }
 
     public enum Axis {
-        X, Y
+        X,
+        Y,
     }
 
     public interface Button {
@@ -25,15 +28,16 @@ public abstract class Controller {
         boolean y = axis == Axis.Y;
         // multiplies by -1 if y-axis (inverted normally)
         return handleDeadband(
-            (y ? -1 : 1)
-                * mController.getRawAxis(
-                    (left ? getLeftAxisId() : getRightAxisId()) + (y ? 1 : 0)
-                ),
+            (y ? -1 : 1) *
+            mController.getRawAxis(
+                (left ? getLeftAxisId() : getRightAxisId()) + (y ? 1 : 0)
+            ),
             deadband
         );
     }
 
     protected abstract int getLeftAxisId();
+
     protected abstract int getRightAxisId();
 
     public Controller(int port) {
@@ -42,7 +46,9 @@ public abstract class Controller {
 
     public abstract double getTriggerScalar(Side side);
 
-    public void setRumble(boolean on) { /* no-op */ }
+    public void setRumble(boolean on) {
+        /* no-op */
+    }
 
     public int getDPad() {
         return mController.getPOV();

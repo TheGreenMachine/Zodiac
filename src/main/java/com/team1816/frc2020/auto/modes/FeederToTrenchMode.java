@@ -7,11 +7,14 @@ import com.team1816.lib.auto.actions.WaitAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
 public class FeederToTrenchMode extends AutoModeBase {
+
     private DriveTrajectory driveTrajectory;
 
     public FeederToTrenchMode(boolean reversed) {
         var trajectorySet = TrajectorySet.getInstance();
-        var trajectory = reversed ? trajectorySet.TRENCH_TO_FEEDER : trajectorySet.FEEDER_TO_TRENCH;
+        var trajectory = reversed
+            ? trajectorySet.TRENCH_TO_FEEDER
+            : trajectorySet.FEEDER_TO_TRENCH;
         driveTrajectory = new DriveTrajectory(trajectory, true);
     }
 

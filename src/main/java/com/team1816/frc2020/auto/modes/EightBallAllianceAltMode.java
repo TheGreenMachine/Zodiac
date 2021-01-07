@@ -12,6 +12,7 @@ import com.team1816.lib.auto.actions.SeriesAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
 public class EightBallAllianceAltMode extends AutoModeBase {
+
     private DriveTrajectory mDriveTrajectoryA;
     private DriveTrajectory mDriveTrajectoryB;
     private DriveTrajectory mDriveTrajectoryC;

@@ -2,10 +2,11 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
-import edu.wpi.first.wpilibj.Solenoid;
 
 public class Hopper extends Subsystem {
+
     private static final String NAME = "hopper";
     private static Hopper INSTANCE;
 
@@ -18,7 +19,7 @@ public class Hopper extends Subsystem {
     }
 
     // Components
-    private final Solenoid feederFlap;
+    private final ISolenoid feederFlap;
     private final IMotorControllerEnhanced spindexer;
     private final IMotorControllerEnhanced elevator;
     private final DistanceManager distanceManager = DistanceManager.getInstance();
@@ -38,7 +39,6 @@ public class Hopper extends Subsystem {
 
     private Hopper() {
         super(NAME);
-
         this.feederFlap = factory.getSolenoid(NAME, "feederFlap");
         this.spindexer = factory.getMotor(NAME, "spindexer");
         this.elevator = factory.getMotor(NAME, "elevator");
@@ -110,9 +110,7 @@ public class Hopper extends Subsystem {
     }
 
     @Override
-    public void stop() {
-
-    }
+    public void stop() {}
 
     @Override
     public boolean checkSystem() {

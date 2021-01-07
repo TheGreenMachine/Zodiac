@@ -3,14 +3,12 @@ package com.team1816.frc2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.revrobotics.ColorSensorV3;
-import com.team1816.frc2020.Robot;
-import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 
-
 public class Spinner extends Subsystem {
+
     private static final String NAME = "spinner";
     private static Spinner INSTANCE;
 
@@ -34,7 +32,6 @@ public class Spinner extends Subsystem {
     private int colorsPassed = 0;
     private boolean colorMode = false;
     private boolean spinMode = false;
-
 
     // Constants
     public enum SpinnerColor {
@@ -126,13 +123,13 @@ public class Spinner extends Subsystem {
         //System.out.println("current color index"currentColor.index);
 
         //TODO: Fix NullPointerException here
-      /*  if (detectedColor != currentColor) {
+        /*  if (detectedColor != currentColor) {
             if (detectedColor.index - currentColor.index == 1 || currentColor.index - detectedColor.index == 3) {
                 colorsPassed++;
                 currentColor = detectedColor;
             }
         } */
-    //    System.out.println(colorsPassed);
+        //    System.out.println(colorsPassed);
 
         inPos = atColor(SpinnerColor.GREEN);
         if (colorMode && inPos) {
@@ -167,16 +164,16 @@ public class Spinner extends Subsystem {
         double minError = Integer.MAX_VALUE;
         for (SpinnerColor color : SpinnerColor.values()) {
             double error =
-                (Math.abs(redOut - color.red) / color.red)
-                    + (Math.abs(greenOut - color.green) / color.green)
-                    + (Math.abs(blueOut - color.blue) / color.blue);
+                (Math.abs(redOut - color.red) / color.red) +
+                (Math.abs(greenOut - color.green) / color.green) +
+                (Math.abs(blueOut - color.blue) / color.blue);
             if (error < minError) {
                 minError = error;
                 colorDetected = color;
             }
         }
 
-    //    System.out.println(colorDetected);
+        //    System.out.println(colorDetected);
         return colorDetected;
     }
 
@@ -185,9 +182,7 @@ public class Spinner extends Subsystem {
     }
 
     @Override
-    public void stop() {
-
-    }
+    public void stop() {}
 
     @Override
     public boolean checkSystem() {

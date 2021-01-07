@@ -1,10 +1,10 @@
 package com.team1816.lib.geometry;
 
 import com.team254.lib.util.Util;
-
 import java.text.DecimalFormat;
 
 public class Twist2d {
+
     protected static final Twist2d kIdentity = new Twist2d(0.0, 0.0, 0.0);
 
     public static Twist2d identity() {
@@ -27,21 +27,26 @@ public class Twist2d {
 
     public double norm() {
         // Common case of dy == 0
-        if (dy == 0.0)
-            return Math.abs(dx);
+        if (dy == 0.0) return Math.abs(dx);
         return Math.hypot(dx, dy);
     }
 
     public double curvature() {
-        if (Math.abs(dtheta) < Util.kEpsilon && norm() < Util.kEpsilon)
-            return 0.0;
+        if (Math.abs(dtheta) < Util.kEpsilon && norm() < Util.kEpsilon) return 0.0;
         return dtheta / norm();
     }
 
     @Override
     public String toString() {
         final DecimalFormat fmt = new DecimalFormat("#0.000");
-        return "(" + fmt.format(dx) + "," + fmt.format(dy) + "," + fmt.format(Math.toDegrees(dtheta)) + " deg)";
+        return (
+            "(" +
+            fmt.format(dx) +
+            "," +
+            fmt.format(dy) +
+            "," +
+            fmt.format(Math.toDegrees(dtheta)) +
+            " deg)"
+        );
     }
 }
-

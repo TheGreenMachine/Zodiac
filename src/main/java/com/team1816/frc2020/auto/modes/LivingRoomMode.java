@@ -6,7 +6,7 @@ import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.actions.WaitAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
-public class LivingRoomMode  extends AutoModeBase {
+public class LivingRoomMode extends AutoModeBase {
 
     private DriveTrajectory mDriveTrajectory;
 

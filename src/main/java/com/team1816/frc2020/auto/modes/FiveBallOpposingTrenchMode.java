@@ -6,10 +6,13 @@ import com.team1816.frc2020.auto.actions.ShootAction;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.AutoModeEndedException;
-import com.team1816.lib.auto.actions.*;
+import com.team1816.lib.auto.actions.DriveTrajectory;
+import com.team1816.lib.auto.actions.ParallelAction;
+import com.team1816.lib.auto.actions.SeriesAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
 public class FiveBallOpposingTrenchMode extends AutoModeBase {
+
     private DriveTrajectory mDriveTrajectoryA;
     private DriveTrajectory mDriveTrajectoryB;
 
@@ -19,15 +22,13 @@ public class FiveBallOpposingTrenchMode extends AutoModeBase {
         mDriveTrajectoryA = new DriveTrajectory(trajectoryA, true);
         mDriveTrajectoryB = new DriveTrajectory(trajectoryB, true);
     }
+
     @Override
     protected void routine() throws AutoModeEndedException {
         System.out.println("Running Five Ball Opposition Auto Trench Mode");
         runAction(
             new SeriesAction(
-                new ParallelAction(
-                    mDriveTrajectoryA,
-                    new CollectAction(true)
-                ),
+                new ParallelAction(mDriveTrajectoryA, new CollectAction(true)),
                 new CollectAction(false),
                 new ParallelAction(
                     mDriveTrajectoryB,

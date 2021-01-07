@@ -4,7 +4,8 @@ import com.team1816.frc2020.RobotState;
 import com.team254.lib.geometry.Translation2d;
 
 public class WaitUntilInsideRegion implements Action {
-    private final static RobotState mRobotState = RobotState.getInstance();
+
+    private static final RobotState mRobotState = RobotState.getInstance();
 
     private final Translation2d mBottomLeft;
     private final Translation2d mTopRight;
@@ -16,9 +17,16 @@ public class WaitUntilInsideRegion implements Action {
 
     @Override
     public boolean isFinished() {
-        Translation2d position = mRobotState.getLatestFieldToVehicle().getValue().getTranslation();
-        return position.x() > mBottomLeft.x() && position.x() < mTopRight.x()
-                && position.y() > mBottomLeft.y() && position.y() < mTopRight.y();
+        Translation2d position = mRobotState
+            .getLatestFieldToVehicle()
+            .getValue()
+            .getTranslation();
+        return (
+            position.x() > mBottomLeft.x() &&
+            position.x() < mTopRight.x() &&
+            position.y() > mBottomLeft.y() &&
+            position.y() < mTopRight.y()
+        );
     }
 
     @Override

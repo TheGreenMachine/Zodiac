@@ -1,13 +1,11 @@
 package com.team1816.lib.vision;
 
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import com.team1816.frc2020.Constants;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.vision.GoalTrack;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * This is used in the event that multiple goals are detected to judge all goals based on timestamp, stability, and
@@ -17,10 +15,12 @@ import com.team254.lib.vision.GoalTrack;
  * @see com.team254.lib.vision.GoalTrack
  */
 public class GoalTracker {
+
     /**
      * Track reports contain all of the relevant information about a given goal track.
      */
     public static class TrackReport {
+
         // Transform from the field frame to the vision target.
         public Pose2d field_to_target;
 
@@ -47,7 +47,9 @@ public class GoalTracker {
      * multiple goals). They contain heuristics used to pick which track we should aim at by calculating a score for
      * each track (highest score wins).
      */
-    public static class TrackReportComparator implements Comparator<GoalTracker.TrackReport> {
+    public static class TrackReportComparator
+        implements Comparator<GoalTracker.TrackReport> {
+
         // Reward tracks for being more stable (seen in more frames)
         double mStabilityWeight;
         // Reward tracks for being recently observed
@@ -58,8 +60,13 @@ public class GoalTracker {
         double mSwitchingWeight;
         int mLastTrackId;
 
-        public TrackReportComparator(double stability_weight, double age_weight, double switching_weight,
-                                     int last_track_id, double current_timestamp) {
+        public TrackReportComparator(
+            double stability_weight,
+            double age_weight,
+            double switching_weight,
+            int last_track_id,
+            double current_timestamp
+        ) {
             this.mStabilityWeight = stability_weight;
             this.mAgeWeight = age_weight;
             this.mSwitchingWeight = switching_weight;
@@ -69,9 +76,16 @@ public class GoalTracker {
 
         double score(TrackReport report) {
             double stability_score = mStabilityWeight * report.stability;
-            double age_score = mAgeWeight
-                * Math.max(0, (Constants.kMaxGoalTrackAge - (mCurrentTimestamp - report.latest_timestamp))
-                / Constants.kMaxGoalTrackAge);
+            double age_score =
+                mAgeWeight *
+                Math.max(
+                    0,
+                    (
+                        Constants.kMaxGoalTrackAge -
+                        (mCurrentTimestamp - report.latest_timestamp)
+                    ) /
+                    Constants.kMaxGoalTrackAge
+                );
             double switching_score = (report.id == mLastTrackId ? mSwitchingWeight : 0);
             return stability_score + age_score + switching_score;
         }

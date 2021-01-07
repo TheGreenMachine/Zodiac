@@ -5,6 +5,7 @@ import com.team1816.frc2020.subsystems.Hopper;
 import com.team1816.lib.auto.actions.Action;
 
 public class CollectAction implements Action {
+
     private boolean isCollecting;
 
     public CollectAction(boolean isCollecting) {
@@ -19,9 +20,7 @@ public class CollectAction implements Action {
     }
 
     @Override
-    public void update() {
-
-    }
+    public void update() {}
 
     @Override
     public boolean isFinished() {
@@ -29,7 +28,5 @@ public class CollectAction implements Action {
     }
 
     @Override
-    public void done() {
-
-    }
+    public void done() {}
 }

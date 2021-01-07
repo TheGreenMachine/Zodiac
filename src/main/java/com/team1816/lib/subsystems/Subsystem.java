@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
  * initializing all member components at the start of the match.
  */
 public abstract class Subsystem implements Sendable {
+
     private final String name;
     protected static final RobotFactory factory = Robot.getFactory();
 

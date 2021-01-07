@@ -9,7 +9,10 @@ public interface PidProvider {
     default String pidToString() {
         return String.format(
             "kP = %f, kI = %f, kD = %f, kF = %f",
-            getKP(), getKI(), getKD(), getKF()
+            getKP(),
+            getKI(),
+            getKD(),
+            getKF()
         );
     }
 }

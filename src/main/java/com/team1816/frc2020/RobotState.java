@@ -1,6 +1,5 @@
 package com.team1816.frc2020;
 
-import com.team1816.frc2020.subsystems.Turret;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -13,13 +12,13 @@ import com.team254.lib.vision.GoalTracker;
 import com.team254.lib.vision.GoalTracker.TrackReportComparator;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public class RobotState {
+
     private static RobotState mInstance;
 
     public static RobotState getInstance() {
@@ -91,16 +90,25 @@ public class RobotState {
     /**
      * Resets the field to robot transform (robot's position on the field)
      */
-    public synchronized void reset(double start_time, Pose2d initial_field_to_vehicle,
-                                   Rotation2d initial_vehicle_to_turret) {
+    public synchronized void reset(
+        double start_time,
+        Pose2d initial_field_to_vehicle,
+        Rotation2d initial_vehicle_to_turret
+    ) {
         reset(start_time, initial_field_to_vehicle);
         vehicle_to_turret_ = new InterpolatingTreeMap<>(kObservationBufferSize);
-        vehicle_to_turret_.put(new InterpolatingDouble(start_time), initial_vehicle_to_turret);
+        vehicle_to_turret_.put(
+            new InterpolatingDouble(start_time),
+            initial_vehicle_to_turret
+        );
     }
 
     public synchronized void reset(double start_time, Pose2d initial_field_to_vehicle) {
         field_to_vehicle_ = new InterpolatingTreeMap<>(kObservationBufferSize);
-        field_to_vehicle_.put(new InterpolatingDouble(start_time), initial_field_to_vehicle);
+        field_to_vehicle_.put(
+            new InterpolatingDouble(start_time),
+            initial_field_to_vehicle
+        );
         vehicle_velocity_predicted_ = Twist2d.identity();
         vehicle_velocity_measured_ = Twist2d.identity();
         vehicle_velocity_measured_filtered_ = new MovingAverageTwist2d(25);
@@ -125,11 +133,17 @@ public class RobotState {
     }
 
     public synchronized double getPoseX(double timestamp) {
-        return field_to_vehicle_.getInterpolated(new InterpolatingDouble(timestamp)).getTranslation().x();
+        return field_to_vehicle_
+            .getInterpolated(new InterpolatingDouble(timestamp))
+            .getTranslation()
+            .x();
     }
 
     public synchronized double getPoseY(double timestamp) {
-        return field_to_vehicle_.getInterpolated(new InterpolatingDouble(timestamp)).getTranslation().y();
+        return field_to_vehicle_
+            .getInterpolated(new InterpolatingDouble(timestamp))
+            .getTranslation()
+            .y();
     }
 
     public synchronized Pose2d getFieldToVehicle(double timestamp) {
@@ -141,7 +155,8 @@ public class RobotState {
     }
 
     public synchronized Pose2d getFieldToTurret(double timestamp) {
-        return getFieldToVehicle(timestamp).transformBy(Pose2d.fromRotation(getVehicleToTurret(timestamp)));
+        return getFieldToVehicle(timestamp)
+            .transformBy(Pose2d.fromRotation(getVehicleToTurret(timestamp)));
     }
 
     public synchronized Map.Entry<InterpolatingDouble, Pose2d> getLatestFieldToVehicle() {
@@ -153,15 +168,22 @@ public class RobotState {
     }
 
     public synchronized Pose2d getPredictedFieldToVehicle(double lookahead_time) {
-        return getLatestFieldToVehicle().getValue()
-                .transformBy(Pose2d.exp(vehicle_velocity_predicted_.scaled(lookahead_time)));
+        return getLatestFieldToVehicle()
+            .getValue()
+            .transformBy(Pose2d.exp(vehicle_velocity_predicted_.scaled(lookahead_time)));
     }
 
-    public synchronized void addFieldToVehicleObservation(double timestamp, Pose2d observation) {
+    public synchronized void addFieldToVehicleObservation(
+        double timestamp,
+        Pose2d observation
+    ) {
         field_to_vehicle_.put(new InterpolatingDouble(timestamp), observation);
     }
 
-    public synchronized void addVehicleToTurretObservation(double timestamp, Rotation2d observation) {
+    public synchronized void addVehicleToTurretObservation(
+        double timestamp,
+        Rotation2d observation
+    ) {
         vehicle_to_turret_.put(new InterpolatingDouble(timestamp), observation);
     }
 
@@ -178,21 +200,38 @@ public class RobotState {
     }
 
     public double getLatestFieldToTurret() {
-        Rotation2d fieldToTurret = getHeadingRelativeToInitial().inverse().rotateBy(getLatestVehicleToTurret().getValue());
+        Rotation2d fieldToTurret = getHeadingRelativeToInitial()
+            .inverse()
+            .rotateBy(getLatestVehicleToTurret().getValue());
         return fieldToTurret.getDegrees();
     }
 
-    public synchronized void addObservations(double timestamp, Twist2d displacement, Twist2d measured_velocity,
-                                             Twist2d predicted_velocity) {
+    public synchronized void addObservations(
+        double timestamp,
+        Twist2d displacement,
+        Twist2d measured_velocity,
+        Twist2d predicted_velocity
+    ) {
         distance_driven_ += displacement.dx;
-        addFieldToVehicleObservation(timestamp,
-                Kinematics.integrateForwardKinematics(getLatestFieldToVehicle().getValue(), displacement));
+        addFieldToVehicleObservation(
+            timestamp,
+            Kinematics.integrateForwardKinematics(
+                getLatestFieldToVehicle().getValue(),
+                displacement
+            )
+        );
         vehicle_velocity_measured_ = measured_velocity;
         if (Math.abs(vehicle_velocity_measured_.dtheta) < 2.0 * Math.PI) {
             // Reject really high angular velocities from the filter.
             vehicle_velocity_measured_filtered_.add(vehicle_velocity_measured_);
         } else {
-            vehicle_velocity_measured_filtered_.add(new Twist2d(vehicle_velocity_measured_.dx, vehicle_velocity_measured_.dy, 0.0));
+            vehicle_velocity_measured_filtered_.add(
+                new Twist2d(
+                    vehicle_velocity_measured_.dx,
+                    vehicle_velocity_measured_.dy,
+                    0.0
+                )
+            );
         }
         vehicle_velocity_predicted_ = predicted_velocity;
     }
@@ -224,7 +263,16 @@ public class RobotState {
 
     // use known field target orientations to compensate for inaccuracy, assumes robot starts pointing directly away
     // from and perpendicular to alliance wall
-    private final double[] kPossibleTargetNormals = {0.0, 90.0, 180.0, 270.0, 30.0, 150.0, 210.0, 330.0};
+    private final double[] kPossibleTargetNormals = {
+        0.0,
+        90.0,
+        180.0,
+        270.0,
+        30.0,
+        150.0,
+        210.0,
+        330.0,
+    };
 
     public synchronized Pose2d getFieldToVisionTarget(boolean highTarget) {
         GoalTracker tracker = highTarget ? vision_target_high_ : vision_target_low_;
@@ -238,15 +286,24 @@ public class RobotState {
         double normalPositive = (fieldToTarget.getRotation().getDegrees() + 360) % 360;
         double normalClamped = kPossibleTargetNormals[0];
         for (double possible : kPossibleTargetNormals) {
-            if (Math.abs(normalPositive - possible) < Math.abs(normalPositive - normalClamped)) {
+            if (
+                Math.abs(normalPositive - possible) <
+                Math.abs(normalPositive - normalClamped)
+            ) {
                 normalClamped = possible;
             }
         }
 
-        return new Pose2d(fieldToTarget.getTranslation(), Rotation2d.fromDegrees(normalClamped));
+        return new Pose2d(
+            fieldToTarget.getTranslation(),
+            Rotation2d.fromDegrees(normalClamped)
+        );
     }
 
-    public synchronized Pose2d getVehicleToVisionTarget(double timestamp, boolean highTarget) {
+    public synchronized Pose2d getVehicleToVisionTarget(
+        double timestamp,
+        boolean highTarget
+    ) {
         Pose2d fieldToVisionTarget = getFieldToVisionTarget(highTarget);
 
         if (fieldToVisionTarget == null) {
@@ -256,7 +313,11 @@ public class RobotState {
         return getFieldToVehicle(timestamp).inverse().transformBy(fieldToVisionTarget);
     }
 
-    public synchronized Optional<AimingParameters> getAimingParameters(boolean highTarget, int prev_track_id, double max_track_age) {
+    public synchronized Optional<AimingParameters> getAimingParameters(
+        boolean highTarget,
+        int prev_track_id,
+        double max_track_age
+    ) {
         GoalTracker tracker = highTarget ? vision_target_high_ : vision_target_low_;
         List<GoalTracker.TrackReport> reports = tracker.getTracks();
 
@@ -268,10 +329,12 @@ public class RobotState {
 
         // Find the best track.
         TrackReportComparator comparator = new TrackReportComparator(
-                Constants.kTrackStabilityWeight,
-                Constants.kTrackAgeWeight,
-                Constants.kTrackSwitchingWeight,
-                prev_track_id, timestamp);
+            Constants.kTrackStabilityWeight,
+            Constants.kTrackAgeWeight,
+            Constants.kTrackSwitchingWeight,
+            prev_track_id,
+            timestamp
+        );
         reports.sort(comparator);
 
         GoalTracker.TrackReport report = null;
@@ -284,12 +347,19 @@ public class RobotState {
         if (report == null) {
             return Optional.empty();
         }
-        Pose2d vehicleToGoal = getFieldToVehicle(timestamp).inverse().transformBy(report.field_to_target).transformBy(getVisionTargetToGoalOffset());
+        Pose2d vehicleToGoal = getFieldToVehicle(timestamp)
+            .inverse()
+            .transformBy(report.field_to_target)
+            .transformBy(getVisionTargetToGoalOffset());
 
-        AimingParameters params = new AimingParameters(vehicleToGoal,
-                report.field_to_target,
-                report.field_to_target.getRotation(),
-                report.latest_timestamp, report.stability, report.id);
+        AimingParameters params = new AimingParameters(
+            vehicleToGoal,
+            report.field_to_target,
+            report.field_to_target.getRotation(),
+            report.latest_timestamp,
+            report.stability,
+            report.id
+        );
         return Optional.of(params);
     }
 
@@ -311,7 +381,13 @@ public class RobotState {
         SmartDashboard.putNumber("Estimated Pose Y", getEstimatedY());
 
         SmartDashboard.putNumber("Field to Turret", getLatestFieldToTurret());
-        SmartDashboard.putNumber("Vehicle to Turret", getLatestVehicleToTurret().getValue().getDegrees());
-        SmartDashboard.putNumber("Heading Relative to Initial", getHeadingRelativeToInitial().getDegrees());
+        SmartDashboard.putNumber(
+            "Vehicle to Turret",
+            getLatestVehicleToTurret().getValue().getDegrees()
+        );
+        SmartDashboard.putNumber(
+            "Heading Relative to Initial",
+            getHeadingRelativeToInitial().getDegrees()
+        );
     }
 }

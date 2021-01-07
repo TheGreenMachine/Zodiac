@@ -2,6 +2,7 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifierStatusFrame;
+import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
@@ -9,13 +10,14 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class LedManager extends Subsystem {
+
     public static final String NAME = "ledmanager";
 
     private static LedManager INSTANCE;
 
     // Components
-    private final CANifier canifier;
-    private final CANifier cameraCanifier;
+    private final ICanifier canifier;
+    private final ICanifier cameraCanifier;
 
     // State
     private boolean blinkMode;
@@ -53,7 +55,7 @@ public class LedManager extends Subsystem {
         return INSTANCE;
     }
 
-    private void configureCanifier(CANifier canifier) {
+    private void configureCanifier(ICanifier canifier) {
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_1_General, 255, 10);
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_2_General, 255, 10);
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_3_PwmInputs0, 255, 10);
@@ -128,7 +130,7 @@ public class LedManager extends Subsystem {
     }
 
     public int[] getLedColor() {
-        return new int[]{ledR, ledG, ledB};
+        return new int[] { ledR, ledG, ledB };
     }
 
     public boolean isBlinkMode() {
@@ -149,7 +151,10 @@ public class LedManager extends Subsystem {
     public void writePeriodicOutputs() {
         if (cameraCanifier != null) {
             if (outputsChanged) {
-                cameraCanifier.setLEDOutput(cameraLedOn ? 1 : 0, CANifier.LEDChannel.LEDChannelB);
+                cameraCanifier.setLEDOutput(
+                    cameraLedOn ? 1 : 0,
+                    CANifier.LEDChannel.LEDChannelB
+                );
             }
         }
         if (canifier != null) {
@@ -172,29 +177,25 @@ public class LedManager extends Subsystem {
     }
 
     @Override
-    public void stop() {
-
-    }
+    public void stop() {}
 
     @Override
     public void registerEnabledLoops(ILooper mEnabledLooper) {
         super.registerEnabledLoops(mEnabledLooper);
-        mEnabledLooper.register(new Loop() {
-            @Override
-            public void onStart(double timestamp) {
+        mEnabledLooper.register(
+            new Loop() {
+                @Override
+                public void onStart(double timestamp) {}
 
+                @Override
+                public void onLoop(double timestamp) {
+                    LedManager.this.writePeriodicOutputs();
+                }
+
+                @Override
+                public void onStop(double timestamp) {}
             }
-
-            @Override
-            public void onLoop(double timestamp) {
-                LedManager.this.writePeriodicOutputs();
-            }
-
-            @Override
-            public void onStop(double timestamp) {
-
-            }
-        });
+        );
     }
 
     @Override
@@ -214,8 +215,7 @@ public class LedManager extends Subsystem {
     }
 
     @Override
-    public void initSendable(SendableBuilder builder) {
-    }
+    public void initSendable(SendableBuilder builder) {}
 
     public enum RobotStatus {
         ENABLED(0, 255, 0), // green

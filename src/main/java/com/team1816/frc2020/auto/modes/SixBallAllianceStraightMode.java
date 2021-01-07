@@ -11,6 +11,7 @@ import com.team1816.lib.auto.actions.SeriesAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
 public class SixBallAllianceStraightMode extends AutoModeBase {
+
     public DriveTrajectory driveTrajectoryA;
     public DriveTrajectory driveTrajectoryB;
 
@@ -26,16 +27,10 @@ public class SixBallAllianceStraightMode extends AutoModeBase {
         runAction(
             new SeriesAction(
                 new PrepareToShootAction(0),
-                new ShootAction( 2.5, false),
-                new ParallelAction(
-                    new CollectAction(true),
-                    driveTrajectoryA
-                ),
+                new ShootAction(2.5, false),
+                new ParallelAction(new CollectAction(true), driveTrajectoryA),
                 new CollectAction(false),
-                new ParallelAction(
-                    new PrepareToShootAction(15.2),
-                    driveTrajectoryB
-                ),
+                new ParallelAction(new PrepareToShootAction(15.2), driveTrajectoryB),
                 new ShootAction(4, true, 9_300)
             )
         );
