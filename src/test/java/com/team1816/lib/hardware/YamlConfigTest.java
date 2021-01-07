@@ -2,8 +2,8 @@ package com.team1816.lib.hardware;
 
 import static org.junit.Assert.*;
 
+import com.team1816.lib.hardware.YamlConfig.SubsystemConfig;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 import org.junit.Test;
 
@@ -18,16 +18,13 @@ public class YamlConfigTest {
             .getClassLoader()
             .getResourceAsStream("test_active.config.yml");
 
-        YamlConfig.SubsystemConfig base = YamlConfig
+        SubsystemConfig base = YamlConfig
             .loadRaw(baseConfigFile)
             .subsystems.get("turret");
-        YamlConfig.SubsystemConfig active = YamlConfig
+        SubsystemConfig active = YamlConfig
             .loadRaw(activeConfigFile)
             .subsystems.get("turret");
-        YamlConfig.SubsystemConfig result = YamlConfig.SubsystemConfig.merge(
-            active,
-            base
-        );
+        SubsystemConfig result = SubsystemConfig.merge(active, base);
         System.out.println(result);
 
         assertEquals("Base constant kP == 2.83", 2.83, result.constants.get("kP"), 0);

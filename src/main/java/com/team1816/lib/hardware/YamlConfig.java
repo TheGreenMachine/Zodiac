@@ -108,12 +108,9 @@ public class YamlConfig {
             SubsystemConfig base
         ) {
             var result = new SubsystemConfig();
-            if(active.implemented == true)
-            {
+            if (active.implemented == true) {
                 result.implemented = active.implemented;
-            }
-            else
-            {
+            } else {
                 result.implemented = base.implemented;
             }
             mergeMap(result.talons, active.talons, base.talons);
