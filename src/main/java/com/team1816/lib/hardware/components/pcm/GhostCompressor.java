@@ -3,6 +3,7 @@ package com.team1816.lib.hardware.components.pcm;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class GhostCompressor implements ICompressor {
+
     private boolean enabled = false;
 
     @Override
@@ -28,17 +29,19 @@ public class GhostCompressor implements ICompressor {
     @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Compressor");
-        builder.addBooleanProperty("Enabled", this::enabled, value -> {
-            if (value) {
-                start();
-            } else {
-                stop();
+        builder.addBooleanProperty(
+            "Enabled",
+            this::enabled,
+            value -> {
+                if (value) {
+                    start();
+                } else {
+                    stop();
+                }
             }
-        });
+        );
     }
 
     @Override
-    public void close() throws Exception {
-
-    }
+    public void close() throws Exception {}
 }

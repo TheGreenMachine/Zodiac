@@ -6,6 +6,7 @@ import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
 
 public class Hopper extends Subsystem {
+
     private static final String NAME = "hopper";
     private static Hopper INSTANCE;
 
@@ -38,7 +39,6 @@ public class Hopper extends Subsystem {
 
     private Hopper() {
         super(NAME);
-
         this.feederFlap = factory.getSolenoid(NAME, "feederFlap");
         this.spindexer = factory.getMotor(NAME, "spindexer");
         this.elevator = factory.getMotor(NAME, "elevator");
@@ -110,9 +110,7 @@ public class Hopper extends Subsystem {
     }
 
     @Override
-    public void stop() {
-
-    }
+    public void stop() {}
 
     @Override
     public boolean checkSystem() {

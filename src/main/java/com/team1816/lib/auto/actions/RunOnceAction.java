@@ -6,6 +6,7 @@ package com.team1816.lib.auto.actions;
  * @see Action
  */
 public abstract class RunOnceAction implements Action {
+
     @Override
     public void start() {
         runOnce();

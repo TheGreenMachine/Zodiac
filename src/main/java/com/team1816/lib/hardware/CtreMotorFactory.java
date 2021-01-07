@@ -13,9 +13,11 @@ import com.team254.lib.drivers.LazyTalonSRX;
  * Based on FRC Team 254 The Cheesy Poof's 2018 TalonSRXFactory
  */
 public class CtreMotorFactory {
-    private final static int kTimeoutMs = 100;
+
+    private static final int kTimeoutMs = 100;
 
     public static class Configuration {
+
         public NeutralMode NEUTRAL_MODE = NeutralMode.Coast;
         // This is factory default.
         public double NEUTRAL_DEADBAND = 0.04;
@@ -37,7 +39,8 @@ public class CtreMotorFactory {
         public int ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS = 160;
         public int PULSE_WIDTH_STATUS_FRAME_RATE_MS = 160;
 
-        public VelocityMeasPeriod VELOCITY_MEASUREMENT_PERIOD = VelocityMeasPeriod.Period_50Ms;
+        public VelocityMeasPeriod VELOCITY_MEASUREMENT_PERIOD =
+            VelocityMeasPeriod.Period_50Ms;
         public int VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW = 1;
 
         public double OPEN_LOOP_RAMP_RATE = 0.0;
@@ -66,42 +69,82 @@ public class CtreMotorFactory {
         return createTalon(id, kDefaultConfiguration, isFalcon);
     }
 
-    public static IMotorControllerEnhanced createPermanentSlaveTalon(int id, boolean isFalcon, IMotorController master) {
-        final IMotorControllerEnhanced talon = createTalon(id, kSlaveConfiguration, isFalcon);
-        System.out.println("Slaving talon on " + id + " to talon on " + master.getDeviceID());
+    public static IMotorControllerEnhanced createPermanentSlaveTalon(
+        int id,
+        boolean isFalcon,
+        IMotorController master
+    ) {
+        final IMotorControllerEnhanced talon = createTalon(
+            id,
+            kSlaveConfiguration,
+            isFalcon
+        );
+        System.out.println(
+            "Slaving talon on " + id + " to talon on " + master.getDeviceID()
+        );
         talon.follow(master);
         return talon;
     }
 
-    private static IMotorControllerEnhanced createTalon(int id, Configuration config, boolean isFalcon) {
+    private static IMotorControllerEnhanced createTalon(
+        int id,
+        Configuration config,
+        boolean isFalcon
+    ) {
         BaseTalon talon = isFalcon ? new LazyTalonFX(id) : new LazyTalonSRX(id);
         configureMotorController(talon, config);
 
-        talon.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-                LimitSwitchNormal.NormallyOpen, kTimeoutMs);
+        talon.configReverseLimitSwitchSource(
+            LimitSwitchSource.FeedbackConnector,
+            LimitSwitchNormal.NormallyOpen,
+            kTimeoutMs
+        );
 
         if (talon instanceof TalonSRX) {
             ((TalonSRX) talon).enableCurrentLimit(config.ENABLE_CURRENT_LIMIT);
         } else {
             ((TalonFX) talon).configSupplyCurrentLimit(
-                new SupplyCurrentLimitConfiguration(config.ENABLE_CURRENT_LIMIT, 0, 0, 0)
-            );
+                    new SupplyCurrentLimitConfiguration(
+                        config.ENABLE_CURRENT_LIMIT,
+                        0,
+                        0,
+                        0
+                    )
+                );
         }
 
-        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General,
-                config.GENERAL_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0,
-                config.FEEDBACK_STATUS_FRAME_RATE_MS, kTimeoutMs);
+        talon.setStatusFramePeriod(
+            StatusFrameEnhanced.Status_1_General,
+            config.GENERAL_STATUS_FRAME_RATE_MS,
+            kTimeoutMs
+        );
+        talon.setStatusFramePeriod(
+            StatusFrameEnhanced.Status_2_Feedback0,
+            config.FEEDBACK_STATUS_FRAME_RATE_MS,
+            kTimeoutMs
+        );
 
-        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature,
-                config.QUAD_ENCODER_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat,
-                config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth,
-                config.PULSE_WIDTH_STATUS_FRAME_RATE_MS, kTimeoutMs);
+        talon.setStatusFramePeriod(
+            StatusFrameEnhanced.Status_3_Quadrature,
+            config.QUAD_ENCODER_STATUS_FRAME_RATE_MS,
+            kTimeoutMs
+        );
+        talon.setStatusFramePeriod(
+            StatusFrameEnhanced.Status_4_AinTempVbat,
+            config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS,
+            kTimeoutMs
+        );
+        talon.setStatusFramePeriod(
+            StatusFrameEnhanced.Status_8_PulseWidth,
+            config.PULSE_WIDTH_STATUS_FRAME_RATE_MS,
+            kTimeoutMs
+        );
         talon.configSelectedFeedbackSensor(
-            isFalcon ? FeedbackDevice.IntegratedSensor : FeedbackDevice.CTRE_MagEncoder_Relative,
-            0, 20
+            isFalcon
+                ? FeedbackDevice.IntegratedSensor
+                : FeedbackDevice.CTRE_MagEncoder_Relative,
+            0,
+            20
         );
 
         return talon;
@@ -115,9 +158,14 @@ public class CtreMotorFactory {
         return createVictor(id, kDefaultConfiguration);
     }
 
-    public static IMotorController createPermanentSlaveVictor(int id, IMotorController master) {
+    public static IMotorController createPermanentSlaveVictor(
+        int id,
+        IMotorController master
+    ) {
         final IMotorController victor = createVictor(id, kSlaveConfiguration);
-        System.out.println("Slaving victor on " + id + " to talon on " + master.getDeviceID());
+        System.out.println(
+            "Slaving victor on " + id + " to talon on " + master.getDeviceID()
+        );
         victor.follow(master);
         return victor;
     }
@@ -126,20 +174,35 @@ public class CtreMotorFactory {
         VictorSPX victor = new VictorSPX(id);
         configureMotorController(victor, config);
 
-        victor.configReverseLimitSwitchSource(RemoteLimitSwitchSource.Deactivated,
-                LimitSwitchNormal.NormallyOpen, kTimeoutMs);
+        victor.configReverseLimitSwitchSource(
+            RemoteLimitSwitchSource.Deactivated,
+            LimitSwitchNormal.NormallyOpen,
+            kTimeoutMs
+        );
 
-        victor.setStatusFramePeriod(StatusFrame.Status_1_General,
-                config.GENERAL_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        victor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0,
-                config.FEEDBACK_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        victor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat,
-                config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS, kTimeoutMs);
+        victor.setStatusFramePeriod(
+            StatusFrame.Status_1_General,
+            config.GENERAL_STATUS_FRAME_RATE_MS,
+            kTimeoutMs
+        );
+        victor.setStatusFramePeriod(
+            StatusFrame.Status_2_Feedback0,
+            config.FEEDBACK_STATUS_FRAME_RATE_MS,
+            kTimeoutMs
+        );
+        victor.setStatusFramePeriod(
+            StatusFrame.Status_4_AinTempVbat,
+            config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS,
+            kTimeoutMs
+        );
 
         return victor;
     }
 
-    private static void configureMotorController(BaseMotorController motor, Configuration config) {
+    private static void configureMotorController(
+        BaseMotorController motor,
+        Configuration config
+    ) {
         motor.configFactoryDefault();
         motor.set(ControlMode.PercentOutput, 0.0);
 
@@ -149,15 +212,16 @@ public class CtreMotorFactory {
 
         motor.clearStickyFaults(kTimeoutMs);
 
-        motor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-                LimitSwitchNormal.NormallyOpen, kTimeoutMs);
+        motor.configForwardLimitSwitchSource(
+            LimitSwitchSource.FeedbackConnector,
+            LimitSwitchNormal.NormallyOpen,
+            kTimeoutMs
+        );
         motor.overrideLimitSwitchesEnable(config.ENABLE_LIMIT_SWITCH);
 
         // Turn off re-zeroing by default.
-        motor.configSetParameter(
-                ParamEnum.eClearPositionOnLimitF, 0, 0, 0, kTimeoutMs);
-        motor.configSetParameter(
-                ParamEnum.eClearPositionOnLimitR, 0, 0, 0, kTimeoutMs);
+        motor.configSetParameter(ParamEnum.eClearPositionOnLimitF, 0, 0, 0, kTimeoutMs);
+        motor.configSetParameter(ParamEnum.eClearPositionOnLimitR, 0, 0, 0, kTimeoutMs);
 
         motor.configNominalOutputForward(0, kTimeoutMs);
         motor.configNominalOutputReverse(0, kTimeoutMs);
@@ -178,14 +242,24 @@ public class CtreMotorFactory {
         motor.setInverted(config.INVERTED);
         motor.selectProfileSlot(0, 0);
 
-        ErrorCode code = motor.configVelocityMeasurementPeriod(config.VELOCITY_MEASUREMENT_PERIOD, kTimeoutMs);
+        ErrorCode code = motor.configVelocityMeasurementPeriod(
+            config.VELOCITY_MEASUREMENT_PERIOD,
+            kTimeoutMs
+        );
         if (code != ErrorCode.OK) {
-            System.out.println("Error setting velocity measurement period: " + code.toString());
+            System.out.println(
+                "Error setting velocity measurement period: " + code.toString()
+            );
         }
-        code = motor.configVelocityMeasurementWindow(config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW,
-                kTimeoutMs);
+        code =
+            motor.configVelocityMeasurementWindow(
+                config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW,
+                kTimeoutMs
+            );
         if (code != ErrorCode.OK) {
-            System.out.println("Error setting velocity measurement window: " + code.toString());
+            System.out.println(
+                "Error setting velocity measurement window: " + code.toString()
+            );
         }
 
         motor.configOpenloopRamp(config.OPEN_LOOP_RAMP_RATE, kTimeoutMs);
@@ -195,6 +269,9 @@ public class CtreMotorFactory {
         motor.configVoltageMeasurementFilter(32, kTimeoutMs);
         motor.enableVoltageCompensation(true);
 
-        motor.setControlFramePeriod(ControlFrame.Control_3_General, config.CONTROL_FRAME_PERIOD_MS);
+        motor.setControlFramePeriod(
+            ControlFrame.Control_3_General,
+            config.CONTROL_FRAME_PERIOD_MS
+        );
     }
 }

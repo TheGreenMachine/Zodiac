@@ -7,8 +7,8 @@ import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 
-
 public class Collector extends Subsystem {
+
     private static final String NAME = "collector";
     private static Collector INSTANCE;
 
@@ -24,7 +24,6 @@ public class Collector extends Subsystem {
     private boolean isRaising;
     private double startTime;
 
-
     public static Collector getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new Collector();
@@ -35,7 +34,6 @@ public class Collector extends Subsystem {
 
     private Collector() {
         super(NAME);
-
         this.armPiston = factory.getSolenoid(NAME, "arm");
         this.intake = factory.getMotor(NAME, "intake");
 
@@ -75,7 +73,9 @@ public class Collector extends Subsystem {
     public void writePeriodicOutputs() {
         if (isRaising) {
             if ((Timer.getFPGATimestamp() - startTime) > 1) {
-                System.out.println("Raising timer passed at : " + (Timer.getFPGATimestamp() - startTime));
+                System.out.println(
+                    "Raising timer passed at : " + (Timer.getFPGATimestamp() - startTime)
+                );
                 setIntakePow(0);
                 isRaising = false;
             }
@@ -89,9 +89,7 @@ public class Collector extends Subsystem {
     }
 
     @Override
-    public void stop() {
-
-    }
+    public void stop() {}
 
     @Override
     public boolean checkSystem() {

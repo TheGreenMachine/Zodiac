@@ -7,13 +7,14 @@ import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
 public class EnhancedMotorChecker {
+
     public static class CheckerConfig {
+
         public double mCurrentFloor = 5;
         public double mRPMFloor = 2000;
 
@@ -25,15 +26,18 @@ public class EnhancedMotorChecker {
         public double mWaitTimeSec = 2.0;
         public double mRunOutputPercentage = 0.2;
 
-        public static CheckerConfig getForSubsystemMotor(Subsystem subsystem, IMotorControllerEnhanced motor) {
+        public static CheckerConfig getForSubsystemMotor(
+            Subsystem subsystem,
+            IMotorControllerEnhanced motor
+        ) {
             var name = subsystem.getName();
             var factory = Robot.getFactory();
             return new EnhancedMotorChecker.CheckerConfig() {
                 {
-                    mCurrentFloor = factory.getConstant(name,"currentFloorCheck");
-                    mRPMFloor = factory.getConstant(name,"rpmFloorCheck");
-                    mCurrentEpsilon = factory.getConstant(name,"currentEpsilonCheck");
-                    mRPMEpsilon = factory.getConstant(name,"rpmEpsilonCheck");
+                    mCurrentFloor = factory.getConstant(name, "currentFloorCheck");
+                    mRPMFloor = factory.getConstant(name, "rpmFloorCheck");
+                    mCurrentEpsilon = factory.getConstant(name, "currentEpsilonCheck");
+                    mRPMEpsilon = factory.getConstant(name, "rpmEpsilonCheck");
                     mRPMSupplier = () -> motor.getSelectedSensorVelocity(0);
                 }
             };
@@ -41,6 +45,7 @@ public class EnhancedMotorChecker {
     }
 
     public static class NamedMotor {
+
         public String name;
         public IMotorControllerEnhanced motor;
 
@@ -50,12 +55,20 @@ public class EnhancedMotorChecker {
         }
     }
 
-    public static boolean checkMotors(Subsystem subsystem,
-                                      CheckerConfig checkerConfig,
-                                      NamedMotor... motorsToCheck) {
+    public static boolean checkMotors(
+        Subsystem subsystem,
+        CheckerConfig checkerConfig,
+        NamedMotor... motorsToCheck
+    ) {
         boolean failure = false;
         System.out.println("////////////////////////////////////////////////");
-        System.out.println("Checking subsystem " + subsystem.getClass() + " for " + motorsToCheck.length + " motors.");
+        System.out.println(
+            "Checking subsystem " +
+            subsystem.getClass() +
+            " for " +
+            motorsToCheck.length +
+            " motors."
+        );
 
         List<Double> currents = new ArrayList<>();
         List<Double> rpms = new ArrayList<>();
@@ -63,8 +76,7 @@ public class EnhancedMotorChecker {
 
         // Record previous configuration for all motors.
         for (NamedMotor config : motorsToCheck) {
-            if (config.motor.getDeviceID() < 0)
-                continue;
+            if (config.motor.getDeviceID() < 0) continue;
             IMotorControllerEnhanced motor = config.motor;
 
             storedControlModes.add(motor.getControlMode());
@@ -81,7 +93,10 @@ public class EnhancedMotorChecker {
                 continue;
             }
 
-            config.motor.set(ControlMode.PercentOutput, checkerConfig.mRunOutputPercentage);
+            config.motor.set(
+                ControlMode.PercentOutput,
+                checkerConfig.mRunOutputPercentage
+            );
             Timer.delay(checkerConfig.mRunTimeSec);
 
             // Now poll the interesting information.
@@ -102,13 +117,23 @@ public class EnhancedMotorChecker {
             // And perform checks.
             if (current < checkerConfig.mCurrentFloor) {
                 DriverStation.reportError(
-                    config.name + " has failed current floor check vs " + checkerConfig.mCurrentFloor + "!!!!!!!!!!!!", false);
+                    config.name +
+                    " has failed current floor check vs " +
+                    checkerConfig.mCurrentFloor +
+                    "!!!!!!!!!!!!",
+                    false
+                );
                 failure = true;
             }
             if (checkerConfig.mRPMSupplier != null) {
                 if (rpm < checkerConfig.mRPMFloor) {
                     DriverStation.reportError(
-                        config.name + " has failed rpm floor check vs " + checkerConfig.mRPMFloor + "!!!!!!!!!!!!!", false);
+                        config.name +
+                        " has failed rpm floor check vs " +
+                        checkerConfig.mRPMFloor +
+                        "!!!!!!!!!!!!!",
+                        false
+                    );
                     failure = true;
                 }
             }
@@ -119,7 +144,11 @@ public class EnhancedMotorChecker {
         // Now run aggregate checks.
 
         if (currents.size() > 0) {
-            Double average = currents.stream().mapToDouble(val -> val).average().getAsDouble();
+            Double average = currents
+                .stream()
+                .mapToDouble(val -> val)
+                .average()
+                .getAsDouble();
 
             if (!Util.allCloseTo(currents, average, checkerConfig.mCurrentEpsilon)) {
                 DriverStation.reportError("Currents varied!!!!!!!!!!!", false);
@@ -128,7 +157,11 @@ public class EnhancedMotorChecker {
         }
 
         if (rpms.size() > 0) {
-            Double average = rpms.stream().mapToDouble(val -> val).average().getAsDouble();
+            Double average = rpms
+                .stream()
+                .mapToDouble(val -> val)
+                .average()
+                .getAsDouble();
 
             if (!Util.allCloseTo(rpms, average, checkerConfig.mRPMEpsilon)) {
                 DriverStation.reportError("RPMs varied!!!!!!!!", false);

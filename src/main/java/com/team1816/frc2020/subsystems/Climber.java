@@ -6,6 +6,7 @@ import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
 
 public class Climber extends Subsystem {
+
     private static final String NAME = "climber";
     private static Climber INSTANCE;
 
@@ -52,9 +53,7 @@ public class Climber extends Subsystem {
     }
 
     @Override
-    public void stop() {
-
-    }
+    public void stop() {}
 
     @Override
     public boolean checkSystem() {

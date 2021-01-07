@@ -8,6 +8,7 @@ import com.team254.lib.util.DelayedBoolean;
 import edu.wpi.first.wpilibj.Timer;
 
 public class GamepadButtonControlBoard implements IButtonControlBoard {
+
     private final double kDeadband = 0.15;
 
     private final double kDPadDelay = 0.02;

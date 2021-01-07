@@ -7,7 +7,6 @@ import com.team254.lib.control.PathSegment;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
-
 import java.util.List;
 
 /**
@@ -18,30 +17,30 @@ import java.util.List;
  * @see PathSegment
  */
 public class PathBuilder {
+
     private static final double kEpsilon = 1E-9;
     private static final double kReallyBigNumber = 1E9;
 
     public static Path buildPathFromWaypoints(List<Waypoint> w) {
         Path p = new Path();
-        if (w.size() < 2)
-            throw new Error("Path must contain at least 2 waypoints");
+        if (w.size() < 2) throw new Error("Path must contain at least 2 waypoints");
         int i = 0;
         if (w.size() > 2) {
             do {
-                new Arc(getPoint(w, i), getPoint(w, i + 1), getPoint(w, i + 2)).addToPath(p);
+                new Arc(getPoint(w, i), getPoint(w, i + 1), getPoint(w, i + 2))
+                .addToPath(p);
                 i++;
             } while (i < w.size() - 2);
         }
         new Line(w.get(w.size() - 2), w.get(w.size() - 1)).addToPath(p, 0);
         p.extrapolateLast();
         p.verifySpeeds();
-        if(RobotFactory.isVerbose()) System.out.println(p);
+        if (RobotFactory.isVerbose()) System.out.println(p);
         return p;
     }
 
     private static Waypoint getPoint(List<Waypoint> w, int i) {
-        if (i > w.size())
-            return w.get(w.size() - 1);
+        if (i > w.size()) return w.get(w.size() - 1);
         return w.get(i);
     }
 
@@ -54,13 +53,20 @@ public class PathBuilder {
      * @see WaitForPathMarkerAction
      */
     public static class Waypoint {
+
         Translation2d position;
         double radius;
         double speed;
         String marker;
 
         public Waypoint(Waypoint other) {
-            this(other.position.x(), other.position.y(), other.radius, other.speed, other.marker);
+            this(
+                other.position.x(),
+                other.position.y(),
+                other.radius,
+                other.speed,
+                other.marker
+            );
         }
 
         /**
@@ -100,6 +106,7 @@ public class PathBuilder {
      * A Line object is formed by two Waypoints. Contains a start and end position, slope, and speed.
      */
     static class Line {
+
         Waypoint a;
         Waypoint b;
         Translation2d start;
@@ -120,14 +127,32 @@ public class PathBuilder {
             double pathLength = new Translation2d(end, start).norm();
             if (pathLength > kEpsilon) {
                 if (b.marker != null) {
-                    p.addSegment(new PathSegment(start.x(), start.y(), end.x(), end.y(), b.speed,
-                            p.getLastMotionState(), endSpeed, b.marker));
+                    p.addSegment(
+                        new PathSegment(
+                            start.x(),
+                            start.y(),
+                            end.x(),
+                            end.y(),
+                            b.speed,
+                            p.getLastMotionState(),
+                            endSpeed,
+                            b.marker
+                        )
+                    );
                 } else {
-                    p.addSegment(new PathSegment(start.x(), start.y(), end.x(), end.y(), b.speed,
-                            p.getLastMotionState(), endSpeed));
+                    p.addSegment(
+                        new PathSegment(
+                            start.x(),
+                            start.y(),
+                            end.x(),
+                            end.y(),
+                            b.speed,
+                            p.getLastMotionState(),
+                            endSpeed
+                        )
+                    );
                 }
             }
-
         }
     }
 
@@ -135,6 +160,7 @@ public class PathBuilder {
      * An Arc object is formed by two Lines that share a common Waypoint. Contains a center position, radius, and speed.
      */
     static class Arc {
+
         Line a;
         Line b;
         Translation2d center;
@@ -156,14 +182,31 @@ public class PathBuilder {
         private void addToPath(Path p) {
             a.addToPath(p, speed);
             if (radius > kEpsilon && radius < kReallyBigNumber) {
-                p.addSegment(new PathSegment(a.end.x(), a.end.y(), b.start.x(), b.start.y(), center.x(), center.y(),
-                        speed, p.getLastMotionState(), b.speed));
+                p.addSegment(
+                    new PathSegment(
+                        a.end.x(),
+                        a.end.y(),
+                        b.start.x(),
+                        b.start.y(),
+                        center.x(),
+                        center.y(),
+                        speed,
+                        p.getLastMotionState(),
+                        b.speed
+                    )
+                );
             }
         }
 
         private static Translation2d intersect(Line l1, Line l2) {
-            final Pose2d lineA = new Pose2d(l1.end, new Rotation2d(l1.slope, true).normal());
-            final Pose2d lineB = new Pose2d(l2.start, new Rotation2d(l2.slope, true).normal());
+            final Pose2d lineA = new Pose2d(
+                l1.end,
+                new Rotation2d(l1.slope, true).normal()
+            );
+            final Pose2d lineB = new Pose2d(
+                l2.start,
+                new Rotation2d(l2.slope, true).normal()
+            );
             return lineA.intersection(lineB);
         }
     }

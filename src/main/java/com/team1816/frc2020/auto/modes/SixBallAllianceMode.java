@@ -32,7 +32,10 @@ public class SixBallAllianceMode extends AutoModeBase {
                     mDriveTrajectory,
                     new TurretAction(15.2),
                     new SeriesAction(
-                        new WaitUntilInsideRegion(new Translation2d(78, 68), new Translation2d(180, 88)),
+                        new WaitUntilInsideRegion(
+                            new Translation2d(78, 68),
+                            new Translation2d(180, 88)
+                        ),
                         new RampUpShooterAction()
                     )
                 ),

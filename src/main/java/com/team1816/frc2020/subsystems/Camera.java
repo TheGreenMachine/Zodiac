@@ -6,6 +6,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Camera {
+
     private static Camera INSTANCE;
 
     public static Camera getInstance() {
@@ -35,21 +36,30 @@ public class Camera {
     private Camera() {
         networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         usingVision = networkTable.getSubTable("Calibration").getEntry("VISION");
-        networkTable.addEntryListener("center_x", (table, key, entry, value, flags) -> {
-            rawCenterX = value.getDouble();
-            if (value.getDouble() < 0) {
-                // Reset deltaX to 0 if contour not detected
-                deltaXAngle = 0;
-                return;
-            }
-            var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
-            this.deltaXAngle = Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH)) * 0.64;
-        }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+        networkTable.addEntryListener(
+            "center_x",
+            (table, key, entry, value, flags) -> {
+                rawCenterX = value.getDouble();
+                if (value.getDouble() < 0) {
+                    // Reset deltaX to 0 if contour not detected
+                    deltaXAngle = 0;
+                    return;
+                }
+                var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
+                this.deltaXAngle =
+                    Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH)) * 0.64;
+            },
+            EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+        );
 
-        networkTable.addEntryListener("distance", (table, key, entry, value, flags) -> {
-            // Use most recently available distance if distance not found
-            this.distance = value.getDouble();
-        }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+        networkTable.addEntryListener(
+            "distance",
+            (table, key, entry, value, flags) -> {
+                // Use most recently available distance if distance not found
+                this.distance = value.getDouble();
+            },
+            EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+        );
     }
 
     public double getDeltaXAngle() {
@@ -60,7 +70,9 @@ public class Camera {
         return distance;
     }
 
-    public double getRawCenterX() { return rawCenterX; }
+    public double getRawCenterX() {
+        return rawCenterX;
+    }
 
     public void setEnabled(boolean enabled) {
         led.setCameraLed(enabled);

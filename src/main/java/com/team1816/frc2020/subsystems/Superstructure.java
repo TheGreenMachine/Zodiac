@@ -6,7 +6,6 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.vision.AimingParameters;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-
 import java.util.Optional;
 
 /**
@@ -19,61 +18,60 @@ import java.util.Optional;
  * The Superstructure class also adjusts the overall goal based on the turret and elevator control modes.
  */
 public class Superstructure extends Subsystem {
-  private static Superstructure mInstance;
-  private Optional<AimingParameters> mLatestAimingParameters = Optional.empty();
 
-  public synchronized static Superstructure getInstance() {
-    if (mInstance == null) {
-      mInstance = new Superstructure();
+    private static Superstructure mInstance;
+    private Optional<AimingParameters> mLatestAimingParameters = Optional.empty();
+
+    public static synchronized Superstructure getInstance() {
+        if (mInstance == null) {
+            mInstance = new Superstructure();
+        }
+
+        return mInstance;
     }
 
-    return mInstance;
-  }
+    private Superstructure() {
+        super("superstructure");
+    }
 
-  private Superstructure() {
-      super("superstructure");
-  }
+    @Override
+    public void registerEnabledLoops(ILooper mEnabledLooper) {
+        mEnabledLooper.register(
+            new Loop() {
+                @Override
+                public void onStart(double timestamp) {
+                    synchronized (Superstructure.this) {}
+                }
 
-  @Override
-  public void registerEnabledLoops(ILooper mEnabledLooper) {
-    mEnabledLooper.register(new Loop() {
-      @Override
-      public void onStart(double timestamp) {
-        synchronized (Superstructure.this) {
-        }
-      }
+                @Override
+                public void onLoop(double timestamp) {
+                    synchronized (Superstructure.this) {}
+                }
 
-      @Override
-      public void onLoop(double timestamp) {
-        synchronized (Superstructure.this) {
-        }
-      }
+                @Override
+                public void onStop(double timestamp) {
+                    stop();
+                }
+            }
+        );
+    }
 
-      @Override
-      public void onStop(double timestamp) {
-        stop();
-      }
-    });
-  }
+    public synchronized Optional<AimingParameters> getLatestAimingParameters() {
+        return mLatestAimingParameters;
+    }
 
-  public synchronized Optional<AimingParameters> getLatestAimingParameters() {
-    return mLatestAimingParameters;
-  }
+    public synchronized boolean isAtDesiredState() {
+        return true;
+    }
 
-  public synchronized boolean isAtDesiredState() {
-    return true;
-  }
+    @Override
+    public void stop() {}
 
-  @Override
-  public void stop() {
-  }
+    @Override
+    public boolean checkSystem() {
+        return false;
+    }
 
-  @Override
-  public boolean checkSystem() {
-    return false;
-  }
-
-  @Override
-   public void initSendable(SendableBuilder builder) {
-   }
+    @Override
+    public void initSendable(SendableBuilder builder) {}
 }

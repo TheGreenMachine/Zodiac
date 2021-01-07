@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class GhostDoubleSolenoid implements IDoubleSolenoid {
+
     // State
     private Value value;
 
@@ -31,19 +32,21 @@ public class GhostDoubleSolenoid implements IDoubleSolenoid {
         builder.setSmartDashboardType("Double Solenoid");
         builder.setActuator(true);
         builder.setSafeState(() -> set(Value.kOff));
-        builder.addStringProperty("Value", () -> get().name().substring(1), value -> {
-            if ("Forward".equals(value)) {
-                set(Value.kForward);
-            } else if ("Reverse".equals(value)) {
-                set(Value.kReverse);
-            } else {
-                set(Value.kOff);
+        builder.addStringProperty(
+            "Value",
+            () -> get().name().substring(1),
+            value -> {
+                if ("Forward".equals(value)) {
+                    set(Value.kForward);
+                } else if ("Reverse".equals(value)) {
+                    set(Value.kReverse);
+                } else {
+                    set(Value.kOff);
+                }
             }
-        });
+        );
     }
 
     @Override
-    public void close() throws Exception {
-
-    }
+    public void close() throws Exception {}
 }

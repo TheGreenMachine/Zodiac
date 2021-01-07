@@ -5,6 +5,7 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 
 public class TrajectorySet {
+
     private static TrajectorySet INSTANCE;
 
     public static TrajectorySet getInstance() {
@@ -32,7 +33,6 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_ALLIANCEC;
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_ALLIANCE_ALTB;
 
-
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_OPPOSEA;
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_OPPOSEB;
     public final Trajectory<TimedState<Pose2dWithCurvature>> TEN_BALL_AUTO;
@@ -40,7 +40,8 @@ public class TrajectorySet {
     private TrajectorySet() {
         this.DRIVE_STRAIGHT = new DriveStraight(12).generateTrajectory();
         this.DRIVE_STRAIGHT_TRENCH = new DriveStraight(178, 100).generateTrajectory();
-        this.DRIVE_STRAIGHT_TRENCH_REVERSE = new DriveStraight(100).generateReversedTrajectory();
+        this.DRIVE_STRAIGHT_TRENCH_REVERSE =
+            new DriveStraight(100).generateReversedTrajectory();
 
         this.TUNE_DRIVETRAIN = new DriveStraight(155).generateTrajectory();
         this.LIVING_ROOM = new LivingRoomPath().generateTrajectory();
@@ -52,13 +53,18 @@ public class TrajectorySet {
         this.TRENCH_TO_FEEDER = new FeederToTrenchPath().generateReversedTrajectory();
 
         this.FIVE_BALL_AUTO_OPPOSEA = new DriveStraight(96).generateTrajectory();
-        this.FIVE_BALL_AUTO_OPPOSEB = new FiveBallOpposingPathPartB().generateTrajectory();
+        this.FIVE_BALL_AUTO_OPPOSEB =
+            new FiveBallOpposingPathPartB().generateTrajectory();
 
-        this.EIGHT_BALL_AUTO_ALLIANCEA = new DriveStraight(110).generateReversedTrajectory();
-        this.EIGHT_BALL_AUTO_ALLIANCE_ALTA = new EightBallAllianceAltAPath().generateTrajectory();
-        this.EIGHT_BALL_AUTO_ALLIANCEB = new EightBallAllianceBPath().generateTrajectory();
+        this.EIGHT_BALL_AUTO_ALLIANCEA =
+            new DriveStraight(110).generateReversedTrajectory();
+        this.EIGHT_BALL_AUTO_ALLIANCE_ALTA =
+            new EightBallAllianceAltAPath().generateTrajectory();
+        this.EIGHT_BALL_AUTO_ALLIANCEB =
+            new EightBallAllianceBPath().generateTrajectory();
         this.EIGHT_BALL_AUTO_ALLIANCE_ALTB = new DriveStraight(20).generateTrajectory();
-        this.EIGHT_BALL_AUTO_ALLIANCEC = new EightBallAllianceCPath().generateTrajectory();
+        this.EIGHT_BALL_AUTO_ALLIANCEC =
+            new EightBallAllianceCPath().generateTrajectory();
 
         this.EIGHT_BALL_AUTO_OPPOSEA = new EightBallOpposingAPath().generateTrajectory();
         this.EIGHT_BALL_AUTO_OPPOSEB = new EightBallOpposingBPath().generateTrajectory();

@@ -5,6 +5,7 @@ import com.team254.lib.util.DriveSignal;
 import edu.wpi.first.wpilibj.Timer;
 
 public class DriveOpenLoopAction implements Action {
+
     private static final Drive mDrive = Drive.getInstance();
 
     private double mStartTime;

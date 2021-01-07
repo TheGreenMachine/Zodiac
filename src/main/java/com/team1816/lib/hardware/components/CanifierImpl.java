@@ -3,6 +3,7 @@ package com.team1816.lib.hardware.components;
 import com.ctre.phoenix.CANifier;
 
 public class CanifierImpl extends CANifier implements ICanifier {
+
     /**
      * Constructor.
      *

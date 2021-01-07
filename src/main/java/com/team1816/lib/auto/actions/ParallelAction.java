@@ -9,6 +9,7 @@ import java.util.List;
  * report being done.
  */
 public class ParallelAction implements Action {
+
     private final ArrayList<Action> mActions;
 
     public ParallelAction(List<Action> actions) {

@@ -12,6 +12,7 @@ import com.team1816.lib.auto.actions.SeriesAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
 public class FiveBallOpposingTrenchMode extends AutoModeBase {
+
     private DriveTrajectory mDriveTrajectoryA;
     private DriveTrajectory mDriveTrajectoryB;
 
@@ -21,15 +22,13 @@ public class FiveBallOpposingTrenchMode extends AutoModeBase {
         mDriveTrajectoryA = new DriveTrajectory(trajectoryA, true);
         mDriveTrajectoryB = new DriveTrajectory(trajectoryB, true);
     }
+
     @Override
     protected void routine() throws AutoModeEndedException {
         System.out.println("Running Five Ball Opposition Auto Trench Mode");
         runAction(
             new SeriesAction(
-                new ParallelAction(
-                    mDriveTrajectoryA,
-                    new CollectAction(true)
-                ),
+                new ParallelAction(mDriveTrajectoryA, new CollectAction(true)),
                 new CollectAction(false),
                 new ParallelAction(
                     mDriveTrajectoryB,

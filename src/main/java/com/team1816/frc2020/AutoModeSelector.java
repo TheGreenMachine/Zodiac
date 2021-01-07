@@ -5,7 +5,6 @@ import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.Optional;
 
 public class AutoModeSelector {
@@ -13,7 +12,11 @@ public class AutoModeSelector {
     private boolean hardwareFailure = false;
 
     enum StartingPosition {
-        LEFT_HAB_2, RIGHT_HAB_2, CENTER_HAB_1, LEFT_HAB_1, RIGHT_HAB_1
+        LEFT_HAB_2,
+        RIGHT_HAB_2,
+        CENTER_HAB_1,
+        LEFT_HAB_1,
+        RIGHT_HAB_1,
     }
 
     enum DesiredMode {
@@ -31,7 +34,7 @@ public class AutoModeSelector {
         EIGHT_BALL_OPPOSE,
         TEN_BALL_AUTO,
         DRIVE_STRAIGHT_SHOOT,
-        SIX_BALL_ALLIANCE_STRAIGHT
+        SIX_BALL_ALLIANCE_STRAIGHT,
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -45,7 +48,10 @@ public class AutoModeSelector {
     private AutoModeSelector() {
         mStartPositionChooser = new SendableChooser<>();
 
-        mStartPositionChooser.setDefaultOption("Center HAB 1", StartingPosition.CENTER_HAB_1);
+        mStartPositionChooser.setDefaultOption(
+            "Center HAB 1",
+            StartingPosition.CENTER_HAB_1
+        );
 
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
 
@@ -57,28 +63,45 @@ public class AutoModeSelector {
         SmartDashboard.putData("Auto mode", mModeChooser);
 
         // CheezeCurd
-        mModeChooser.addOption("Living Room",DesiredMode.LIVING_ROOM);
-//        mModeChooser.addOption("Shop", DesiredMode.SHOP);
-//        mModeChooser.addOption("PID", DesiredMode.PID);
+        mModeChooser.addOption("Living Room", DesiredMode.LIVING_ROOM);
+        //        mModeChooser.addOption("Shop", DesiredMode.SHOP);
+        //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
         mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
-        mModeChooser.addOption("Auto Trench Turn Right", DesiredMode.AUTO_TRENCH_TURN_RIGHT);
-        mModeChooser.addOption("Auto Trench Turn Right", DesiredMode.AUTO_TRENCH_TURN_RIGHT);
-
+        mModeChooser.addOption(
+            "Auto Trench Turn Right",
+            DesiredMode.AUTO_TRENCH_TURN_RIGHT
+        );
+        mModeChooser.addOption(
+            "Auto Trench Turn Right",
+            DesiredMode.AUTO_TRENCH_TURN_RIGHT
+        );
 
         mModeChooser.addOption("Drive Straight Shoot", DesiredMode.DRIVE_STRAIGHT_SHOOT);
 
         // ALLIANCE
         mModeChooser.addOption("6 Ball Alliance Trench", DesiredMode.SIX_BALL_ALLIANCE);
-        mModeChooser.addOption("6 Ball Alliance Straight", DesiredMode.SIX_BALL_ALLIANCE_STRAIGHT);
+        mModeChooser.addOption(
+            "6 Ball Alliance Straight",
+            DesiredMode.SIX_BALL_ALLIANCE_STRAIGHT
+        );
         mModeChooser.addOption("8 Ball Alliance Trench", DesiredMode.EIGHT_BALL_ALLIANCE);
-        mModeChooser.addOption("8 Ball Alliance Trench ALT (NOT TESTED)", DesiredMode.EIGHT_BALL_ALLIANCE_ALT);
+        mModeChooser.addOption(
+            "8 Ball Alliance Trench ALT (NOT TESTED)",
+            DesiredMode.EIGHT_BALL_ALLIANCE_ALT
+        );
 
         // OPPOSING
         mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
-        mModeChooser.addOption("8 Ball Opposing Trench (NOT TESTED)", DesiredMode.EIGHT_BALL_OPPOSE);
+        mModeChooser.addOption(
+            "8 Ball Opposing Trench (NOT TESTED)",
+            DesiredMode.EIGHT_BALL_OPPOSE
+        );
 
-        mModeChooser.addOption("10 Ball Trench (Not yet implemented DO NOT USE)", DesiredMode.TEN_BALL_AUTO);
+        mModeChooser.addOption(
+            "10 Ball Trench (Not yet implemented DO NOT USE)",
+            DesiredMode.TEN_BALL_AUTO
+        );
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
 
@@ -89,9 +112,16 @@ public class AutoModeSelector {
     public void updateModeCreator() {
         DesiredMode desiredMode = mModeChooser.getSelected();
         StartingPosition startingPosition = mStartPositionChooser.getSelected();
-        if (mCachedDesiredMode != desiredMode || startingPosition != mCachedStartingPosition) {
-            System.out.println("Auto selection changed, updating creator: desiredMode->" + desiredMode.name()
-                    + ", starting position->" + startingPosition.name());
+        if (
+            mCachedDesiredMode != desiredMode ||
+            startingPosition != mCachedStartingPosition
+        ) {
+            System.out.println(
+                "Auto selection changed, updating creator: desiredMode->" +
+                desiredMode.name() +
+                ", starting position->" +
+                startingPosition.name()
+            );
             mAutoMode = getAutoModeForParams(desiredMode, startingPosition);
         }
         mCachedDesiredMode = desiredMode;
@@ -99,14 +129,23 @@ public class AutoModeSelector {
     }
 
     private boolean startingLeft(StartingPosition position) {
-        return position == StartingPosition.LEFT_HAB_1 || position == StartingPosition.LEFT_HAB_2;
+        return (
+            position == StartingPosition.LEFT_HAB_1 ||
+            position == StartingPosition.LEFT_HAB_2
+        );
     }
 
     private boolean startingHab1(StartingPosition position) {
-        return position == StartingPosition.LEFT_HAB_1 || position == StartingPosition.RIGHT_HAB_1;
+        return (
+            position == StartingPosition.LEFT_HAB_1 ||
+            position == StartingPosition.RIGHT_HAB_1
+        );
     }
 
-    private Optional<AutoModeBase> getAutoModeForParams(DesiredMode mode, StartingPosition position) {
+    private Optional<AutoModeBase> getAutoModeForParams(
+        DesiredMode mode,
+        StartingPosition position
+    ) {
         if (hardwareFailure) {
             return Optional.of(new DriveStraightMode());
         }
@@ -154,7 +193,10 @@ public class AutoModeSelector {
 
     public void outputToSmartDashboard() {
         SmartDashboard.putString("AutoModeSelected", mCachedDesiredMode.name());
-        SmartDashboard.putString("StartingPositionSelected", mCachedStartingPosition.name());
+        SmartDashboard.putString(
+            "StartingPositionSelected",
+            mCachedStartingPosition.name()
+        );
     }
 
     public Optional<AutoModeBase> getAutoMode() {
