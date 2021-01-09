@@ -235,7 +235,7 @@ public class Turret extends Subsystem implements PidProvider {
         return 0;
     }
 
-    public int getTurretPositionTicks() {
+    public double getTurretPositionTicks() {
         return turret.getSelectedSensorPosition(kPIDLoopIDx);
     }
 
@@ -255,7 +255,7 @@ public class Turret extends Subsystem implements PidProvider {
         return (degrees / 360.0) * TURRET_ENCODER_PPR;
     }
 
-    public static double convertTurretTicksToDegrees(int ticks) {
+    public static double convertTurretTicksToDegrees(double ticks) {
         return (ticks / TURRET_ENCODER_PPR) * 360;
     }
 

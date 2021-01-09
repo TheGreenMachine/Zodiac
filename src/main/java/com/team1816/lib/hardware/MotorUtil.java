@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.team1816.frc2020.Constants;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class MotorUtil {
@@ -21,6 +22,10 @@ public class MotorUtil {
         }
     }
 
+    /**
+     * @deprecated Use {@link IMotorControllerEnhanced#configSupplyCurrentLimit(SupplyCurrentLimitConfiguration, int)} instead.
+     */
+    @Deprecated
     public static void configCurrentLimit(
         IMotorControllerEnhanced motor,
         boolean enabled,
@@ -34,11 +39,7 @@ public class MotorUtil {
             peakCurrentLimit,
             peakThresholdSeconds
         );
-        if (motor instanceof TalonFX) {
-            ((TalonFX) motor).configSupplyCurrentLimit(limitConfig);
-        } else if (motor instanceof TalonSRX) {
-            ((TalonSRX) motor).configSupplyCurrentLimit(limitConfig);
-        }
+        motor.configSupplyCurrentLimit(limitConfig, Constants.kCANTimeoutMs);
     }
 
     public static double getSupplyCurrent(IMotorControllerEnhanced motor) {
