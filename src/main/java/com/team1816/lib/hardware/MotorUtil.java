@@ -2,10 +2,8 @@ package com.team1816.lib.hardware;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.team1816.frc2020.Constants;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class MotorUtil {
@@ -20,26 +18,6 @@ public class MotorUtil {
         if (errorCode != ErrorCode.OK) {
             DriverStation.reportError(message + errorCode, false);
         }
-    }
-
-    /**
-     * @deprecated Use {@link IMotorControllerEnhanced#configSupplyCurrentLimit(SupplyCurrentLimitConfiguration, int)} instead.
-     */
-    @Deprecated
-    public static void configCurrentLimit(
-        IMotorControllerEnhanced motor,
-        boolean enabled,
-        double continuousCurrentLimit,
-        double peakCurrentLimit,
-        double peakThresholdSeconds
-    ) {
-        var limitConfig = new SupplyCurrentLimitConfiguration(
-            enabled,
-            continuousCurrentLimit,
-            peakCurrentLimit,
-            peakThresholdSeconds
-        );
-        motor.configSupplyCurrentLimit(limitConfig, Constants.kCANTimeoutMs);
     }
 
     public static double getSupplyCurrent(IMotorControllerEnhanced motor) {
