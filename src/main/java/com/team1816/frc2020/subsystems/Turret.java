@@ -309,7 +309,10 @@ public class Turret extends Subsystem implements PidProvider {
 
     private void positionControl() {
         if (outputsChanged) {
-            turret.set(com.ctre.phoenix.motorcontrol.ControlMode.Position, periodicIO.demandedPositionTicks);
+            turret.set(
+                com.ctre.phoenix.motorcontrol.ControlMode.Position,
+                periodicIO.demandedPositionTicks
+            );
             outputsChanged = false;
         }
     }
@@ -364,6 +367,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public static class PeriodicIO {
+
         // Inputs
         double fieldToTurretAngle;
         double actualPositionTicks;
