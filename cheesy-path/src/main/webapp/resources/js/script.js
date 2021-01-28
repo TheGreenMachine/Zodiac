@@ -8,14 +8,14 @@ let wto;
 let change = "propertychange change click keyup input paste";
 let animating = false;
 
-const fieldWidth = 888; // inches
-const fieldHeight = 360; // inches
+const fieldWidth = 360; // inches
+const fieldHeight = 180; // inches
 
-const xOffset = 263; // inches
-const yOffset = 248; // inches
+const xOffset = 0; // inches
+const yOffset = 0; // inches
 
-const width = 1334; //pixels
-const height = 542; //pixels
+const width = 1312; //pixels
+const height = 650; //pixels
 
 const robotWidth = 28; // inches
 const robotHeight = 28; // inches
@@ -369,13 +369,13 @@ function init() {
     ctx.clearRect(0, 0, width, height);
 
 	image = new Image();
-	image.src = 'resources/img/field.png';
+	image.src = 'resources/img/field1.png';
 	image.onload = function() {
 		ctxBackground.drawImage(image, 0, 0, width, height);
 		update();
 	};
 	imageFlipped = new Image();
-	imageFlipped.src = 'resources/img/fieldFlipped.png';
+	imageFlipped.src = 'resources/img/field2.png';
     rebind();
 }
 

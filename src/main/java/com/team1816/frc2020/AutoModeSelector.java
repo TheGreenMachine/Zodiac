@@ -1,6 +1,7 @@
 package com.team1816.frc2020;
 
-import com.team1816.frc2020.auto.modes.*;
+import com.team1816.frc2020.auto.modes.modes2020.*;
+import com.team1816.frc2020.auto.modes.modes2021.BlueRedPathBMode;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -20,6 +21,7 @@ public class AutoModeSelector {
     }
 
     enum DesiredMode {
+        // 2020
         DRIVE_BY_CAMERA,
         DO_NOTHING,
         TUNE_DRIVETRAIN,
@@ -35,6 +37,9 @@ public class AutoModeSelector {
         TEN_BALL_AUTO,
         DRIVE_STRAIGHT_SHOOT,
         SIX_BALL_ALLIANCE_STRAIGHT,
+
+        // 2021
+        BLUE_RED_PATHB,
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -56,6 +61,8 @@ public class AutoModeSelector {
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
 
         mModeChooser = new SendableChooser<>();
+
+        // 2020
 
         mModeChooser.addOption("Drive By Camera", DesiredMode.DRIVE_BY_CAMERA);
         mModeChooser.addOption("Tune Drivetrain", DesiredMode.TUNE_DRIVETRAIN);
@@ -102,6 +109,10 @@ public class AutoModeSelector {
             "10 Ball Trench (Not yet implemented DO NOT USE)",
             DesiredMode.TEN_BALL_AUTO
         );
+
+        // 2021
+
+        mModeChooser.addOption("Blue & Red Path B", DesiredMode.BLUE_RED_PATHB);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
 
@@ -150,6 +161,7 @@ public class AutoModeSelector {
             return Optional.of(new DriveStraightMode());
         }
         switch (mode) {
+            // 2020
             case DO_NOTHING:
                 return Optional.of(new DoNothingMode());
             case DRIVE_BY_CAMERA:
@@ -178,6 +190,9 @@ public class AutoModeSelector {
                 return (Optional.of(new DriveStraightShootMode()));
             case SIX_BALL_ALLIANCE_STRAIGHT:
                 return (Optional.of(new SixBallAllianceStraightMode()));
+            // 2021
+            case BLUE_RED_PATHB:
+                return (Optional.of(new BlueRedPathBMode()));
             default:
                 break;
         }
