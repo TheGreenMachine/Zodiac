@@ -6,7 +6,7 @@ import badlog.lib.BadLog;
 import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
-import com.team1816.frc2020.paths.TrajectorySet;
+import com.team1816.frc2020.paths.paths2020.TrajectorySet;
 import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.actions.DriveTrajectory;

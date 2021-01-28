@@ -3,6 +3,7 @@ package com.team1816.frc2020.paths;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.team1816.frc2020.paths.paths2020.TrajectorySet;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Twist2d;
