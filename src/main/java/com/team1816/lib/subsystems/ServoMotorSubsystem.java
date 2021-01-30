@@ -375,11 +375,11 @@ public abstract class ServoMotorSubsystem extends Subsystem {
 
         // INPUTS
         public double timestamp;
-        public int position_ticks;
+        public double position_ticks;
         public double position_units;
-        public int velocity_ticks_per_100ms;
-        public int active_trajectory_position; // ticks
-        public int active_trajectory_velocity; // ticks/100ms
+        public double velocity_ticks_per_100ms;
+        public double active_trajectory_position; // ticks
+        public double active_trajectory_velocity; // ticks/100ms
         public double active_trajectory_acceleration; // ticks/100ms/s
         public double output_percent;
         public double output_voltage;
@@ -446,7 +446,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
                     false
                 );
             }
-            final int newVel = mMaster.getActiveTrajectoryVelocity();
+            final double newVel = mMaster.getActiveTrajectoryVelocity();
             if (
                 Util.epsilonEquals(
                     newVel,
@@ -494,7 +494,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
                 mPeriodicIO.absolute_pulse_position_modded += 4096;
             }
 
-            int estimated_pulse_pos =
+            double estimated_pulse_pos =
                 (
                     (mConstants.kMasterConstants.invert_sensor_phase ? -1 : 1) *
                     mPeriodicIO.position_ticks

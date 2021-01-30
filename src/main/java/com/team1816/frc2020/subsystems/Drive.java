@@ -160,10 +160,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
         // INPUTS
         public double timestamp;
-        public int left_position_ticks;
-        public int right_position_ticks;
-        public int left_velocity_ticks_per_100ms;
-        public int right_velocity_ticks_per_100ms;
+        public double left_position_ticks;
+        public double right_position_ticks;
+        public double left_velocity_ticks_per_100ms;
+        public double right_velocity_ticks_per_100ms;
         public Rotation2d gyro_heading = Rotation2d.identity();
         // no_offset = Relative to initial position, unaffected by reset
         public Rotation2d gyro_heading_no_offset = Rotation2d.identity();

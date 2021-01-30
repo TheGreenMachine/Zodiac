@@ -3,9 +3,9 @@ package com.team1816.frc2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
-import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -82,8 +82,14 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     private void configCurrentLimits(int currentLimitAmps) {
-        MotorUtil.configCurrentLimit(shooterMain, true, currentLimitAmps, 0, 0);
-        MotorUtil.configCurrentLimit(shooterFollower, true, currentLimitAmps, 0, 0);
+        shooterMain.configSupplyCurrentLimit(
+            new SupplyCurrentLimitConfiguration(true, currentLimitAmps, 0, 0),
+            Constants.kCANTimeoutMs
+        );
+        shooterFollower.configSupplyCurrentLimit(
+            new SupplyCurrentLimitConfiguration(true, currentLimitAmps, 0, 0),
+            Constants.kCANTimeoutMs
+        );
     }
 
     @Override

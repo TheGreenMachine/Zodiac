@@ -4,7 +4,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
-import com.team1816.lib.hardware.components.motor.GhostTalonSRX;
+import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.motor.LazyTalonFX;
 import com.team254.lib.drivers.LazyTalonSRX;
 
@@ -151,7 +151,7 @@ public class CtreMotorFactory {
     }
 
     public static IMotorControllerEnhanced createGhostTalon() {
-        return new GhostTalonSRX();
+        return new GhostMotorControllerEnhanced();
     }
 
     public static IMotorController createDefaultVictor(int id) {

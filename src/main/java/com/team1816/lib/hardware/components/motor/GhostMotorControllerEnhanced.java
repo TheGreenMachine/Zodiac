@@ -8,17 +8,14 @@ import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.sensors.CANCoder;
 
-public class GhostTalonSRX implements IMotorControllerEnhanced {
+public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
-    private SensorCollection sensorCollection = new SensorCollection(
+    private final SensorCollection sensorCollection = new SensorCollection(
         new BaseTalon(0, "Talon SRX") {}
     );
 
     @Override
     public void set(ControlMode Mode, double demand) {}
-
-    @Override
-    public void set(ControlMode Mode, double demand0, double demand1) {}
 
     @Override
     public void set(
@@ -171,18 +168,22 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public int getSelectedSensorPosition(int pidIdx) {
+    public double getSelectedSensorPosition(int pidIdx) {
         return 0;
     }
 
     @Override
-    public int getSelectedSensorVelocity(int pidIdx) {
+    public double getSelectedSensorVelocity(int pidIdx) {
         return 0;
     }
 
     @Override
-    public ErrorCode setSelectedSensorPosition(int sensorPos, int pidIdx, int timeoutMs) {
-        return ErrorCode.OK;
+    public ErrorCode setSelectedSensorPosition(
+        double sensorPos,
+        int pidIdx,
+        int timeoutMs
+    ) {
+        return null;
     }
 
     @Override
@@ -229,7 +230,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
 
     @Override
     public ErrorCode configForwardSoftLimitThreshold(
-        int forwardSensorLimit,
+        double forwardSensorLimit,
         int timeoutMs
     ) {
         return ErrorCode.OK;
@@ -237,7 +238,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
 
     @Override
     public ErrorCode configReverseSoftLimitThreshold(
-        int reverseSensorLimit,
+        double reverseSensorLimit,
         int timeoutMs
     ) {
         return ErrorCode.OK;
@@ -277,14 +278,14 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode config_IntegralZone(int slotIdx, int izone, int timeoutMs) {
+    public ErrorCode config_IntegralZone(int slotIdx, double izone, int timeoutMs) {
         return ErrorCode.OK;
     }
 
     @Override
     public ErrorCode configAllowableClosedloopError(
         int slotIdx,
-        int allowableCloseLoopError,
+        double allowableCloseLoopError,
         int timeoutMs
     ) {
         return ErrorCode.OK;
@@ -324,7 +325,7 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public int getClosedLoopError(int pidIdx) {
+    public double getClosedLoopError(int pidIdx) {
         return 0;
     }
 
@@ -347,28 +348,26 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     }
 
     @Override
-    public int getActiveTrajectoryPosition() {
+    public double getActiveTrajectoryPosition() {
         return 0;
     }
 
     @Override
-    public int getActiveTrajectoryVelocity() {
+    public double getActiveTrajectoryVelocity() {
         return 0;
     }
 
     @Override
-    public double getActiveTrajectoryHeading() {
-        return 0;
-    }
-
-    @Override
-    public ErrorCode configMotionCruiseVelocity(int sensorUnitsPer100ms, int timeoutMs) {
+    public ErrorCode configMotionCruiseVelocity(
+        double sensorUnitsPer100ms,
+        int timeoutMs
+    ) {
         return ErrorCode.OK;
     }
 
     @Override
     public ErrorCode configMotionAcceleration(
-        int sensorUnitsPer100msPerSec,
+        double sensorUnitsPer100msPerSec,
         int timeoutMs
     ) {
         return ErrorCode.OK;
@@ -522,6 +521,14 @@ public class GhostTalonSRX implements IMotorControllerEnhanced {
     public ErrorCode configSelectedFeedbackSensor(
         FeedbackDevice feedbackDevice,
         int pidIdx,
+        int timeoutMs
+    ) {
+        return ErrorCode.OK;
+    }
+
+    @Override
+    public ErrorCode configSupplyCurrentLimit(
+        SupplyCurrentLimitConfiguration currLimitCfg,
         int timeoutMs
     ) {
         return ErrorCode.OK;
