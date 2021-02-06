@@ -3,6 +3,7 @@ package com.team1816.frc2020.paths;
 import com.team1816.frc2020.paths.paths2020.*;
 import com.team1816.frc2020.paths.paths2021.BluePathA;
 import com.team1816.frc2020.paths.paths2021.BlueRedPathB;
+import com.team1816.frc2020.paths.paths2021.DimeTurn;
 import com.team1816.frc2020.paths.paths2021.RedPathA;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
@@ -47,6 +48,7 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> BLUE_RED_PATHB;
     public final Trajectory<TimedState<Pose2dWithCurvature>> RED_PATHA;
     public final Trajectory<TimedState<Pose2dWithCurvature>> BLUE_PATHA;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> DIME_TURN;
 
     private TrajectorySet() {
         // 2020
@@ -88,5 +90,6 @@ public class TrajectorySet {
         this.BLUE_RED_PATHB = new BlueRedPathB().generateTrajectory();
         this.RED_PATHA = new RedPathA().generateTrajectory();
         this.BLUE_PATHA = new BluePathA().generateTrajectory();
+        this.DIME_TURN = new DimeTurn().generateTrajectory();
     }
 }

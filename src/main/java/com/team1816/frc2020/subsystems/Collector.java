@@ -25,6 +25,8 @@ public class Collector extends Subsystem {
     private boolean isRaising;
     private double startTime;
 
+    private double actualVelocity;
+
     public static Collector getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new Collector();
@@ -39,7 +41,7 @@ public class Collector extends Subsystem {
         this.intake = factory.getMotor(NAME, "intake");
 
         intake.configSupplyCurrentLimit(
-            new SupplyCurrentLimitConfiguration(true, 20, 0, 0),
+            new SupplyCurrentLimitConfiguration(true, 25, 0, 0),
             Constants.kCANTimeoutMs
         );
     }
@@ -51,6 +53,8 @@ public class Collector extends Subsystem {
     public double getIntakePow() {
         return this.intakePow;
     }
+
+    public double getActualVelocity() { return this.actualVelocity; }
 
     public void setArm(boolean down) {
         this.armDown = down;
@@ -66,11 +70,16 @@ public class Collector extends Subsystem {
         isRaising = !down;
         if (down) {
             setArm(true);
-            setIntakePow(1);
+            setIntakePow(6800);
         } else {
             startTime = Timer.getFPGATimestamp();
             setArm(false);
         }
+    }
+
+    @Override
+    public void readPeriodicInputs() {
+        this.actualVelocity = intake.getSelectedSensorVelocity(0);
     }
 
     @Override
@@ -87,7 +96,7 @@ public class Collector extends Subsystem {
 
         if (outputsChanged) {
             this.armPiston.set(armDown);
-            this.intake.set(ControlMode.PercentOutput, intakePow);
+            this.intake.set(ControlMode.Velocity, intakePow);
             this.outputsChanged = false;
         }
     }

@@ -129,6 +129,22 @@ public class Robot extends TimedRobot {
                 "join:Shooter/Velocities"
             );
 
+//            BadLog.createTopic(
+//                "Collector/TargetVel",
+//                "NativeUnits",
+//                collector::getIntakePow,
+//                "hide",
+//                "join:Collector/Velocities"
+//            );
+//
+//            BadLog.createTopic(
+//                "Collector/ActVel",
+//                "NativeUnits",
+//                collector::getActualVelocity,
+//                "hide",
+//                "join:Collector/Velocities"
+//            );
+
             if (Constants.kIsBadlogEnabled) {
                 BadLog.createTopic(
                     "Timings/Looper",

@@ -1,7 +1,6 @@
 $extends: zodiac_base
 subsystems:
     climber:
-        implemented: true
         invertMotor:
             - elevator
     hopper:
