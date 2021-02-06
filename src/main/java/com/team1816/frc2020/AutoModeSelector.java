@@ -1,7 +1,9 @@
 package com.team1816.frc2020;
 
 import com.team1816.frc2020.auto.modes.modes2020.*;
+import com.team1816.frc2020.auto.modes.modes2021.BluePathAMode;
 import com.team1816.frc2020.auto.modes.modes2021.BlueRedPathBMode;
+import com.team1816.frc2020.auto.modes.modes2021.RedPathAMode;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -40,6 +42,8 @@ public class AutoModeSelector {
 
         // 2021
         BLUE_RED_PATHB,
+        RED_PATHA,
+        BLUE_PATHA,
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -113,6 +117,9 @@ public class AutoModeSelector {
         // 2021
 
         mModeChooser.addOption("Blue & Red Path B", DesiredMode.BLUE_RED_PATHB);
+        mModeChooser.addOption("Red Path A", DesiredMode.RED_PATHA);
+        mModeChooser.addOption("Blue Path A", DesiredMode.BLUE_PATHA);
+
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
 
@@ -193,6 +200,10 @@ public class AutoModeSelector {
             // 2021
             case BLUE_RED_PATHB:
                 return (Optional.of(new BlueRedPathBMode()));
+            case RED_PATHA:
+                return (Optional.of(new RedPathAMode()));
+            case BLUE_PATHA:
+                return (Optional.of(new BluePathAMode()));
             default:
                 break;
         }

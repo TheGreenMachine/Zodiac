@@ -6,7 +6,7 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import java.util.List;
 
-public class BlueRedPathB implements PathContainer {
+public class RedPathA implements PathContainer {
 
     @Override
     public Path buildPath() {
@@ -16,10 +16,11 @@ public class BlueRedPathB implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         return List.of(
-            new Pose2d(40, 125, Rotation2d.fromDegrees(0)),
-            new Pose2d(150, 58, Rotation2d.fromDegrees(-10)),
-            new Pose2d(220, 120, Rotation2d.fromDegrees(10)),
-            new Pose2d(335, 55, Rotation2d.fromDegrees(0))
+            new Pose2d(40, 90, Rotation2d.fromDegrees(0)),
+            new Pose2d(90, 90, Rotation2d.fromDegrees(0)),
+            new Pose2d(150, 60, Rotation2d.fromDegrees(0)),
+            new Pose2d(200, 155, Rotation2d.fromDegrees(0)),
+            new Pose2d(330, 155, Rotation2d.fromDegrees(0))
         );
     }
 

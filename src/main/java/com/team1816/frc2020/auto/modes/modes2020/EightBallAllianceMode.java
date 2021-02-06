@@ -3,7 +3,7 @@ package com.team1816.frc2020.auto.modes.modes2020;
 import com.team1816.frc2020.auto.actions.actions2020.CollectAction;
 import com.team1816.frc2020.auto.actions.actions2020.PrepareToShootAction;
 import com.team1816.frc2020.auto.actions.actions2020.ShootAction;
-import com.team1816.frc2020.paths.paths2020.TrajectorySet;
+import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.DriveTrajectory;

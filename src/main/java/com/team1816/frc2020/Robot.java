@@ -1,12 +1,10 @@
 package com.team1816.frc2020;
 
-import static com.team1816.frc2020.controlboard.ControlUtils.*;
-
 import badlog.lib.BadLog;
 import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
-import com.team1816.frc2020.paths.paths2020.TrajectorySet;
+import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.actions.DriveTrajectory;
@@ -27,9 +25,12 @@ import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
+
+import static com.team1816.frc2020.controlboard.ControlUtils.*;
 
 public class Robot extends TimedRobot {
 
@@ -102,6 +103,9 @@ public class Robot extends TimedRobot {
                 BadLog.init(
                     "/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag"
                 );
+
+            BadLog.createValue("Max Velocity", String.valueOf(Constants.kPathFollowingMaxVel));
+            BadLog.createValue("Max Acceleration", String.valueOf(Constants.kPathFollowingMaxAccel));
 
             BadLog.createTopic(
                 "Shooter/ActVel",

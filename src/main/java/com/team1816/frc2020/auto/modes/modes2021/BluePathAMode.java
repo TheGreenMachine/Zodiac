@@ -8,18 +8,17 @@ import com.team1816.lib.auto.actions.ParallelAction;
 import com.team1816.lib.auto.actions.SeriesAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
-public class BlueRedPathBMode extends AutoModeBase {
+public class BluePathAMode extends AutoModeBase {
 
-    private DriveTrajectory trajectory;
+    DriveTrajectory trajectory;
 
-    public BlueRedPathBMode() {
-        trajectory =
-            new DriveTrajectory(TrajectorySet.getInstance().BLUE_RED_PATHB, true);
+    public BluePathAMode() {
+        trajectory = new DriveTrajectory(TrajectorySet.getInstance().BLUE_PATHA, true);
     }
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        System.out.println("Run Blue & Red Path B");
+        System.out.println("Run Blue Path A");
         runAction(
             new SeriesAction(
                 new ParallelAction(trajectory, new CollectAction(true)),

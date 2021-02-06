@@ -1,9 +1,5 @@
 package com.team1816.frc2020.paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import com.team1816.frc2020.paths.paths2020.TrajectorySet;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Twist2d;
@@ -13,6 +9,9 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.Util;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TrajectoryTest {
 
@@ -137,8 +136,8 @@ public class TrajectoryTest {
     @Test
     public void test() {
         var trajectories = TrajectorySet.getInstance();
-        System.out.println(trajectories.FEEDER_TO_TRENCH);
-        verifyTrajectory(trajectories.FEEDER_TO_TRENCH, true);
+        System.out.println(trajectories.BLUE_RED_PATHB);
+        verifyTrajectory(trajectories.BLUE_RED_PATHB, true);
     }
 
     @Test
