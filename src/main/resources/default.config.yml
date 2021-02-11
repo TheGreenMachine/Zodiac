@@ -25,15 +25,14 @@ subsystems:
             canId: 12
 pcm: -1
 constants:
-    wheelDiameter: 3.92820959548
-    trackWidth: 15.75
-    maxVel: 25
-    maxAccel: 75
+    wheelDiameter: 6.3
+    trackWidth: 25 #inches
+    maxVel: 120 #inch/s
+    maxAccel: 60 #inch/s^2
     sensorPhase: 0
-    kLooperDt: .01
+    kLooperDt: .030
     kTrackScrubFactor: 1.0
-    kPCMId: 0
-    pathKs: 0
+    pathKs: 2
     verbose: 0 # 0 or 1
     compressorEnabled: 0 # 0 or 1
     badLogEnabled: 0

@@ -10,12 +10,12 @@ import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.Util;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TrajectoryTest {
 
     public static final double kTestEpsilon = 1e-5;
+    private static final TrajectorySet set = TrajectorySet.getInstance();
 
     public void verifyMirroredTrajectories(
         final Trajectory.Mirrored mirrored,
@@ -135,16 +135,14 @@ public class TrajectoryTest {
 
     @Test
     public void test() {
-        var trajectories = TrajectorySet.getInstance();
-        System.out.println(trajectories.BLUE_RED_PATHB);
-        verifyTrajectory(trajectories.BLUE_RED_PATHB, true);
+        System.out.println(set.BLUE_RED_PATHB);
+        verifyTrajectory(set.BLUE_RED_PATHB, true);
     }
 
     @Test
     public void reversedTrajectory() {
-        var trajectories = TrajectorySet.getInstance();
-        System.out.println(trajectories.TRENCH_TO_FEEDER);
-        verifyTrajectory(trajectories.TRENCH_TO_FEEDER, false);
+        System.out.println(set.TRENCH_TO_FEEDER);
+        verifyTrajectory(set.TRENCH_TO_FEEDER, false);
     }
 
     private void verifyTrajectory(
@@ -201,12 +199,20 @@ public class TrajectoryTest {
         }
     }
 
-    @Test
-    public void timeTrajectory() {
-        var trajectory = TrajectorySet.getInstance().BLUE_PATHA;
+    private void timeTrajectory(String name, Trajectory<TimedState<Pose2dWithCurvature>> trajectory) {
         verifyTrajectory(trajectory, false);
+        System.out.println(name + ": ");
         System.out.println("Final time = " + trajectory.getLastState().t() + " s");
         System.out.println("Final velocity = " + trajectory.getLastState().velocity());
         assertEquals("Final velocity == 0", 0, trajectory.getLastState().velocity(), kTestEpsilon);
+    }
+
+    @Test
+    public void timeTrajectories() {
+        timeTrajectory("BLUE_RED_PATHB", set.BLUE_RED_PATHB);
+
+        System.out.println("Two Path Combo: ");
+        timeTrajectory("RED_PATHA", set.RED_PATHA);
+        timeTrajectory("DIME_TURN", set.DIME_TURN);
     }
 }
