@@ -174,7 +174,7 @@ public class DriveMotionPlanner implements CSVWritable {
             all_constraints.addAll(constraints);
         }
         // Generate the timed trajectory.
-        System.out.println("TrajectoryGenerator reversed condition: " + reversed);
+        /*System.out.println("TrajectoryGenerator reversed condition: " + reversed);
         System.out.println("################### START OF A BUNCH OF PRINTS:");
         System.out.println(
             "start_Vel:" +
@@ -185,7 +185,7 @@ public class DriveMotionPlanner implements CSVWritable {
             max_vel +
             ", max_accel: " +
             max_accel
-        );
+        );*/
         Trajectory<TimedState<Pose2dWithCurvature>> timed_trajectory = TimingUtil.timeParameterizeTrajectory(
             reversed,
             new DistanceView<>(trajectory),

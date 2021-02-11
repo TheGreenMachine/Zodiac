@@ -200,4 +200,13 @@ public class TrajectoryTest {
             prev_left = left_state;
         }
     }
+
+    @Test
+    public void timeTrajectory() {
+        var trajectory = TrajectorySet.getInstance().BLUE_PATHA;
+        verifyTrajectory(trajectory, false);
+        System.out.println("Final time = " + trajectory.getLastState().t() + " s");
+        System.out.println("Final velocity = " + trajectory.getLastState().velocity());
+        assertEquals("Final velocity == 0", 0, trajectory.getLastState().velocity(), kTestEpsilon);
+    }
 }
