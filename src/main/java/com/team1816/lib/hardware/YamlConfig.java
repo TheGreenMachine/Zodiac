@@ -1,10 +1,8 @@
 package com.team1816.lib.hardware;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
@@ -58,7 +56,7 @@ public class YamlConfig {
 
     public static class SubsystemConfig {
 
-        boolean implemented = false;
+        private Boolean implemented;
         Map<String, Integer> talons = new HashMap<>();
         Map<String, Integer> falcons = new HashMap<>();
         Map<String, Integer> victors = new HashMap<>();
@@ -68,38 +66,50 @@ public class YamlConfig {
         Integer canifier;
         List<String> invertMotor = new ArrayList<>();
 
+        public SubsystemConfig() {
+            // no-op
+        }
+
+        public SubsystemConfig(boolean implemented) {
+            this.implemented = implemented;
+        }
+
+        public boolean isImplemented() {
+            return Objects.requireNonNullElse(implemented, false);
+        }
+
         @Override
         public String toString() {
             return (
                 "SubsystemConfig {\n" +
-                "  implemented = " +
-                implemented +
-                ",\n" +
-                "  talons = " +
-                talons.toString() +
-                ",\n" +
-                "  falcons = " +
-                falcons.toString() +
-                ", \n" +
-                "  victors = " +
-                victors.toString() +
-                ",\n" +
-                "  invertMotor = " +
-                invertMotor +
-                ",\n" +
-                "  solenoids = " +
-                solenoids.toString() +
-                ",\n" +
-                "  doublesolenoids = " +
-                doublesolenoids.toString() +
-                ",\n" +
-                "  canifier = " +
-                canifier +
-                ",\n" +
-                "  constants = " +
-                constants.toString() +
-                ",\n" +
-                "}"
+                    "  implemented = " +
+                    implemented +
+                    ",\n" +
+                    "  talons = " +
+                    talons.toString() +
+                    ",\n" +
+                    "  falcons = " +
+                    falcons.toString() +
+                    ", \n" +
+                    "  victors = " +
+                    victors.toString() +
+                    ",\n" +
+                    "  invertMotor = " +
+                    invertMotor +
+                    ",\n" +
+                    "  solenoids = " +
+                    solenoids.toString() +
+                    ",\n" +
+                    "  doublesolenoids = " +
+                    doublesolenoids.toString() +
+                    ",\n" +
+                    "  canifier = " +
+                    canifier +
+                    ",\n" +
+                    "  constants = " +
+                    constants.toString() +
+                    ",\n" +
+                    "}"
             );
         }
 
@@ -109,7 +119,14 @@ public class YamlConfig {
         ) {
             var result = new SubsystemConfig();
 
-            result.implemented = active.implemented || base.implemented;
+            if (active.implemented != null) {
+                result.implemented = active.implemented;
+            } else if (base.implemented != null) {
+                result.implemented = base.implemented;
+            } else {
+                result.implemented = false;
+            }
+
             mergeMap(result.talons, active.talons, base.talons);
             mergeMap(result.falcons, active.falcons, base.falcons);
             mergeMap(result.victors, active.victors, base.victors);
@@ -143,13 +160,13 @@ public class YamlConfig {
     public String toString() {
         return (
             "YamlConfig {\n" +
-            "  subsystems = " +
-            subsystems.toString() +
-            "\n  pcm = " +
-            pcm +
-            "\n  constants = " +
-            constants.toString() +
-            "\n}"
+                "  subsystems = " +
+                subsystems.toString() +
+                "\n  pcm = " +
+                pcm +
+                "\n  constants = " +
+                constants.toString() +
+                "\n}"
         );
     }
 

@@ -51,7 +51,7 @@ public class RobotFactory {
         var subsystem = getSubsystem(subsystemName);
 
         // Motor creation
-        if (subsystem.implemented) {
+        if (subsystem.isImplemented()) {
             if (isHardwareValid(subsystem.talons.get(name))) {
                 motor =
                     CtreMotorFactory.createDefaultTalon(
@@ -67,12 +67,12 @@ public class RobotFactory {
             } // Never make the victor a master
         }
         if (motor == null) {
-            if (subsystem.implemented) reportGhostWarning("Motor", subsystemName, name);
+            if (subsystem.isImplemented()) reportGhostWarning("Motor", subsystemName, name);
             motor = CtreMotorFactory.createGhostTalon();
         }
 
         // Motor configuration
-        if (subsystem.implemented && subsystem.invertMotor.contains(name)) {
+        if (subsystem.isImplemented() && subsystem.invertMotor.contains(name)) {
             System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
             motor.setInverted(true);
         }
@@ -107,7 +107,7 @@ public class RobotFactory {
     ) { // TODO: optimize this method
         IMotorController motor = null;
         var subsystem = getSubsystem(subsystemName);
-        if (subsystem.implemented && master != null) {
+        if (subsystem.isImplemented() && master != null) {
             if (isHardwareValid(subsystem.talons.get(name))) {
                 // Talons must be following another Talon, cannot follow a Victor.
                 motor =
@@ -133,7 +133,7 @@ public class RobotFactory {
             }
         }
         if (motor == null) {
-            if (subsystem.implemented) reportGhostWarning("Motor", subsystemName, name);
+            if (subsystem.isImplemented()) reportGhostWarning("Motor", subsystemName, name);
             motor = CtreMotorFactory.createGhostTalon();
         }
         if (master != null) {
@@ -150,10 +150,10 @@ public class RobotFactory {
     public ISolenoid getSolenoid(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
         Integer solenoidId = subsystem.solenoids.get(name);
-        if (subsystem.implemented && isHardwareValid(solenoidId) && isPcmEnabled()) {
+        if (subsystem.isImplemented() && isHardwareValid(solenoidId) && isPcmEnabled()) {
             return new SolenoidImpl(config.pcm, solenoidId);
         }
-        if (subsystem.implemented) {
+        if (subsystem.isImplemented()) {
             reportGhostWarning("Solenoid", subsystemName, name);
         }
         return new GhostSolenoid();
@@ -165,7 +165,7 @@ public class RobotFactory {
         YamlConfig.DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName)
             .doublesolenoids.get(name);
         if (
-            subsystem.implemented &&
+            subsystem.isImplemented() &&
             solenoidConfig != null &&
             isHardwareValid(solenoidConfig.forward) &&
             isHardwareValid(solenoidConfig.reverse) &&
@@ -184,7 +184,7 @@ public class RobotFactory {
     @Nonnull
     public ICanifier getCanifier(String subsystemName) {
         var subsystem = getSubsystem(subsystemName);
-        if (subsystem.implemented && isHardwareValid(subsystem.canifier)) {
+        if (subsystem.isImplemented() && isHardwareValid(subsystem.canifier)) {
             return new CanifierImpl(subsystem.canifier);
         }
         reportGhostWarning("CANifier", subsystemName, "canifier");
@@ -216,7 +216,7 @@ public class RobotFactory {
     }
 
     public double getConstant(String subsystemName, String name, double defaultVal) {
-        if (!getSubsystem(subsystemName).implemented) {
+        if (!getSubsystem(subsystemName).isImplemented()) {
             return defaultVal;
         }
         if (!getSubsystem(subsystemName).constants.containsKey(name)) {
@@ -241,8 +241,7 @@ public class RobotFactory {
     public YamlConfig.SubsystemConfig getSubsystem(String subsystemName) {
         var subsystem = config.subsystems.get(subsystemName);
         if (subsystem == null) {
-            subsystem = new YamlConfig.SubsystemConfig();
-            subsystem.implemented = false;
+            subsystem = new YamlConfig.SubsystemConfig(false);
         }
         return subsystem;
     }

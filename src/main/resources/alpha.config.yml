@@ -44,6 +44,8 @@ subsystems:
     ledmanager:
         implemented: false
         canifier: 18
+    collector:
+        implemented: false
     camera:
         implemented: false
         canifier: 19
