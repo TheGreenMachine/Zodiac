@@ -1,5 +1,8 @@
 $extends: zodiac_base
 subsystems:
+    drivetrain:
+        invertMotor:
+            - leftMain
     climber:
         invertMotor:
             - elevator
