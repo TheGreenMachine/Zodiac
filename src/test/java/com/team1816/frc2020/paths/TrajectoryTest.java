@@ -136,7 +136,7 @@ public class TrajectoryTest {
     @Test
     public void test() {
         System.out.println(set.BLUE_RED_PATHB);
-        verifyTrajectory(set.BLUE_RED_PATHB, true);
+        verifyTrajectory(set.BLUE_RED_PATHB, false);
     }
 
     @Test
