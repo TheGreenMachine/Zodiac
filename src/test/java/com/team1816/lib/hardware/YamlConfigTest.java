@@ -4,24 +4,23 @@ import static org.junit.Assert.*;
 
 import java.io.InputStream;
 import java.util.List;
+
 import org.junit.Test;
 
 public class YamlConfigTest {
 
+    private YamlConfig loadConfig(String configName) {
+        InputStream configFile = getClass()
+            .getClassLoader()
+            .getResourceAsStream(configName + ".config.yml");
+        return YamlConfig.loadRaw(configFile);
+    }
+
     @Test
     public void subsystemConfig_merge() {
-        InputStream baseConfigFile = getClass()
-            .getClassLoader()
-            .getResourceAsStream("test_base.config.yml");
-        InputStream activeConfigFile = getClass()
-            .getClassLoader()
-            .getResourceAsStream("test_active.config.yml");
-
-        YamlConfig.SubsystemConfig base = YamlConfig
-            .loadRaw(baseConfigFile)
+        var base = loadConfig("test_base")
             .subsystems.get("turret");
-        YamlConfig.SubsystemConfig active = YamlConfig
-            .loadRaw(activeConfigFile)
+        var active = loadConfig("test_active")
             .subsystems.get("turret");
         YamlConfig.SubsystemConfig result = YamlConfig.SubsystemConfig.merge(
             active,
@@ -46,7 +45,7 @@ public class YamlConfigTest {
             13,
             result.talons.get("turret").intValue()
         );
-        assertTrue("implemented == true (favors true)", result.implemented);
+        assertTrue("implemented == true (favors true)", result.isImplemented());
     }
 
     @Test(expected = ConfigIsAbstractException.class)
@@ -65,15 +64,8 @@ public class YamlConfigTest {
 
     @Test
     public void yamlConfig_merge() {
-        InputStream baseConfigFile = getClass()
-            .getClassLoader()
-            .getResourceAsStream("test_base.config.yml");
-        InputStream activeConfigFile = getClass()
-            .getClassLoader()
-            .getResourceAsStream("test_active.config.yml");
-
-        YamlConfig base = YamlConfig.loadRaw(baseConfigFile);
-        YamlConfig active = YamlConfig.loadRaw(activeConfigFile);
+        YamlConfig base = loadConfig("test_base");
+        YamlConfig active = loadConfig("test_active");
         YamlConfig result = YamlConfig.merge(active, base);
 
         verifyMergedConfig(result);
@@ -87,6 +79,29 @@ public class YamlConfigTest {
         YamlConfig config = YamlConfig.loadFrom(configFile);
         verifyMergedConfig(config);
     }
+
+    @Test
+    public void testImplementedOverride() {
+        mergeImplemented(true, false, true);
+        mergeImplemented(false, true, false);
+        mergeImplemented(true, true, true);
+        mergeImplemented(false, false, false);
+        mergeImplemented(null, null, false);
+        mergeImplemented(null, true, true);
+        mergeImplemented(true, null, true);
+    }
+
+
+    private void mergeImplemented(Boolean active, Boolean base, boolean result) {
+        var configActive = new YamlConfig.SubsystemConfig(active);
+        var configBase = new YamlConfig.SubsystemConfig(base);
+        var configResult = YamlConfig.SubsystemConfig.merge(
+            configActive,
+            configBase
+        );
+        assertEquals(result, configResult.isImplemented());
+    }
+
 
     void verifyMergedConfig(YamlConfig config) {
         System.out.println(config);

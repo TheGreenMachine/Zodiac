@@ -70,7 +70,7 @@ public class YamlConfig {
             // no-op
         }
 
-        public SubsystemConfig(boolean implemented) {
+        public SubsystemConfig(Boolean implemented) {
             this.implemented = implemented;
         }
 
