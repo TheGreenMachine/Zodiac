@@ -9,15 +9,17 @@ subsystems:
             rightMain: 13
             rightFollower: 12
             rightFollowerTwo: -1
+        invertMotor:
+            - rightMain
         constants:
-            pigeonId: -1
+            pigeonId: 9
             pigeonOnTalon: -1
-            kP: 0 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
+            kP: 0.623 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
             kI: 0 # 0.018
             kD: 0 # 3.6
-            kF: 0
+            kF: 0.87
             iZone: 0
-            encPPR: 22220.8
+            encPPR: 999
             currentFloorCheck: .12
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000

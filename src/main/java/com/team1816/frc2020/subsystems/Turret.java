@@ -256,7 +256,10 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public static double convertTurretTicksToDegrees(double ticks) {
-        return (ticks / TURRET_ENCODER_PPR) * 360;
+        if (TURRET_ENCODER_PPR != 0) {
+            return (ticks / TURRET_ENCODER_PPR) * 360;
+        }
+        return 0;
     }
 
     public double getTurretAngleRelativeToField() {

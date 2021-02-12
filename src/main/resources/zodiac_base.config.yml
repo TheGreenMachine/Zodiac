@@ -9,8 +9,6 @@ subsystems:
             rightMain: 14
             rightFollower: 15
             rightFollowerTwo: -1
-        invertMotor:
-            - leftMain
         constants:
             pigeonId: 9
             pigeonOnTalon: -1

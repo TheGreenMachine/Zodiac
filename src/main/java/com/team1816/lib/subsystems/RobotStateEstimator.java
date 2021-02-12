@@ -129,7 +129,7 @@ public class RobotStateEstimator extends Subsystem {
         ); // - Turret.CARDINAL_NORTH);
         SmartDashboard.putNumber(
             "test num",
-            new Rotation2d().fromDegrees(turret.getTurretPositionDegrees()).getDegrees()
+            Rotation2d.fromDegrees(turret.getTurretPositionDegrees()).getDegrees()
         );
     }
 }
