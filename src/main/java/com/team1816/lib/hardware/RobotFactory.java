@@ -67,7 +67,11 @@ public class RobotFactory {
             } // Never make the victor a master
         }
         if (motor == null) {
-            if (subsystem.isImplemented()) reportGhostWarning("Motor", subsystemName, name);
+            if (subsystem.isImplemented()) reportGhostWarning(
+                "Motor",
+                subsystemName,
+                name
+            );
             motor = CtreMotorFactory.createGhostTalon();
         }
 
@@ -133,7 +137,11 @@ public class RobotFactory {
             }
         }
         if (motor == null) {
-            if (subsystem.isImplemented()) reportGhostWarning("Motor", subsystemName, name);
+            if (subsystem.isImplemented()) reportGhostWarning(
+                "Motor",
+                subsystemName,
+                name
+            );
             motor = CtreMotorFactory.createGhostTalon();
         }
         if (master != null) {

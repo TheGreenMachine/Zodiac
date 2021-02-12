@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.InputStream;
 import java.util.List;
-
 import org.junit.Test;
 
 public class YamlConfigTest {
@@ -18,10 +17,8 @@ public class YamlConfigTest {
 
     @Test
     public void subsystemConfig_merge() {
-        var base = loadConfig("test_base")
-            .subsystems.get("turret");
-        var active = loadConfig("test_active")
-            .subsystems.get("turret");
+        var base = loadConfig("test_base").subsystems.get("turret");
+        var active = loadConfig("test_active").subsystems.get("turret");
         YamlConfig.SubsystemConfig result = YamlConfig.SubsystemConfig.merge(
             active,
             base
@@ -91,17 +88,12 @@ public class YamlConfigTest {
         mergeImplemented(true, null, true);
     }
 
-
     private void mergeImplemented(Boolean active, Boolean base, boolean result) {
         var configActive = new YamlConfig.SubsystemConfig(active);
         var configBase = new YamlConfig.SubsystemConfig(base);
-        var configResult = YamlConfig.SubsystemConfig.merge(
-            configActive,
-            configBase
-        );
+        var configResult = YamlConfig.SubsystemConfig.merge(configActive, configBase);
         assertEquals(result, configResult.isImplemented());
     }
-
 
     void verifyMergedConfig(YamlConfig config) {
         System.out.println(config);

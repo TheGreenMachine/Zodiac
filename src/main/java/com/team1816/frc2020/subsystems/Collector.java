@@ -54,7 +54,9 @@ public class Collector extends Subsystem {
         return this.intakePow;
     }
 
-    public double getActualVelocity() { return this.actualVelocity; }
+    public double getActualVelocity() {
+        return this.actualVelocity;
+    }
 
     public void setArm(boolean down) {
         this.armDown = down;

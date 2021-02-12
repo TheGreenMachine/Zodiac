@@ -2,7 +2,6 @@ package com.team1816.lib.hardware;
 
 import java.io.InputStream;
 import java.util.*;
-
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
@@ -82,34 +81,34 @@ public class YamlConfig {
         public String toString() {
             return (
                 "SubsystemConfig {\n" +
-                    "  implemented = " +
-                    implemented +
-                    ",\n" +
-                    "  talons = " +
-                    talons.toString() +
-                    ",\n" +
-                    "  falcons = " +
-                    falcons.toString() +
-                    ", \n" +
-                    "  victors = " +
-                    victors.toString() +
-                    ",\n" +
-                    "  invertMotor = " +
-                    invertMotor +
-                    ",\n" +
-                    "  solenoids = " +
-                    solenoids.toString() +
-                    ",\n" +
-                    "  doublesolenoids = " +
-                    doublesolenoids.toString() +
-                    ",\n" +
-                    "  canifier = " +
-                    canifier +
-                    ",\n" +
-                    "  constants = " +
-                    constants.toString() +
-                    ",\n" +
-                    "}"
+                "  implemented = " +
+                implemented +
+                ",\n" +
+                "  talons = " +
+                talons.toString() +
+                ",\n" +
+                "  falcons = " +
+                falcons.toString() +
+                ", \n" +
+                "  victors = " +
+                victors.toString() +
+                ",\n" +
+                "  invertMotor = " +
+                invertMotor +
+                ",\n" +
+                "  solenoids = " +
+                solenoids.toString() +
+                ",\n" +
+                "  doublesolenoids = " +
+                doublesolenoids.toString() +
+                ",\n" +
+                "  canifier = " +
+                canifier +
+                ",\n" +
+                "  constants = " +
+                constants.toString() +
+                ",\n" +
+                "}"
             );
         }
 
@@ -160,13 +159,13 @@ public class YamlConfig {
     public String toString() {
         return (
             "YamlConfig {\n" +
-                "  subsystems = " +
-                subsystems.toString() +
-                "\n  pcm = " +
-                pcm +
-                "\n  constants = " +
-                constants.toString() +
-                "\n}"
+            "  subsystems = " +
+            subsystems.toString() +
+            "\n  pcm = " +
+            pcm +
+            "\n  constants = " +
+            constants.toString() +
+            "\n}"
         );
     }
 

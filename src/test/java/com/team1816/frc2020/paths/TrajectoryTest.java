@@ -1,5 +1,7 @@
 package com.team1816.frc2020.paths;
 
+import static org.junit.Assert.*;
+
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Twist2d;
@@ -9,8 +11,6 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.Util;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class TrajectoryTest {
 
@@ -199,12 +199,20 @@ public class TrajectoryTest {
         }
     }
 
-    private void timeTrajectory(String name, Trajectory<TimedState<Pose2dWithCurvature>> trajectory) {
+    private void timeTrajectory(
+        String name,
+        Trajectory<TimedState<Pose2dWithCurvature>> trajectory
+    ) {
         verifyTrajectory(trajectory, false);
         System.out.println(name + ": ");
         System.out.println("Final time = " + trajectory.getLastState().t() + " s");
         System.out.println("Final velocity = " + trajectory.getLastState().velocity());
-        assertEquals("Final velocity == 0", 0, trajectory.getLastState().velocity(), kTestEpsilon);
+        assertEquals(
+            "Final velocity == 0",
+            0,
+            trajectory.getLastState().velocity(),
+            kTestEpsilon
+        );
     }
 
     @Test

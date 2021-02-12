@@ -1,5 +1,7 @@
 package com.team1816.frc2020;
 
+import static com.team1816.frc2020.controlboard.ControlUtils.*;
+
 import badlog.lib.BadLog;
 import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
@@ -25,12 +27,9 @@ import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
-
-import static com.team1816.frc2020.controlboard.ControlUtils.*;
 
 public class Robot extends TimedRobot {
 
@@ -104,8 +103,14 @@ public class Robot extends TimedRobot {
                     "/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag"
                 );
 
-            BadLog.createValue("Max Velocity", String.valueOf(Constants.kPathFollowingMaxVel));
-            BadLog.createValue("Max Acceleration", String.valueOf(Constants.kPathFollowingMaxAccel));
+            BadLog.createValue(
+                "Max Velocity",
+                String.valueOf(Constants.kPathFollowingMaxVel)
+            );
+            BadLog.createValue(
+                "Max Acceleration",
+                String.valueOf(Constants.kPathFollowingMaxAccel)
+            );
 
             BadLog.createTopic(
                 "Shooter/ActVel",
@@ -129,21 +134,21 @@ public class Robot extends TimedRobot {
                 "join:Shooter/Velocities"
             );
 
-//            BadLog.createTopic(
-//                "Collector/TargetVel",
-//                "NativeUnits",
-//                collector::getIntakePow,
-//                "hide",
-//                "join:Collector/Velocities"
-//            );
-//
-//            BadLog.createTopic(
-//                "Collector/ActVel",
-//                "NativeUnits",
-//                collector::getActualVelocity,
-//                "hide",
-//                "join:Collector/Velocities"
-//            );
+            //            BadLog.createTopic(
+            //                "Collector/TargetVel",
+            //                "NativeUnits",
+            //                collector::getIntakePow,
+            //                "hide",
+            //                "join:Collector/Velocities"
+            //            );
+            //
+            //            BadLog.createTopic(
+            //                "Collector/ActVel",
+            //                "NativeUnits",
+            //                collector::getActualVelocity,
+            //                "hide",
+            //                "join:Collector/Velocities"
+            //            );
 
             if (Constants.kIsBadlogEnabled) {
                 BadLog.createTopic(
