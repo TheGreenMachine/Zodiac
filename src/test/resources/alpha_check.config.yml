@@ -1,0 +1,93 @@
+$abstract: false
+$extends: null
+constants: {maxAccel: 60.0, pathKs: 2.0, logAuto: 1.0, kLooperDt: 0.03, badLogEnabled: 1.0,
+  kTrackScrubFactor: 1.0, verbose: 0.0, wheelDiameter: 6.32, logTeleOp: 0.0, logTeleop: 1.0,
+  compressorEnabled: 1.0, trackWidth: 25.0, maxVel: 120.0, sensorPhase: 0.0, useAutoAim: 1.0}
+pcm: 8
+subsystems:
+  turret:
+    canifier: null
+    constants: {kP: 2.83, kD: 0.0, minPos: -3802.0, kF: 0.0, encPPR: 4124.6, kI: 0.0,
+      maxPos: -757.0}
+    doublesolenoids: {}
+    falcons: {}
+    implemented: false
+    invertMotor: []
+    solenoids: {}
+    talons: {turret: 13}
+    victors: {}
+  ledmanager:
+    canifier: 18
+    constants: {}
+    doublesolenoids: {}
+    falcons: {}
+    implemented: false
+    invertMotor: []
+    solenoids: {}
+    talons: {}
+    victors: {}
+  shooter:
+    canifier: null
+    constants: {rpmEpsilonCheck: 60.0, kP: 0.15, kD: 2.5, currentEpsilonCheck: 0.2,
+      velocityThreshold: 500.0, currentFloorCheck: 0.12, kF: 0.053, kI: 0.0, rpmFloorCheck: 2000.0}
+    doublesolenoids: {}
+    falcons: {shooterMain: 3, shooterFollower: 2}
+    implemented: false
+    invertMotor: []
+    solenoids: {}
+    talons: {}
+    victors: {}
+  drivetrain:
+    canifier: null
+    constants: {pigeonOnTalon: -1.0, rpmEpsilonCheck: 60.0, kP: 0.623, iZone: 0.0,
+      openLoopRampRate: 0.8, pigeonId: 9.0, encPPR: 999.0, rpmFloorCheck: 2000.0,
+      kD: 0.0, currentEpsilonCheck: 0.2, currentFloorCheck: 0.12, kF: 0.87, kI: 0.0}
+    doublesolenoids: {}
+    falcons: {rightMain: 14, rightFollowerTwo: -1, rightFollower: 15, leftMain: 17,
+      leftFollowerTwo: -1, leftFollower: 1}
+    implemented: true
+    invertMotor: [rightMain]
+    solenoids: {}
+    talons: {rightMain: 13, rightFollowerTwo: -1, rightFollower: 12, leftMain: 15,
+      leftFollowerTwo: -1, leftFollower: 14}
+    victors: {}
+  camera:
+    canifier: 19
+    constants: {}
+    doublesolenoids: {}
+    falcons: {}
+    implemented: false
+    invertMotor: []
+    solenoids: {}
+    talons: {}
+    victors: {}
+  climber:
+    canifier: null
+    constants: {}
+    doublesolenoids: {}
+    falcons: {}
+    implemented: false
+    invertMotor: [elevator]
+    solenoids: {deployer: 5}
+    talons: {elevator: 12}
+    victors: {}
+  hopper:
+    canifier: null
+    constants: {}
+    doublesolenoids: {}
+    falcons: {}
+    implemented: false
+    invertMotor: [spindexer, elevator]
+    solenoids: {feederFlap: 4}
+    talons: {spindexer: 4, elevator: 5}
+    victors: {}
+  collector:
+    canifier: null
+    constants: {kD: 0.0, kF: 0.0545, kP: 0.0, kI: 0.0}
+    doublesolenoids: {}
+    falcons: {intake: 11}
+    implemented: false
+    invertMotor: [intake]
+    solenoids: {arm: 0}
+    talons: {}
+    victors: {}

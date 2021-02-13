@@ -129,7 +129,7 @@ public class YamlConfigTest {
     @Test
     @Ignore // Only used to generate checking file
     public void outputMergedYaml() throws ConfigIsAbstractException, IOException {
-        var configName = "zodiac_pro";
+        var configName = "alpha";
         InputStream configFile =
             Robot.class.getClassLoader().getResourceAsStream(configName + ".config.yml");
         try (var writer = new FileWriter(configName + "_check.config.yml")) {
@@ -138,8 +138,12 @@ public class YamlConfigTest {
     }
 
     @Test
-    public void verifyNewYaml_zodiacPro() throws ConfigIsAbstractException {
-        var configName = "zodiac_pro";
+    public void verifyNewYamls() throws ConfigIsAbstractException {
+        verifyNewYaml("zodiac_pro");
+        verifyNewYaml("alpha");
+    }
+
+    private void verifyNewYaml(String configName) throws ConfigIsAbstractException {
         var newConfigFile =
             Robot.class.getClassLoader().getResourceAsStream(configName + ".config.yml");
         var oldConfigFile = getClass()
