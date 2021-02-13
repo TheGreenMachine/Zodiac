@@ -19,7 +19,7 @@ subsystems:
             kF: 0.87
             encPPR: 999
 constants:
-    trackWidth: 25 # inches, TODO: Update Alpha trackWidth
+    trackWidth: 23 # inches
     wheelDiameter: 6.32 #inches
     logTeleop: 1
     logAuto: 1

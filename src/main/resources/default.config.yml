@@ -1,41 +1,19 @@
+$extends: base
 subsystems:
     drivetrain:
         implemented: true
         talons:
-            leftMain: 2
-            leftSlaveOne: -1
-            leftSlaveTwo: -1
-            rightMain: 1
-            rightSlaveOne: -1
-            rightSlaveTwo: -1
+            leftMain: -1
+            leftFollowerOne: -1
+            leftFollowerTwo: -1
+            rightMain: -1
+            rightFollowerOne: -1
+            rightFollowerTwo: -1
+        invertMotor:
+            - leftMain
         constants:
-            pigeonId: 13
-            pigeonOnTalon: 0
-            kP: 0
-            kI: 0
-            kD: 0
-            kF: 1.70
-            iZone: 28.884639745885927
-            encPPR: 960
-            invertMotor: 2
-            openLoopRampRate: 0.8
-    canifier:
-        implemented: true
-        constants:
-            canId: 12
+            encPPR: 22220.8
 pcm: -1
 constants:
     wheelDiameter: 6.3
     trackWidth: 25 #inches
-    maxVel: 120 #inch/s
-    maxAccel: 60 #inch/s^2
-    sensorPhase: 0
-    kLooperDt: .030
-    kTrackScrubFactor: 1.0
-    pathKs: 2
-    verbose: 0 # 0 or 1
-    compressorEnabled: 0 # 0 or 1
-    badLogEnabled: 0
-    logTeleOp: 0
-    logAuto: 0
-    useAutoAim: 1
