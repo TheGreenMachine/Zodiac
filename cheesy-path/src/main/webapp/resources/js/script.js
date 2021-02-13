@@ -14,8 +14,8 @@ const fieldHeight = 180; // inches
 const xOffset = 0; // inches
 const yOffset = 0; // inches
 
-const width = 1312; //pixels
-const height = 650; //pixels
+const width = 980; //pixels
+const height = 490; //pixels
 
 const robotWidth = 34; // inches
 const robotHeight = 34; // inches
@@ -369,13 +369,13 @@ function init() {
     ctx.clearRect(0, 0, width, height);
 
 	image = new Image();
-	image.src = 'resources/img/field1.png';
+	image.src = 'resources/img/6_field1.jpg';
 	image.onload = function() {
 		ctxBackground.drawImage(image, 0, 0, width, height);
 		update();
 	};
 	imageFlipped = new Image();
-	imageFlipped.src = 'resources/img/field2.png';
+	imageFlipped.src = 'resources/img/6_field2.jpg';
     rebind();
 }
 
