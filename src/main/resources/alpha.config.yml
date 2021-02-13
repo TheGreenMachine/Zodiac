@@ -21,7 +21,7 @@ subsystems:
 pcm: 8
 constants:
     trackWidth: 23 # inches
-    wheelDiameter: 6.32 #inches
+    wheelDiameter: 6.322 #inches
     logTeleop: 1
     logAuto: 1
     badLogEnabled: 1
