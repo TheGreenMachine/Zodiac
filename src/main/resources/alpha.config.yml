@@ -18,6 +18,7 @@ subsystems:
             kD: 0 # 3.6
             kF: 0.87
             encPPR: 999
+pcm: 8
 constants:
     trackWidth: 23 # inches
     wheelDiameter: 6.32 #inches
