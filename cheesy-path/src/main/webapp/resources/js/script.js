@@ -1,5 +1,6 @@
 let waypoints = [];
 let splinePoints = [];
+let fieldCanvas;
 let ctx;
 let ctxBackground;
 let image;
@@ -355,8 +356,10 @@ function init() {
     background.css("height", heightString);
     canvases.css("width", widthString);
     canvases.css("height", heightString);
+    fieldCanvas = document.getElementById('field');
+    fieldCanvas.addEventListener('click', onCanvasClick);
 
-	ctx = document.getElementById('field').getContext('2d');
+	ctx = fieldCanvas.getContext('2d');
 	ctx.canvas.width = width;
 	ctx.canvas.height = height;
     ctx.clearRect(0, 0, width, height);
@@ -389,10 +392,10 @@ function rebind() {
     let input = $('input');
     input.unbind(change);
     input.bind(change, function() {
-        clearTimeout(wto);
-        wto = setTimeout(function() {
+        cancelAnimationFrame(wto);
+        wto = requestAnimationFrame(function() {
             update();
-        }, 500);
+        });
     });
 }
 
@@ -400,15 +403,36 @@ function addPoint() {
 	let prev;
 	if (waypoints.length > 0) prev = waypoints[waypoints.length - 1].translation;
 	else prev = new Translation2d(50, 50);
-	$("tbody").append("<tr>" + "<td class='drag-handler'></td>"
-        + "<td class='x'><input type='number' value='" + (prev.x + 50) + "'></td>"
-        + "<td class='y'><input type='number' value='" + (prev.y + 50) + "'></td>"
+	_addPoint(prev.x + 50, prev.y + 50);
+}
+
+function _addPoint(x, y) {
+    $("tbody").append("<tr>" + "<td class='drag-handler'></td>"
+        + "<td class='x'><input type='number' value='" + (x) + "'></td>"
+        + "<td class='y'><input type='number' value='" + (y) + "'></td>"
         + "<td class='heading'><input type='number' value='0'></td>"
         + "<td class='comments'><input type='search' placeholder='Comments'></td>"
         + "<td class='enabled'><input type='checkbox' checked></td>"
         + "<td class='delete'><button onclick='$(this).parent().parent().remove();update()'>&times;</button></td></tr>");
-	update();
-	rebind();
+    update();
+    rebind();
+}
+
+function getCursorPosition(event) {
+    const rect = fieldCanvas.getBoundingClientRect();
+    return {
+        x: (event.clientX - rect.left) * (width / rect.width),
+        y: (event.clientY - rect.top) * (height / rect.height),
+    };
+}
+
+function onCanvasClick(event) {
+    let { x: canvasX, y: canvasY } = getCursorPosition(event);
+    console.log(`canvas ${canvasX} ${canvasY}`)
+    let x = Math.round(canvasX * (fieldWidth / width) - xOffset);
+    let y = Math.round((height - canvasY) * (fieldHeight / height) - yOffset);
+    console.log(`onCanvasClick ${x} ${y}`);
+    _addPoint(x, y);
 }
 
 function draw(style) {
@@ -462,7 +486,7 @@ function update() {
 				return;
 			}
 
-			console.log(data);
+			// console.log(data);
 
 			let points = JSON.parse(data).points;
 		

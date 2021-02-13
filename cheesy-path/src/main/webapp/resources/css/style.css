@@ -24,6 +24,10 @@
     position: relative;
 }
 
+#field {
+    cursor: crosshair;
+}
+
 #canvases canvas {
     position: absolute;
     top: 0;
