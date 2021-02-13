@@ -82,11 +82,11 @@ subsystems:
     victors: {}
   collector:
     canifier: null
-    constants: {kP: 0.2, kI: 0.0, kD: 0.0, kF: 0.0}
+    constants: {kD: 0.0, kF: 0.0545, kP: 0.0, kI: 0.0}
     doublesolenoids: {}
-    falcons: {}
+    falcons: {intake: 11}
     implemented: true
-    invertMotor: []
+    invertMotor: [intake]
     solenoids: {arm: 0}
-    talons: {intake: 11}
+    talons: {}
     victors: {}

@@ -1,4 +1,4 @@
-$extends: zodiac_base
+$extends: base
 subsystems:
     drivetrain:
         implemented: true
@@ -13,33 +13,13 @@ subsystems:
             - rightMain
         constants:
             pigeonId: 9
-            pigeonOnTalon: -1
             kP: 0.623 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
             kI: 0 # 0.018
             kD: 0 # 3.6
             kF: 0.87
-            iZone: 0
             encPPR: 999
-            currentFloorCheck: .12
-            currentEpsilonCheck: .2
-            rpmFloorCheck: 2000
-            rpmEpsilonCheck: 60
-            openLoopRampRate: 0.8
-    climber:
-        implemented: false
-    hopper:
-        implemented: false
-    shooter:
-        implemented: false
-    turret:
-        implemented: false
-    ledmanager:
-        implemented: false
-    collector:
-        implemented: false
-    camera:
-        implemented: false
 constants:
+    trackWidth: 25 # inches, TODO: Update Alpha trackWidth
     wheelDiameter: 6.32 #inches
     logTeleop: 1
     logAuto: 1
