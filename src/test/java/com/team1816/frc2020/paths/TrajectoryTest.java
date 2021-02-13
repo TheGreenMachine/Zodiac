@@ -1,9 +1,7 @@
 package com.team1816.frc2020.paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import com.team1816.frc2020.paths.paths2020.TrajectorySet;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Twist2d;
@@ -17,6 +15,7 @@ import org.junit.Test;
 public class TrajectoryTest {
 
     public static final double kTestEpsilon = 1e-5;
+    private static final TrajectorySet set = TrajectorySet.getInstance();
 
     public void verifyMirroredTrajectories(
         final Trajectory.Mirrored mirrored,
@@ -136,16 +135,14 @@ public class TrajectoryTest {
 
     @Test
     public void test() {
-        var trajectories = TrajectorySet.getInstance();
-        System.out.println(trajectories.FEEDER_TO_TRENCH);
-        verifyTrajectory(trajectories.FEEDER_TO_TRENCH, true);
+        System.out.println(set.BLUE_RED_PATHB);
+        verifyTrajectory(set.BLUE_RED_PATHB, false);
     }
 
     @Test
     public void reversedTrajectory() {
-        var trajectories = TrajectorySet.getInstance();
-        System.out.println(trajectories.TRENCH_TO_FEEDER);
-        verifyTrajectory(trajectories.TRENCH_TO_FEEDER, false);
+        System.out.println(set.TRENCH_TO_FEEDER);
+        verifyTrajectory(set.TRENCH_TO_FEEDER, false);
     }
 
     private void verifyTrajectory(
@@ -200,5 +197,30 @@ public class TrajectoryTest {
             iterator.advance(dt);
             prev_left = left_state;
         }
+    }
+
+    private void timeTrajectory(
+        String name,
+        Trajectory<TimedState<Pose2dWithCurvature>> trajectory
+    ) {
+        verifyTrajectory(trajectory, false);
+        System.out.println(name + ": ");
+        System.out.println("Final time = " + trajectory.getLastState().t() + " s");
+        System.out.println("Final velocity = " + trajectory.getLastState().velocity());
+        assertEquals(
+            "Final velocity == 0",
+            0,
+            trajectory.getLastState().velocity(),
+            kTestEpsilon
+        );
+    }
+
+    @Test
+    public void timeTrajectories() {
+        timeTrajectory("BLUE_RED_PATHB", set.BLUE_RED_PATHB);
+
+        System.out.println("Two Path Combo: ");
+        timeTrajectory("RED_PATHA", set.RED_PATHA);
+        timeTrajectory("DIME_TURN", set.DIME_TURN);
     }
 }

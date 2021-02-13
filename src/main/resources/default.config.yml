@@ -1,35 +1,19 @@
+$extends: base
 subsystems:
-  drivetrain:
-    implemented: true
-    talons:
-      leftMain: 2
-      leftSlaveOne: -1
-      leftSlaveTwo: -1
-      rightMain: 1
-      rightSlaveOne: -1
-      rightSlaveTwo: -1
-    constants:
-      pigeonId: 13
-      pigeonOnTalon: 0
-      kP: 0
-      kI: 0
-      kD: 0
-      kF: 1.70
-      iZone: 28.884639745885927
-      encPPR: 960
-      invertMotor: 2
-  canifier:
-    implemented: true
-    constants:
-      canId: 12
+    drivetrain:
+        implemented: true
+        talons:
+            leftMain: -1
+            leftFollowerOne: -1
+            leftFollowerTwo: -1
+            rightMain: -1
+            rightFollowerOne: -1
+            rightFollowerTwo: -1
+        invertMotor:
+            - leftMain
+        constants:
+            encPPR: 22220.8
+pcm: -1
 constants:
-  wheelDiameter: 3.92820959548
-  trackWidth: 15.75
-  maxVel: 25
-  maxAccel: 75
-  sensorPhase: 0
-  verbose: 1
-  kLooperDt: .01
-  kTrackScrubFactor: 1.0
-  kPCMId: 0
-  pathKs: 0
+    wheelDiameter: 6.3
+    trackWidth: 25 #inches

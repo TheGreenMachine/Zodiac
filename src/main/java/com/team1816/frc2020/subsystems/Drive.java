@@ -196,7 +196,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             mRightMaster.getSelectedSensorVelocity(0);
         if (mPigeon.getLastError() != ErrorCode.OK) {
             ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
-            System.out.println("Pigeon error detected, maybe reinitialized");
+            //    System.out.println("Pigeon error detected, maybe reinitialized");
         }
         mPeriodicIO.gyro_heading_no_offset =
             Rotation2d.fromDegrees(mPigeon.getFusedHeading());

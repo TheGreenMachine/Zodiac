@@ -18,7 +18,7 @@ jobs:
                 continue-on-error: true
                 run: ./gradlew test
             -   name: JUnit Report
-                uses: mikepenz/action-junit-report@v1.1.1
+                uses: mikepenz/action-junit-report@v2
                 with:
                     report_paths: 'build/test-results/test/TEST-*.xml'
                     github_token: ${{ secrets.GITHUB_TOKEN }}

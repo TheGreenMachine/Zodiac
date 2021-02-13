@@ -1,18 +1,18 @@
+$extends: base
 subsystems:
     drivetrain:
         implemented: true
         talons:
             leftMain: 2
-            leftSlaveOne: -1
-            leftSlaveTwo: -1
+            leftFollowerOne: -1
+            leftFollowerTwo: -1
             rightMain: 1
-            rightSlaveOne: -1
-            rightSlaveTwo: -1
+            rightFollowerOne: -1
+            rightFollowerTwo: -1
         invertMotor:
-            - 2
+            - leftMain
         constants:
             pigeonId: 13
-            pigeonOnTalon: 0
             kP: 1.6
             kI: .001
             kD: 15
@@ -20,17 +20,7 @@ subsystems:
             iZone: 30
             encPPR: 4096 # CTRE mag encoder
             currentFloorCheck: .3
-            currentEpsilonCheck: .2
             rpmFloorCheck: 750
-            rpmEpsilonCheck: 60
-    climber:
-        implemented: false
-    collector:
-        implemented: false
-    hopper:
-        implemented: false
-    shooter:
-        implemented: false
     turret:
         implemented: true
         talons:
@@ -40,17 +30,12 @@ subsystems:
     ledmanager:
         implemented: true
         canifier: 12
-    camera:
-        implemented: false
 pcm: -1
 constants:
     wheelDiameter: 4.058 # inches
     trackWidth: 15.75 # inches
     maxVel: 30 # inches/s
     maxAccel: 50 # inches/s^2
-    sensorPhase: 0
-    kLooperDt: .030
-    kTrackScrubFactor: 1.0
     compressorEnabled: 1
     pathKs: .0125
     verbose: 0

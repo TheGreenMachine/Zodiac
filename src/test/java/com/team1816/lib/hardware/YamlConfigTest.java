@@ -2,27 +2,32 @@ package com.team1816.lib.hardware;
 
 import static org.junit.Assert.*;
 
+import com.team1816.frc2020.Robot;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class YamlConfigTest {
 
+    public static final double EPSILON = 1e-9;
+
+    private InputStream getResourceFile(String configName) {
+        return getClass()
+            .getClassLoader()
+            .getResourceAsStream(configName + ".config.yml");
+    }
+
+    private YamlConfig loadConfig(String configName) {
+        return YamlConfig.loadRaw(getResourceFile(configName));
+    }
+
     @Test
     public void subsystemConfig_merge() {
-        InputStream baseConfigFile = getClass()
-            .getClassLoader()
-            .getResourceAsStream("test_base.config.yml");
-        InputStream activeConfigFile = getClass()
-            .getClassLoader()
-            .getResourceAsStream("test_active.config.yml");
-
-        YamlConfig.SubsystemConfig base = YamlConfig
-            .loadRaw(baseConfigFile)
-            .subsystems.get("turret");
-        YamlConfig.SubsystemConfig active = YamlConfig
-            .loadRaw(activeConfigFile)
-            .subsystems.get("turret");
+        var base = loadConfig("test_base").subsystems.get("turret");
+        var active = loadConfig("test_active").subsystems.get("turret");
         YamlConfig.SubsystemConfig result = YamlConfig.SubsystemConfig.merge(
             active,
             base
@@ -46,34 +51,23 @@ public class YamlConfigTest {
             13,
             result.talons.get("turret").intValue()
         );
-        assertTrue("implemented == true (favors true)", result.implemented);
+        assertTrue("implemented == true (favors true)", result.isImplemented());
     }
 
     @Test(expected = ConfigIsAbstractException.class)
     public void loadFromBase_throwsIfAbstract() throws ConfigIsAbstractException {
-        YamlConfig.loadFrom(
-            getClass().getClassLoader().getResourceAsStream("test_base.config.yml")
-        );
+        YamlConfig.loadFrom(getResourceFile("test_base"));
     }
 
     @Test
     public void loadFromActive_doesNotThrow() throws ConfigIsAbstractException {
-        YamlConfig.loadFrom(
-            getClass().getClassLoader().getResourceAsStream("test_active.config.yml")
-        );
+        YamlConfig.loadFrom(getResourceFile("test_active"));
     }
 
     @Test
     public void yamlConfig_merge() {
-        InputStream baseConfigFile = getClass()
-            .getClassLoader()
-            .getResourceAsStream("test_base.config.yml");
-        InputStream activeConfigFile = getClass()
-            .getClassLoader()
-            .getResourceAsStream("test_active.config.yml");
-
-        YamlConfig base = YamlConfig.loadRaw(baseConfigFile);
-        YamlConfig active = YamlConfig.loadRaw(activeConfigFile);
+        YamlConfig base = loadConfig("test_base");
+        YamlConfig active = loadConfig("test_active");
         YamlConfig result = YamlConfig.merge(active, base);
 
         verifyMergedConfig(result);
@@ -81,11 +75,72 @@ public class YamlConfigTest {
 
     @Test
     public void yamlConfig_autoMerge_ifExtends() throws ConfigIsAbstractException {
-        var configFile = getClass()
-            .getClassLoader()
-            .getResourceAsStream("test_active.config.yml");
+        var configFile = getResourceFile("test_active");
         YamlConfig config = YamlConfig.loadFrom(configFile);
         verifyMergedConfig(config);
+    }
+
+    @Test
+    public void layer2_autoMerge() throws ConfigIsAbstractException {
+        var configFile = getResourceFile("test_layer2");
+        var config = YamlConfig.loadFrom(configFile);
+
+        verifyMergedConfig(config);
+
+        assertNotNull("collector != null", config.subsystems.get("collector"));
+        assertFalse(
+            "Turret not implemented",
+            config.subsystems.get("turret").isImplemented()
+        );
+        assertEquals(
+            "activeConstantOverridden == 18.16",
+            18.16,
+            config.getConstant("activeConstantOverridden"),
+            EPSILON
+        );
+        assertEquals(
+            "layer2Constant == 3.0",
+            3,
+            config.getConstant("layer2Constant"),
+            EPSILON
+        );
+    }
+
+    @Test(expected = ConfigIsAbstractException.class)
+    @Ignore // test_layer2 is not abstract
+    public void layer2_autoMerge_throwsIfAbstract() throws ConfigIsAbstractException {
+        var configFile = getResourceFile("test_layer2");
+        var config = YamlConfig.loadFrom(configFile);
+        System.out.println(config);
+    }
+
+    @Test
+    public void testImplementedOverride() {
+        mergeImplemented(true, false, true);
+        mergeImplemented(false, true, false);
+        mergeImplemented(true, true, true);
+        mergeImplemented(false, false, false);
+        mergeImplemented(null, null, false);
+        mergeImplemented(null, true, true);
+        mergeImplemented(true, null, true);
+    }
+
+    @Test
+    @Ignore // Only used to generate checking file
+    public void outputMergedYaml() throws ConfigIsAbstractException, IOException {
+        var configName = "alpha";
+        InputStream configFile =
+            Robot.class.getClassLoader().getResourceAsStream(configName + ".config.yml");
+        try (var writer = new FileWriter(configName + "_check.config.yml")) {
+            writer.write(YamlConfig.loadFrom(configFile).toString());
+        }
+    }
+
+    private void mergeImplemented(Boolean active, Boolean base, boolean result) {
+        var configActive = new YamlConfig.SubsystemConfig(active);
+        var configBase = new YamlConfig.SubsystemConfig(base);
+        var configResult = YamlConfig.SubsystemConfig.merge(configActive, configBase);
+        assertEquals(result, configResult.isImplemented());
     }
 
     void verifyMergedConfig(YamlConfig config) {

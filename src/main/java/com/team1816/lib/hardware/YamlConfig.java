@@ -1,10 +1,7 @@
 package com.team1816.lib.hardware;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
@@ -15,6 +12,12 @@ import org.yaml.snakeyaml.representer.Representer;
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class YamlConfig {
 
+    private static final Yaml FORMATTER = new Yaml();
+
+    static {
+        FORMATTER.setBeanAccess(BeanAccess.FIELD);
+    }
+
     private boolean $abstract = false;
     private String $extends;
     Map<String, SubsystemConfig> subsystems;
@@ -23,21 +26,22 @@ public class YamlConfig {
 
     public static YamlConfig loadFrom(InputStream input)
         throws ConfigIsAbstractException {
-        Representer representer = new Representer();
-        representer.getPropertyUtils().setSkipMissingProperties(true);
-        Yaml yaml = new Yaml(new Constructor(YamlConfig.class), representer);
-        yaml.setBeanAccess(BeanAccess.FIELD);
-
-        YamlConfig loadedConfig = yaml.load(input);
+        YamlConfig loadedConfig = loadInternal(input);
         if (loadedConfig.$abstract) {
             throw new ConfigIsAbstractException();
         }
+
+        return loadedConfig;
+    }
+
+    static YamlConfig loadInternal(InputStream input) {
+        YamlConfig loadedConfig = loadRaw(input);
 
         if (loadedConfig.$extends != null && !loadedConfig.$extends.equals("")) {
             var baseConfigFile =
                 YamlConfig.class.getClassLoader()
                     .getResourceAsStream(loadedConfig.$extends + ".config.yml");
-            return merge(loadedConfig, loadRaw(baseConfigFile));
+            return merge(loadedConfig, loadInternal(baseConfigFile));
         }
 
         return loadedConfig;
@@ -58,7 +62,7 @@ public class YamlConfig {
 
     public static class SubsystemConfig {
 
-        boolean implemented = false;
+        private Boolean implemented;
         Map<String, Integer> talons = new HashMap<>();
         Map<String, Integer> falcons = new HashMap<>();
         Map<String, Integer> victors = new HashMap<>();
@@ -68,39 +72,54 @@ public class YamlConfig {
         Integer canifier;
         List<String> invertMotor = new ArrayList<>();
 
+        public SubsystemConfig() {
+            // no-op
+        }
+
+        public SubsystemConfig(Boolean implemented) {
+            this.implemented = implemented;
+        }
+
+        public boolean isImplemented() {
+            return Objects.requireNonNullElse(implemented, false);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SubsystemConfig that = (SubsystemConfig) o;
+            return (
+                Objects.equals(implemented, that.implemented) &&
+                talons.equals(that.talons) &&
+                falcons.equals(that.falcons) &&
+                victors.equals(that.victors) &&
+                solenoids.equals(that.solenoids) &&
+                doublesolenoids.equals(that.doublesolenoids) &&
+                constants.equals(that.constants) &&
+                Objects.equals(canifier, that.canifier) &&
+                invertMotor.equals(that.invertMotor)
+            );
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(
+                implemented,
+                talons,
+                falcons,
+                victors,
+                solenoids,
+                doublesolenoids,
+                constants,
+                canifier,
+                invertMotor
+            );
+        }
+
         @Override
         public String toString() {
-            return (
-                "SubsystemConfig {\n" +
-                "  implemented = " +
-                implemented +
-                ",\n" +
-                "  talons = " +
-                talons.toString() +
-                ",\n" +
-                "  falcons = " +
-                falcons.toString() +
-                ", \n" +
-                "  victors = " +
-                victors.toString() +
-                ",\n" +
-                "  invertMotor = " +
-                invertMotor +
-                ",\n" +
-                "  solenoids = " +
-                solenoids.toString() +
-                ",\n" +
-                "  doublesolenoids = " +
-                doublesolenoids.toString() +
-                ",\n" +
-                "  canifier = " +
-                canifier +
-                ",\n" +
-                "  constants = " +
-                constants.toString() +
-                ",\n" +
-                "}"
-            );
+            return FORMATTER.dump(this);
         }
 
         public static SubsystemConfig merge(
@@ -109,7 +128,14 @@ public class YamlConfig {
         ) {
             var result = new SubsystemConfig();
 
-            result.implemented = active.implemented || base.implemented;
+            if (active.implemented != null) {
+                result.implemented = active.implemented;
+            } else if (base.implemented != null) {
+                result.implemented = base.implemented;
+            } else {
+                result.implemented = false;
+            }
+
             mergeMap(result.talons, active.talons, base.talons);
             mergeMap(result.falcons, active.falcons, base.falcons);
             mergeMap(result.victors, active.victors, base.victors);
@@ -134,23 +160,46 @@ public class YamlConfig {
         int reverse;
 
         @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            DoubleSolenoidConfig that = (DoubleSolenoidConfig) o;
+            return forward == that.forward && reverse == that.reverse;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(forward, reverse);
+        }
+
+        @Override
         public String toString() {
             return String.format("{ forward = %d, reverse = %d }", forward, reverse);
         }
     }
 
     @Override
-    public String toString() {
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        YamlConfig that = (YamlConfig) o;
         return (
-            "YamlConfig {\n" +
-            "  subsystems = " +
-            subsystems.toString() +
-            "\n  pcm = " +
-            pcm +
-            "\n  constants = " +
-            constants.toString() +
-            "\n}"
+            $abstract == that.$abstract &&
+            Objects.equals($extends, that.$extends) &&
+            subsystems.equals(that.subsystems) &&
+            constants.equals(that.constants) &&
+            Objects.equals(pcm, that.pcm)
         );
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash($abstract, $extends, subsystems, constants, pcm);
+    }
+
+    @Override
+    public String toString() {
+        return FORMATTER.dump(this);
     }
 
     public static YamlConfig merge(YamlConfig active, YamlConfig base) {
@@ -165,7 +214,7 @@ public class YamlConfig {
         );
         mergeMap(result.constants, active.constants, base.constants);
         result.pcm = active.pcm != null ? active.pcm : base.pcm;
-        result.$abstract = false;
+        result.$abstract = active.$abstract;
         result.$extends = null;
         return result;
     }

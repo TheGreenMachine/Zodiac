@@ -6,7 +6,7 @@ import badlog.lib.BadLog;
 import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
-import com.team1816.frc2020.paths.paths2020.TrajectorySet;
+import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.actions.DriveTrajectory;
@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
     private final Collector collector = Collector.getInstance();
     private final Shooter shooter = Shooter.getInstance();
     private final Turret turret = Turret.getInstance();
-    private final Spinner spinner = Spinner.getInstance();
+    // private final Spinner spinner = Spinner.getInstance();
     private final Hopper hopper = Hopper.getInstance();
     private final Climber climber = Climber.getInstance();
     private final Camera camera = Camera.getInstance();
@@ -103,6 +103,15 @@ public class Robot extends TimedRobot {
                     "/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag"
                 );
 
+            BadLog.createValue(
+                "Max Velocity",
+                String.valueOf(Constants.kPathFollowingMaxVel)
+            );
+            BadLog.createValue(
+                "Max Acceleration",
+                String.valueOf(Constants.kPathFollowingMaxAccel)
+            );
+
             BadLog.createTopic(
                 "Shooter/ActVel",
                 "NativeUnits",
@@ -123,6 +132,22 @@ public class Robot extends TimedRobot {
                 shooter::getError,
                 "hide",
                 "join:Shooter/Velocities"
+            );
+
+            BadLog.createTopic(
+                "Collector/TargetVel",
+                "NativeUnits",
+                collector::getIntakePow,
+                "hide",
+                "join:Collector/Velocities"
+            );
+
+            BadLog.createTopic(
+                "Collector/ActVel",
+                "NativeUnits",
+                collector::getActualVelocity,
+                "hide",
+                "join:Collector/Velocities"
             );
 
             if (Constants.kIsBadlogEnabled) {
@@ -225,7 +250,7 @@ public class Robot extends TimedRobot {
                 mSuperstructure,
                 mInfrastructure,
                 shooter,
-                spinner,
+                // spinner,
                 collector,
                 hopper,
                 turret,
@@ -306,12 +331,12 @@ public class Robot extends TimedRobot {
                     ),
                     createHoldAction(mControlBoard::getSlowMode, mDrive::setSlowMode),
                     // Operator Gamepad
-                    createAction(mControlBoard::getSpinnerReset, spinner::initialize),
-                    createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
-                    createHoldAction(
-                        mControlBoard::getSpinnerThreeTimes,
-                        spinner::spinThreeTimes
-                    ),
+                    // createAction(mControlBoard::getSpinnerReset, spinner::initialize),
+                    // createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
+                    // createHoldAction(
+                    //     mControlBoard::getSpinnerThreeTimes,
+                    //     spinner::spinThreeTimes
+                    // ),
                     createAction(
                         mControlBoard::getFieldFollowing,
                         () -> turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING)

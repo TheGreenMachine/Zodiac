@@ -17,11 +17,6 @@ public class RobotYamlTests {
     }
 
     @Test
-    public void zetaYamlTest() {
-        loadConfig("zeta");
-    }
-
-    @Test
     public void zodiacYamlTest() {
         loadConfig("zodiac");
     }
@@ -29,11 +24,6 @@ public class RobotYamlTests {
     @Test
     public void zodiacProYamlTest() {
         loadConfig("zodiac_pro");
-    }
-
-    @Test
-    public void zenithYamlTest() {
-        loadConfig("zenith");
     }
 
     private void loadConfig(String configName) {
