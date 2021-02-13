@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -152,11 +151,7 @@ public class YamlConfigTest {
         var oldConfig = YamlConfig.loadFrom(oldConfigFile);
         var newConfig = YamlConfig.loadFrom(newConfigFile);
 
-        assertEquals(
-            "New config == old config",
-            oldConfig.toString(),
-            newConfig.toString()
-        );
+        assertEquals(configName + " New config == old config", oldConfig, newConfig);
     }
 
     private void mergeImplemented(Boolean active, Boolean base, boolean result) {

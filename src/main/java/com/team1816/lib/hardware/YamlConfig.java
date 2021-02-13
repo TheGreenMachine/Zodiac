@@ -85,6 +85,39 @@ public class YamlConfig {
         }
 
         @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SubsystemConfig that = (SubsystemConfig) o;
+            return (
+                Objects.equals(implemented, that.implemented) &&
+                talons.equals(that.talons) &&
+                falcons.equals(that.falcons) &&
+                victors.equals(that.victors) &&
+                solenoids.equals(that.solenoids) &&
+                doublesolenoids.equals(that.doublesolenoids) &&
+                constants.equals(that.constants) &&
+                Objects.equals(canifier, that.canifier) &&
+                invertMotor.equals(that.invertMotor)
+            );
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(
+                implemented,
+                talons,
+                falcons,
+                victors,
+                solenoids,
+                doublesolenoids,
+                constants,
+                canifier,
+                invertMotor
+            );
+        }
+
+        @Override
         public String toString() {
             return FORMATTER.dump(this);
         }
@@ -127,9 +160,41 @@ public class YamlConfig {
         int reverse;
 
         @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            DoubleSolenoidConfig that = (DoubleSolenoidConfig) o;
+            return forward == that.forward && reverse == that.reverse;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(forward, reverse);
+        }
+
+        @Override
         public String toString() {
             return String.format("{ forward = %d, reverse = %d }", forward, reverse);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        YamlConfig that = (YamlConfig) o;
+        return (
+            $abstract == that.$abstract &&
+            Objects.equals($extends, that.$extends) &&
+            subsystems.equals(that.subsystems) &&
+            constants.equals(that.constants) &&
+            Objects.equals(pcm, that.pcm)
+        );
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash($abstract, $extends, subsystems, constants, pcm);
     }
 
     @Override
