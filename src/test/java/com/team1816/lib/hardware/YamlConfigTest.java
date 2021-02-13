@@ -136,24 +136,6 @@ public class YamlConfigTest {
         }
     }
 
-    @Test
-    public void verifyNewYamls() throws ConfigIsAbstractException {
-        verifyNewYaml("zodiac_pro");
-        // verifyNewYaml("alpha"); // old alpha config had lots of unneccesary stuff
-    }
-
-    private void verifyNewYaml(String configName) throws ConfigIsAbstractException {
-        var newConfigFile =
-            Robot.class.getClassLoader().getResourceAsStream(configName + ".config.yml");
-        var oldConfigFile = getClass()
-            .getClassLoader()
-            .getResourceAsStream(configName + "_check.config.yml");
-        var oldConfig = YamlConfig.loadFrom(oldConfigFile);
-        var newConfig = YamlConfig.loadFrom(newConfigFile);
-
-        assertEquals(configName + " New config == old config", oldConfig, newConfig);
-    }
-
     private void mergeImplemented(Boolean active, Boolean base, boolean result) {
         var configActive = new YamlConfig.SubsystemConfig(active);
         var configBase = new YamlConfig.SubsystemConfig(base);
