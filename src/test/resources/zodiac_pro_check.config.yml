@@ -32,19 +32,19 @@ subsystems:
       velocityThreshold: 500.0, currentFloorCheck: 0.12, kF: 0.053, kI: 0.0, rpmFloorCheck: 2000.0}
     doublesolenoids: {}
     falcons: {shooterMain: 3, shooterFollower: 2}
-    implemented: false
+    implemented: true
     invertMotor: []
     solenoids: {}
     talons: {}
     victors: {}
   drivetrain:
     canifier: null
-    constants: {pigeonOnTalon: -1.0, rpmEpsilonCheck: 60.0, kP: 0.1, iZone: 0.0, openLoopRampRate: 0.8,
-      pigeonId: 9.0, encPPR: 22220.8, rpmFloorCheck: 2000.0, kD: 4.0, currentEpsilonCheck: 0.2,
-      currentFloorCheck: 0.12, kF: 0.0475813, kI: 1.0E-4}
+    constants: {pigeonId: 9.0, pigeonOnTalon: -1.0, kP: 0.1, kI: 1.0E-4, kD: 4.0,
+      kF: 0.0475813, iZone: 0.0, encPPR: 22220.8, currentFloorCheck: 0.12, currentEpsilonCheck: 0.2,
+      rpmFloorCheck: 2000.0, rpmEpsilonCheck: 60.0, openLoopRampRate: 0.8}
     doublesolenoids: {}
-    falcons: {rightMain: 14, rightFollowerTwo: -1, rightFollower: 15, leftMain: 17,
-      leftFollowerTwo: -1, leftFollower: 1}
+    falcons: {leftMain: 17, leftFollower: 1, leftFollowerTwo: -1, rightMain: 14, rightFollower: 15,
+      rightFollowerTwo: -1}
     implemented: true
     invertMotor: [leftMain]
     solenoids: {}
@@ -65,7 +65,7 @@ subsystems:
     constants: {}
     doublesolenoids: {}
     falcons: {}
-    implemented: false
+    implemented: true
     invertMotor: [elevator]
     solenoids: {deployer: 5}
     talons: {elevator: 12}
@@ -82,11 +82,11 @@ subsystems:
     victors: {}
   collector:
     canifier: null
-    constants: {kP: 0.0, kI: 0.0, kD: 0.0, kF: 0.0545}
+    constants: {kP: 0.2, kI: 0.0, kD: 0.0, kF: 0.0}
     doublesolenoids: {}
-    falcons: {intake: 11}
+    falcons: {}
     implemented: true
-    invertMotor: [intake]
+    invertMotor: []
     solenoids: {arm: 0}
-    talons: {}
+    talons: {intake: 11}
     victors: {}
