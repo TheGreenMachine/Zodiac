@@ -5,7 +5,6 @@ import java.util.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
-import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
 // Since the Collections of configurations are injected by SnakeYaml,
@@ -14,6 +13,7 @@ import org.yaml.snakeyaml.representer.Representer;
 public class YamlConfig {
 
     private static final Yaml FORMATTER = new Yaml();
+
     static {
         FORMATTER.setBeanAccess(BeanAccess.FIELD);
     }
@@ -26,21 +26,22 @@ public class YamlConfig {
 
     public static YamlConfig loadFrom(InputStream input)
         throws ConfigIsAbstractException {
-        Representer representer = new Representer();
-        representer.getPropertyUtils().setSkipMissingProperties(true);
-        Yaml yaml = new Yaml(new Constructor(YamlConfig.class), representer);
-        yaml.setBeanAccess(BeanAccess.FIELD);
-
-        YamlConfig loadedConfig = yaml.load(input);
+        YamlConfig loadedConfig = loadInternal(input);
         if (loadedConfig.$abstract) {
             throw new ConfigIsAbstractException();
         }
+
+        return loadedConfig;
+    }
+
+    static YamlConfig loadInternal(InputStream input) {
+        YamlConfig loadedConfig = loadRaw(input);
 
         if (loadedConfig.$extends != null && !loadedConfig.$extends.equals("")) {
             var baseConfigFile =
                 YamlConfig.class.getClassLoader()
                     .getResourceAsStream(loadedConfig.$extends + ".config.yml");
-            return merge(loadedConfig, loadRaw(baseConfigFile));
+            return merge(loadedConfig, loadInternal(baseConfigFile));
         }
 
         return loadedConfig;
@@ -86,37 +87,6 @@ public class YamlConfig {
         @Override
         public String toString() {
             return FORMATTER.dump(this);
-            /*return (
-                "SubsystemConfig {\n" +
-                "  implemented = " +
-                implemented +
-                ",\n" +
-                "  talons = " +
-                talons.toString() +
-                ",\n" +
-                "  falcons = " +
-                falcons.toString() +
-                ", \n" +
-                "  victors = " +
-                victors.toString() +
-                ",\n" +
-                "  invertMotor = " +
-                invertMotor +
-                ",\n" +
-                "  solenoids = " +
-                solenoids.toString() +
-                ",\n" +
-                "  doublesolenoids = " +
-                doublesolenoids.toString() +
-                ",\n" +
-                "  canifier = " +
-                canifier +
-                ",\n" +
-                "  constants = " +
-                constants.toString() +
-                ",\n" +
-                "}"
-            );*/
         }
 
         public static SubsystemConfig merge(
@@ -165,16 +135,6 @@ public class YamlConfig {
     @Override
     public String toString() {
         return FORMATTER.dump(this);
-        /*return (
-            "YamlConfig {\n" +
-            "  subsystems = " +
-            subsystems.toString() +
-            "\n  pcm = " +
-            pcm +
-            "\n  constants = " +
-            constants.toString() +
-            "\n}"
-        );*/
     }
 
     public static YamlConfig merge(YamlConfig active, YamlConfig base) {
@@ -189,7 +149,7 @@ public class YamlConfig {
         );
         mergeMap(result.constants, active.constants, base.constants);
         result.pcm = active.pcm != null ? active.pcm : base.pcm;
-        result.$abstract = false;
+        result.$abstract = active.$abstract;
         result.$extends = null;
         return result;
     }

@@ -2,21 +2,27 @@ package com.team1816.lib.hardware;
 
 import static org.junit.Assert.*;
 
+import com.team1816.frc2020.Robot;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import com.team1816.frc2020.Robot;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class YamlConfigTest {
 
-    private YamlConfig loadConfig(String configName) {
-        InputStream configFile = getClass()
+    public static final double EPSILON = 1e-9;
+
+    private InputStream getResourceFile(String configName) {
+        return getClass()
             .getClassLoader()
             .getResourceAsStream(configName + ".config.yml");
-        return YamlConfig.loadRaw(configFile);
+    }
+
+    private YamlConfig loadConfig(String configName) {
+        return YamlConfig.loadRaw(getResourceFile(configName));
     }
 
     @Test
@@ -51,16 +57,12 @@ public class YamlConfigTest {
 
     @Test(expected = ConfigIsAbstractException.class)
     public void loadFromBase_throwsIfAbstract() throws ConfigIsAbstractException {
-        YamlConfig.loadFrom(
-            getClass().getClassLoader().getResourceAsStream("test_base.config.yml")
-        );
+        YamlConfig.loadFrom(getResourceFile("test_base"));
     }
 
     @Test
     public void loadFromActive_doesNotThrow() throws ConfigIsAbstractException {
-        YamlConfig.loadFrom(
-            getClass().getClassLoader().getResourceAsStream("test_active.config.yml")
-        );
+        YamlConfig.loadFrom(getResourceFile("test_active"));
     }
 
     @Test
@@ -74,11 +76,43 @@ public class YamlConfigTest {
 
     @Test
     public void yamlConfig_autoMerge_ifExtends() throws ConfigIsAbstractException {
-        var configFile = getClass()
-            .getClassLoader()
-            .getResourceAsStream("test_active.config.yml");
+        var configFile = getResourceFile("test_active");
         YamlConfig config = YamlConfig.loadFrom(configFile);
         verifyMergedConfig(config);
+    }
+
+    @Test
+    public void layer2_autoMerge() throws ConfigIsAbstractException {
+        var configFile = getResourceFile("test_layer2");
+        var config = YamlConfig.loadFrom(configFile);
+
+        verifyMergedConfig(config);
+
+        assertNotNull("collector != null", config.subsystems.get("collector"));
+        assertFalse(
+            "Turret not implemented",
+            config.subsystems.get("turret").isImplemented()
+        );
+        assertEquals(
+            "activeConstantOverridden == 18.16",
+            18.16,
+            config.getConstant("activeConstantOverridden"),
+            EPSILON
+        );
+        assertEquals(
+            "layer2Constant == 3.0",
+            3,
+            config.getConstant("layer2Constant"),
+            EPSILON
+        );
+    }
+
+    @Test(expected = ConfigIsAbstractException.class)
+    @Ignore // test_layer2 is not abstract
+    public void layer2_autoMerge_throwsIfAbstract() throws ConfigIsAbstractException {
+        var configFile = getResourceFile("test_layer2");
+        var config = YamlConfig.loadFrom(configFile);
+        System.out.println(config);
     }
 
     @Test
@@ -93,11 +127,11 @@ public class YamlConfigTest {
     }
 
     @Test
+    @Ignore // Only used to generate checking file
     public void outputMergedYaml() throws ConfigIsAbstractException, IOException {
         var configName = "zodiac_pro";
-        InputStream configFile = Robot.class
-            .getClassLoader()
-            .getResourceAsStream(configName + ".config.yml");
+        InputStream configFile =
+            Robot.class.getClassLoader().getResourceAsStream(configName + ".config.yml");
         try (var writer = new FileWriter(configName + "_check.config.yml")) {
             writer.write(YamlConfig.loadFrom(configFile).toString());
         }
@@ -106,16 +140,19 @@ public class YamlConfigTest {
     @Test
     public void verifyNewYaml_zodiacPro() throws ConfigIsAbstractException {
         var configName = "zodiac_pro";
-        var newConfigFile = Robot.class
-            .getClassLoader()
-            .getResourceAsStream(configName + ".config.yml");
+        var newConfigFile =
+            Robot.class.getClassLoader().getResourceAsStream(configName + ".config.yml");
         var oldConfigFile = getClass()
             .getClassLoader()
             .getResourceAsStream(configName + "_check.config.yml");
         var oldConfig = YamlConfig.loadFrom(oldConfigFile);
         var newConfig = YamlConfig.loadFrom(newConfigFile);
 
-        assertEquals("New config == old config", oldConfig.toString(), newConfig.toString());
+        assertEquals(
+            "New config == old config",
+            oldConfig.toString(),
+            newConfig.toString()
+        );
     }
 
     private void mergeImplemented(Boolean active, Boolean base, boolean result) {
