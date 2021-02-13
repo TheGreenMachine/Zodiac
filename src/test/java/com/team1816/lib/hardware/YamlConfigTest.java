@@ -2,8 +2,12 @@ package com.team1816.lib.hardware;
 
 import static org.junit.Assert.*;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
+import com.team1816.frc2020.Robot;
 import org.junit.Test;
 
 public class YamlConfigTest {
@@ -86,6 +90,32 @@ public class YamlConfigTest {
         mergeImplemented(null, null, false);
         mergeImplemented(null, true, true);
         mergeImplemented(true, null, true);
+    }
+
+    @Test
+    public void outputMergedYaml() throws ConfigIsAbstractException, IOException {
+        var configName = "zodiac_pro";
+        InputStream configFile = Robot.class
+            .getClassLoader()
+            .getResourceAsStream(configName + ".config.yml");
+        try (var writer = new FileWriter(configName + "_check.config.yml")) {
+            writer.write(YamlConfig.loadFrom(configFile).toString());
+        }
+    }
+
+    @Test
+    public void verifyNewYaml_zodiacPro() throws ConfigIsAbstractException {
+        var configName = "zodiac_pro";
+        var newConfigFile = Robot.class
+            .getClassLoader()
+            .getResourceAsStream(configName + ".config.yml");
+        var oldConfigFile = getClass()
+            .getClassLoader()
+            .getResourceAsStream(configName + "_check.config.yml");
+        var oldConfig = YamlConfig.loadFrom(oldConfigFile);
+        var newConfig = YamlConfig.loadFrom(newConfigFile);
+
+        assertEquals("New config == old config", oldConfig.toString(), newConfig.toString());
     }
 
     private void mergeImplemented(Boolean active, Boolean base, boolean result) {

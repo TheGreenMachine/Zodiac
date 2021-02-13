@@ -5,12 +5,18 @@ import java.util.*;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
+import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
 // Since the Collections of configurations are injected by SnakeYaml,
 // IDEs will report that the collections are never updated.
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class YamlConfig {
+
+    private static final Yaml FORMATTER = new Yaml();
+    static {
+        FORMATTER.setBeanAccess(BeanAccess.FIELD);
+    }
 
     private boolean $abstract = false;
     private String $extends;
@@ -79,7 +85,8 @@ public class YamlConfig {
 
         @Override
         public String toString() {
-            return (
+            return FORMATTER.dump(this);
+            /*return (
                 "SubsystemConfig {\n" +
                 "  implemented = " +
                 implemented +
@@ -109,7 +116,7 @@ public class YamlConfig {
                 constants.toString() +
                 ",\n" +
                 "}"
-            );
+            );*/
         }
 
         public static SubsystemConfig merge(
@@ -157,7 +164,8 @@ public class YamlConfig {
 
     @Override
     public String toString() {
-        return (
+        return FORMATTER.dump(this);
+        /*return (
             "YamlConfig {\n" +
             "  subsystems = " +
             subsystems.toString() +
@@ -166,7 +174,7 @@ public class YamlConfig {
             "\n  constants = " +
             constants.toString() +
             "\n}"
-        );
+        );*/
     }
 
     public static YamlConfig merge(YamlConfig active, YamlConfig base) {
