@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
     private final Collector collector = Collector.getInstance();
     private final Shooter shooter = Shooter.getInstance();
     private final Turret turret = Turret.getInstance();
-    private final Spinner spinner = Spinner.getInstance();
+    // private final Spinner spinner = Spinner.getInstance();
     private final Hopper hopper = Hopper.getInstance();
     private final Climber climber = Climber.getInstance();
     private final Camera camera = Camera.getInstance();
@@ -250,7 +250,7 @@ public class Robot extends TimedRobot {
                 mSuperstructure,
                 mInfrastructure,
                 shooter,
-                spinner,
+                // spinner,
                 collector,
                 hopper,
                 turret,
@@ -331,12 +331,12 @@ public class Robot extends TimedRobot {
                     ),
                     createHoldAction(mControlBoard::getSlowMode, mDrive::setSlowMode),
                     // Operator Gamepad
-                    createAction(mControlBoard::getSpinnerReset, spinner::initialize),
-                    createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
-                    createHoldAction(
-                        mControlBoard::getSpinnerThreeTimes,
-                        spinner::spinThreeTimes
-                    ),
+                    // createAction(mControlBoard::getSpinnerReset, spinner::initialize),
+                    // createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
+                    // createHoldAction(
+                    //     mControlBoard::getSpinnerThreeTimes,
+                    //     spinner::spinThreeTimes
+                    // ),
                     createAction(
                         mControlBoard::getFieldFollowing,
                         () -> turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING)
