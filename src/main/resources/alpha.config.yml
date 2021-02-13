@@ -27,30 +27,18 @@ subsystems:
             openLoopRampRate: 0.8
     climber:
         implemented: false
-        invertMotor:
-            - elevator
     hopper:
         implemented: false
-        invertMotor:
-            - elevator
     shooter:
         implemented: false
-        falcons:
-            shooterMain: 3
-            shooterFollower: 2
     turret:
         implemented: false
-        constants:
-            minPos: -3802
-            maxPos: -757
     ledmanager:
         implemented: false
-        canifier: 18
     collector:
         implemented: false
     camera:
         implemented: false
-        canifier: 19
 constants:
     wheelDiameter: 6.32 #inches
     logTeleop: 1

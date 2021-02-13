@@ -1,3 +1,4 @@
+!!com.team1816.lib.hardware.YamlConfig
 $abstract: false
 $extends: null
 constants: {maxAccel: 60.0, pathKs: 2.0, logAuto: 1.0, kLooperDt: 0.03, badLogEnabled: 1.0,
