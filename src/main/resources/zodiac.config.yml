@@ -2,7 +2,7 @@ $extends: zodiac_base
 subsystems:
     drivetrain:
         invertMotor:
-            - rightMain
+            - leftMain
     turret:
         constants:
             minPos: -4220
