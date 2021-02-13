@@ -3,7 +3,6 @@ let splinePoints = [];
 let ctx;
 let ctxBackground;
 let image;
-let imageFlipped;
 let wto;
 let change = "propertychange change click keyup input paste";
 let animating = false;
@@ -374,8 +373,6 @@ function init() {
 		ctxBackground.drawImage(image, 0, 0, width, height);
 		update();
 	};
-	imageFlipped = new Image();
-	imageFlipped.src = 'resources/img/6_field2.jpg';
     rebind();
 }
 
@@ -385,7 +382,7 @@ function clear() {
 
 	ctxBackground.clearRect(0, 0, width, height);
     ctxBackground.fillStyle = "#FF0000";
-    ctxBackground.drawImage(flipped ? imageFlipped : image, 0, 0, width, height);
+    ctxBackground.drawImage(image, 0, 0, width, height);
 }
 
 function rebind() {
@@ -480,10 +477,10 @@ function update() {
     });
 }
 
-let flipped = false;
-function flipField() {
-	flipped = !flipped;
-	ctx.drawImage(flipped ? imageFlipped : image, 0, 0, width, height);
+function changeField(val) {
+    console.log(val);
+	image.src = `resources/img/${val}.jpg`
+	ctx.drawImage(image, 0, 0, width, height);
 	update();
 }
 

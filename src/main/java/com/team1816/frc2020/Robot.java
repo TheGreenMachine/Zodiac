@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
     private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
     private AsyncTimer blinkTimer;
 
-    private PowerDistributionPanel pdp = new PowerDistributionPanel();
+    // private PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     Robot() {
@@ -173,7 +173,7 @@ public class Robot extends TimedRobot {
                     "hide"
                 );
 
-                BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
+                // BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
 
                 BadLog.createTopicSubscriber(
                     "Pigeon Error",

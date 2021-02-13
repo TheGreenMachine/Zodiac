@@ -24,7 +24,13 @@
             <button onclick='addPoint()'>Add Point</button>
             <button onclick='update()'>Update</button>
             <button onclick='draw(3)'>Animate</button>
-            <button onclick='flipField()'>Flip Field</button>
+            <select onchange='changeField(this.value)'>
+                <option value="6_field1" selected>6_field1</option>
+                <option value="6_field2">6_field2</option>
+                <option value="7_field1">7_field1</option>
+                <option value="7_field2">7_field2</option>
+                <option value="7_field3">7_field3</option>
+            </select>
             <span class='checkbox'>Is reversed: <input type='checkbox' id='isReversed'></span>
         </div>
         <table>

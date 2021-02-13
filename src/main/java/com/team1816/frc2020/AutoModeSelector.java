@@ -1,9 +1,7 @@
 package com.team1816.frc2020;
 
 import com.team1816.frc2020.auto.modes.modes2020.*;
-import com.team1816.frc2020.auto.modes.modes2021.BluePathAMode;
-import com.team1816.frc2020.auto.modes.modes2021.BlueRedPathBMode;
-import com.team1816.frc2020.auto.modes.modes2021.RedPathAMode;
+import com.team1816.frc2020.auto.modes.modes2021.*;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -27,6 +25,7 @@ public class AutoModeSelector {
         DRIVE_BY_CAMERA,
         DO_NOTHING,
         TUNE_DRIVETRAIN,
+        TUNE_DRIVETRAIN_REVERSE,
         TURRET_TEST,
         LIVING_ROOM,
         DRIVE_STRAIGHT,
@@ -44,6 +43,8 @@ public class AutoModeSelector {
         BLUE_RED_PATHB,
         RED_PATHA,
         BLUE_PATHA,
+        SLALOM,
+        BARREL,
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -70,6 +71,7 @@ public class AutoModeSelector {
 
         mModeChooser.addOption("Drive By Camera", DesiredMode.DRIVE_BY_CAMERA);
         mModeChooser.addOption("Tune Drivetrain", DesiredMode.TUNE_DRIVETRAIN);
+        mModeChooser.addOption("Tune Drivetrain Reverse", DesiredMode.TUNE_DRIVETRAIN_REVERSE);
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
         SmartDashboard.putData("Auto mode", mModeChooser);
 
@@ -119,6 +121,8 @@ public class AutoModeSelector {
         mModeChooser.addOption("Blue & Red Path B", DesiredMode.BLUE_RED_PATHB);
         mModeChooser.addOption("Red Path A", DesiredMode.RED_PATHA);
         mModeChooser.addOption("Blue Path A", DesiredMode.BLUE_PATHA);
+        mModeChooser.addOption("Slalom Mode", DesiredMode.SLALOM);
+        mModeChooser.addOption("Barrel Run", DesiredMode.BARREL);
 
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
@@ -174,7 +178,9 @@ public class AutoModeSelector {
             case DRIVE_BY_CAMERA:
                 return Optional.of(new DriveByCameraMode());
             case TUNE_DRIVETRAIN:
-                return Optional.of(new TuneDrivetrainMode());
+                return Optional.of(new TuneDrivetrainMode(false));
+            case TUNE_DRIVETRAIN_REVERSE:
+                return Optional.of(new TuneDrivetrainMode(true));
             case TURRET_TEST:
                 return Optional.of(new TurretTestMode());
             case DRIVE_STRAIGHT:
@@ -204,6 +210,10 @@ public class AutoModeSelector {
                 return (Optional.of(new RedPathAMode()));
             case BLUE_PATHA:
                 return (Optional.of(new BluePathAMode()));
+            case SLALOM:
+                return (Optional.of(new SlalomMode()));
+            case BARREL:
+                return (Optional.of(new BarrelMode()));
             default:
                 break;
         }

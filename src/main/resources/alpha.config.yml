@@ -13,15 +13,17 @@ subsystems:
             - rightMain
         constants:
             pigeonId: 9
-            kP: 0.623 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
-            kI: 0 # 0.018
-            kD: 0 # 3.6
-            kF: 0.87
+            kP: 3.0 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
+            kI: 0.03 # 0.018
+            kD: 36 # 3.6
+            kF: 0.96
             encPPR: 999
 pcm: 8
 constants:
+    maxVel: 120 # inches/s
+    maxAccel: 60 # inches/s^2
     trackWidth: 23 # inches
-    wheelDiameter: 6.322 #inches
+    wheelDiameter: 6.122 #inches
     logTeleop: 1
     logAuto: 1
     badLogEnabled: 1

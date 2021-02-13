@@ -10,9 +10,12 @@ public class TuneDrivetrainMode extends AutoModeBase {
 
     private DriveTrajectory trajectory;
 
-    public TuneDrivetrainMode() {
+    public TuneDrivetrainMode(boolean isReversed) {
+        var traj = isReversed ?
+            TrajectorySet.getInstance().TUNE_DRIVETRAIN_REVERSE :
+            TrajectorySet.getInstance().TUNE_DRIVETRAIN;
         trajectory =
-            new DriveTrajectory(TrajectorySet.getInstance().TUNE_DRIVETRAIN, true);
+            new DriveTrajectory(traj, true);
     }
 
     @Override
