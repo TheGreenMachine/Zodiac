@@ -5,17 +5,22 @@ import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.actions.WaitAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
+import com.team1816.lib.automode.AutoMode;
 
+@AutoMode("Tune Drivetrain")
 public class TuneDrivetrainMode extends AutoModeBase {
 
     private DriveTrajectory trajectory;
 
     public TuneDrivetrainMode(boolean isReversed) {
-        var traj = isReversed ?
-            TrajectorySet.getInstance().TUNE_DRIVETRAIN_REVERSE :
-            TrajectorySet.getInstance().TUNE_DRIVETRAIN;
-        trajectory =
-            new DriveTrajectory(traj, true);
+        var traj = isReversed
+            ? TrajectorySet.getInstance().TUNE_DRIVETRAIN_REVERSE
+            : TrajectorySet.getInstance().TUNE_DRIVETRAIN;
+        trajectory = new DriveTrajectory(traj, true);
+    }
+
+    public TuneDrivetrainMode() {
+        this(false);
     }
 
     @Override

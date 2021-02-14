@@ -23,3 +23,7 @@ pluginManagement {
         }
     }
 }
+
+rootProject.name = 'Zodiac'
+include 'automode'
+

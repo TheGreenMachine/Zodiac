@@ -1,9 +1,8 @@
 package com.team1816.frc2020;
 
-import com.team1816.frc2020.auto.modes.modes2020.*;
-import com.team1816.frc2020.auto.modes.modes2021.*;
+import com.team1816.frc2020.auto.AutoModes;
+import com.team1816.frc2020.auto.modes.modes2020.DriveStraightMode;
 import com.team1816.lib.auto.modes.AutoModeBase;
-import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
@@ -20,37 +19,10 @@ public class AutoModeSelector {
         RIGHT_HAB_1,
     }
 
-    enum DesiredMode {
-        // 2020
-        DRIVE_BY_CAMERA,
-        DO_NOTHING,
-        TUNE_DRIVETRAIN,
-        TUNE_DRIVETRAIN_REVERSE,
-        TURRET_TEST,
-        LIVING_ROOM,
-        DRIVE_STRAIGHT,
-        AUTO_TRENCH_TURN_RIGHT,
-        FIVE_BALL_OPPOSING,
-        SIX_BALL_ALLIANCE,
-        EIGHT_BALL_ALLIANCE,
-        EIGHT_BALL_ALLIANCE_ALT,
-        EIGHT_BALL_OPPOSE,
-        TEN_BALL_AUTO,
-        DRIVE_STRAIGHT_SHOOT,
-        SIX_BALL_ALLIANCE_STRAIGHT,
-
-        // 2021
-        BLUE_RED_PATHB,
-        RED_PATHA,
-        BLUE_PATHA,
-        SLALOM,
-        BARREL,
-    }
-
-    private DesiredMode mCachedDesiredMode = null;
+    private AutoModes mCachedDesiredMode = null;
     private StartingPosition mCachedStartingPosition = null;
 
-    private SendableChooser<DesiredMode> mModeChooser;
+    private SendableChooser<AutoModes> mModeChooser;
     private SendableChooser<StartingPosition> mStartPositionChooser;
 
     private Optional<AutoModeBase> mAutoMode = Optional.empty();
@@ -69,60 +41,9 @@ public class AutoModeSelector {
 
         // 2020
 
-        mModeChooser.addOption("Drive By Camera", DesiredMode.DRIVE_BY_CAMERA);
-        mModeChooser.addOption("Tune Drivetrain", DesiredMode.TUNE_DRIVETRAIN);
-        mModeChooser.addOption("Tune Drivetrain Reverse", DesiredMode.TUNE_DRIVETRAIN_REVERSE);
-        mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
-        SmartDashboard.putData("Auto mode", mModeChooser);
-
-        // CheezeCurd
-        mModeChooser.addOption("Living Room", DesiredMode.LIVING_ROOM);
-        //        mModeChooser.addOption("Shop", DesiredMode.SHOP);
-        //        mModeChooser.addOption("PID", DesiredMode.PID);
-        mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
-        mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
-        mModeChooser.addOption(
-            "Auto Trench Turn Right",
-            DesiredMode.AUTO_TRENCH_TURN_RIGHT
-        );
-        mModeChooser.addOption(
-            "Auto Trench Turn Right",
-            DesiredMode.AUTO_TRENCH_TURN_RIGHT
-        );
-
-        mModeChooser.addOption("Drive Straight Shoot", DesiredMode.DRIVE_STRAIGHT_SHOOT);
-
-        // ALLIANCE
-        mModeChooser.addOption("6 Ball Alliance Trench", DesiredMode.SIX_BALL_ALLIANCE);
-        mModeChooser.addOption(
-            "6 Ball Alliance Straight",
-            DesiredMode.SIX_BALL_ALLIANCE_STRAIGHT
-        );
-        mModeChooser.addOption("8 Ball Alliance Trench", DesiredMode.EIGHT_BALL_ALLIANCE);
-        mModeChooser.addOption(
-            "8 Ball Alliance Trench ALT (NOT TESTED)",
-            DesiredMode.EIGHT_BALL_ALLIANCE_ALT
-        );
-
-        // OPPOSING
-        mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
-        mModeChooser.addOption(
-            "8 Ball Opposing Trench (NOT TESTED)",
-            DesiredMode.EIGHT_BALL_OPPOSE
-        );
-
-        mModeChooser.addOption(
-            "10 Ball Trench (Not yet implemented DO NOT USE)",
-            DesiredMode.TEN_BALL_AUTO
-        );
-
-        // 2021
-
-        mModeChooser.addOption("Blue & Red Path B", DesiredMode.BLUE_RED_PATHB);
-        mModeChooser.addOption("Red Path A", DesiredMode.RED_PATHA);
-        mModeChooser.addOption("Blue Path A", DesiredMode.BLUE_PATHA);
-        mModeChooser.addOption("Slalom Mode", DesiredMode.SLALOM);
-        mModeChooser.addOption("Barrel Run", DesiredMode.BARREL);
+        for (AutoModes mode : AutoModes.values()) {
+            mModeChooser.addOption(mode.getName(), mode);
+        }
 
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
@@ -132,7 +53,7 @@ public class AutoModeSelector {
     }
 
     public void updateModeCreator() {
-        DesiredMode desiredMode = mModeChooser.getSelected();
+        var desiredMode = mModeChooser.getSelected();
         StartingPosition startingPosition = mStartPositionChooser.getSelected();
         if (
             mCachedDesiredMode != desiredMode ||
@@ -165,61 +86,13 @@ public class AutoModeSelector {
     }
 
     private Optional<AutoModeBase> getAutoModeForParams(
-        DesiredMode mode,
+        AutoModes mode,
         StartingPosition position
     ) {
         if (hardwareFailure) {
             return Optional.of(new DriveStraightMode());
         }
-        switch (mode) {
-            // 2020
-            case DO_NOTHING:
-                return Optional.of(new DoNothingMode());
-            case DRIVE_BY_CAMERA:
-                return Optional.of(new DriveByCameraMode());
-            case TUNE_DRIVETRAIN:
-                return Optional.of(new TuneDrivetrainMode(false));
-            case TUNE_DRIVETRAIN_REVERSE:
-                return Optional.of(new TuneDrivetrainMode(true));
-            case TURRET_TEST:
-                return Optional.of(new TurretTestMode());
-            case DRIVE_STRAIGHT:
-                return (Optional.of(new DriveStraightMode()));
-            case LIVING_ROOM:
-                return (Optional.of(new LivingRoomMode()));
-            case SIX_BALL_ALLIANCE:
-                return (Optional.of(new SixBallAllianceMode()));
-            case FIVE_BALL_OPPOSING:
-                return (Optional.of(new FiveBallOpposingTrenchMode()));
-            case EIGHT_BALL_ALLIANCE:
-                return (Optional.of(new EightBallAllianceMode()));
-            case EIGHT_BALL_ALLIANCE_ALT:
-                return (Optional.of(new EightBallAllianceAltMode()));
-            case EIGHT_BALL_OPPOSE:
-                return (Optional.of(new EightBallOpposeMode()));
-            case TEN_BALL_AUTO:
-                return (Optional.of(new TenBallMode()));
-            case DRIVE_STRAIGHT_SHOOT:
-                return (Optional.of(new DriveStraightShootMode()));
-            case SIX_BALL_ALLIANCE_STRAIGHT:
-                return (Optional.of(new SixBallAllianceStraightMode()));
-            // 2021
-            case BLUE_RED_PATHB:
-                return (Optional.of(new BlueRedPathBMode()));
-            case RED_PATHA:
-                return (Optional.of(new RedPathAMode()));
-            case BLUE_PATHA:
-                return (Optional.of(new BluePathAMode()));
-            case SLALOM:
-                return (Optional.of(new SlalomMode()));
-            case BARREL:
-                return (Optional.of(new BarrelMode()));
-            default:
-                break;
-        }
-
-        System.err.println("No valid auto mode found for  " + mode);
-        return Optional.empty();
+        return Optional.of(mode.getConstructor().get());
     }
 
     public void reset() {
@@ -240,7 +113,7 @@ public class AutoModeSelector {
     }
 
     public boolean isDriveByCamera() {
-        return mCachedDesiredMode == DesiredMode.DRIVE_BY_CAMERA;
+        return false;
     }
 
     private static AutoModeSelector INSTANCE;

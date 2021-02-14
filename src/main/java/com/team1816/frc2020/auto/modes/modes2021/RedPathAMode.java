@@ -7,7 +7,9 @@ import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.actions.ParallelAction;
 import com.team1816.lib.auto.actions.SeriesAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
+import com.team1816.lib.automode.AutoMode;
 
+@AutoMode("Red Path A")
 public class RedPathAMode extends AutoModeBase {
 
     private DriveTrajectory trajectory;

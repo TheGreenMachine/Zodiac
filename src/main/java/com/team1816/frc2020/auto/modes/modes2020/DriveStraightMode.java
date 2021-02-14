@@ -5,7 +5,9 @@ import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.actions.WaitAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
+import com.team1816.lib.automode.AutoMode;
 
+@AutoMode("Drive Straight")
 public class DriveStraightMode extends AutoModeBase {
 
     private DriveTrajectory mDriveStraight;

@@ -67,6 +67,9 @@ dependencies {
     implementation 'org.yaml:snakeyaml:1.23'
     implementation 'gov.nist.math:jama:1.0.3'
 
+    compileOnly project(':automode')
+    annotationProcessor project(':automode')
+
     testImplementation 'org.mockito:mockito-core:3.6.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest:2.1'
