@@ -507,8 +507,10 @@ function update() {
 function changeField(val) {
     console.log(val);
 	image.src = `resources/img/${val}.jpg`
-	ctx.drawImage(image, 0, 0, width, height);
-	update();
+    image.onload(() => {
+        ctx.drawImage(image, 0, 0, width, height);
+        update();
+    });
 }
 
 function drawWaypoints() {
