@@ -9,9 +9,6 @@
         <script type='text/javascript' src='<c:url value='/resources/js/script.js' />'></script>
 
         <link rel='shortcut icon' href='https://media.team254.com/homepage/icons/favicon32.png' />
-        <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
-        <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet'>
-        <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet'>
         <link href='<c:url value='/resources/css/style.css' />' rel='stylesheet'>
     </head>
     <body onload='init()'>
@@ -24,6 +21,7 @@
             <button onclick='addPoint()'>Add Point</button>
             <button onclick='update()'>Update</button>
             <button onclick='draw(3)'>Animate</button>
+            <button onclick="showWaypointsList()">Waypoints Code</button>
             <select onchange='changeField(this.value)'>
                 <option value="6_field1" selected>6_field1</option>
                 <option value="6_field2">6_field2</option>
@@ -45,7 +43,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class='drag-handler'></td>
+                    <td class='drag-handler'>&#x205e;</td>
                     <td class='x'><input type='number' value='0'></td>
                     <td class='y'><input type='number' value='0'></td>
                     <td class='heading'><input type='number' value='0'></td>
@@ -55,6 +53,11 @@
                 </tr>
             </tbody>
         </table>
+        <dialog id="waypointsDialog">
+            <button onclick='this.parentElement.close()' class="close-button">&times;</button>
+            <h3>Waypoints List</h3>
+            <pre><code id="waypointsOutput"></code></pre>
+        </dialog>
 
         <input type='file' id='upl' style='display:none;'>
     </body>

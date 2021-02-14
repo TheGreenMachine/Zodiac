@@ -7,6 +7,8 @@ let image;
 let wto;
 let change = "propertychange change click keyup input paste";
 let animating = false;
+let waypointsOutput;
+let waypointsDialog;
 
 const fieldWidth = 360; // inches
 const fieldHeight = 180; // inches
@@ -376,6 +378,9 @@ function init() {
 		ctxBackground.drawImage(image, 0, 0, width, height);
 		update();
 	};
+
+    waypointsDialog = document.getElementById('waypointsDialog');
+    waypointsOutput = document.getElementById('waypointsOutput');
     rebind();
 }
 
@@ -407,7 +412,7 @@ function addPoint() {
 }
 
 function _addPoint(x, y) {
-    $("tbody").append("<tr>" + "<td class='drag-handler'></td>"
+    $("tbody").append("<tr>" + "<td class='drag-handler'>&#x205e;</td>"
         + "<td class='x'><input type='number' value='" + (x) + "'></td>"
         + "<td class='y'><input type='number' value='" + (y) + "'></td>"
         + "<td class='heading'><input type='number' value='0'></td>"
@@ -428,10 +433,8 @@ function getCursorPosition(event) {
 
 function onCanvasClick(event) {
     let { x: canvasX, y: canvasY } = getCursorPosition(event);
-    console.log(`canvas ${canvasX} ${canvasY}`)
     let x = Math.round(canvasX * (fieldWidth / width) - xOffset);
     let y = Math.round((height - canvasY) * (fieldHeight / height) - yOffset);
-    console.log(`onCanvasClick ${x} ${y}`);
     _addPoint(x, y);
 }
 
@@ -559,4 +562,19 @@ function drawSplines(fill, animate) {
             }
         });
     }
+}
+
+function showWaypointsList() {
+    waypointsOutput.textContent = generateWaypointsList();
+    waypointsDialog.showModal();
+}
+
+function generateWaypointsList() {
+    return 'List.of(\n' +
+        waypoints.map((waypoint, i, arr) =>
+            `\tnew Pose2d(${waypoint.translation.x}, ${waypoint.translation.y}, ${waypoint.rotation.getDegrees()})`
+            + (i === arr.length - 1 ? '' : ',')
+            + (waypoint.comment && ` // ${waypoint.comment}`)
+        ).join('\n') +
+        '\n)';
 }
