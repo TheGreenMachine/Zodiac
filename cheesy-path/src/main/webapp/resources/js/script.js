@@ -633,12 +633,11 @@ class CSV {
 
 function handleFiles() {
     const file = this.files[0];
-    console.log(`File upload: ${file.name} ${file.type} ${file.size}`);
+    titleInput.value = file.name.slice(0, -4);
     let reader = new FileReader();
     let output;
     reader.onload = (e) => {
         output = CSV.load(e.target.result);
-        console.log(output);
         loadWaypoints(output.data);
     }
     reader.readAsText(file);
