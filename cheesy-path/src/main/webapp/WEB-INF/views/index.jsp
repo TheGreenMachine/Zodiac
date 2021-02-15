@@ -8,6 +8,7 @@
         <script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
         <script type='text/javascript' src='<c:url value='/resources/js/script.js' />'></script>
 
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel='shortcut icon' href='https://media.team254.com/homepage/icons/favicon32.png' />
         <link href='<c:url value='/resources/css/style.css' />' rel='stylesheet'>
     </head>
@@ -18,10 +19,14 @@
             <canvas id='field'></canvas>
         </div>
         <div class='buttonContainer'>
-            <button onclick='addPoint()'>Add Point</button>
-            <button onclick='update()'>Update</button>
-            <button onclick='draw(3)'>Animate</button>
+            <button onclick='addPoint()' class="icon-button"><i class="material-icons">add</i></button>
+            <button onclick='update()' class="icon-button"><i class="material-icons">refresh</i></button>
+            <button onclick='draw(3)' class="icon-button"><i class="material-icons">play_arrow</i></button>
             <button onclick="showWaypointsList()">Waypoints Code</button>
+            <input type="file" id="upload" accept="text/csv" hidden>
+            <label for="upload" class="btn btn-pair-left">Import CSV</label>
+            <a id="downloadButton" onclick="downloadCSV(this)" download class="btn btn-pair-right">Export CSV</a>
+            <div class="spacer"></div>
             <select onchange='changeField(this.value)'>
                 <option value="6_field1" selected>6_field1</option>
                 <option value="6_field2">6_field2</option>
@@ -29,7 +34,7 @@
                 <option value="7_field2">7_field2</option>
                 <option value="7_field3">7_field3</option>
             </select>
-            <span class='checkbox'>Is reversed: <input type='checkbox' id='isReversed'></span>
+            <label class='checkbox'>Is reversed: <input type='checkbox' id='isReversed'></label>
         </div>
         <table>
             <thead>
@@ -43,13 +48,17 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class='drag-handler'>&#x205e;</td>
-                    <td class='x'><input type='number' value='0'></td>
-                    <td class='y'><input type='number' value='0'></td>
-                    <td class='heading'><input type='number' value='0'></td>
+                    <td class='drag-handler'><i class="material-icons">drag_indicator</i></td>
+                    <td class='x'><input type='number' class='data-input' value='0'></td>
+                    <td class='y'><input type='number' class='data-input' value='0'></td>
+                    <td class='heading'><input type='number' class='data-input' value='0'></td>
                     <td class='comments'><input type='search' placeholder='Comments'></td>
-                    <td class='enabled'><input type='checkbox' checked></td>
-                    <td class='delete'><button onclick='$(this).parent().parent().remove();update()'>&times;</button></td>
+                    <td class='enabled'><input type='checkbox' class='data-input' checked></td>
+                    <td class='delete'>
+                        <button onclick='$(this).parent().parent().remove();update()' class="icon-button">
+                            <i class='material-icons'>clear</i>
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -58,8 +67,6 @@
             <h3>Waypoints List</h3>
             <pre><code id="waypointsOutput"></code></pre>
         </dialog>
-
-        <input type='file' id='upl' style='display:none;'>
     </body>
 </html>
 

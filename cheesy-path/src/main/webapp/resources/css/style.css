@@ -117,30 +117,56 @@ td>input, td>input:focus {
 .buttonContainer {
 	width: 828px;
 	margin: 10px auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
-button {
+.spacer {
+    flex-grow: 1;
+}
+
+button, .btn {
 	background-color: #0070FF;
 	border: none;
-	padding: 7px 12px;
+	padding: 4px 12px;
 	border-radius: 4px;
 	color: #fff;
 	cursor: pointer;
-	font-size: 12px;
-	transition: background-color 0.25s
+	font-size: 14px;
+	transition: background-color 0.25s;
+    height: 30px;
+    box-sizing: border-box;
+    display: inline-block;
+    line-height: 1.5;
 }
 
-button:hover {
+.btn:link, .btn:any-link, .btn:visited {
+    text-decoration: none;
+}
+
+button:hover, .btn:hover {
 	background-color: #0062EE;
 }
 
-button:focus {
+button:focus, .btn:focus {
 	outline: none;
 }
 
-span.checkbox {
+.btn-pair-left {
+    margin-right: -4px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: 1px solid #0045b7;
+}
+
+.btn-pair-right {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.checkbox {
 	font-size: 15px;
-	float: right;
 	padding: 3px
 }
 
@@ -187,4 +213,10 @@ pre, code {
 .close-button:hover {
     background-color: #888;
     color: white;
+}
+
+.icon-button {
+    width: 30px;
+    height: 30px;
+    padding: 3px;
 }

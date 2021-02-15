@@ -5,10 +5,12 @@ let ctx;
 let ctxBackground;
 let image;
 let wto;
-let change = "propertychange change click keyup input paste";
+let change = "propertychange change input";
 let animating = false;
 let waypointsOutput;
 let waypointsDialog;
+let downloadButton;
+let titleInput;
 
 const fieldWidth = 360; // inches
 const fieldHeight = 180; // inches
@@ -379,6 +381,10 @@ function init() {
 		update();
 	};
 
+	document.getElementById("upload").addEventListener("change", handleFiles, false);
+	downloadButton = document.getElementById("downloadButton");
+	titleInput = document.getElementById("title");
+
     waypointsDialog = document.getElementById('waypointsDialog');
     waypointsOutput = document.getElementById('waypointsOutput');
     rebind();
@@ -394,7 +400,7 @@ function clear() {
 }
 
 function rebind() {
-    let input = $('input');
+    let input = $('.data-input');
     input.unbind(change);
     input.bind(change, function() {
         cancelAnimationFrame(wto);
@@ -411,16 +417,18 @@ function addPoint() {
 	_addPoint(prev.x + 50, prev.y + 50);
 }
 
-function _addPoint(x, y) {
-    $("tbody").append("<tr>" + "<td class='drag-handler'>&#x205e;</td>"
-        + "<td class='x'><input type='number' value='" + (x) + "'></td>"
-        + "<td class='y'><input type='number' value='" + (y) + "'></td>"
-        + "<td class='heading'><input type='number' value='0'></td>"
+function _addPoint(x, y, heading = 0, doUpdate = true) {
+    $("tbody").append("<tr>" + "<td class='drag-handler'><i class='material-icons'>drag_indicator</i></td>"
+        + `<td class='x'><input type='number' class='data-input' value='${x}'></td>`
+        + `<td class='y'><input type='number' class='data-input' value='${y}'></td>`
+        + `<td class='heading'><input type='number' class='data-input' value='${heading}'></td>`
         + "<td class='comments'><input type='search' placeholder='Comments'></td>"
-        + "<td class='enabled'><input type='checkbox' checked></td>"
-        + "<td class='delete'><button onclick='$(this).parent().parent().remove();update()'>&times;</button></td></tr>");
-    update();
-    rebind();
+        + "<td class='enabled'><input type='checkbox' class='data-input' checked></td>"
+        + "<td class='delete'><button onclick='$(this).parent().parent().remove();update()' class='icon-button'><i class='material-icons'>clear</i></button></td></tr>");
+    if (doUpdate) {
+        update();
+        rebind();
+    }
 }
 
 function getCursorPosition(event) {
@@ -457,7 +465,7 @@ function draw(style) {
     }
 }
 
-function update() {
+function update(recalculate = true) {
     if (animating) {
         return;
     }
@@ -465,43 +473,45 @@ function update() {
 	waypoints = [];
 	let data = "";
 	$('tbody').children('tr').each(function() {
-		let x = parseInt($($($(this).children()).children()[0]).val());
-		let y = parseInt($($($(this).children()).children()[1]).val());
-		let heading = parseInt($($($(this).children()).children()[2]).val());
+		let x = parseInt($($($(this).children()).children()[1]).val());
+		let y = parseInt($($($(this).children()).children()[2]).val());
+		let heading = parseInt($($($(this).children()).children()[3]).val());
 		if (isNaN(heading)) {
 			heading = 0;
         }
-		let comment = ($($($(this).children()).children()[3]).val());
-        let enabled = ($($($(this).children()).children()[4]).prop('checked'));
+		let comment = ($($($(this).children()).children()[4]).val());
+        let enabled = ($($($(this).children()).children()[5]).prop('checked'));
 		if (enabled) {
             waypoints.push(new Pose2d(new Translation2d(x, y), Rotation2d.fromDegrees(heading), comment));
-            data += x + "," + y + "," + heading + ";";
+            data += `${x},${y},${heading};`;
         }
     });
 
     draw(1);
 
-	$.post({
-		url: "api/calculate_splines",
-		data: data,
-		success: function(data) {
-			if (data === "no") {
-				return;
-			}
+    if (recalculate && data.length !== 0) {
+        $.post({
+            url: "api/calculate_splines",
+            data: data,
+            success: function (data) {
+                if (data === "no") {
+                    return;
+                }
 
-			// console.log(data);
+                // console.log(data);
 
-			let points = JSON.parse(data).points;
-		
-			splinePoints = [];
-			for (let i in points) {
-			    let point = points[i];
-				splinePoints.push(new Pose2d(new Translation2d(point.x, point.y), Rotation2d.fromRadians(point.rotation)));
+                let points = JSON.parse(data).points;
+
+                splinePoints = [];
+                for (let i in points) {
+                    let point = points[i];
+                    splinePoints.push(new Pose2d(new Translation2d(point.x, point.y), Rotation2d.fromRadians(point.rotation)));
+                }
+
+                draw(2);
             }
-
-            draw(2);
-		}
-    });
+        });
+    }
 }
 
 function changeField(val) {
@@ -579,4 +589,70 @@ function generateWaypointsList() {
             + (waypoint.comment && ` // ${waypoint.comment}`)
         ).join('\n') +
         '\n)';
+}
+
+function loadWaypoints(data) {
+    waypoints = [];
+    $('tbody').empty();
+    for (const {x, y, heading} of data) {
+        _addPoint(x, y, heading, false);
+    }
+    update();
+    rebind();
+}
+
+class CSV {
+    constructor(data = []) {
+        this.data = data;
+    }
+
+    static load(text) {
+        const rows = text.split("\n");
+        rows.shift(); // remove headers;
+        const data = rows.map(row => {
+            const [ x, y, heading ] = row.split(",");
+            return { x, y, heading };
+        });
+        return new CSV(data);
+    }
+
+    addRow({ x, y, heading }) {
+        this.data.push({ x, y, heading });
+    }
+
+    toString() {
+        let returnVal = "x,y,heading\n";
+        returnVal += this.data.map(({x, y, heading}) => `${x},${y},${heading}`).join('\n');
+        return returnVal;
+    }
+
+    toBlob() {
+        return new Blob([this.toString()], { type: 'text/csv' });
+    }
+}
+
+function handleFiles() {
+    const file = this.files[0];
+    console.log(`File upload: ${file.name} ${file.type} ${file.size}`);
+    let reader = new FileReader();
+    let output;
+    reader.onload = (e) => {
+        output = CSV.load(e.target.result);
+        console.log(output);
+        loadWaypoints(output.data);
+    }
+    reader.readAsText(file);
+}
+
+function downloadCSV(el) {
+    console.log("downloadCSV!");
+    const csv = new CSV(
+        waypoints.map(point => ({
+            x: point.translation.x,
+            y: point.translation.y,
+            heading: point.rotation.getDegrees(),
+        }))
+    );
+    el.download = titleInput.value ? `${titleInput.value}.csv` : 'path.csv';
+    el.href = URL.createObjectURL(csv.toBlob());
 }
