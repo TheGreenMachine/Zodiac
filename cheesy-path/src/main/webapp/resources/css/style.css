@@ -2,6 +2,10 @@
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', "Helvetica Neue", Helvetica, 'Roboto', sans-serif;
 }
 
+html {
+    background-color: #f5f5f5;
+}
+
 #title {
 	font-size: 28px;
 	margin: 20px auto 20px auto;
@@ -12,10 +16,15 @@
 	text-align: center;
 	width: 500px;
 	color: #232323;
+    background-color: transparent;
 }
 
 #title, #title:focus {
 	outline: none;
+}
+
+#title:focus {
+    border-color: #0070FF;
 }
 
 #canvases {
@@ -38,6 +47,8 @@ table {
 	width: 828px;
 	margin: 5px auto;
 	border-collapse: collapse;
+    border-radius: 4px;
+    background-color: white;
 	box-shadow: 0 3px 5px rgba(128, 128, 128, 0.4);
 }
 
@@ -48,6 +59,27 @@ thead {
 
 thead>tr>th {
 	padding: 8px 0;
+}
+
+th:first-child {
+    border-top-left-radius: 4px;
+}
+
+th:last-child {
+    border-top-right-radius: 4px;
+}
+
+tbody tr {
+    background-color: white;
+    transition: box-shadow 0.2s ease;
+}
+
+.ui-sortable-placeholder {
+    height: 38px;
+}
+
+tr.ui-sortable-helper {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
 }
 
 tbody:before, tbody:after {
@@ -62,7 +94,7 @@ td {
 	font-size: 14px;
 }
 
-td>input, td>input:focus {
+td>input {
 	font-size: 14px;
 	padding: 2px;
 	border: none;
@@ -70,12 +102,18 @@ td>input, td>input:focus {
 	border-bottom: #AAA solid 1px;
 	text-align: center;
 	width: 50px;
-	outline: none;
+}
+
+td>input:focus {
+    border-color: #0070FF;
+}
+
+td > input:not([type=checkbox]) {
+    outline: none;
 }
 
 .drag-handler {
-    margin-left: 3px;
-    display: block;
+    margin-left: 8px;
     width: 20px;
     height: 30px;
     padding-top: 2px;
@@ -84,6 +122,10 @@ td>input, td>input:focus {
     font-size: 24px;
     line-height: 34px;
     cursor: grab;
+}
+
+.drag-handler .material-icons {
+    vertical-align: text-bottom;
 }
 
 .drag-handler:active {
@@ -110,8 +152,8 @@ td>input, td>input:focus {
 	font-size: 16px;
 }
 
-.delete>button:hover {
-	background-color: #EE1900;
+.delete>button:hover, .delete>button:focus-visible {
+	background-color: #ee1900;
 }
 
 .buttonContainer {
@@ -145,8 +187,9 @@ button, .btn {
     text-decoration: none;
 }
 
-button:hover, .btn:hover {
-	background-color: #0062EE;
+button:hover, .btn:hover,
+button:focus-visible, .btn:focus-visible {
+	background-color: #0053d0;
 }
 
 button:focus, .btn:focus {
@@ -219,4 +262,12 @@ pre, code {
     width: 30px;
     height: 30px;
     padding: 3px;
+}
+
+.modified-indicator {
+    display: none;
+}
+
+html[data-modified] .modified-indicator {
+    display: inline;
 }

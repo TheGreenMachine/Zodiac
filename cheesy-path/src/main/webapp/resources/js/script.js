@@ -9,7 +9,6 @@ let change = "propertychange change input";
 let animating = false;
 let waypointsOutput;
 let waypointsDialog;
-let downloadButton;
 let titleInput;
 
 const fieldWidth = 360; // inches
@@ -378,15 +377,21 @@ function init() {
 	image.src = 'resources/img/6_field1.jpg';
 	image.onload = function() {
 		ctxBackground.drawImage(image, 0, 0, width, height);
-		update();
+		update(false);
 	};
 
-	document.getElementById("upload").addEventListener("change", handleFiles, false);
-	downloadButton = document.getElementById("downloadButton");
 	titleInput = document.getElementById("title");
 
     waypointsDialog = document.getElementById('waypointsDialog');
     waypointsOutput = document.getElementById('waypointsOutput');
+
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'KeyS' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            saveFile();
+        }
+    })
+
     rebind();
 }
 
@@ -465,7 +470,7 @@ function draw(style) {
     }
 }
 
-function update(recalculate = true) {
+function update(modified = true) {
     if (animating) {
         return;
     }
@@ -489,7 +494,11 @@ function update(recalculate = true) {
 
     draw(1);
 
-    if (recalculate && data.length !== 0) {
+    if (modified) {
+        setModified(true);
+    }
+
+    if (data.length !== 0) {
         $.post({
             url: "api/calculate_splines",
             data: data,
@@ -503,8 +512,7 @@ function update(recalculate = true) {
                 let points = JSON.parse(data).points;
 
                 splinePoints = [];
-                for (let i in points) {
-                    let point = points[i];
+                for (const point of points) {
                     splinePoints.push(new Pose2d(new Translation2d(point.x, point.y), Rotation2d.fromRadians(point.rotation)));
                 }
 
@@ -519,7 +527,7 @@ function changeField(val) {
 	image.src = `resources/img/${val}.jpg`
     image.onload(() => {
         ctx.drawImage(image, 0, 0, width, height);
-        update();
+        update(false);
     });
 }
 
@@ -597,7 +605,7 @@ function loadWaypoints(data) {
     for (const {x, y, heading} of data) {
         _addPoint(x, y, heading, false);
     }
-    update();
+    update(false);
     rebind();
 }
 
@@ -631,20 +639,42 @@ class CSV {
     }
 }
 
-function handleFiles() {
-    const file = this.files[0];
-    titleInput.value = file.name.slice(0, -4);
-    let reader = new FileReader();
-    let output;
-    reader.onload = (e) => {
-        output = CSV.load(e.target.result);
-        loadWaypoints(output.data);
+function setModified(modified) {
+    if (modified) {
+        document.documentElement.setAttribute('data-modified', 'true');
+    } else {
+        document.documentElement.removeAttribute('data-modified');
     }
-    reader.readAsText(file);
 }
 
-function downloadCSV(el) {
-    console.log("downloadCSV!");
+const filePickerOptions = {
+    types: [
+        {
+            description: 'CSV Files',
+            accept: {
+                'text/csv': ['.csv'],
+            },
+        },
+    ],
+};
+let fileHandle;
+
+async function openFile() {
+    [fileHandle] = await window.showOpenFilePicker(filePickerOptions);
+    const file = await fileHandle.getFile();
+    titleInput.value = file.name.slice(0, -4);
+    const text = await file.text();
+    const output = CSV.load(text);
+    loadWaypoints(output.data);
+}
+
+async function writeFile(fileHandle, contents) {
+    const writable = await fileHandle.createWritable();
+    await writable.write(contents);
+    await writable.close();
+}
+
+function generateCSV() {
     const csv = new CSV(
         waypoints.map(point => ({
             x: point.translation.x,
@@ -652,6 +682,34 @@ function downloadCSV(el) {
             heading: point.rotation.getDegrees(),
         }))
     );
-    el.download = titleInput.value ? `${titleInput.value}.csv` : 'path.csv';
-    el.href = URL.createObjectURL(csv.toBlob());
+    return csv.toString();
+}
+
+async function saveFile() {
+    try {
+        if (!fileHandle) {
+            return await saveFileAs();
+        }
+        await writeFile(fileHandle, generateCSV());
+    } catch (e) {
+        console.error('Unable to save file', e);
+    }
+    setModified(false);
+}
+
+async function saveFileAs() {
+    try {
+        fileHandle = await window.showSaveFilePicker(filePickerOptions);
+        titleInput.value = fileHandle.name.slice(0, -4);
+    } catch (e) {
+        if (e.name === 'AbortError') return;
+        console.error('An error occurred trying to open the file', e);
+        return;
+    }
+    try {
+        await writeFile(fileHandle, generateCSV());
+    } catch (e) {
+        console.error('Unable to save file', e);
+    }
+    setModified(false);
 }

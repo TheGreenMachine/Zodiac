@@ -13,19 +13,21 @@
         <link href='<c:url value='/resources/css/style.css' />' rel='stylesheet'>
     </head>
     <body onload='init()'>
-        <input id='title' placeholder='Title'>
+        <input id='title' placeholder='Title' disabled>
         <div id='canvases'>
             <canvas id='background'></canvas>
             <canvas id='field'></canvas>
         </div>
         <div class='buttonContainer'>
             <button onclick='addPoint()' class="icon-button"><i class="material-icons">add</i></button>
-            <button onclick='update()' class="icon-button"><i class="material-icons">refresh</i></button>
+            <button onclick='update(false)' class="icon-button"><i class="material-icons">refresh</i></button>
             <button onclick='draw(3)' class="icon-button"><i class="material-icons">play_arrow</i></button>
             <button onclick="showWaypointsList()">Waypoints Code</button>
-            <input type="file" id="upload" accept="text/csv" hidden>
-            <label for="upload" class="btn btn-pair-left">Import CSV</label>
-            <a id="downloadButton" onclick="downloadCSV(this)" download class="btn btn-pair-right">Export CSV</a>
+            <button id="openButton" onclick="openFile()" class="btn-pair-left">Open</button>
+            <button id="saveButton" onclick="saveFile()" class="btn-pair-right">
+                Save
+                <span class="modified-indicator">&bull;</span>
+            </button>
             <div class="spacer"></div>
             <select onchange='changeField(this.value)'>
                 <option value="6_field1" selected>6_field1</option>
@@ -73,7 +75,8 @@
 <script>
     $('table tbody').sortable({
         helper: fixWidthHelper,
-        deactivate: update
+        update: update,
+        forcePlaceholderSize: true,
     }).disableSelection();
         
     function fixWidthHelper(e, ui) {
