@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 VERSION="0.1.0"
-
 ROBORIO_IP="10.18.16.2"
 
 function subcommand_fetch {
@@ -18,7 +17,7 @@ function subcommand_eraseLocal {
 
 function subcommand_eraseRemote {
     echo "Deleting all .bag files from lvuser@$ROBORIO_IP:~"
-    ssh -q lvuser@ROBORIO_IP "rm $ROBOT_NAME*.bag"
+    ssh -q lvuser@ROBORIO_IP "rm *.bag"
 }
 
 function subcommand_help {
