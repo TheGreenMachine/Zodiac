@@ -10,6 +10,7 @@ let animating = false;
 let waypointsOutput;
 let waypointsDialog;
 let titleInput;
+let interactive;
 
 const fieldWidth = 360; // inches
 const fieldHeight = 180; // inches
@@ -24,10 +25,21 @@ const robotWidth = 34; // inches
 const robotHeight = 34; // inches
 
 const waypointRadius = 7;
-const splineWidth = 2;
+const splineWidth = 3;
 
 const kEps = 1E-9;
 const pi = Math.PI;
+
+function svg(tagName, attrs) {
+    const svgNs = "http://www.w3.org/2000/svg";
+    let element = document.createElementNS(svgNs, tagName);
+    if (attrs && typeof attrs === 'object') {
+        for (const [key, value] of Object.entries(attrs)) {
+            element.setAttribute(key, value);
+        }
+    }
+    return element;
+}
 
 class Translation2d {
 	constructor(x, y) {
@@ -289,6 +301,21 @@ class Pose2d {
 		ctx.stroke();
         ctx.closePath();
 	}
+
+	drawInteractive(radius, index) {
+	    let point = svg('circle', {
+            fill: "#2CFF2C",
+            cx: this.translation.drawX,
+            cy: this.translation.drawY,
+            r: radius,
+            'data-index': index,
+        });
+
+	    point.addEventListener('mousedown', handleWaypointDragStart);
+        point.addEventListener('click', handleWaypointClick);
+
+        interactive.appendChild(point);
+    }
 	
 	toString() {
 		return "new Pose2d(new Translation2d(" + this.translation.x + ", " + this.translation.y + "), new Rotation2d(" + this.rotation.cos + ", " + this.rotation.sin + ", " + this.rotation.normalize + "))";
@@ -350,6 +377,7 @@ function init() {
     let field = $('#field');
     let background = $('#background');
     let canvases = $('#canvases');
+    let interactiveEl = $('#interactive');
     let widthString = (width / 1.5) + "px";
     let heightString = (height / 1.5) + "px";
 
@@ -357,10 +385,11 @@ function init() {
     field.css("height", heightString);
     background.css("width", widthString);
     background.css("height", heightString);
+    interactiveEl.css("width", widthString);
+    interactiveEl.css("height", heightString);
     canvases.css("width", widthString);
     canvases.css("height", heightString);
     fieldCanvas = document.getElementById('field');
-    fieldCanvas.addEventListener('click', onCanvasClick);
 
 	ctx = fieldCanvas.getContext('2d');
 	ctx.canvas.width = width;
@@ -372,6 +401,12 @@ function init() {
     ctxBackground.canvas.width = width;
     ctxBackground.canvas.height = height;
     ctx.clearRect(0, 0, width, height);
+
+    interactive = document.getElementById('interactive');
+    interactive.setAttribute("width", width);
+    interactive.setAttribute("height", height);
+    interactive.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    interactive.addEventListener('click', onCanvasClick);
 
 	image = new Image();
 	image.src = 'resources/img/6_field1.jpg';
@@ -395,13 +430,21 @@ function init() {
     rebind();
 }
 
-function clear() {
+function clearSplines() {
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = "#FF0000";
+}
+
+function clear() {
+    clearSplines();
 
 	ctxBackground.clearRect(0, 0, width, height);
     ctxBackground.fillStyle = "#FF0000";
     ctxBackground.drawImage(image, 0, 0, width, height);
+
+    while (interactive.lastChild) {
+        interactive.removeChild(interactive.lastChild);
+    }
 }
 
 function rebind() {
@@ -437,7 +480,7 @@ function _addPoint(x, y, heading = 0, doUpdate = true) {
 }
 
 function getCursorPosition(event) {
-    const rect = fieldCanvas.getBoundingClientRect();
+    const rect = interactive.getBoundingClientRect();
     return {
         x: (event.clientX - rect.left) * (width / rect.width),
         y: (event.clientY - rect.top) * (height / rect.height),
@@ -446,12 +489,88 @@ function getCursorPosition(event) {
 
 function onCanvasClick(event) {
     let { x: canvasX, y: canvasY } = getCursorPosition(event);
-    let x = Math.round(canvasX * (fieldWidth / width) - xOffset);
-    let y = Math.round((height - canvasY) * (fieldHeight / height) - yOffset);
+    let { x, y } = canvasToFieldCoords(canvasX, canvasY);
     _addPoint(x, y);
 }
 
+function canvasToFieldCoords(canvasX, canvasY) {
+    let x = Math.round(canvasX * (fieldWidth / width) - xOffset);
+    let y = Math.round((height - canvasY) * (fieldHeight / height) - yOffset);
+    return { x, y };
+}
+
+let selectedWaypoint;
+function selectWaypoint(el) {
+    if (el === selectedWaypoint) return;
+    if (selectedWaypoint) {
+        selectedWaypoint.removeAttribute('data-selected');
+    }
+    selectedWaypoint = el;
+    if (selectedWaypoint) {
+        selectedWaypoint.setAttribute('data-selected', true);
+    }
+}
+
+function handleWaypointDragStart(event) {
+    selectWaypoint(event.target);
+    fieldCanvas.classList.add('faded');
+    interactive.addEventListener('mousemove', handleWaypointDrag);
+    interactive.addEventListener('mouseup', handleWaypointDragEnd);
+}
+
+function handleWaypointDrag(event) {
+    if (selectedWaypoint) {
+        event.preventDefault();
+        let { x: canvasX, y: canvasY } = getCursorPosition(event);
+        selectedWaypoint.setAttribute("cx", canvasX);
+        selectedWaypoint.setAttribute("cy", canvasY);
+        let index = selectedWaypoint.getAttribute('data-index');
+        let { x, y } = canvasToFieldCoords(canvasX, canvasY);
+        waypoints[index].translation.x = x;
+        waypoints[index].translation.y = y;
+
+        const data = waypoints.map(point => (
+            `${point.translation.x},${point.translation.y},${point.rotation.getDegrees()}`
+        )).join(';');
+        recalculateSplines(data, 4);
+    }
+}
+
+function handleWaypointClick(event) {
+    event.stopPropagation();
+}
+
+function handleWaypointDragEnd(event) {
+    if (selectedWaypoint) {
+        let { x: canvasX, y: canvasY } = getCursorPosition(event);
+        let { x, y } = canvasToFieldCoords(canvasX, canvasY);
+        modifyWaypoint(selectedWaypoint.getAttribute('data-index'), x, y);
+        selectWaypoint(null);
+    }
+    fieldCanvas.classList.remove('faded');
+    interactive.removeEventListener('mousemove', handleWaypointDrag);
+    interactive.removeEventListener('mouseup', handleWaypointDragEnd);
+}
+
+function modifyWaypoint(index, x, y) {
+    let tr = $('tbody').children('tr')[index];
+    let xInput = tr.querySelector('.x input');
+    let yInput = tr.querySelector('.y input');
+
+    xInput.value = x;
+    yInput.value = y;
+
+    update();
+    rebind();
+}
+
 function draw(style) {
+    if (style === 4) {
+        clearSplines();
+        drawSplines(true);
+        drawSplines(false);
+        return;
+    }
     clear();
     drawWaypoints();
 
@@ -498,25 +617,29 @@ function update(modified = true) {
         setModified(true);
     }
 
+    recalculateSplines(data, 2);
+}
+
+function recalculateSplines(data, drawStyle) {
     if (data.length !== 0) {
         $.post({
             url: "api/calculate_splines",
             data: data,
-            success: function (data) {
-                if (data === "no") {
+            success: function (splineData) {
+                if (splineData === "no") {
                     return;
                 }
 
-                // console.log(data);
+                // console.log(splineData);
 
-                let points = JSON.parse(data).points;
+                let points = JSON.parse(splineData).points;
 
                 splinePoints = [];
                 for (const point of points) {
                     splinePoints.push(new Pose2d(new Translation2d(point.x, point.y), Rotation2d.fromRadians(point.rotation)));
                 }
 
-                draw(2);
+                draw(drawStyle);
             }
         });
     }
@@ -532,8 +655,8 @@ function changeField(val) {
 }
 
 function drawWaypoints() {
-	waypoints.forEach(function(waypoint) {
-        waypoint.draw(true, waypointRadius);
+	waypoints.forEach((waypoint, i) => {
+        waypoint.drawInteractive(waypointRadius, i);
         drawRobot(waypoint, waypoint.rotation.getRadians());
     });
 }

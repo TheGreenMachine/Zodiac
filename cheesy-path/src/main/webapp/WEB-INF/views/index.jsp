@@ -17,6 +17,7 @@
         <div id='canvases'>
             <canvas id='background'></canvas>
             <canvas id='field'></canvas>
+            <svg id='interactive'></svg>
         </div>
         <div class='buttonContainer'>
             <button onclick='addPoint()' class="icon-button"><i class="material-icons">add</i></button>

@@ -33,14 +33,29 @@ html {
     position: relative;
 }
 
-#field {
-    cursor: crosshair;
-}
-
-#canvases canvas {
+#canvases canvas, #canvases svg {
     position: absolute;
     top: 0;
     left: 0;
+}
+
+#field.faded {
+    transition: opacity 350ms ease;
+    opacity: 0.5;
+}
+
+#interactive {
+    cursor: crosshair;
+}
+
+svg circle {
+    cursor: move;
+}
+
+svg circle[data-selected] {
+    stroke: #0070FF;
+    r: 16;
+    stroke-width: 2;
 }
 
 table {
