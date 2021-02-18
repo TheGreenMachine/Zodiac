@@ -6,7 +6,7 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import java.util.List;
 
-public class DimeTurn implements PathContainer {
+public class DimeTurnRedPathA implements PathContainer {
 
     @Override
     public Path buildPath() {

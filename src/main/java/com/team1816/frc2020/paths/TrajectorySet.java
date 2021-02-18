@@ -92,7 +92,7 @@ public class TrajectorySet {
         this.BLUE_RED_PATHB = new BlueRedPathB().generateTrajectory();
         this.RED_PATHA = new RedPathA().generateTrajectory();
         this.BLUE_PATHA = new BluePathA().generateTrajectory();
-        this.DIME_TURN = new DimeTurn().generateTrajectory();
+        this.DIME_TURN = new DimeTurnRedPathA().generateTrajectory();
 
         this.SLALOM_PATH = new SlalomPath().generateTrajectory();
         this.BARREL_PATH = new BarrelPath().generateTrajectory();
