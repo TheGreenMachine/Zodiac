@@ -530,7 +530,7 @@ function handleWaypointDrag(event) {
         waypoints[index].translation.y = y;
 
         const data = waypoints.map(point => (
-            `${point.translation.x},${point.translation.y},${point.rotation.getDegrees()}`
+            `${point.translation.x},${point.translation.y},${Math.round(point.rotation.getDegrees())}`
         )).join(';');
         recalculateSplines(data, 4);
     }
@@ -599,7 +599,7 @@ function update(modified = true) {
 	$('tbody').children('tr').each(function() {
 		let x = parseInt($($($(this).children()).children()[1]).val());
 		let y = parseInt($($($(this).children()).children()[2]).val());
-		let heading = parseInt($($($(this).children()).children()[3]).val());
+		let heading = Math.round(parseInt($($($(this).children()).children()[3]).val()));
 		if (isNaN(heading)) {
 			heading = 0;
         }
@@ -715,7 +715,7 @@ function showWaypointsList() {
 function generateWaypointsList() {
     return 'List.of(\n' +
         waypoints.map((waypoint, i, arr) =>
-            `\tnew Pose2d(${waypoint.translation.x}, ${waypoint.translation.y}, ${waypoint.rotation.getDegrees()})`
+            `\tnew Pose2d(${waypoint.translation.x}, ${waypoint.translation.y}, ${Math.round(waypoint.rotation.getDegrees())})`
             + (i === arr.length - 1 ? '' : ',')
             + (waypoint.comment && ` // ${waypoint.comment}`)
         ).join('\n') +
@@ -802,7 +802,7 @@ function generateCSV() {
         waypoints.map(point => ({
             x: point.translation.x,
             y: point.translation.y,
-            heading: point.rotation.getDegrees(),
+            heading: Math.round(point.rotation.getDegrees()),
         }))
     );
     return csv.toString();
