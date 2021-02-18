@@ -11,6 +11,7 @@ let waypointsOutput;
 let waypointsDialog;
 let titleInput;
 let interactive;
+let clipboardToast;
 
 const fieldWidth = 360; // inches
 const fieldHeight = 180; // inches
@@ -419,6 +420,7 @@ function init() {
 
     waypointsDialog = document.getElementById('waypointsDialog');
     waypointsOutput = document.getElementById('waypointsOutput');
+    clipboardToast = document.getElementById('clipboardToast');
 
     document.addEventListener('keydown', (e) => {
         if (e.code === 'KeyS' && (e.ctrlKey || e.metaKey)) {
@@ -710,6 +712,24 @@ function drawSplines(fill, animate) {
 function showWaypointsList() {
     waypointsOutput.textContent = generateWaypointsList();
     waypointsDialog.showModal();
+}
+
+async function copyToClipboard() {
+    let range = new Range();
+    range.selectNode(waypointsOutput);
+    window.getSelection().empty();
+    window.getSelection().addRange(range);
+    await navigator.clipboard.writeText(waypointsOutput.textContent);
+    showToast(clipboardToast);
+}
+
+const TOAST_DURATION = 1000; // ms
+
+function showToast(toastEl) {
+    toastEl.classList.add('shown');
+    setTimeout(() => {
+        toastEl.classList.remove('shown');
+    }, TOAST_DURATION);
 }
 
 function generateWaypointsList() {

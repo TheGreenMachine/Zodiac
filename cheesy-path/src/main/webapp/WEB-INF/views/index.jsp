@@ -25,10 +25,11 @@
             <button onclick='draw(3)' class="icon-button"><i class="material-icons">play_arrow</i></button>
             <button onclick="showWaypointsList()">Waypoints Code</button>
             <button id="openButton" onclick="openFile()" class="btn-pair-left">Open</button>
-            <button id="saveButton" onclick="saveFile()" class="btn-pair-right">
+            <button id="saveButton" onclick="saveFile()" class="btn-pair-center">
                 Save
                 <span class="modified-indicator">&bull;</span>
             </button>
+            <button id="saveAsButton" onclick="saveFileAs()" class="btn-pair-right">Save As</button>
             <div class="spacer"></div>
             <select onchange='changeField(this.value)'>
                 <option value="6_field1" selected>6_field1</option>
@@ -68,8 +69,9 @@
         <dialog id="waypointsDialog">
             <button onclick='this.parentElement.close()' class="close-button">&times;</button>
             <h3>Waypoints List</h3>
-            <pre><code id="waypointsOutput"></code></pre>
+            <pre onclick="copyToClipboard()"><code id="waypointsOutput"></code></pre>
         </dialog>
+        <div class="toast" id="clipboardToast">Copied to clipboard!</div>
     </body>
 </html>
 
