@@ -1,0 +1,3 @@
+[submodule "cheesy-path"]
+	path = cheesy-path
+	url = https://github.com/TheGreenMachine/cheesy-path.git
