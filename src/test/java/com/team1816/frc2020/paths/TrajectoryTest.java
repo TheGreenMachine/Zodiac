@@ -203,7 +203,6 @@ public class TrajectoryTest {
         String name,
         Trajectory<TimedState<Pose2dWithCurvature>> trajectory
     ) {
-        verifyTrajectory(trajectory, false);
         System.out.println(name + ": ");
         System.out.println("Final time = " + trajectory.getLastState().t() + " s");
         System.out.println("Final velocity = " + trajectory.getLastState().velocity());
@@ -213,14 +212,13 @@ public class TrajectoryTest {
             trajectory.getLastState().velocity(),
             kTestEpsilon
         );
+        verifyTrajectory(trajectory, false);
+        // System.out.println(trajectory.toCSV());
     }
 
     @Test
     public void timeTrajectories() {
-        timeTrajectory("BLUE_RED_PATHB", set.BLUE_RED_PATHB);
-
-        System.out.println("Two Path Combo: ");
-        timeTrajectory("RED_PATHA", set.RED_PATHA);
-        timeTrajectory("DIME_TURN", set.DIME_TURN);
+        System.out.println(set.BARREL_PATH);
+        timeTrajectory("BARREL_PATH", set.BARREL_PATH);
     }
 }
