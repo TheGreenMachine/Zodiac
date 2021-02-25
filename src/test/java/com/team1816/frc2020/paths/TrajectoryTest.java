@@ -1,7 +1,5 @@
 package com.team1816.frc2020.paths;
 
-import static org.junit.Assert.*;
-
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Twist2d;
@@ -11,6 +9,9 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.Util;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TrajectoryTest {
 
@@ -135,11 +136,11 @@ public class TrajectoryTest {
 
     @Test
     public void test() {
-        System.out.println(set.BLUE_RED_PATHB);
-        verifyTrajectory(set.BLUE_RED_PATHB, false);
+        System.out.println(set.BOUNCE_PATH_2_F);
+        verifyTrajectory(set.BOUNCE_PATH_2_F, false);
     }
 
-    @Test
+//    @Test
     public void reversedTrajectory() {
         System.out.println(set.TRENCH_TO_FEEDER);
         verifyTrajectory(set.TRENCH_TO_FEEDER, false);
@@ -203,7 +204,6 @@ public class TrajectoryTest {
         String name,
         Trajectory<TimedState<Pose2dWithCurvature>> trajectory
     ) {
-        verifyTrajectory(trajectory, false);
         System.out.println(name + ": ");
         System.out.println("Final time = " + trajectory.getLastState().t() + " s");
         System.out.println("Final velocity = " + trajectory.getLastState().velocity());
@@ -213,14 +213,16 @@ public class TrajectoryTest {
             trajectory.getLastState().velocity(),
             kTestEpsilon
         );
+        verifyTrajectory(trajectory, false);
     }
 
     @Test
     public void timeTrajectories() {
-        timeTrajectory("BLUE_RED_PATHB", set.BLUE_RED_PATHB);
-
-        System.out.println("Two Path Combo: ");
-        timeTrajectory("RED_PATHA", set.RED_PATHA);
-        timeTrajectory("DIME_TURN", set.DIME_TURN);
+//        timeTrajectory("BLUE_RED_PATHB", set.BLUE_RED_PATHB);
+//
+//        System.out.println("Two Path Combo: ");
+//        timeTrajectory("RED_PATHA", set.RED_PATHA);
+//        timeTrajectory("DIME_TURN", set.DIME_TURN);
+        timeTrajectory("BOUNCE_PATH_2_F", set.BOUNCE_PATH_2_F);
     }
 }
