@@ -1,5 +1,7 @@
 package com.team1816.frc2020.paths;
 
+import static org.junit.Assert.*;
+
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Twist2d;
@@ -9,9 +11,6 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.Util;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TrajectoryTest {
 
@@ -136,11 +135,11 @@ public class TrajectoryTest {
 
     @Test
     public void test() {
-        System.out.println(set.BOUNCE_PATH_2_F);
-        verifyTrajectory(set.BOUNCE_PATH_2_F, false);
+        System.out.println(set.BLUE_RED_PATHB);
+        verifyTrajectory(set.BLUE_RED_PATHB, false);
     }
 
-//    @Test
+    @Test
     public void reversedTrajectory() {
         System.out.println(set.TRENCH_TO_FEEDER);
         verifyTrajectory(set.TRENCH_TO_FEEDER, false);
@@ -214,15 +213,12 @@ public class TrajectoryTest {
             kTestEpsilon
         );
         verifyTrajectory(trajectory, false);
+        // System.out.println(trajectory.toCSV());
     }
 
     @Test
     public void timeTrajectories() {
-//        timeTrajectory("BLUE_RED_PATHB", set.BLUE_RED_PATHB);
-//
-//        System.out.println("Two Path Combo: ");
-//        timeTrajectory("RED_PATHA", set.RED_PATHA);
-//        timeTrajectory("DIME_TURN", set.DIME_TURN);
-        timeTrajectory("BOUNCE_PATH_2_F", set.BOUNCE_PATH_2_F);
+        System.out.println(set.BARREL_PATH);
+        timeTrajectory("BARREL_PATH", set.BARREL_PATH);
     }
 }
