@@ -170,8 +170,8 @@ public class RobotFactory {
     @Nonnull
     public IDoubleSolenoid getDoubleSolenoid(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
-        YamlConfig.DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName)
-            .doublesolenoids.get(name);
+        DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName)
+            .doubleSolenoids.get(name);
         if (
             subsystem.isImplemented() &&
             solenoidConfig != null &&
@@ -246,10 +246,10 @@ public class RobotFactory {
         return getPcmId() > -1;
     }
 
-    public YamlConfig.SubsystemConfig getSubsystem(String subsystemName) {
+    public SubsystemConfig getSubsystem(String subsystemName) {
         var subsystem = config.subsystems.get(subsystemName);
         if (subsystem == null) {
-            subsystem = new YamlConfig.SubsystemConfig(false);
+            subsystem = new SubsystemConfig(false);
         }
         return subsystem;
     }

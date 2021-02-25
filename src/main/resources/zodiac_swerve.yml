@@ -1,0 +1,45 @@
+$extends: zodiac_base
+subsystems:
+    drivetrain:
+        talons:
+            flAzimuth: -1
+            frAzimuth: -1
+            blAzimuth: -1
+            brAzimuth: -1
+        swerveModules:
+            frontLeft:
+                drive: leftMain
+                azimuth: flAzimuth
+            frontRight:
+                drive: rightMain
+                azimuth: frAzimuth
+            backLeft:
+                drive: leftFollower
+                azimuth: blAzimuth
+            backRight:
+                drive: rightFollower
+                azimuth: brAzimuth
+
+    hopper:
+        invertMotor:
+            - elevator
+    shooter:
+        falcons:
+            shooterMain: 3
+            shooterFollower: 2
+    turret:
+        constants:
+            minPos: -3802
+            maxPos: -757
+    ledmanager:
+        implemented: true
+        canifier: 18
+    camera:
+        implemented: true
+        canifier: 19
+
+constants:
+    wheelDiameter: 6.32 #inches
+    logTeleop: 1
+    logAuto: 1
+    badLogEnabled: 1

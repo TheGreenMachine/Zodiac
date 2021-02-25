@@ -49,8 +49,26 @@
                             "type": "string"
                         }
                     },
+                    "swerveModules": {
+                        "type": "object",
+                        "propertyNames": {
+                            "pattern": "^[a-z]+([A-Z][a-z]*)*$"
+                        },
+                        "additionalProperties": {
+                            "type": "object",
+                            "required": ["drive", "azimuth"],
+                            "properties": {
+                                "forward": {
+                                    "type": "string"
+                                },
+                                "reverse": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
                     "solenoids": { "$ref": "#/definitions/hardwareMap" },
-                    "doublesolenoids": {
+                    "doubleSolenoids": {
                         "type": "object",
                         "propertyNames": {
                             "pattern": "^[a-z]+([A-Z][a-z]*)*$"

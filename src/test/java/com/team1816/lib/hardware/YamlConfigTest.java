@@ -28,7 +28,7 @@ public class YamlConfigTest {
     public void subsystemConfig_merge() {
         var base = loadConfig("test_base").subsystems.get("turret");
         var active = loadConfig("test_active").subsystems.get("turret");
-        YamlConfig.SubsystemConfig result = YamlConfig.SubsystemConfig.merge(
+        SubsystemConfig result = SubsystemConfig.merge(
             active,
             base
         );
@@ -137,9 +137,9 @@ public class YamlConfigTest {
     }
 
     private void mergeImplemented(Boolean active, Boolean base, boolean result) {
-        var configActive = new YamlConfig.SubsystemConfig(active);
-        var configBase = new YamlConfig.SubsystemConfig(base);
-        var configResult = YamlConfig.SubsystemConfig.merge(configActive, configBase);
+        var configActive = new SubsystemConfig(active);
+        var configBase = new SubsystemConfig(base);
+        var configResult = SubsystemConfig.merge(configActive, configBase);
         assertEquals(result, configResult.isImplemented());
     }
 
