@@ -28,7 +28,8 @@ public class Turret extends Subsystem implements PidProvider {
         POSITION,
         MANUAL,
     }
-
+    private long lastWriteTime = System.currentTimeMillis();
+    private double lastAngle;
     // Components
     private final IMotorControllerEnhanced turret;
     private final Camera camera = Camera.getInstance();
@@ -236,7 +237,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public int getTurretPositionTicks() {
-        return turret.getSelectedSensorPosition(kPIDLoopIDx);
+        return (int)turret.getSelectedSensorPosition(kPIDLoopIDx);
     }
 
     public double getTargetPosition() {
@@ -279,10 +280,10 @@ public class Turret extends Subsystem implements PidProvider {
                 autoHome();
                 positionControl();
                 break;
-            case FIELD_FOLLOWING:
-                trackGyro();
-                positionControl();
-                break;
+//            case FIELD_FOLLOWING:
+//                trackGyro();
+//                positionControl();
+//                break;
             case POSITION:
                 positionControl();
                 break;
@@ -293,11 +294,23 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     private void autoHome() {
-        setTurretAngleInternal(
-            getTurretPositionDegrees() +
-            camera.getDeltaXAngle() +
-            distanceManager.getTurretBias(camera.getDistance())
-        );
+        if(System.currentTimeMillis()>lastWriteTime+60){
+            lastWriteTime=System.currentTimeMillis();
+            setTurretAngleInternal(
+                getTurretPositionDegrees() +
+                    camera.getDeltaXAngle() +
+                    distanceManager.getTurretBias(camera.getDistance())
+
+            );
+            lastAngle=getTurretPositionDegrees() +
+                camera.getDeltaXAngle() +
+                distanceManager.getTurretBias(camera.getDistance());
+
+        }
+        else{
+            setTurretAngleInternal(lastAngle);
+        }
+
     }
 
     private void trackGyro() {

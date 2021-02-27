@@ -374,7 +374,7 @@ public class Robot extends TimedRobot {
                             }
                             hopper.lockToShooter(shooting, true);
                             hopper.setIntake(shooting ? 1 : 0);
-                            collector.setIntakePow(shooting ? 0.5 : 0);
+                            collector.setIntakePow(shooting ? -0.25 : 0);
                         }
                     ),
                     createHoldAction(

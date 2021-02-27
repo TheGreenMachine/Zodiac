@@ -74,8 +74,8 @@ public class Shooter extends Subsystem implements PidProvider {
 
         configCurrentLimits(40/* amps */);
 
-        shooterMain.setInverted(false);
-        shooterFollower.setInverted(true);
+        shooterMain.setInverted(true);
+        shooterFollower.setInverted(false);
 
         shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);

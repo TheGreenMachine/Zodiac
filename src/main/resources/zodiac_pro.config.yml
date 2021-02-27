@@ -9,8 +9,8 @@ subsystems:
             - elevator
     shooter:
         falcons:
-            shooterMain: 3
-            shooterFollower: 2
+            shooterMain: 2
+            shooterFollower: 3
     turret:
         constants:
             minPos: -3802

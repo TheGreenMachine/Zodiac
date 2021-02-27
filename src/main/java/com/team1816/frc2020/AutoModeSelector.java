@@ -5,6 +5,8 @@ import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 public class AutoModeSelector {
@@ -35,6 +37,7 @@ public class AutoModeSelector {
         TEN_BALL_AUTO,
         DRIVE_STRAIGHT_SHOOT,
         SIX_BALL_ALLIANCE_STRAIGHT,
+        SHOOTER_CHALLENGE_1,
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -102,7 +105,9 @@ public class AutoModeSelector {
             "10 Ball Trench (Not yet implemented DO NOT USE)",
             DesiredMode.TEN_BALL_AUTO
         );
+        mModeChooser.addOption("Shooter Challenge 1",DesiredMode.SHOOTER_CHALLENGE_1);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
+
     }
 
     public void setHardwareFailure(boolean hasFailed) {
@@ -178,6 +183,8 @@ public class AutoModeSelector {
                 return (Optional.of(new DriveStraightShootMode()));
             case SIX_BALL_ALLIANCE_STRAIGHT:
                 return (Optional.of(new SixBallAllianceStraightMode()));
+            case SHOOTER_CHALLENGE_1:
+                return (Optional.of(new ShooterChallengeMode()));
             default:
                 break;
         }

@@ -46,14 +46,11 @@ public class DistanceManager {
         //        new Entry(315, 10_200, 1, 1.25),
         //        new Entry(360, 10_400, 1, 1.25),
         //        new Entry(400, 10_600, 1, 1.25)
-        new Entry(167, 11_100, 2, 1.7),/* 167, 198 were 1.5 */
-        new Entry(198, 10_400, 1, 1.7),
-        new Entry(223, 9_200, 1, 1.6),
-        new Entry(250, 9_200, 1, 1.5),
-        new Entry(285, 10_000, 1, 1.8),
-        new Entry(315, 10_100, 1, 1.875),
-        new Entry(360, 10_400, 1, 1.95),
-        new Entry(400, 10_600, 1, 2.1),
+        new Entry(125, 6100, 2, 0),//1.7),/* 167, 198 were 1.5 */
+        new Entry(170, 6500, 1, 0),//1.7),
+        new Entry(265, 6850, 1, 0),//1.6),
+        new Entry(290, 7500, 1, 0),//1.5),
+
     };
 
     public double getShooterVelocity(double distance) {
@@ -68,7 +65,7 @@ public class DistanceManager {
     public double getTurretBias(double distance) {
         for (Entry bucket : buckets) {
             if (distance <= bucket.distance) {
-                return bucket.turretBias;
+                return 0;//bucket.turretBias;
             }
         }
         return 1.25;

@@ -1,5 +1,6 @@
 package com.team1816.frc2020.paths;
 
+import com.team1816.frc2020.subsystems.Drive;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
@@ -13,6 +14,10 @@ public class TrajectorySet {
             INSTANCE = new TrajectorySet();
         }
         return INSTANCE;
+    }
+    public Trajectory<TimedState<Pose2dWithCurvature>> DriveStraightCustom(int dist){
+        //return dist>0 ? new DriveStraight(dist).generateTrajectory() : new DriveStraight(dist).generateReversedTrajectory();
+        return new DriveStraight(dist).generateReversedTrajectory();
     }
 
     public final Trajectory<TimedState<Pose2dWithCurvature>> DRIVE_STRAIGHT;
