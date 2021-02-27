@@ -17,16 +17,16 @@ public class BarrelPath implements PathContainer {
         return List.of(
             new Pose2d(39, 93, 0),
             new Pose2d(150, 101, 0),
-            new Pose2d(150, 22, 180),
+            new Pose2d(149, 25, 180),
             new Pose2d(143, 99, 10),
-            new Pose2d(278, 87, 30),
-            new Pose2d(255, 158, 176),
-            new Pose2d(212, 95, -60),
-            new Pose2d(271, 27, -25),
-            new Pose2d(323, 93, 132),
+            new Pose2d(266, 83, 30),
+            new Pose2d(248, 156, 176),
+            new Pose2d(208, 90, -60),
+            new Pose2d(271, 31, -25),
+            new Pose2d(325, 91, 132),
             new Pose2d(208, 86, 180),
             new Pose2d(143, 93, 180),
-            new Pose2d(39, 93, 180)
+            new Pose2d(39, 100, 180)
         );
     }
 

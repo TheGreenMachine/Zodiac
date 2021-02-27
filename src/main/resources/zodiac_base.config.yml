@@ -44,5 +44,6 @@ subsystems:
             turret: 13
 pcm: 8
 constants:
+    maxVel: 105 #inch/s
     trackWidth: 25 #inches
     compressorEnabled: 1 # 0 or 1
