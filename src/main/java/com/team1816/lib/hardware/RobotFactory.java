@@ -3,6 +3,7 @@ package com.team1816.lib.hardware;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.frc2020.Constants;
+import com.team1816.frc2020.subsystems.SwerveModule;
 import com.team1816.lib.hardware.components.CanifierImpl;
 import com.team1816.lib.hardware.components.GhostCanifier;
 import com.team1816.lib.hardware.components.ICanifier;
@@ -152,6 +153,21 @@ public class RobotFactory {
 
     private boolean isHardwareValid(Integer hardwareId) {
         return hardwareId != null && hardwareId > -1;
+    }
+
+    @Nonnull
+    public SwerveModule getSwerveModule(String subsystemName, String name){
+        var subsystem = getSubsystem(subsystemName);
+        SwerveModuleConfig module = subsystem.swerveModules.get(name);
+
+        var swerveConstants = new SwerveModule.SwerveModuleConstants();
+        swerveConstants.kName = name;
+        swerveConstants.kAzimuthMotorName = module.azimuth;
+        swerveConstants.kDriveMotorName = module.drive;
+        swerveConstants.kAzimuthEncoderHomeOffset = module.encoderOffset;
+
+        return new SwerveModule(subsystemName, swerveConstants);
+
     }
 
     @Nonnull

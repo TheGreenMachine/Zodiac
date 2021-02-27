@@ -100,11 +100,10 @@ public class SwerveModule extends Subsystem {
     private final SwerveModuleConstants mConstants;
 
 
-    public SwerveModule(SwerveModuleConstants constants) {
+    public SwerveModule(String subsystemName, SwerveModuleConstants constants) {
         super(constants.kName);
         mConstants = constants;
 
-        var subsystemName = Drive.getInstance().getName();
         mDriveMotor = factory.getMotor(subsystemName, constants.kDriveMotorName);
         mAzimuthMotor = factory.getMotor(subsystemName, constants.kAzimuthMotorName);
 

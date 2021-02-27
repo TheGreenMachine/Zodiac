@@ -43,8 +43,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private LedManager ledManager = LedManager.getInstance();
 
     // hardware
-    private final IMotorControllerEnhanced mLeftMaster, mRightMaster;
-    private final IMotorController mLeftSlaveA, mRightSlaveA, mLeftSlaveB, mRightSlaveB;
+    private final SwerveModule frontLeft, frontRight, backLeft, backRight;
 
     // Controllers
     private PathFollower mPathFollower;
@@ -81,17 +80,18 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mPeriodicIO = new PeriodicIO();
 
         // start all Talons in open loop mode
-        mLeftMaster = factory.getMotor(NAME, "leftMain");
-        mLeftSlaveA = factory.getMotor(NAME, "leftFollower", mLeftMaster);
-        mLeftSlaveB = factory.getMotor(NAME, "leftFollowerTwo", mLeftMaster);
-        mRightMaster = factory.getMotor(NAME, "rightMain");
-        mRightSlaveA = factory.getMotor(NAME, "rightFollower", mRightMaster);
-        mRightSlaveB = factory.getMotor(NAME, "rightFollowerTwo", mRightMaster);
+        frontLeft = factory.getSwerveModule(NAME, "frontLeft");
+        frontRight = factory.getSwerveModule(NAME, "frontRight");
+        backLeft = factory.getSwerveModule(NAME, "backLeft");
+        backRight = factory.getSwerveModule(NAME, "backRight");
+
+
+
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
         if (((int) factory.getConstant(NAME, "pigeonOnTalon")) == 1) {
-            var pigeonId = ((int) factory.getConstant(NAME, "pigeonId"));
+            /*var pigeonId = ((int) factory.getConstant(NAME, "pigeonId"));
             System.out.println("Pigeon on Talon " + pigeonId);
             IMotorController master = null;
             if (pigeonId == mLeftSlaveA.getDeviceID()) {
@@ -110,7 +110,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                     new PigeonIMU(
                         new TalonSRX((int) factory.getConstant(NAME, "pigeonId"))
                     );
-            }
+            }*/
         } else {
             mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId"));
         }
@@ -312,6 +312,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mPeriodicIO.right_demand = signal.getRight();
         mPeriodicIO.left_feedforward = 0.0;
         mPeriodicIO.right_feedforward = 0.0;
+        frontLeft.setOpenLoop();
     }
 
     public void setOpenLoopRampRate(double openLoopRampRate) {
