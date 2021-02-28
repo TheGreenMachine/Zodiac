@@ -3,7 +3,7 @@
 <html>
     <head>
         <title>Cheesy Path</title>
-        
+
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
         <script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
         <script type='text/javascript' src='<c:url value='/resources/js/script.js' />'></script>
@@ -38,7 +38,7 @@
                 <option value="7_field2">7_field2</option>
                 <option value="7_field3">7_field3</option>
             </select>
-            <label class='checkbox'>Is reversed: <input type='checkbox' id='isReversed'></label>
+            <label class='checkbox'>Is reversed: <input type='checkbox' class='data-input' id='isReversed'></label>
         </div>
         <table>
             <thead>
@@ -81,7 +81,7 @@
         update: update,
         forcePlaceholderSize: true,
     }).disableSelection();
-        
+
     function fixWidthHelper(e, ui) {
         ui.children().each(function() {
             $(this).width($(this).width());
