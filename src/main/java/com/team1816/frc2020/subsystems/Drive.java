@@ -52,6 +52,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     // control states
     private DriveControlState mDriveControlState;
     private PigeonIMU mPigeon;
+    private SwerveModule[] mModules = new SwerveModule[4];
+
 
     // hardware states
     private boolean mIsBrakeMode;
@@ -85,7 +87,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         backLeft = factory.getSwerveModule(NAME, "backLeft");
         backRight = factory.getSwerveModule(NAME, "backRight");
 
-
+        mModules[0] = frontLeft;
+        mModules[1] = frontRight;
+        mModules[2] = backLeft;
+        mModules[3] = backRight;
 
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
@@ -389,15 +394,33 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mPeriodicIO.desired_heading = heading;
     }
 
+    public synchronized double[] getModuleVelocities() {
+        double[] ret_val = new double[mModules.length];
+        for (int i = 0; i < ret_val.length; i++) {
+            ret_val[i] = mModules[i].getLinearVelocity();
+        }
+
+        return ret_val;
+    }
+
+    public synchronized Rotation2d[] getModuleAzimuths() {
+        Rotation2d[] ret_val = new Rotation2d[mModules.length];
+        for (int i = 0; i < ret_val.length; i++) {
+            ret_val[i] = mModules[i].getAngle();
+        }
+
+        return ret_val;
+    }
+
     public synchronized void resetPigeon() {
         mPigeon.setFusedHeading(0);
     }
 
-    public synchronized void resetEncoders() {
+   /* public synchronized void resetEncoders() {
         mLeftMaster.setSelectedSensorPosition(0, 0, 0);
         mRightMaster.setSelectedSensorPosition(0, 0, 0);
         mPeriodicIO = new PeriodicIO();
-    }
+    } */
 
     public DriveControlState getDriveControlState() {
         return mDriveControlState;
@@ -496,7 +519,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             mDriveControlState = DriveControlState.PATH_FOLLOWING;
             mCurrentPath = path;
         } else {
-            setVelocity(new DriveSignal(0, 0), new DriveSignal(0, 0));
+            setVelocity(DriveSignal.NEUTRAL, DriveSignal.NEUTRAL);
         }
     }
 
@@ -622,12 +645,20 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         TRAJECTORY_FOLLOWING,
     }
 
+    public SwerveModule[] getSwerveModules() {
+        return mModules;
+    }
+
     @Override
     public void zeroSensors() {
         System.out.println("Zeroing drive sensors!");
         resetPigeon();
         setHeading(Rotation2d.identity());
-        resetEncoders();
+        for (int i = 0; i < mModules.length; i++) {
+            if (mModules != null && mModules[i] != null) {
+                mModules[i].zeroSensors();
+            }
+        }
         if (mPigeon.getLastError() != ErrorCode.OK) {
             // BadLog.createValue("PigeonErrorDetected", "true");
             System.out.println(
