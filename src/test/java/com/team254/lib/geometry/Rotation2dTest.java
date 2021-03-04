@@ -1,5 +1,6 @@
 package com.team254.lib.geometry;
 
+import com.team254.lib.util.Util;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -18,8 +19,9 @@ public class Rotation2dTest {
 
     @Test
     public void wrap() {
-        System.out.println("90: " + Rotation2d.fromDegrees(90).getDegrees());
-        System.out.println("-90: " + Rotation2d.fromDegrees(-90).getDegrees());
+        assertEquals("90", 90, Rotation2d.fromDegrees(90).getDegrees(), Util.kTestEpsilon);
+        assertEquals("-90", -90, Rotation2d.fromDegrees(-90).getDegrees(), Util.kTestEpsilon);
+        assertEquals("-180", -180, Rotation2d.fromDegrees(-180).getDegrees(), Util.kTestEpsilon);
         System.out.println("-180: " + Rotation2d.fromDegrees(-180).getDegrees());
         System.out.println("-190: " + Rotation2d.fromDegrees(-190).getDegrees());
         System.out.println("180: " + Rotation2d.fromDegrees(180).getDegrees());
