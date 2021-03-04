@@ -26,7 +26,7 @@ public class BarrelPath implements PathContainer {
             new Pose2d(325, 91, 132),
             new Pose2d(208, 86, 180),
             new Pose2d(143, 93, 180),
-            new Pose2d(39, 100, 180)
+            new Pose2d(39, 93, 180)
         );
     }
 
