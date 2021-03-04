@@ -4,6 +4,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
+import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.motor.LazyTalonFX;
 import com.team254.lib.drivers.LazyTalonSRX;
@@ -22,7 +23,8 @@ public class CtreMotorFactory {
         // This is factory default.
         public double NEUTRAL_DEADBAND = 0.04;
 
-        public boolean ENABLE_CURRENT_LIMIT = false;
+        public boolean ENABLE_CURRENT_LIMIT = true;
+        public int CONTINUOUS_CURRENT_LIMIT = 40;
         public boolean ENABLE_SOFT_LIMIT = false;
         public boolean ENABLE_LIMIT_SWITCH = false;
         public int FORWARD_SOFT_LIMIT = 0;
@@ -100,18 +102,15 @@ public class CtreMotorFactory {
             kTimeoutMs
         );
 
-        if (talon instanceof TalonSRX) {
-            ((TalonSRX) talon).enableCurrentLimit(config.ENABLE_CURRENT_LIMIT);
-        } else {
-            ((TalonFX) talon).configSupplyCurrentLimit(
-                    new SupplyCurrentLimitConfiguration(
-                        config.ENABLE_CURRENT_LIMIT,
-                        0,
-                        0,
-                        0
-                    )
-                );
-        }
+        talon.configSupplyCurrentLimit(
+            new SupplyCurrentLimitConfiguration(
+                config.ENABLE_CURRENT_LIMIT,
+                config.CONTINUOUS_CURRENT_LIMIT,
+                0,
+                0
+            ),
+            kTimeoutMs
+        );
 
         talon.setStatusFramePeriod(
             StatusFrameEnhanced.Status_1_General,
