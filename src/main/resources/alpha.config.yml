@@ -21,10 +21,6 @@ subsystems:
     turret:
         talons:
             turret: 1
-        constants:
-            minPos: 0
-            maxPos: 4096
-            offset: 727
 pcm: 8
 constants:
     maxVel: 120 # inches/s

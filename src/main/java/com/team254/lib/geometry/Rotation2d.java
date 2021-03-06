@@ -166,12 +166,16 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
     }
 
     protected double WrapRadians(double radians) {
+        var calculatedRadians = radians;
         final double k2Pi = 2.0 * Math.PI;
-        radians = radians % k2Pi;
-        radians = (radians + k2Pi) % k2Pi;
-        if (radians > Math.PI)
-            radians -= k2Pi;
-        return radians;
+        calculatedRadians = calculatedRadians % k2Pi;
+        calculatedRadians = (calculatedRadians + k2Pi) % k2Pi;
+        if (calculatedRadians > Math.PI)
+            calculatedRadians -= k2Pi;
+        if (calculatedRadians == Math.PI && radians < 0) {
+            return -calculatedRadians;
+        }
+        return calculatedRadians;
     }
 
     private boolean hasTrig() {
