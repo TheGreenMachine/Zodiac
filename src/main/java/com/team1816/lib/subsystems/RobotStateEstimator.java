@@ -64,7 +64,7 @@ public class RobotStateEstimator extends Subsystem {
 
             Twist2d odometry_twist;
             /* final */Rotation2d turret_angle = Rotation2d.fromDegrees(
-                turret.getTurretPositionDegrees() - Turret.CARDINAL_SOUTH
+                turret.getActualTurretPositionDegrees() - Turret.CARDINAL_SOUTH
             ); // - Turret.CARDINAL_NORTH);
             synchronized (mRobotState) {
                 final Pose2d last_measurement = mRobotState
@@ -122,14 +122,4 @@ public class RobotStateEstimator extends Subsystem {
         mRobotState.outputToSmartDashboard();
     }
 
-    public synchronized void outputToSmartDashboard() {
-        SmartDashboard.putNumber(
-            "turret angle",
-            (turret.getTurretPositionDegrees() - Turret.CARDINAL_SOUTH)
-        ); // - Turret.CARDINAL_NORTH);
-        SmartDashboard.putNumber(
-            "test num",
-            Rotation2d.fromDegrees(turret.getTurretPositionDegrees()).getDegrees()
-        );
-    }
 }

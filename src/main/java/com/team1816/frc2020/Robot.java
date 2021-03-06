@@ -199,7 +199,7 @@ public class Robot extends TimedRobot {
                 BadLog.createTopic(
                     "Turret/ActPos",
                     "NativeUnits",
-                    turret::getTurretPositionTicks,
+                    () -> (double) turret.getActualTurretPositionTicks(),
                     "hide",
                     "join:Turret/Positions"
                 );
@@ -233,7 +233,7 @@ public class Robot extends TimedRobot {
                 BadLog.createTopic(
                     "Turret/TurretAngle",
                     "Degrees",
-                    turret::getTurretPositionDegrees,
+                    turret::getActualTurretPositionDegrees,
                     "hide",
                     "join:Tracking/Angles"
                 );
@@ -550,7 +550,6 @@ public class Robot extends TimedRobot {
             mSubsystemManager.outputToSmartDashboard();
             mRobotState.outputToSmartDashboard();
             mAutoModeSelector.outputToSmartDashboard();
-            mRobotStateEstimator.outputToSmartDashboard();
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
