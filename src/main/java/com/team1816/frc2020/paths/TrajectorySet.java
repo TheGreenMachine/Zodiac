@@ -56,6 +56,8 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_3;
     public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_4;
 
+    public final Trajectory<TimedState<Pose2dWithCurvature>> U_TURN_PATH;
+
 
     private TrajectorySet() {
         // 2020
@@ -108,5 +110,6 @@ public class TrajectorySet {
         this.BOUNCE_PATH_2_R = new BouncePath2().generateReversedTrajectory();
         this.BOUNCE_PATH_3 = new BouncePath3().generateTrajectory();
         this.BOUNCE_PATH_4 = new BouncePath4().generateTrajectory();
+        this.U_TURN_PATH = new UTurnPath().generateTrajectory();
     }
 }

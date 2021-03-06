@@ -15,7 +15,7 @@ public class TuneDrivetrainMode extends AutoModeBase {
             TrajectorySet.getInstance().TUNE_DRIVETRAIN_REVERSE :
             TrajectorySet.getInstance().TUNE_DRIVETRAIN;
         trajectory =
-            new DriveTrajectory(traj, true);
+            new DriveTrajectory(traj, false);
     }
 
     @Override

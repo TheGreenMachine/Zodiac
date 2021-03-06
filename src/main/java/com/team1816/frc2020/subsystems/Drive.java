@@ -29,10 +29,8 @@ import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
-import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider {
 
@@ -244,19 +242,11 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                         switch (mDriveControlState) {
                             case OPEN_LOOP:
                                 break;
-                            case PATH_FOLLOWING:
-                                if (mPathFollower != null) {
-                                    if (Constants.kIsBadlogEnabled) {
-                                        mLogger.updateTopics();
-                                        mLogger.log();
-                                    }
-                                    updatePathFollower(timestamp);
-                                }
                             case TRAJECTORY_FOLLOWING:
-                                if (Constants.kIsBadlogEnabled) {
-                                    mLogger.updateTopics();
-                                    mLogger.log();
-                                }
+//                                if (Constants.kIsBadlogEnabled) {
+//                                    mLogger.updateTopics();
+//                                    mLogger.log();
+//                                }
                                 updatePathFollower(timestamp);
                                 break;
                             default:
@@ -712,51 +702,51 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty(
-            "Right Drive Distance",
-            this::getRightEncoderDistance,
-            null
-        );
-        builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
-        builder.addDoubleProperty(
-            "Left Drive Distance",
-            this::getLeftEncoderDistance,
-            null
-        );
-        builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
-        builder.addStringProperty(
-            "Drive/ControlState",
-            () -> this.getDriveControlState().toString(),
-            null
-        );
-        builder.addBooleanProperty(
-            "Drive/PigeonIMU State",
-            () -> this.mPigeon.getLastError() == ErrorCode.OK,
-            null
-        );
-
-        SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
-        SmartDashboard
-            .getEntry("Drive/OpenLoopRampRate")
-            .addListener(
-                notification -> {
-                    setOpenLoopRampRate(notification.value.getDouble());
-                },
-                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-            );
-
-        SmartDashboard.putBoolean("Drive/Zero Sensors", false);
-        SmartDashboard
-            .getEntry("Drive/Zero Sensors")
-            .addListener(
-                entryNotification -> {
-                    if (entryNotification.value.getBoolean()) {
-                        zeroSensors();
-                        entryNotification.getEntry().setBoolean(false);
-                    }
-                },
-                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-            );
+//        builder.addDoubleProperty(
+//            "Right Drive Distance",
+//            this::getRightEncoderDistance,
+//            null
+//        );
+//        builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
+//        builder.addDoubleProperty(
+//            "Left Drive Distance",
+//            this::getLeftEncoderDistance,
+//            null
+//        );
+//        builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
+//        builder.addStringProperty(
+//            "Drive/ControlState",
+//            () -> this.getDriveControlState().toString(),
+//            null
+//        );
+//        builder.addBooleanProperty(
+//            "Drive/PigeonIMU State",
+//            () -> this.mPigeon.getLastError() == ErrorCode.OK,
+//            null
+//        );
+//
+//        SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
+//        SmartDashboard
+//            .getEntry("Drive/OpenLoopRampRate")
+//            .addListener(
+//                notification -> {
+//                    setOpenLoopRampRate(notification.value.getDouble());
+//                },
+//                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+//            );
+//
+//        SmartDashboard.putBoolean("Drive/Zero Sensors", false);
+//        SmartDashboard
+//            .getEntry("Drive/Zero Sensors")
+//            .addListener(
+//                entryNotification -> {
+//                    if (entryNotification.value.getBoolean()) {
+//                        zeroSensors();
+//                        entryNotification.getEntry().setBoolean(false);
+//                    }
+//                },
+//                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+//            );
         // builder.addDoubleProperty("Drive/OpenLoopRampRateSetter", null, this::setOpenLoopRampRate);
         // builder.addDoubleProperty("Drive/OpenLoopRampRateValue", this::getOpenLoopRampRate, null);
 
