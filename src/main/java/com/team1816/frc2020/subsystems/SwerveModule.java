@@ -2,6 +2,7 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.team1816.frc2020.Constants;
+import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
@@ -95,9 +96,15 @@ public class SwerveModule extends Subsystem {
     // State
     private PeriodicIO mPeriodicIO = new PeriodicIO();
     private ControlState mControlState = ControlState.OPEN_LOOP;
+    private boolean isBrakeMode = false;
 
     // Constants
     private final SwerveModuleConstants mConstants;
+
+    public static final int kFrontLeft = 0;
+    public static final int kFrontRight = 1;
+    public static final int kBackLeft = 2;
+    public static final int kBackRight = 3;
 
 
     public SwerveModule(String subsystemName, SwerveModuleConstants constants) {
@@ -272,6 +279,10 @@ public class SwerveModule extends Subsystem {
             - mConstants.kAzimuthEncoderHomeOffset;
     }
 
+    public void setOpenLoopRampRate(double openLoopRampRate) {
+        mDriveMotor.configOpenloopRamp(openLoopRampRate, Constants.kCANTimeoutMs);
+    }
+
     @Override
     public void writePeriodicOutputs() {
         if (mControlState == ControlState.OPEN_LOOP) {
@@ -330,7 +341,17 @@ public class SwerveModule extends Subsystem {
 
     @Override
     public boolean checkSystem() {
-        return true;
+        boolean driveMotorPassed = EnhancedMotorChecker.checkMotors(
+            this,
+            EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, mDriveMotor),
+            new EnhancedMotorChecker.NamedMotor("drive", mDriveMotor)
+        );
+        boolean azimuthMotorPassed = EnhancedMotorChecker.checkMotors(
+            this,
+            EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, mAzimuthMotor),
+            new EnhancedMotorChecker.NamedMotor("azimuth", mAzimuthMotor)
+        );
+        return driveMotorPassed && azimuthMotorPassed;
     }
 
     /**

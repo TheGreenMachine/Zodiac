@@ -56,13 +56,16 @@
                         },
                         "additionalProperties": {
                             "type": "object",
-                            "required": ["drive", "azimuth"],
+                            "required": ["drive", "azimuth", "encoderOffset"],
                             "properties": {
-                                "forward": {
-                                    "type": "string"
+                                "drive": {
+                                    "type": "integer"
                                 },
-                                "reverse": {
-                                    "type": "string"
+                                "azimuth": {
+                                    "type": "integer"
+                                },
+                                "encoderOffset": {
+                                    "type": "number"
                                 }
                             }
                         }

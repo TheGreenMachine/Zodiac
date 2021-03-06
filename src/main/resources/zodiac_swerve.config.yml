@@ -1,25 +1,33 @@
 $extends: zodiac_base
 subsystems:
     drivetrain:
+        falcons:
+            leftMain: 2
+            leftFollower: 1
+            rightMain: 13
+            rightFollower: 14
         talons:
-            flAzimuth: -1
-            frAzimuth: -1
-            blAzimuth: -1
-            brAzimuth: -1
+            flAzimuth: 4
+            frAzimuth: 11
+            blAzimuth: 3
+            brAzimuth: 12
         swerveModules:
             frontLeft:
                 drive: leftMain
                 azimuth: flAzimuth
+                encoderOffset: 1409
             frontRight:
                 drive: rightMain
                 azimuth: frAzimuth
+                encoderOffset: 3335
             backLeft:
                 drive: leftFollower
                 azimuth: blAzimuth
+                encoderOffset: 5
             backRight:
                 drive: rightFollower
                 azimuth: brAzimuth
-
+                encoderOffset: 2582
     hopper:
         invertMotor:
             - elevator
@@ -37,7 +45,6 @@ subsystems:
     camera:
         implemented: true
         canifier: 19
-
 constants:
     wheelDiameter: 6.32 #inches
     logTeleop: 1
