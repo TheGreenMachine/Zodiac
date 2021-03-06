@@ -1,7 +1,5 @@
 package com.team1816.frc2020;
 
-import static com.team1816.frc2020.controlboard.ControlUtils.*;
-
 import badlog.lib.BadLog;
 import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
@@ -27,9 +25,12 @@ import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
+
+import static com.team1816.frc2020.controlboard.ControlUtils.*;
 
 public class Robot extends TimedRobot {
 
@@ -76,7 +77,7 @@ public class Robot extends TimedRobot {
     private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
     private AsyncTimer blinkTimer;
 
-    // private PowerDistributionPanel pdp = new PowerDistributionPanel();
+    private PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     Robot() {
@@ -173,7 +174,7 @@ public class Robot extends TimedRobot {
                     "hide"
                 );
 
-                // BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
+                BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
 
                 BadLog.createTopicSubscriber(
                     "Pigeon Error",

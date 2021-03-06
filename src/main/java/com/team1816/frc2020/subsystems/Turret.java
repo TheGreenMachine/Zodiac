@@ -38,6 +38,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     // State
     private double turretPos;
+    private double followingTurretPos;
     private double turretSpeed;
     private boolean outputsChanged;
     private double turretAngleRelativeToField;
@@ -51,7 +52,7 @@ public class Turret extends Subsystem implements PidProvider {
     private final double kD;
     private final double kF;
 
-    private static final double TURRET_ENCODER_PPR = factory.getConstant(
+    private static final int TURRET_ENCODER_PPR = (int) factory.getConstant(
         "turret",
         "encPPR"
     );
@@ -67,9 +68,11 @@ public class Turret extends Subsystem implements PidProvider {
         ((int) factory.getConstant("turret", "maxPos"));
     private static final boolean TURRET_SENSOR_PHASE = true;
 
-    public static final double CARDINAL_SOUTH = 32.556; // deg
-    public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90; // deg
-    public static final double CARDINAL_NORTH = CARDINAL_SOUTH + 180; // deg
+    public static final int TURRET_ENC_PPR_MASK =  TURRET_ENCODER_PPR - 1;
+    public static final double TURRET_SOUTH_TICKS = factory.getConstant("turret", "offset");
+    public static final double CARDINAL_SOUTH = 0; // deg
+    public static final double CARDINAL_WEST = 90; // deg
+    public static final double CARDINAL_NORTH = 180; // deg
     public static final double MAX_ANGLE = convertTurretTicksToDegrees(
         TURRET_POSITION_MAX - TURRET_POSITION_MIN
     );
@@ -184,7 +187,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public synchronized void setTurretPosition(double position) {
-        turretPos = position;
+        turretPos = ((int) position & TURRET_ENC_PPR_MASK);
         outputsChanged = true;
     }
 
@@ -194,17 +197,9 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     private synchronized void setTurretAngleInternal(double angle) {
-        if (angle < MAX_ANGLE - 360) {
-            setTurretPosition(
-                convertTurretDegreesToTicks(angle + 360) + TURRET_POSITION_MIN
-            );
-        } else if (angle > 360) {
-            setTurretPosition(
-                convertTurretDegreesToTicks(angle - 360) + TURRET_POSITION_MIN
-            );
-        } else if (angle >= 0 && angle <= MAX_ANGLE) {
-            setTurretPosition(convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN);
-        }
+        setTurretPosition(
+            convertTurretDegreesToTicks(angle) + TURRET_POSITION_MIN
+        );
         // do nothing if angle in deadzone
     }
 
@@ -229,7 +224,7 @@ public class Turret extends Subsystem implements PidProvider {
     public int getTurretPosAbsolute() {
         if (turret instanceof TalonSRX) {
             int rawValue =
-                ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & 0xFFF;
+                ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & TURRET_ENC_PPR_MASK;
             return (TURRET_SENSOR_PHASE ? -1 : 1) * rawValue;
         }
         return 0;
@@ -252,12 +247,12 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public static double convertTurretDegreesToTicks(double degrees) {
-        return (degrees / 360.0) * TURRET_ENCODER_PPR;
+        return ((degrees / 360.0) * TURRET_ENCODER_PPR) + TURRET_SOUTH_TICKS;
     }
 
     public static double convertTurretTicksToDegrees(double ticks) {
         if (TURRET_ENCODER_PPR != 0) {
-            return (ticks / TURRET_ENCODER_PPR) * 360;
+            return (ticks - TURRET_SOUTH_TICKS / TURRET_ENCODER_PPR) * 360;
         }
         return 0;
     }
@@ -304,6 +299,10 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     private void trackGyro() {
+        int fieldTickOffset = (int) (convertTurretDegreesToTicks(turretAngleRelativeToField) - TURRET_SOUTH_TICKS);
+        int adjPos = (int) turretPos + fieldTickOffset;
+
+        
         followTargetTurretSetAngle =
             (getTurretPositionDegrees() - turretAngleRelativeToField);
         setTurretAngleInternal(followTargetTurretSetAngle);
