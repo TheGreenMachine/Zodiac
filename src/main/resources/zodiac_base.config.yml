@@ -42,7 +42,8 @@ subsystems:
         implemented: true
         talons:
             turret: 13
-            offset: 370
+        constants:
+            invertSensorPhase: 0
 pcm: 8
 constants:
     maxVel: 105 #inch/s

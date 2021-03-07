@@ -1,7 +1,10 @@
 $extends: zodiac_base
 subsystems:
+    drivetrain:
+        constants:
+            currentLimit: 35 # amps
     climber:
-        implemented: true
+        implemented: false
         invertMotor:
             - elevator
     hopper:
@@ -12,9 +15,11 @@ subsystems:
             shooterMain: 3
             shooterFollower: 2
     turret:
+        implemented: false
         constants:
-            minPos: -3802
-            maxPos: -757
+            minPos: 326
+            maxPos: 1054
+            absPosTicksSouth: 3415
     ledmanager:
         implemented: true
         canifier: 18
@@ -22,6 +27,8 @@ subsystems:
         implemented: true
         canifier: 19
 constants:
+    maxVel: 100
+    maxAccel: 30
     wheelDiameter: 6.32 #inches
     logTeleop: 1
     logAuto: 1

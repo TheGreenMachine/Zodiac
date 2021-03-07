@@ -61,7 +61,7 @@ public class Turret extends Subsystem implements PidProvider {
     public static final int TURRET_POSITION_MIN = ((int) factory.getConstant(NAME, "minPos"));
     public static final int TURRET_POSITION_MAX = ((int) factory.getConstant(NAME, "maxPos"));
     public static final int ABS_TICKS_SOUTH = ((int) factory.getConstant(NAME, "absPosTicksSouth"));
-    private static final boolean TURRET_SENSOR_PHASE = factory.getConstant(NAME, "invert_sensor_phase") >= 1;
+    private static final boolean TURRET_SENSOR_PHASE = factory.getConstant(NAME, "invertSensorPhase") >= 1;
 
     public static final double CARDINAL_SOUTH = 0; // deg
     public static final double CARDINAL_WEST = 90; // deg

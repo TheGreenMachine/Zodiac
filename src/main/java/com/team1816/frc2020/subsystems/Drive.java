@@ -2,10 +2,7 @@ package com.team1816.frc2020.subsystems;
 
 import badlog.lib.BadLog;
 import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.IMotorController;
-import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.team1816.frc2020.AutoModeSelector;
@@ -85,6 +82,20 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mRightMaster = factory.getMotor(NAME, "rightMain");
         mRightSlaveA = factory.getMotor(NAME, "rightFollower", mRightMaster);
         mRightSlaveB = factory.getMotor(NAME, "rightFollowerTwo", mRightMaster);
+
+        var currentLimitConfig = new SupplyCurrentLimitConfiguration(
+            true,
+            factory.getConstant(NAME, "currentLimit", 40),
+            0,
+            0
+        );
+        mLeftMaster.configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
+        ((IMotorControllerEnhanced) mLeftSlaveA).configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
+        ((IMotorControllerEnhanced) mLeftSlaveB).configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
+        mRightMaster.configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
+        ((IMotorControllerEnhanced) mRightSlaveA).configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
+        ((IMotorControllerEnhanced) mRightSlaveB).configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
+
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
