@@ -159,6 +159,13 @@ public class RobotFactory {
     public SwerveModule getSwerveModule(String subsystemName, String name){
         var subsystem = getSubsystem(subsystemName);
         SwerveModuleConfig module = subsystem.swerveModules.get(name);
+        if (module == null) {
+            DriverStation.reportError(
+                "No swerve module with name " + name + " subsystem " + subsystemName,
+                true
+            );
+            return null;
+        }
 
         var swerveConstants = new SwerveModule.SwerveModuleConstants();
         swerveConstants.kName = name;

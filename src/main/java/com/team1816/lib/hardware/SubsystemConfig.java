@@ -43,6 +43,7 @@ public class SubsystemConfig {
                 talons.equals(that.talons) &&
                 falcons.equals(that.falcons) &&
                 victors.equals(that.victors) &&
+                swerveModules.equals(that.swerveModules) &&
                 solenoids.equals(that.solenoids) &&
                 doubleSolenoids.equals(that.doubleSolenoids) &&
                 constants.equals(that.constants) &&
@@ -58,6 +59,7 @@ public class SubsystemConfig {
             talons,
             falcons,
             victors,
+            swerveModules,
             solenoids,
             doubleSolenoids,
             constants,
@@ -88,6 +90,7 @@ public class SubsystemConfig {
         YamlConfig.mergeMap(result.talons, active.talons, base.talons);
         YamlConfig.mergeMap(result.falcons, active.falcons, base.falcons);
         YamlConfig.mergeMap(result.victors, active.victors, base.victors);
+        YamlConfig.mergeMap(result.swerveModules, active.swerveModules, base.swerveModules);
         YamlConfig.mergeMap(result.solenoids, active.solenoids, base.solenoids);
         YamlConfig.mergeMap(
             result.doubleSolenoids,

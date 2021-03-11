@@ -42,10 +42,10 @@ public class SwerveModule extends Subsystem {
         public double kAzimuthEncoderHomeOffset = 0;
 
         // azimuth motion
-        public double kAzimuthKp = 1.3;
+        public double kAzimuthKp = 3;
         public double kAzimuthKi = 0.05;
         public double kAzimuthKd = 20;
-        public double kAzimuthKf = 0.5421;
+        public double kAzimuthKf = 0;
         public int kAzimuthIZone = 25;
         public int kAzimuthCruiseVelocity = 1698;
         public int kAzimuthAcceleration = 20379; // 12 * kAzimuthCruiseVelocity
@@ -110,6 +110,7 @@ public class SwerveModule extends Subsystem {
     public SwerveModule(String subsystemName, SwerveModuleConstants constants) {
         super(constants.kName);
         mConstants = constants;
+        System.out.println("Configuring Swerve Module" + constants.kName + " on subsystem " + subsystemName);
 
         mDriveMotor = factory.getMotor(subsystemName, constants.kDriveMotorName);
         mAzimuthMotor = factory.getMotor(subsystemName, constants.kAzimuthMotorName);
@@ -169,7 +170,7 @@ public class SwerveModule extends Subsystem {
         mAzimuthMotor.enableVoltageCompensation(true);
 
         // config azimuth measurement settings
-        MotorUtil.checkError(
+        /*MotorUtil.checkError(
             mAzimuthMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0,
                 mConstants.kAzimuthStatusFrame2UpdateRate, Constants.kLongCANTimeoutMs),
             "Error in " + mConstants.kName + "Module: Unable to config azimuth status frame 2 period");
@@ -184,7 +185,7 @@ public class SwerveModule extends Subsystem {
         MotorUtil.checkError(
             mAzimuthMotor.configVelocityMeasurementWindow(mConstants.kAzimuthVelocityMeasurementWindow,
                 Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth velocity measurement window");
+            "Error in " + mConstants.kName + "Module: Unable to config azimuth velocity measurement window");*/
 
         // config drive current/voltage settings
         mDriveMotor.configSupplyCurrentLimit(
@@ -206,7 +207,7 @@ public class SwerveModule extends Subsystem {
         mDriveMotor.enableVoltageCompensation(true);
 
         // config drive measurement settings
-        MotorUtil.checkError(
+        /*MotorUtil.checkError(
             mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0,
                 mConstants.kDriveStatusFrame2UpdateRate, Constants.kLongCANTimeoutMs),
             "Error in " + mConstants.kName + "Module: Unable to config drive status frame 2 period");
@@ -221,7 +222,7 @@ public class SwerveModule extends Subsystem {
         MotorUtil.checkError(
             mDriveMotor.configVelocityMeasurementWindow(mConstants.kDriveVelocityMeasurementWindow,
                 Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config drive velocity measurement window");
+            "Error in " + mConstants.kName + "Module: Unable to config drive velocity measurement window");*/
 
         // config general drive settings
         mDriveMotor.setInverted(mConstants.kInvertDrive);
@@ -290,7 +291,7 @@ public class SwerveModule extends Subsystem {
                 // throttle is 0
                 stop();
             } else {
-                mAzimuthMotor.set(ControlMode.MotionMagic,
+                mAzimuthMotor.set(ControlMode.Position,
                     mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset);
                 mDriveMotor.set(ControlMode.PercentOutput, mPeriodicIO.drive_demand);
             }

@@ -504,6 +504,8 @@ public class Robot extends TimedRobot {
             turret.setTurretAngle(Turret.CARDINAL_SOUTH);
             turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
 
+            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
+
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
         } catch (Throwable t) {
