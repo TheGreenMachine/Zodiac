@@ -1,6 +1,6 @@
 package com.team254.lib.util;
 
-import com.team254.frc2019.Kinematics;
+import com.team1816.frc2020.Kinematics;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 

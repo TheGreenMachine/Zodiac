@@ -646,29 +646,34 @@ public class Robot extends TimedRobot {
 
         DriveSignal driveSignal;
 
-        // if (arcadeDrive) {
-        //            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
-        //            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
-        //            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-        //            driveSignal = new DriveSignal(left, right);
-        // } else {
-        driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
-        // }
-        if (
-            mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING
-        ) {
-            if (
-                driveSignal.getLeft() != 0 ||
-                driveSignal.getRight() != 0 ||
-                mDrive.isDoneWithTrajectory()
-            ) {
-                mDrive.setOpenLoop(driveSignal);
-            }
-        } else if (!(shooter.getTargetVelocity() > 0)) {
-            mDrive.setOpenLoop(driveSignal);
-        } else {
-            mDrive.setOpenLoop(DriveSignal.BRAKE);
-        }
+//        boolean maintainAzimuth = mShouldMaintainAzimuth.update(mControlBoard.getRotation() == 0, 0.2);
+//        boolean changeAzimuthSetpoint = shouldChangeAzimuthSetpoint.update(maintainAzimuth);
+//
+//
+//        if (mControlBoard.getDPad() != -1) {
+//            mSwerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.SNAP);
+//            double heading_goal = mControlBoard.getDPad();
+//            SmartDashboard.putNumber("Heading Goal", heading_goal);
+//            mSwerveHeadingController.setGoal(heading_goal);
+//        } else {
+//            if (!maintainAzimuth) {
+//                mSwerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.OFF);
+//            } else if ((mSwerveHeadingController
+//                .getHeadingControllerState() == SwerveHeadingController.HeadingControllerState.SNAP
+//                && mSwerveHeadingController.isAtGoal()) || changeAzimuthSetpoint) {
+//                mSwerveHeadingController
+//                    .setHeadingControllerState(SwerveHeadingController.HeadingControllerState.MAINTAIN);
+//                mSwerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
+//            }
+//        }
+//
+//        if (mSwerveHeadingController.getHeadingControllerState() != SwerveHeadingController.HeadingControllerState.OFF) {
+//            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), mSwerveHeadingController.update(),
+//                mControlBoard.getDriveLowPower(), mControlBoard.getFieldRelative(), true);
+//        } else {
+//            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), mControlBoard.getRotation(),
+//                mControlBoard.getDriveLowPower(), mControlBoard.getFieldRelative(), false);
+//        }
     }
 
     @Override

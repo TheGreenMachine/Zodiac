@@ -8,12 +8,18 @@ import java.text.DecimalFormat;
  * A drivetrain signal containing the speed and azimuth for each wheel
  */
 public class DriveSignal {
+    public static final double[] ZERO_SPEED = new double[]{0, 0, 0, 0};
+    public static final Rotation2d[] ZERO_AZIMUTH = new Rotation2d[]{Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity()};
+
+    public static final DriveSignal NEUTRAL = new DriveSignal(ZERO_SPEED, ZERO_AZIMUTH, false);
+    public static final DriveSignal BRAKE = new DriveSignal(ZERO_SPEED, ZERO_AZIMUTH, true);
+
     private double[] mWheelSpeeds;
     private Rotation2d[] mWheelAzimuths; // Radians!
     private boolean mBrakeMode;
 
     public DriveSignal() {
-        this(new double[]{0, 0, 0, 0}, new Rotation2d[]{Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity()}, false);
+        this(ZERO_SPEED, ZERO_AZIMUTH, false);
     }
 
     public DriveSignal(double[] wheelSpeeds, Rotation2d[] wheelAzimuths, boolean brakeMode) {
@@ -21,9 +27,6 @@ public class DriveSignal {
         mWheelAzimuths = wheelAzimuths;
         mBrakeMode = brakeMode;
     }
-
-    public static final DriveSignal NEUTRAL = new DriveSignal(new double[]{0, 0, 0, 0}, new Rotation2d[]{Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity()}, false);
-    public static final DriveSignal BRAKE = new DriveSignal(new double[]{0, 0, 0, 0}, new Rotation2d[]{Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity()}, true);
 
     public double[] getWheelSpeeds() {
         return mWheelSpeeds;
@@ -35,6 +38,14 @@ public class DriveSignal {
 
     public boolean getBrakeMode() {
         return mBrakeMode;
+    }
+
+    public static DriveSignal fromTank(double left, double right) {
+        return new DriveSignal(
+            new double[] {left, right, left, right},
+            ZERO_AZIMUTH,
+            false
+        );
     }
 
     @Override

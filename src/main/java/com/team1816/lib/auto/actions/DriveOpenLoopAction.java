@@ -1,6 +1,7 @@
 package com.team1816.lib.auto.actions;
 
 import com.team1816.frc2020.subsystems.Drive;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.DriveSignal;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -19,7 +20,7 @@ public class DriveOpenLoopAction implements Action {
 
     @Override
     public void start() {
-        mDrive.setOpenLoop(new DriveSignal(mLeft, mRight));
+        mDrive.setOpenLoop(DriveSignal.fromTank(mLeft, mRight));
         mStartTime = Timer.getFPGATimestamp();
     }
 
@@ -33,6 +34,6 @@ public class DriveOpenLoopAction implements Action {
 
     @Override
     public void done() {
-        mDrive.setOpenLoop(new DriveSignal(0.0, 0.0));
+        mDrive.setOpenLoop(DriveSignal.BRAKE);
     }
 }
