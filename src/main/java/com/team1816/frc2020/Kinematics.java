@@ -1,6 +1,5 @@
 package com.team1816.frc2020;
 
-import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.SwerveModule;
 import com.team254.lib.geometry.Pose2d;
@@ -17,6 +16,7 @@ import com.team254.lib.util.DriveSignal;
  */
 
 public class Kinematics {
+
     private static final double L = Constants.kDriveWheelTrackWidthInches;
     private static final double W = Constants.kDriveWheelTrackWidthInches;
     private static final double R = Math.hypot(L, W);
@@ -25,7 +25,10 @@ public class Kinematics {
      * Forward kinematics using only encoders
      */
     public static Twist2d forwardKinematics(DriveSignal drive_signal) {
-        return forwardKinematics(drive_signal.getWheelSpeeds(), drive_signal.getWheelAzimuths());
+        return forwardKinematics(
+            drive_signal.getWheelSpeeds(),
+            drive_signal.getWheelAzimuths()
+        );
     }
 
     /**
@@ -33,7 +36,10 @@ public class Kinematics {
      * @param wheel_azimuths
      * @return Twist2d representing forward, strafe, and angular velocities in real world units
      */
-    public static Twist2d forwardKinematics(double[] wheel_speeds, Rotation2d[] wheel_azimuths) {
+    public static Twist2d forwardKinematics(
+        double[] wheel_speeds,
+        Rotation2d[] wheel_azimuths
+    ) {
         double[] vx = new double[4]; // wheel velocities in the x (forward) direction
         double[] vy = new double[4]; // wheel velocities in the y (strafe) direction
 
@@ -51,8 +57,14 @@ public class Kinematics {
         // average possible solutions to minimize error
         double forward = (C + D) / 2;
         double strafe = (A + B) / 2;
-        double rotation = (((strafe - A) * R / L) + ((B - strafe) * R / L) + ((forward - C) * R / W)
-            + ((D - forward) * R / W)) / 4;
+        double rotation =
+            (
+                ((strafe - A) * R / L) +
+                ((B - strafe) * R / L) +
+                ((forward - C) * R / W) +
+                ((D - forward) * R / W)
+            ) /
+            4;
 
         return new Twist2d(forward, strafe, rotation);
     }
@@ -60,34 +72,68 @@ public class Kinematics {
     /**
      * Use Gyro for dtheta
      */
-    public static Twist2d forwardKinematics(DriveSignal drive_signal, Rotation2d prev_heading,
-                                            Rotation2d current_heading, double dt) {
+    public static Twist2d forwardKinematics(
+        DriveSignal drive_signal,
+        Rotation2d prev_heading,
+        Rotation2d current_heading,
+        double dt
+    ) {
         Twist2d ret_val = forwardKinematics(drive_signal);
-        return new Twist2d(ret_val.dx, ret_val.dy, prev_heading.inverse().rotateBy(current_heading).getRadians() / dt);
+        return new Twist2d(
+            ret_val.dx,
+            ret_val.dy,
+            prev_heading.inverse().rotateBy(current_heading).getRadians() / dt
+        );
     }
 
-    public static Twist2d forwardKinematics(double[] wheel_speeds, Rotation2d[] wheel_azimuths, Rotation2d prev_heading,
-                                            Rotation2d current_heading, double dt) {
+    public static Twist2d forwardKinematics(
+        double[] wheel_speeds,
+        Rotation2d[] wheel_azimuths,
+        Rotation2d prev_heading,
+        Rotation2d current_heading,
+        double dt
+    ) {
         Twist2d ret_val = forwardKinematics(wheel_speeds, wheel_azimuths);
-        return new Twist2d(ret_val.dx, ret_val.dy, prev_heading.inverse().rotateBy(current_heading).getRadians() / dt);
+        return new Twist2d(
+            ret_val.dx,
+            ret_val.dy,
+            prev_heading.inverse().rotateBy(current_heading).getRadians() / dt
+        );
     }
 
     /**
      * For convenience, integrate forward kinematics with a Twist2d and previous
      * rotation.
      */
-    public static Pose2d integrateForwardKinematics(Pose2d current_pose, Twist2d forward_kinematics) {
-        return current_pose.transformBy(new Pose2d(forward_kinematics.dx, forward_kinematics.dy,
-            Rotation2d.fromRadians(forward_kinematics.dtheta)));
+    public static Pose2d integrateForwardKinematics(
+        Pose2d current_pose,
+        Twist2d forward_kinematics
+    ) {
+        return current_pose.transformBy(
+            new Pose2d(
+                forward_kinematics.dx,
+                forward_kinematics.dy,
+                Rotation2d.fromRadians(forward_kinematics.dtheta)
+            )
+        );
     }
 
-    public static DriveSignal inverseKinematics(double forward, double strafe, double rotation,
-                                                boolean field_relative) {
+    public static DriveSignal inverseKinematics(
+        double forward,
+        double strafe,
+        double rotation,
+        boolean field_relative
+    ) {
         return inverseKinematics(forward, strafe, rotation, field_relative, true);
     }
 
-    public static DriveSignal inverseKinematics(double forward, double strafe, double rotation, boolean field_relative,
-                                                boolean normalize_outputs) {
+    public static DriveSignal inverseKinematics(
+        double forward,
+        double strafe,
+        double rotation,
+        boolean field_relative,
+        boolean normalize_outputs
+    ) {
         if (field_relative) {
             Rotation2d gyroHeading = Drive.getInstance().getHeading();
             double temp = forward * gyroHeading.cos() + strafe * gyroHeading.sin();
@@ -121,10 +167,13 @@ public class Kinematics {
         }
 
         Rotation2d[] wheel_azimuths = new Rotation2d[4];
-        wheel_azimuths[SwerveModule.kFrontLeft] = Rotation2d.fromRadians(Math.atan2(B, C));
-        wheel_azimuths[SwerveModule.kFrontRight] = Rotation2d.fromRadians(Math.atan2(B, D));
+        wheel_azimuths[SwerveModule.kFrontLeft] =
+            Rotation2d.fromRadians(Math.atan2(B, C));
+        wheel_azimuths[SwerveModule.kFrontRight] =
+            Rotation2d.fromRadians(Math.atan2(B, D));
         wheel_azimuths[SwerveModule.kBackLeft] = Rotation2d.fromRadians(Math.atan2(A, D));
-        wheel_azimuths[SwerveModule.kBackRight] = Rotation2d.fromRadians(Math.atan2(A, C));
+        wheel_azimuths[SwerveModule.kBackRight] =
+            Rotation2d.fromRadians(Math.atan2(A, C));
 
         return new DriveSignal(wheel_speeds, wheel_azimuths, false);
     }

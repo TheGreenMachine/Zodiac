@@ -44,8 +44,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private DriveControlState mDriveControlState;
     private PigeonIMU mPigeon;
 
-
-
     // hardware states
     private boolean mIsBrakeMode;
     private Rotation2d mGyroOffset = Rotation2d.identity();
@@ -162,12 +160,12 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         double right_error;
 
         // OUTPUTS
-        public double[] wheel_speeds = new double[] {0, 0, 0, 0};
+        public double[] wheel_speeds = new double[] { 0, 0, 0, 0 };
         public Rotation2d[] wheel_azimuths = new Rotation2d[] {
             Rotation2d.identity(),
             Rotation2d.identity(),
             Rotation2d.identity(),
-            Rotation2d.identity()
+            Rotation2d.identity(),
         };
         public Rotation2d desired_heading = Rotation2d.identity();
         TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(
@@ -192,7 +190,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     public synchronized void writePeriodicOutputs() {
         for (int i = 0; i < mModules.length; i++) {
             if (mModules != null && mModules[i] != null) {
-                mModules[i].setOpenLoop(mPeriodicIO.wheel_speeds[i], mPeriodicIO.wheel_azimuths[i]);
+                mModules[i].setOpenLoop(
+                        mPeriodicIO.wheel_speeds[i],
+                        mPeriodicIO.wheel_azimuths[i]
+                    );
             }
         }
     }
@@ -233,7 +234,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                             default:
                                 System.out.println(
                                     "unexpected drive control state: " +
-                                        mDriveControlState
+                                    mDriveControlState
                                 );
                                 break;
                         }
@@ -305,7 +306,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             // mLeftMaster.configNeutralDeadband(0.0, 0);
             // mRightMaster.configNeutralDeadband(0.0, 0);
         }
-
         // mPeriodicIO.left_demand = signal.getLeft();
         // mPeriodicIO.right_demand = signal.getRight();
         // mPeriodicIO.left_feedforward = feedforward.getLeft();
@@ -370,7 +370,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mPigeon.setFusedHeading(0);
     }
 
-   /* public synchronized void resetEncoders() {
+    /* public synchronized void resetEncoders() {
         mLeftMaster.setSelectedSensorPosition(0, 0, 0);
         mRightMaster.setSelectedSensorPosition(0, 0, 0);
         mPeriodicIO = new PeriodicIO();
@@ -431,7 +431,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     public double getAngularVelocity() {
         return (
             (getRightLinearVelocity() - getLeftLinearVelocity()) /
-                Constants.kDriveWheelTrackWidthInches
+            Constants.kDriveWheelTrackWidthInches
         );
     }
 
@@ -493,7 +493,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     public boolean isDoneWithTrajectory() {
         if (
             mMotionPlanner == null ||
-                mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING
+            mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING
         ) {
             return false;
         }
@@ -503,7 +503,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     public synchronized boolean isDoneWithPath() {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-                mPathFollower != null
+            mPathFollower != null
         ) {
             return mPathFollower.isFinished();
         } else {
@@ -515,7 +515,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     public synchronized void forceDoneWithPath() {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-                mPathFollower != null
+            mPathFollower != null
         ) {
             mPathFollower.forceFinish();
         } else {
@@ -555,7 +555,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
             mPeriodicIO.error = mMotionPlanner.error();
             mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
-
             // if (!mOverrideTrajectory) {
             //     setVelocity(
             //         new DriveSignal(
@@ -584,7 +583,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     public synchronized boolean hasPassedMarker(String marker) {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-                mPathFollower != null
+            mPathFollower != null
         ) {
             return mPathFollower.hasPassedMarker(marker);
         } else {

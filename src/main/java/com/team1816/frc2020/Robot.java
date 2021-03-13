@@ -647,35 +647,34 @@ public class Robot extends TimedRobot {
         double turn = mControlBoard.getTurn();
 
         DriveSignal driveSignal;
-
-//        boolean maintainAzimuth = mShouldMaintainAzimuth.update(mControlBoard.getRotation() == 0, 0.2);
-//        boolean changeAzimuthSetpoint = shouldChangeAzimuthSetpoint.update(maintainAzimuth);
-//
-//
-//        if (mControlBoard.getDPad() != -1) {
-//            mSwerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.SNAP);
-//            double heading_goal = mControlBoard.getDPad();
-//            SmartDashboard.putNumber("Heading Goal", heading_goal);
-//            mSwerveHeadingController.setGoal(heading_goal);
-//        } else {
-//            if (!maintainAzimuth) {
-//                mSwerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.OFF);
-//            } else if ((mSwerveHeadingController
-//                .getHeadingControllerState() == SwerveHeadingController.HeadingControllerState.SNAP
-//                && mSwerveHeadingController.isAtGoal()) || changeAzimuthSetpoint) {
-//                mSwerveHeadingController
-//                    .setHeadingControllerState(SwerveHeadingController.HeadingControllerState.MAINTAIN);
-//                mSwerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
-//            }
-//        }
-//
-//        if (mSwerveHeadingController.getHeadingControllerState() != SwerveHeadingController.HeadingControllerState.OFF) {
-//            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), mSwerveHeadingController.update(),
-//                mControlBoard.getDriveLowPower(), mControlBoard.getFieldRelative(), true);
-//        } else {
-//            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), mControlBoard.getRotation(),
-//                mControlBoard.getDriveLowPower(), mControlBoard.getFieldRelative(), false);
-//        }
+        //        boolean maintainAzimuth = mShouldMaintainAzimuth.update(mControlBoard.getRotation() == 0, 0.2);
+        //        boolean changeAzimuthSetpoint = shouldChangeAzimuthSetpoint.update(maintainAzimuth);
+        //
+        //
+        //        if (mControlBoard.getDPad() != -1) {
+        //            mSwerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.SNAP);
+        //            double heading_goal = mControlBoard.getDPad();
+        //            SmartDashboard.putNumber("Heading Goal", heading_goal);
+        //            mSwerveHeadingController.setGoal(heading_goal);
+        //        } else {
+        //            if (!maintainAzimuth) {
+        //                mSwerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.OFF);
+        //            } else if ((mSwerveHeadingController
+        //                .getHeadingControllerState() == SwerveHeadingController.HeadingControllerState.SNAP
+        //                && mSwerveHeadingController.isAtGoal()) || changeAzimuthSetpoint) {
+        //                mSwerveHeadingController
+        //                    .setHeadingControllerState(SwerveHeadingController.HeadingControllerState.MAINTAIN);
+        //                mSwerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
+        //            }
+        //        }
+        //
+        //        if (mSwerveHeadingController.getHeadingControllerState() != SwerveHeadingController.HeadingControllerState.OFF) {
+        //            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), mSwerveHeadingController.update(),
+        //                mControlBoard.getDriveLowPower(), mControlBoard.getFieldRelative(), true);
+        //        } else {
+        //            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), mControlBoard.getRotation(),
+        //                mControlBoard.getDriveLowPower(), mControlBoard.getFieldRelative(), false);
+        //        }
     }
 
     @Override
