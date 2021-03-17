@@ -1,14 +1,15 @@
 package com.team1816.frc2020.subsystems;
 
-import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
-import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.ReflectingCSVWriter;
 import com.team254.lib.util.Util;
 
 public class SwerveModule extends Subsystem {
@@ -114,133 +115,6 @@ public class SwerveModule extends Subsystem {
 
         mDriveMotor = factory.getMotor(subsystemName, constants.kDriveMotorName);
         mAzimuthMotor = factory.getMotor(subsystemName, constants.kAzimuthMotorName);
-
-        // config sensors
-        MotorUtil.checkError(
-            mDriveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0,
-                Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config drive encoder");
-        MotorUtil.checkError(
-            mAzimuthMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0,
-                Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth encoder");
-
-        // config azimuth motion
-        MotorUtil.checkError(mAzimuthMotor.config_kP(0, mConstants.kAzimuthKp, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth kp");
-        MotorUtil.checkError(mAzimuthMotor.config_kI(0, mConstants.kAzimuthKi, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth ki");
-        MotorUtil.checkError(
-            mAzimuthMotor.config_IntegralZone(0, mConstants.kAzimuthIZone, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth i zone");
-        MotorUtil.checkError(mAzimuthMotor.config_kD(0, mConstants.kAzimuthKd, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth kd");
-        MotorUtil.checkError(mAzimuthMotor.config_kF(0, mConstants.kAzimuthKf, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth kf");
-        MotorUtil.checkError(
-            mAzimuthMotor.configMotionCruiseVelocity(mConstants.kAzimuthCruiseVelocity,
-                Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth cruise vel");
-        MotorUtil.checkError(
-            mAzimuthMotor.configMotionAcceleration(mConstants.kAzimuthAcceleration, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth max acc");
-        MotorUtil.checkError(
-            mAzimuthMotor.configAllowableClosedloopError(0, mConstants.kAzimuthClosedLoopAllowableError,
-                Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth allowable closed loop error");
-        mAzimuthMotor.selectProfileSlot(0, 0);
-
-        // config azimuth current/voltage settings
-        mAzimuthMotor.configSupplyCurrentLimit(
-            new SupplyCurrentLimitConfiguration(
-                mConstants.kAzimuthEnableCurrentLimit,
-                mConstants.kAzimuthContinuousCurrentLimit,
-                mConstants.kAzimuthPeakCurrentLimit,
-                mConstants.kAzimuthPeakCurrentDuration
-            ),
-            Constants.kLongCANTimeoutMs
-        );
-        MotorUtil.checkError(
-            mAzimuthMotor.configVoltageMeasurementFilter(mConstants.kAzimuthVoltageMeasurementFilter,
-                Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth voltage measurement filter");
-        MotorUtil.checkError(
-            mAzimuthMotor.configVoltageCompSaturation(mConstants.kAzimuthMaxVoltage, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth voltage comp saturation");
-        mAzimuthMotor.enableVoltageCompensation(true);
-
-        // config azimuth measurement settings
-        /*MotorUtil.checkError(
-            mAzimuthMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0,
-                mConstants.kAzimuthStatusFrame2UpdateRate, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth status frame 2 period");
-        MotorUtil.checkError(
-            mAzimuthMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic,
-                mConstants.kAzimuthStatusFrame10UpdateRate, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth status frame 10 period");
-        MotorUtil.checkError(
-            mAzimuthMotor.configVelocityMeasurementPeriod(mConstants.kAzimuthVelocityMeasurementPeriod,
-                Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth velocity measurement period");
-        MotorUtil.checkError(
-            mAzimuthMotor.configVelocityMeasurementWindow(mConstants.kAzimuthVelocityMeasurementWindow,
-                Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config azimuth velocity measurement window");*/
-
-        // config drive current/voltage settings
-        mDriveMotor.configSupplyCurrentLimit(
-            new SupplyCurrentLimitConfiguration(
-                mConstants.kDriveEnableCurrentLimit,
-                mConstants.kDriveContinuousCurrentLimit,
-                mConstants.kDrivePeakCurrentLimit,
-                mConstants.kDrivePeakCurrentDuration
-            ),
-            Constants.kLongCANTimeoutMs
-        );
-        MotorUtil.checkError(
-            mDriveMotor.configVoltageMeasurementFilter(mConstants.kDriveVoltageMeasurementFilter,
-                Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config drive voltage measurement filter");
-        MotorUtil.checkError(
-            mDriveMotor.configVoltageCompSaturation(mConstants.kDriveMaxVoltage, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config drive voltage comp saturation");
-        mDriveMotor.enableVoltageCompensation(true);
-
-        // config drive measurement settings
-        /*MotorUtil.checkError(
-            mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0,
-                mConstants.kDriveStatusFrame2UpdateRate, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config drive status frame 2 period");
-        MotorUtil.checkError(
-            mDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic,
-                mConstants.kDriveStatusFrame10UpdateRate, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config drive status frame 10 period");
-        MotorUtil.checkError(
-            mDriveMotor.configVelocityMeasurementPeriod(mConstants.kDriveVelocityMeasurementPeriod,
-                Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config drive velocity measurement period");
-        MotorUtil.checkError(
-            mDriveMotor.configVelocityMeasurementWindow(mConstants.kDriveVelocityMeasurementWindow,
-                Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to config drive velocity measurement window");*/
-
-        // config general drive settings
-        mDriveMotor.setInverted(mConstants.kInvertDrive);
-        mDriveMotor.setSensorPhase(mConstants.kInvertDriveSensorPhase);
-        mDriveMotor.setNeutralMode(mConstants.kDriveInitNeutralMode);
-        MotorUtil.checkError(mDriveMotor.configForwardSoftLimitEnable(false, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to disable drive forward soft limit");
-        MotorUtil.checkError(mDriveMotor.configReverseSoftLimitEnable(false, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to disable drive reverse soft limit");
-
-        // config general azimuth settings
-        mAzimuthMotor.setInverted(mConstants.kInvertAzimuth);
-        mAzimuthMotor.setSensorPhase(mConstants.kInvertAzimuthSensorPhase);
-        mAzimuthMotor.setNeutralMode(mConstants.kAzimuthInitNeutralMode);
-        MotorUtil.checkError(mAzimuthMotor.configForwardSoftLimitEnable(false, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to disable azimuth forward soft limit");
-        MotorUtil.checkError(mAzimuthMotor.configReverseSoftLimitEnable(false, Constants.kLongCANTimeoutMs),
-            "Error in " + mConstants.kName + "Module: Unable to disable azimuth reverse soft limit");
 
         zeroSensors();
     }
