@@ -7,8 +7,6 @@ public class SwerveModuleConfig {
     String drive;
     String azimuth;
     int encoderOffset;
-    PidConfig drivePid;
-    PidConfig azimuthPid;
 
     @Override
     public boolean equals(Object o) {
@@ -18,14 +16,12 @@ public class SwerveModuleConfig {
         return (
             encoderOffset == that.encoderOffset &&
             Objects.equals(drive, that.drive) &&
-            Objects.equals(azimuth, that.azimuth) &&
-            Objects.equals(drivePid, that.drivePid) &&
-            Objects.equals(azimuthPid, that.azimuthPid)
+            Objects.equals(azimuth, that.azimuth)
         );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(drive, azimuth, encoderOffset, drivePid, azimuthPid);
+        return Objects.hash(drive, azimuth, encoderOffset);
     }
 }

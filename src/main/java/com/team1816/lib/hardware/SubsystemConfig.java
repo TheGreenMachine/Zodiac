@@ -13,6 +13,8 @@ public class SubsystemConfig {
     List<String> invertMotor = new ArrayList<>();
     List<PidConfig> pid = new ArrayList<>();
     Map<String, SwerveModuleConfig> swerveModules = new HashMap<>();
+    PidConfig drivePid;
+    PidConfig azimuthPid;
 
     // Pneumatics
     Map<String, Integer> solenoids = new HashMap<>();
@@ -49,6 +51,8 @@ public class SubsystemConfig {
             doubleSolenoids.equals(that.doubleSolenoids) &&
             constants.equals(that.constants) &&
             Objects.equals(pid, that.pid) &&
+            Objects.equals(azimuthPid, that.azimuthPid) &&
+            Objects.equals(drivePid, that.drivePid) &&
             Objects.equals(canifier, that.canifier) &&
             invertMotor.equals(that.invertMotor)
         );
@@ -66,6 +70,8 @@ public class SubsystemConfig {
             doubleSolenoids,
             constants,
             pid,
+            azimuthPid,
+            drivePid,
             canifier,
             invertMotor
         );
@@ -109,6 +115,8 @@ public class SubsystemConfig {
             result.pid = base.pid;
         }
 
+        result.azimuthPid = active.azimuthPid != null ? active.azimuthPid : base.azimuthPid;
+        result.drivePid = active.drivePid != null ? active.drivePid : base.drivePid;
         result.canifier = active.canifier != null ? active.canifier : base.canifier;
         YamlConfig.mergeMap(result.constants, active.constants, base.constants);
 

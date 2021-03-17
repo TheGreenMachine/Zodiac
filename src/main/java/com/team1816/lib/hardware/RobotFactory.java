@@ -167,9 +167,9 @@ public class RobotFactory {
         var swerveConstants = new SwerveModule.SwerveModuleConstants();
         swerveConstants.kName = name;
         swerveConstants.kAzimuthMotorName = module.azimuth;
-        swerveConstants.kAzimuthPid = module.azimuthPid;
+        swerveConstants.kAzimuthPid = subsystem.azimuthPid;
         swerveConstants.kDriveMotorName = module.drive;
-        swerveConstants.kDrivePid = module.drivePid;
+        swerveConstants.kDrivePid = subsystem.drivePid;
         swerveConstants.kAzimuthEncoderHomeOffset = module.encoderOffset;
 
         return new SwerveModule(subsystemName, swerveConstants);

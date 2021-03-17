@@ -19,6 +19,7 @@
         "pid": {
             "type": "object",
             "title": "PID Configuration",
+            "required": ["kP", "kI", "kD", "kF"],
             "properties": {
                 "kP": { "type": "number" },
                 "kI": { "type": "number" },
@@ -59,6 +60,12 @@
                             "type": "string"
                         }
                     },
+                    "drivePid": {
+                        "$ref": "#/definitions/pid"
+                    },
+                    "azimuthPid": {
+                        "$ref": "#/definitions/pid"
+                    },
                     "pid": {
                         "type": "array",
                         "items": {
@@ -67,11 +74,13 @@
                     },
                     "swerveModules": {
                         "type": "object",
+                        "title": "Swerve Module Map",
                         "propertyNames": {
                             "pattern": "^[a-z]+([A-Z][a-z]*)*$"
                         },
                         "additionalProperties": {
                             "type": "object",
+                            "title": "Swerve Module",
                             "required": ["drive", "azimuth", "encoderOffset"],
                             "properties": {
                                 "drive": {
@@ -82,12 +91,6 @@
                                 },
                                 "encoderOffset": {
                                     "type": "number"
-                                },
-                                "drivePid": {
-                                    "$ref": "#/definitions/pid"
-                                },
-                                "azimuthPid": {
-                                    "$ref": "#/definitions/pid"
                                 }
                             }
                         }

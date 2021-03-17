@@ -28,6 +28,16 @@ subsystems:
                 drive: rightFollower
                 azimuth: brAzimuth
                 encoderOffset: 2582
+        drivePid:
+            kP: 0.1
+            kI: 0.0001
+            kD: 4.0
+            kF: 0.0475813
+        azimuthPid:
+            kP: 3.0
+            kI: 0.05
+            kD: 20
+            kF: 0
         constants:
             encPPR: 22220.8
             azimuthEncPPR: 4096
