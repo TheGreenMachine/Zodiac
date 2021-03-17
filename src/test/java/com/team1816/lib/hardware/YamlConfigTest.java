@@ -28,10 +28,7 @@ public class YamlConfigTest {
     public void subsystemConfig_merge() {
         var base = loadConfig("test_base").subsystems.get("turret");
         var active = loadConfig("test_active").subsystems.get("turret");
-        SubsystemConfig result = SubsystemConfig.merge(
-            active,
-            base
-        );
+        SubsystemConfig result = SubsystemConfig.merge(active, base);
         System.out.println(result);
 
         assertEquals("Base constant kP == 2.83", 2.83, result.constants.get("kP"), 0);

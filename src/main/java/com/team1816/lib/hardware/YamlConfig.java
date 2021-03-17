@@ -101,11 +101,7 @@ public class YamlConfig {
         return result;
     }
 
-    static <K, V> void mergeMap(
-        Map<K, V> result,
-        Map<K, V> active,
-        Map<K, V> fallback
-    ) {
+    static <K, V> void mergeMap(Map<K, V> result, Map<K, V> active, Map<K, V> fallback) {
         result.putAll(fallback);
         result.putAll(active);
     }

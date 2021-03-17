@@ -9,6 +9,7 @@ import com.team1816.lib.hardware.components.GhostCanifier;
 import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.hardware.components.pcm.*;
 import edu.wpi.first.wpilibj.DriverStation;
+import java.util.List;
 import javax.annotation.Nonnull;
 
 public class RobotFactory {
@@ -47,7 +48,11 @@ public class RobotFactory {
         verbose = getConstant("verbose") >= 1;
     }
 
-    public IMotorControllerEnhanced getMotor(String subsystemName, String name) {
+    public IMotorControllerEnhanced getMotor(
+        String subsystemName,
+        String name,
+        List<PidConfig> pidConfigs
+    ) {
         IMotorControllerEnhanced motor = null;
         var subsystem = getSubsystem(subsystemName);
 
@@ -81,28 +86,20 @@ public class RobotFactory {
             System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
             motor.setInverted(true);
         }
-        motor.config_kP(
-            0,
-            getConstant(subsystemName, "kP", 0),
-            Constants.kLongCANTimeoutMs
-        );
-        motor.config_kI(
-            0,
-            getConstant(subsystemName, "kI", 0),
-            Constants.kLongCANTimeoutMs
-        );
-        motor.config_kD(
-            0,
-            getConstant(subsystemName, "kD", 0),
-            Constants.kLongCANTimeoutMs
-        );
-        motor.config_kF(
-            0,
-            getConstant(subsystemName, "kF", 0),
-            Constants.kLongCANTimeoutMs
-        );
+
+        for (int i = 0; i < Math.min(pidConfigs.size(), 4); i++) {
+            var pid = pidConfigs.get(i);
+            motor.config_kP(i, pid.kP, Constants.kLongCANTimeoutMs);
+            motor.config_kI(i, pid.kI, Constants.kLongCANTimeoutMs);
+            motor.config_kD(i, pid.kD, Constants.kLongCANTimeoutMs);
+            motor.config_kF(i, pid.kF, Constants.kLongCANTimeoutMs);
+        }
 
         return motor;
+    }
+
+    public IMotorControllerEnhanced getMotor(String subsystemName, String name) {
+        return getMotor(subsystemName, name, getSubsystem(subsystemName).pid);
     }
 
     public IMotorController getMotor(
@@ -156,7 +153,7 @@ public class RobotFactory {
     }
 
     @Nonnull
-    public SwerveModule getSwerveModule(String subsystemName, String name){
+    public SwerveModule getSwerveModule(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
         SwerveModuleConfig module = subsystem.swerveModules.get(name);
         if (module == null) {
@@ -170,11 +167,12 @@ public class RobotFactory {
         var swerveConstants = new SwerveModule.SwerveModuleConstants();
         swerveConstants.kName = name;
         swerveConstants.kAzimuthMotorName = module.azimuth;
+        swerveConstants.kAzimuthPid = subsystem.azimuthPid;
         swerveConstants.kDriveMotorName = module.drive;
+        swerveConstants.kDrivePid = subsystem.drivePid;
         swerveConstants.kAzimuthEncoderHomeOffset = module.encoderOffset;
 
         return new SwerveModule(subsystemName, swerveConstants);
-
     }
 
     @Nonnull
@@ -258,6 +256,10 @@ public class RobotFactory {
             return defaultVal;
         }
         return getSubsystem(subsystemName).constants.get(name);
+    }
+
+    public PidConfig getPidConfig(String subsystemName, int slot) {
+        return getSubsystem(subsystemName).pid.get(slot);
     }
 
     public int getPcmId() {

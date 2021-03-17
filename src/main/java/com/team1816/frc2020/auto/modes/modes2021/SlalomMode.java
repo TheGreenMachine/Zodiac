@@ -6,6 +6,7 @@ import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.modes.AutoModeBase;
 
 public class SlalomMode extends AutoModeBase {
+
     private DriveTrajectory trajectory;
 
     public SlalomMode() {

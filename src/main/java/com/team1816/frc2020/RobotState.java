@@ -213,15 +213,25 @@ public class RobotState {
     ) {
         distance_driven_ += displacement.norm();
 
-        addFieldToVehicleObservation(timestamp,
-            Kinematics.integrateForwardKinematics(getLatestFieldToVehicle().getValue(), displacement));
+        addFieldToVehicleObservation(
+            timestamp,
+            Kinematics.integrateForwardKinematics(
+                getLatestFieldToVehicle().getValue(),
+                displacement
+            )
+        );
         vehicle_velocity_measured_ = measured_velocity;
         if (Math.abs(vehicle_velocity_measured_.dtheta) < 2.0 * Math.PI) {
             // Reject really high angular velocities from the filter.
             vehicle_velocity_measured_filtered_.add(vehicle_velocity_measured_);
         } else {
-            vehicle_velocity_measured_filtered_
-                .add(new Twist2d(vehicle_velocity_measured_.dx, vehicle_velocity_measured_.dy, 0.0));
+            vehicle_velocity_measured_filtered_.add(
+                new Twist2d(
+                    vehicle_velocity_measured_.dx,
+                    vehicle_velocity_measured_.dy,
+                    0.0
+                )
+            );
         }
     }
 

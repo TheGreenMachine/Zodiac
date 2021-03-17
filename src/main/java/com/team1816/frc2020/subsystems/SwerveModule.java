@@ -6,14 +6,18 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
+import com.team1816.lib.hardware.PidConfig;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.Util;
+import java.util.List;
 
 public class SwerveModule extends Subsystem {
+
     public static class PeriodicIO {
+
         // INPUTS
         public double drive_encoder_ticks;
         public double azimuth_encoder_ticks; // actual position of module in encoder units, adjusted for home offset
@@ -27,10 +31,11 @@ public class SwerveModule extends Subsystem {
     }
 
     public enum ControlState {
-        OPEN_LOOP
+        OPEN_LOOP,
     }
 
     public static class SwerveModuleConstants {
+
         public String kName = "Name";
         public String kDriveMotorName = "";
         public String kAzimuthMotorName = "";
@@ -43,10 +48,7 @@ public class SwerveModule extends Subsystem {
         public double kAzimuthEncoderHomeOffset = 0;
 
         // azimuth motion
-        public double kAzimuthKp = 3;
-        public double kAzimuthKi = 0.05;
-        public double kAzimuthKd = 20;
-        public double kAzimuthKf = 0;
+        public PidConfig kAzimuthPid = PidConfig.EMPTY;
         public int kAzimuthIZone = 25;
         public int kAzimuthCruiseVelocity = 1698;
         public int kAzimuthAcceleration = 20379; // 12 * kAzimuthCruiseVelocity
@@ -63,16 +65,18 @@ public class SwerveModule extends Subsystem {
         // azimuth measurement
         public int kAzimuthStatusFrame2UpdateRate = 10; // feedback for selected sensor, ms
         public int kAzimuthStatusFrame10UpdateRate = 10; // motion magic, ms
-        public VelocityMeasPeriod kAzimuthVelocityMeasurementPeriod = VelocityMeasPeriod.Period_100Ms; // dt for velocity measurements, ms
+        public VelocityMeasPeriod kAzimuthVelocityMeasurementPeriod =
+            VelocityMeasPeriod.Period_100Ms; // dt for velocity measurements, ms
         public int kAzimuthVelocityMeasurementWindow = 64; // # of samples in rolling average
 
         // general drive
+        public PidConfig kDrivePid = PidConfig.EMPTY;
         public boolean kInvertDrive = true;
         public boolean kInvertDriveSensorPhase = false;
         public NeutralMode kDriveInitNeutralMode = NeutralMode.Brake; // neutral mode could change
         public double kWheelDiameter = 4.0; // Probably should tune for each individual wheel maybe
-        public double kDriveTicksPerUnitDistance = (1.0 / 4096.0) * (18.0 / 28.0 * 15.0 / 45.0)
-            * (Math.PI * kWheelDiameter);
+        public double kDriveTicksPerUnitDistance =
+            (1.0 / 4096.0) * (18.0 / 28.0 * 15.0 / 45.0) * (Math.PI * kWheelDiameter);
         public double kDriveDeadband = 0.01;
 
         // drive current/voltage
@@ -86,7 +90,8 @@ public class SwerveModule extends Subsystem {
         // drive measurement
         public int kDriveStatusFrame2UpdateRate = 15; // feedback for selected sensor, ms
         public int kDriveStatusFrame10UpdateRate = 200; // motion magic, ms
-        public VelocityMeasPeriod kDriveVelocityMeasurementPeriod = VelocityMeasPeriod.Period_100Ms; // dt for velocity measurements, ms
+        public VelocityMeasPeriod kDriveVelocityMeasurementPeriod =
+            VelocityMeasPeriod.Period_100Ms; // dt for velocity measurements, ms
         public int kDriveVelocityMeasurementWindow = 64; // # of samples in rolling average
     }
 
@@ -107,14 +112,28 @@ public class SwerveModule extends Subsystem {
     public static final int kBackLeft = 2;
     public static final int kBackRight = 3;
 
-
     public SwerveModule(String subsystemName, SwerveModuleConstants constants) {
         super(constants.kName);
         mConstants = constants;
-        System.out.println("Configuring Swerve Module" + constants.kName + " on subsystem " + subsystemName);
+        System.out.println(
+            "Configuring Swerve Module" +
+            constants.kName +
+            " on subsystem " +
+            subsystemName
+        );
 
-        mDriveMotor = factory.getMotor(subsystemName, constants.kDriveMotorName);
-        mAzimuthMotor = factory.getMotor(subsystemName, constants.kAzimuthMotorName);
+        mDriveMotor =
+            factory.getMotor(
+                subsystemName,
+                constants.kDriveMotorName,
+                List.of(constants.kDrivePid)
+            );
+        mAzimuthMotor =
+            factory.getMotor(
+                subsystemName,
+                constants.kAzimuthMotorName,
+                List.of(constants.kAzimuthPid)
+            );
 
         zeroSensors();
     }
@@ -148,10 +167,12 @@ public class SwerveModule extends Subsystem {
     @Override
     public void readPeriodicInputs() {
         mPeriodicIO.drive_encoder_ticks = mDriveMotor.getSelectedSensorPosition(0);
-        mPeriodicIO.distance = (int) encoderUnitsToDistance(mPeriodicIO.drive_encoder_ticks);
+        mPeriodicIO.distance =
+            (int) encoderUnitsToDistance(mPeriodicIO.drive_encoder_ticks);
         mPeriodicIO.velocity_ticks_per_100ms = mDriveMotor.getSelectedSensorVelocity(0);
-        mPeriodicIO.azimuth_encoder_ticks = mAzimuthMotor.getSelectedSensorPosition(0)
-            - mConstants.kAzimuthEncoderHomeOffset;
+        mPeriodicIO.azimuth_encoder_ticks =
+            mAzimuthMotor.getSelectedSensorPosition(0) -
+            mConstants.kAzimuthEncoderHomeOffset;
     }
 
     public void setOpenLoopRampRate(double openLoopRampRate) {
@@ -161,12 +182,20 @@ public class SwerveModule extends Subsystem {
     @Override
     public void writePeriodicOutputs() {
         if (mControlState == ControlState.OPEN_LOOP) {
-            if (Util.epsilonEquals(mPeriodicIO.drive_demand, 0.0, mConstants.kDriveDeadband)) { // don't move if
+            if (
+                Util.epsilonEquals(
+                    mPeriodicIO.drive_demand,
+                    0.0,
+                    mConstants.kDriveDeadband
+                )
+            ) { // don't move if
                 // throttle is 0
                 stop();
             } else {
-                mAzimuthMotor.set(ControlMode.Position,
-                    mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset);
+                mAzimuthMotor.set(
+                    ControlMode.Position,
+                    mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset
+                );
                 mDriveMotor.set(ControlMode.PercentOutput, mPeriodicIO.drive_demand);
             }
         }
@@ -174,32 +203,36 @@ public class SwerveModule extends Subsystem {
 
     @Override
     public void registerEnabledLoops(ILooper mEnabledLooper) {
-        mEnabledLooper.register(new Loop() {
-            @Override
-            public void onStart(double timestamp) {
-                synchronized (SwerveModule.this) {
+        mEnabledLooper.register(
+            new Loop() {
+                @Override
+                public void onStart(double timestamp) {
+                    synchronized (SwerveModule.this) {
+                        stop();
+                    }
+                }
+
+                @Override
+                public void onLoop(double timestamp) {
+                    synchronized (SwerveModule.this) {
+                        switch (mControlState) {
+                            case OPEN_LOOP:
+                                break;
+                            default:
+                                System.out.println(
+                                    "Unexpected control state: " + mControlState
+                                );
+                                break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onStop(double timestamp) {
                     stop();
                 }
             }
-
-            @Override
-            public void onLoop(double timestamp) {
-                synchronized (SwerveModule.this) {
-                    switch (mControlState) {
-                        case OPEN_LOOP:
-                            break;
-                        default:
-                            System.out.println("Unexpected control state: " + mControlState);
-                            break;
-                    }
-                }
-            }
-
-            @Override
-            public void onStop(double timestamp) {
-                stop();
-            }
-        });
+        );
     }
 
     @Override
@@ -294,7 +327,10 @@ public class SwerveModule extends Subsystem {
     }
 
     public synchronized boolean isAzimuthAtTarget() {
-        return Util.epsilonEquals(mPeriodicIO.azimuth_demand, getAngleEncoderUnits(),
-            mConstants.kAzimuthClosedLoopAllowableError);
+        return Util.epsilonEquals(
+            mPeriodicIO.azimuth_demand,
+            getAngleEncoderUnits(),
+            mConstants.kAzimuthClosedLoopAllowableError
+        );
     }
 }

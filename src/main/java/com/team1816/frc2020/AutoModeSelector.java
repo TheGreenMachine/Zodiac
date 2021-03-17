@@ -71,7 +71,10 @@ public class AutoModeSelector {
 
         mModeChooser.addOption("Drive By Camera", DesiredMode.DRIVE_BY_CAMERA);
         mModeChooser.addOption("Tune Drivetrain", DesiredMode.TUNE_DRIVETRAIN);
-        mModeChooser.addOption("Tune Drivetrain Reverse", DesiredMode.TUNE_DRIVETRAIN_REVERSE);
+        mModeChooser.addOption(
+            "Tune Drivetrain Reverse",
+            DesiredMode.TUNE_DRIVETRAIN_REVERSE
+        );
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
         SmartDashboard.putData("Auto mode", mModeChooser);
 
