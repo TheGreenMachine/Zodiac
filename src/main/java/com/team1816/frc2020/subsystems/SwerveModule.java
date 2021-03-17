@@ -12,7 +12,6 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.Util;
-
 import java.util.List;
 
 public class SwerveModule extends Subsystem {
@@ -123,8 +122,18 @@ public class SwerveModule extends Subsystem {
             subsystemName
         );
 
-        mDriveMotor = factory.getMotor(subsystemName, constants.kDriveMotorName, List.of(constants.kDrivePid));
-        mAzimuthMotor = factory.getMotor(subsystemName, constants.kAzimuthMotorName, List.of(constants.kAzimuthPid));
+        mDriveMotor =
+            factory.getMotor(
+                subsystemName,
+                constants.kDriveMotorName,
+                List.of(constants.kDrivePid)
+            );
+        mAzimuthMotor =
+            factory.getMotor(
+                subsystemName,
+                constants.kAzimuthMotorName,
+                List.of(constants.kAzimuthPid)
+            );
 
         zeroSensors();
     }

@@ -115,7 +115,8 @@ public class SubsystemConfig {
             result.pid = base.pid;
         }
 
-        result.azimuthPid = active.azimuthPid != null ? active.azimuthPid : base.azimuthPid;
+        result.azimuthPid =
+            active.azimuthPid != null ? active.azimuthPid : base.azimuthPid;
         result.drivePid = active.drivePid != null ? active.drivePid : base.drivePid;
         result.canifier = active.canifier != null ? active.canifier : base.canifier;
         YamlConfig.mergeMap(result.constants, active.constants, base.constants);
