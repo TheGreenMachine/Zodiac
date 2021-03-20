@@ -3,10 +3,10 @@ subsystems:
     drivetrain:
         implemented: true
         falcons:
-            flDrive: -2
-            blDrive: -1
-            frDrive: -13
-            brDrive: -14
+            flDrive: 2
+            blDrive: 1
+            frDrive: 13
+            brDrive: 14
         talons:
             flAzimuth: 4
             frAzimuth: 11
