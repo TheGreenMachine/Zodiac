@@ -76,4 +76,50 @@ public class DrivetrainLogger {
             "join:Drivetrain/Heading"
         );
     }
+
+    public static void initSwerve(SwerveDrivetrain drivetrain) {
+        for (ISwerveModule module : drivetrain.getSwerveModules()) {
+            var name = module.getName();
+            var prefix = "Drivetrain/" + name;
+
+            // Azimuth
+            BadLog.createTopic(
+                prefix + "AzimuthPosition",
+                "ticks",
+                module::getAzimuthPosition,
+                "hide",
+                "join:Drivetrain/AzimuthPosition"
+            );
+            BadLog.createTopic(
+                prefix + "AzimuthVelocity",
+                "ticks",
+                module::getAzimuthVelocity,
+                "hide",
+                "join:Drivetrain/AzimuthVelocity"
+            );
+            BadLog.createTopic(
+                prefix + "AzimuthError",
+                "ticks",
+                module::getAzimuthError,
+                "hide",
+                "join:Drivetrain/AzimuthError"
+            );
+
+            // Drive
+            BadLog.createTopic(
+                prefix + "DriveVelocity",
+                "ticks",
+                module::getDriveVelocity,
+                "hide",
+                "join:Drivetrain/DriveVelocity"
+            );
+            BadLog.createTopic(
+                prefix + "DriveError",
+                "ticks",
+                module::getDriveError,
+                "hide",
+                "join:Drivetrain/DriveError"
+            );
+        }
+    }
 }

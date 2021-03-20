@@ -171,6 +171,7 @@ public class RobotFactory {
         swerveConstants.kDriveMotorName = module.drive;
         swerveConstants.kDrivePid = subsystem.drivePid;
         swerveConstants.kAzimuthEncoderHomeOffset = module.encoderOffset;
+        swerveConstants.kInvertAzimuthSensorPhase = module.invertSensorPhase;
 
         return new SwerveModule(subsystemName, swerveConstants);
     }

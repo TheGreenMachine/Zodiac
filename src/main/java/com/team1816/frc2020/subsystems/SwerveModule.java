@@ -1,19 +1,23 @@
 package com.team1816.frc2020.subsystems;
 
-import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
-import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.hardware.PidConfig;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
+import com.team1816.lib.subsystems.ISwerveModule;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.Util;
+
 import java.util.List;
 
-public class SwerveModule extends Subsystem {
+public class SwerveModule extends Subsystem implements ISwerveModule {
 
     public static class PeriodicIO {
 
@@ -51,7 +55,8 @@ public class SwerveModule extends Subsystem {
         public int kAzimuthIZone = 25;
         public int kAzimuthCruiseVelocity = 1698;
         public int kAzimuthAcceleration = 20379; // 12 * kAzimuthCruiseVelocity
-        public int kAzimuthClosedLoopAllowableError = 5;
+        public int kAzimuthClosedLoopAllowableError =
+            (int) factory.getConstant("drivetrain", "azimuthAllowableErrorTicks");
 
         // azimuth current/voltage
         public int kAzimuthContinuousCurrentLimit = 30; // amps
@@ -134,6 +139,9 @@ public class SwerveModule extends Subsystem {
                 List.of(constants.kAzimuthPid)
             );
 
+        mAzimuthMotor.setSensorPhase(constants.kInvertAzimuthSensorPhase);
+        mAzimuthMotor.configAllowableClosedloopError(0, constants.kAzimuthClosedLoopAllowableError, Constants.kLongCANTimeoutMs);
+
         System.out.println(mConstants.kName + " drive motor ID: " + mDriveMotor.getDeviceID());
         System.out.println(mConstants.kName + " azimuth motor ID: " + mAzimuthMotor.getDeviceID());
 
@@ -162,7 +170,7 @@ public class SwerveModule extends Subsystem {
         double final_setpoint = getRawAngle() + raw_error;
         // double adjusted_speed = speed * Math.abs(Math.cos(raw_error));
 
-        mPeriodicIO.drive_demand = speed;
+        mPeriodicIO.drive_demand = 0/*speed*/;
         mPeriodicIO.azimuth_demand = radiansToEncoderUnits(final_setpoint);
     }
 
@@ -194,12 +202,12 @@ public class SwerveModule extends Subsystem {
                 // throttle is 0
                 stop();
             } else {
-
                 System.out.println("Swerve Module Drive Demand: " + mPeriodicIO.drive_demand);
                 mDriveMotor.set(ControlMode.PercentOutput, mPeriodicIO.drive_demand);
             }
         }
-        mAzimuthMotor.set(ControlMode.Position,
+        mAzimuthMotor.set(
+            ControlMode.Position,
             mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset
         );
     }
@@ -242,18 +250,19 @@ public class SwerveModule extends Subsystem {
     public void zeroSensors() {
         mDriveMotor.setSelectedSensorPosition(0, 0, Constants.kCANTimeoutMs);
         int absolutePosition = getAzimuthPosAbsolute();
-        mAzimuthMotor.setSelectedSensorPosition(
-            absolutePosition,
-            0,
-            Constants.kLongCANTimeoutMs
-        );
+        if (mAzimuthMotor instanceof TalonSRX) {
+            ((TalonSRX) mAzimuthMotor).getSensorCollection().setQuadraturePosition(
+                absolutePosition,
+                Constants.kLongCANTimeoutMs
+            );
+        }
     }
 
     private int getAzimuthPosAbsolute() {
         if (mAzimuthMotor instanceof TalonSRX) {
             int rawValue =
                 ((TalonSRX) mAzimuthMotor).getSensorCollection().getPulseWidthPosition() & 0xFFF;
-            return (mConstants.kInvertAzimuthSensorPhase ? -1 : 1) * rawValue;
+            return rawValue;
         }
         return 0;
     }
@@ -266,18 +275,45 @@ public class SwerveModule extends Subsystem {
 
     @Override
     public boolean checkSystem() {
-//        boolean driveMotorPassed = EnhancedMotorChecker.checkMotors(
-//            this,
-//            EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, mDriveMotor),
-//            new EnhancedMotorChecker.NamedMotor("drive", mDriveMotor)
-//        );
-//        boolean azimuthMotorPassed = EnhancedMotorChecker.checkMotors(
-//            this,
-//            EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, mAzimuthMotor),
-//            new EnhancedMotorChecker.NamedMotor("azimuth", mAzimuthMotor)
-//        );
-//        return driveMotorPassed && azimuthMotorPassed;
-        return true;
+        boolean driveMotorPassed = EnhancedMotorChecker.checkMotors(
+            this,
+            EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, mDriveMotor),
+            new EnhancedMotorChecker.NamedMotor("drive", mDriveMotor)
+        );
+        boolean azimuthMotorPassed = EnhancedMotorChecker.checkMotors(
+            this,
+            EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, mAzimuthMotor),
+            new EnhancedMotorChecker.NamedMotor("azimuth", mAzimuthMotor)
+        );
+        return driveMotorPassed && azimuthMotorPassed;
+    }
+
+    @Override
+    public double getAzimuthVelocity() {
+        return mAzimuthMotor.getSelectedSensorVelocity(0);
+    }
+
+    @Override
+    public double getAzimuthPosition() {
+        return
+            (mConstants.kInvertAzimuthSensorPhase ? -1 : 1)
+                * ((int) mAzimuthMotor.getSelectedSensorPosition(0) & 0xFFF)
+                - mConstants.kAzimuthEncoderHomeOffset;
+    }
+
+    @Override
+    public double getAzimuthError() {
+        return mAzimuthMotor.getClosedLoopError(0);
+    }
+
+    @Override
+    public double getDriveVelocity() {
+        return mDriveMotor.getSelectedSensorVelocity(0);
+    }
+
+    @Override
+    public double getDriveError() {
+        return mDriveMotor.getClosedLoopError(0);
     }
 
     /**

@@ -11,6 +11,7 @@ import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import com.team1816.lib.subsystems.SwerveDrivetrain;
 import com.team1816.lib.subsystems.TrackableDrivetrain;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
@@ -26,7 +27,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider {
+public class Drive extends Subsystem implements SwerveDrivetrain, TrackableDrivetrain, PidProvider {
 
     private static Drive mInstance;
     private static final String NAME = "drivetrain";
@@ -201,15 +202,15 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                             case PATH_FOLLOWING:
                                 if (mPathFollower != null) {
                                     if (Constants.kIsBadlogEnabled) {
-                                        mLogger.updateTopics();
-                                        mLogger.log();
+                                        // mLogger.updateTopics();
+                                        // mLogger.log();
                                     }
                                     updatePathFollower(timestamp);
                                 }
                             case TRAJECTORY_FOLLOWING:
                                 if (Constants.kIsBadlogEnabled) {
-                                    mLogger.updateTopics();
-                                    mLogger.log();
+                                    // mLogger.updateTopics();
+                                    // mLogger.log();
                                 }
                                 updatePathFollower(timestamp);
                                 break;
@@ -581,6 +582,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         TRAJECTORY_FOLLOWING,
     }
 
+    @Override
     public SwerveModule[] getSwerveModules() {
         return mModules;
     }

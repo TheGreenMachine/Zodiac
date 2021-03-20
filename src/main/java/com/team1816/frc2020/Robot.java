@@ -182,7 +182,7 @@ public class Robot extends TimedRobot {
                     DataInferMode.DEFAULT
                 );
 
-                DrivetrainLogger.init(mDrive);
+                DrivetrainLogger.initSwerve(mDrive);
 
                 BadLog.createValue("Drivetrain PID", mDrive.pidToString());
                 BadLog.createValue("Shooter PID", shooter.pidToString());
@@ -505,7 +505,7 @@ public class Robot extends TimedRobot {
             turret.setTurretAngle(Turret.CARDINAL_SOUTH);
             turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
 
-//            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
+            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
 
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();

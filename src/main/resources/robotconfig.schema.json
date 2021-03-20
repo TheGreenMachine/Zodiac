@@ -91,6 +91,10 @@
                                 },
                                 "encoderOffset": {
                                     "type": "number"
+                                },
+                                "invertSensorPhase": {
+                                    "type": "boolean",
+                                    "default": false
                                 }
                             }
                         }
