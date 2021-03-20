@@ -194,14 +194,14 @@ public class SwerveModule extends Subsystem {
                 // throttle is 0
                 stop();
             } else {
-                mAzimuthMotor.set(
-                    ControlMode.Position,
-                    mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset
-                );
+
                 System.out.println("Swerve Module Drive Demand: " + mPeriodicIO.drive_demand);
                 mDriveMotor.set(ControlMode.PercentOutput, mPeriodicIO.drive_demand);
             }
         }
+        mAzimuthMotor.set(ControlMode.Position,
+            mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset
+        );
     }
 
     @Override

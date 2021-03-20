@@ -97,6 +97,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         try {
+            DriverStation.getInstance().silenceJoystickConnectionWarning(true);
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger =
                 BadLog.init(
