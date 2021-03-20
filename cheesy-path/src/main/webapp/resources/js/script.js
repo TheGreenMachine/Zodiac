@@ -812,6 +812,17 @@ let fileHandle;
 async function openFile() {
     [fileHandle] = await window.showOpenFilePicker(filePickerOptions);
     const file = await fileHandle.getFile();
+    await loadFromFile(file);
+}
+
+async function restoreFromFile() {
+    if (fileHandle) {
+        const file = await fileHandle.getFile();
+        await loadFromFile(file);
+    }
+}
+
+async function loadFromFile(file) {
     titleInput.value = file.name.slice(0, -4);
     const text = await file.text();
     const output = CSV.load(text);

@@ -20,10 +20,11 @@
             <svg id='interactive'></svg>
         </div>
         <div class='buttonContainer'>
-            <button onclick='addPoint()' class="icon-button"><i class="material-icons">add</i></button>
-            <button onclick='update(false)' class="icon-button"><i class="material-icons">refresh</i></button>
-            <button onclick='draw(3)' class="icon-button"><i class="material-icons">play_arrow</i></button>
+            <button onclick='addPoint()' class="icon-button" title="Add Point"><i class="material-icons">add</i></button>
+            <button onclick='update(false)' class="icon-button" title="Refresh"><i class="material-icons">refresh</i></button>
+            <button onclick='draw(3)' class="icon-button" title="Animate"><i class="material-icons">play_arrow</i></button>
             <button onclick="showWaypointsList()">Waypoints Code</button>
+            <button id="resetButton" onclick="restoreFromFile()" class="icon-button" title="Restore from file"><i class="material-icons">sync</i></button>
             <button id="openButton" onclick="openFile()" class="btn-pair-left">Open</button>
             <button id="saveButton" onclick="saveFile()" class="btn-pair-center">
                 Save
