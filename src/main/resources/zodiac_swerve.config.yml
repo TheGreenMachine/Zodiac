@@ -1,6 +1,7 @@
 $extends: base
 subsystems:
     drivetrain:
+        implemented: true
         falcons:
             leftMain: 2
             leftFollower: 1

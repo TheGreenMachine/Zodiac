@@ -52,4 +52,8 @@ public abstract class Subsystem implements Sendable {
     public String getName() {
         return name;
     }
+
+    public boolean isImplemented() {
+        return factory.getSubsystem(name).isImplemented();
+    }
 }

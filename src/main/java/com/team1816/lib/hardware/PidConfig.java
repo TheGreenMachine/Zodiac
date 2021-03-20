@@ -11,6 +11,8 @@ public class PidConfig {
     double kD;
     double kF;
 
+    public PidConfig() {}
+
     public PidConfig(double kP, double kI, double kD, double kF) {
         this.kP = kP;
         this.kI = kI;

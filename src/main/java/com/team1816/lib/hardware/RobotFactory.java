@@ -73,7 +73,7 @@ public class RobotFactory {
             } // Never make the victor a master
         }
         if (motor == null) {
-            if (subsystem.isImplemented()) reportGhostWarning(
+            reportGhostWarning(
                 "Motor",
                 subsystemName,
                 name

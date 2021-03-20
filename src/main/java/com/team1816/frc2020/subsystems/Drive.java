@@ -78,30 +78,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
-        if (((int) factory.getConstant(NAME, "pigeonOnTalon")) == 1) {
-            /*var pigeonId = ((int) factory.getConstant(NAME, "pigeonId"));
-            System.out.println("Pigeon on Talon " + pigeonId);
-            IMotorController master = null;
-            if (pigeonId == mLeftSlaveA.getDeviceID()) {
-                master = mLeftSlaveA;
-            } else if (pigeonId == mLeftSlaveB.getDeviceID()) {
-                master = mLeftSlaveB;
-            } else if (pigeonId == mRightSlaveA.getDeviceID()) {
-                master = mRightSlaveA;
-            } else if (pigeonId == mRightSlaveB.getDeviceID()) {
-                master = mRightSlaveB;
-            }
-            if (master != null) {
-                mPigeon = new PigeonIMU((TalonSRX) master);
-            } else {
-                mPigeon =
-                    new PigeonIMU(
-                        new TalonSRX((int) factory.getConstant(NAME, "pigeonId"))
-                    );
-            }*/
-        } else {
-            mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId"));
-        }
+
+        mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId", -1));
+
         mPigeon.configFactoryDefault();
 
         setOpenLoop(DriveSignal.NEUTRAL);
@@ -184,6 +163,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mPeriodicIO.gyro_heading =
             mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
         // System.out.println("control state: " + mDriveControlState + ", left: " + mPeriodicIO.left_demand + ", right: " + mPeriodicIO.right_demand);
+        for (SwerveModule module : mModules) {
+            module.readPeriodicInputs();
+        }
     }
 
     @Override
@@ -194,6 +176,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                         mPeriodicIO.wheel_speeds[i],
                         mPeriodicIO.wheel_azimuths[i]
                     );
+                mModules[i].writePeriodicOutputs();
             }
         }
     }
@@ -279,6 +262,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             System.out.println(signal);
             mDriveControlState = DriveControlState.OPEN_LOOP;
         }
+        System.out.println(mPeriodicIO.wheel_speeds);
         mPeriodicIO.wheel_speeds = signal.getWheelSpeeds();
         mPeriodicIO.wheel_azimuths = signal.getWheelAzimuths();
     }
