@@ -1,0 +1,34 @@
+$extends: zodiac_base
+subsystems:
+    drivetrain:
+        falcons:
+            leftMain: 2
+            leftFollower: 1
+            rightMain: 13
+            rightFollower: 14
+        constants:
+            currentLimit: 35 # amps
+    climber:
+        implemented: false
+        invertMotor:
+            - elevator
+    hopper:
+        invertMotor:
+            - elevator
+    shooter:
+        falcons:
+            shooterMain: -3
+            shooterFollower: -2
+    turret:
+        implemented: false
+        constants:
+            minPos: 326
+            maxPos: 1054
+            absPosTicksSouth: 3415
+constants:
+    maxVel: 100
+    maxAccel: 30
+    wheelDiameter: 6.32 #inches
+    logTeleop: 1
+    logAuto: 1
+    badLogEnabled: 1
