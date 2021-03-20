@@ -78,7 +78,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
-
         mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId", -1));
 
         mPigeon.configFactoryDefault();
@@ -171,7 +170,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     @Override
     public synchronized void writePeriodicOutputs() {
         for (int i = 0; i < mModules.length; i++) {
-            if (mModules != null && mModules[i] != null) {
+            if (mModules[i] != null) {
                 mModules[i].setOpenLoop(
                         mPeriodicIO.wheel_speeds[i],
                         mPeriodicIO.wheel_azimuths[i]

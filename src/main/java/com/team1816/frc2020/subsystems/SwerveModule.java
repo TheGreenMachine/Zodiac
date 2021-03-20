@@ -134,7 +134,6 @@ public class SwerveModule extends Subsystem {
                 List.of(constants.kAzimuthPid)
             );
 
-
         System.out.println(mConstants.kName + " drive motor ID: " + mDriveMotor.getDeviceID());
         System.out.println(mConstants.kName + " azimuth motor ID: " + mAzimuthMotor.getDeviceID());
 

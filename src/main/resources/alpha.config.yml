@@ -4,19 +4,44 @@ subsystems:
         implemented: true
         talons:
             leftMain: 15
-            leftFollower: 14
-            leftFollowerTwo: -1
+            leftFollower: -1
             rightMain: 13
-            rightFollower: 12
-            rightFollowerTwo: -1
-        invertMotor:
-            - rightMain
-        constants:
-            pigeonId: 9
+            rightFollower: -1
+            flAzimuth: 1
+            blAzimuth: -1
+            frAzimuth: -1
+            brAzimuth: -1
+        swerveModules:
+            frontLeft:
+                drive: leftMain
+                azimuth: flAzimuth
+                encoderOffset: 1409
+            frontRight:
+                drive: rightMain
+                azimuth: frAzimuth
+                encoderOffset: 3335
+            backLeft:
+                drive: leftFollower
+                azimuth: blAzimuth
+                encoderOffset: 5
+            backRight:
+                drive: rightFollower
+                azimuth: brAzimuth
+                encoderOffset: 2582
+        drivePid:
             kP: 3.0 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
             kI: 0.03 # 0.018
             kD: 36 # 3.6
             kF: 0.96
+        azimuthPid:
+            kP: 3.0
+            kI: 0.05
+            kD: 20
+            kF: 0
+        invertMotor:
+            - rightMain
+        constants:
+            pigeonId: 9
             encPPR: 999
 pcm: 8
 constants:
