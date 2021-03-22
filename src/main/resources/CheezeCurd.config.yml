@@ -4,25 +4,47 @@ subsystems:
         implemented: true
         talons:
             leftMain: 2
-            leftFollowerOne: -1
-            leftFollowerTwo: -1
+            leftFollower: -1
+            rightFollower: -1
             rightMain: 1
-            rightFollowerOne: -1
-            rightFollowerTwo: -1
-        invertMotor:
-            - leftMain
-        constants:
-            pigeonId: 13
+            flAzimuth: -1
+            frAzimuth: 3
+            blAzimuth: -1
+            brAzimuth: -1
+        swerveModules:
+            frontLeft:
+                drive: leftMain
+                azimuth: flAzimuth
+                encoderOffset: 4035
+            frontRight:
+                drive: rightMain
+                azimuth: frAzimuth
+                encoderOffset: 3335
+            backLeft:
+                drive: leftFollower
+                azimuth: blAzimuth
+                encoderOffset: 5
+            backRight:
+                drive: rightFollower
+                azimuth: brAzimuth
+                encoderOffset: 2582
+        drivePid:
             kP: 1.6
-            kI: .001
-            kD: 15
+            kI: 0.001
+            kD: 15.0
             kF: 0.5383998
-            iZone: 30
+        azimuthPid:
+            kP: 2.0
+            kI: 0
+            kD: 10.0
+            kF: 0
+        constants:
             encPPR: 4096 # CTRE mag encoder
-            currentFloorCheck: .3
-            rpmFloorCheck: 750
+            azimuthEncPPR: 4096
+            pigeonId: 13
+            azimuthAllowableErrorTicks: 5
     turret:
-        implemented: true
+        implemented: false
         talons:
             turret: 3
         constants:
@@ -30,6 +52,8 @@ subsystems:
     ledmanager:
         implemented: true
         canifier: 12
+        constants:
+            maxLevel: 25
 pcm: -1
 constants:
     wheelDiameter: 4.058 # inches

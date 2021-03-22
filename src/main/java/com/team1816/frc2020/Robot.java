@@ -22,11 +22,13 @@ import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.CheesyDriveHelper;
-import com.team254.lib.util.CrashTracker;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -81,7 +83,6 @@ public class Robot extends TimedRobot {
 
     Robot() {
         super();
-        CrashTracker.logRobotConstruction();
     }
 
     private static RobotFactory factory;
@@ -99,10 +100,18 @@ public class Robot extends TimedRobot {
         try {
             DriverStation.getInstance().silenceJoystickConnectionWarning(true);
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
-            logger =
-                BadLog.init(
-                    "/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag"
-                );
+            var robotName = System.getenv("ROBOT_NAME");
+            if (robotName == null) robotName = "default";
+            var filePath = " /home/lvuser/" + robotName + "_" + logFile + ".bag";
+            // if there is a usb drive use it
+            if (Files.exists(Path.of("/media/sda1"))) {
+                filePath = "/media/sda1/" + robotName + "_" + logFile + ".bag";
+            }
+            if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                filePath =
+                    System.getenv("temp") + "\\" + robotName + "_" + logFile + ".bag";
+            }
+            logger = BadLog.init(filePath);
 
             BadLog.createValue(
                 "Max Velocity",
@@ -242,8 +251,6 @@ public class Robot extends TimedRobot {
             }
 
             logger.finishInitialization();
-
-            CrashTracker.logRobotInit();
 
             mSubsystemManager.setSubsystems(
                 mRobotStateEstimator,
@@ -416,7 +423,6 @@ public class Robot extends TimedRobot {
                     () -> ledManager.indicateStatus(LedManager.RobotStatus.OFF)
                 );
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -424,7 +430,6 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         try {
-            CrashTracker.logDisabledInit();
             mEnabledLooper.stop();
 
             ledManager.setDefaultStatus(LedManager.RobotStatus.DISABLED);
@@ -446,7 +451,6 @@ public class Robot extends TimedRobot {
 
             mDrive.setBrakeMode(false);
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -454,7 +458,6 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         try {
-            CrashTracker.logAutoInit();
             mDisabledLooper.stop();
             ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
 
@@ -480,7 +483,6 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -488,7 +490,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         try {
-            CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
             ledManager.setDefaultStatus(LedManager.RobotStatus.ENABLED);
 
@@ -510,7 +511,6 @@ public class Robot extends TimedRobot {
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -518,11 +518,10 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         try {
-            CrashTracker.logTestInit();
 
             double initTime = System.currentTimeMillis();
 
-            ledManager.setLedColorBlink(255, 255, 0, 1000);
+            ledManager.blinkStatus(LedManager.RobotStatus.DRIVETRAIN_FLIPPED);
             // Warning - blocks thread - intended behavior?
             while (System.currentTimeMillis() - initTime <= 3000) {
                 ledManager.writePeriodicOutputs();
@@ -537,11 +536,12 @@ public class Robot extends TimedRobot {
 
             if (mSubsystemManager.checkSubsystems()) {
                 System.out.println("ALL SYSTEMS PASSED");
+                ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
             } else {
                 System.err.println("CHECK ABOVE OUTPUT SOME SYSTEMS FAILED!!!");
+                ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
             }
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -554,7 +554,6 @@ public class Robot extends TimedRobot {
             mAutoModeSelector.outputToSmartDashboard();
             mRobotStateEstimator.outputToSmartDashboard();
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -592,7 +591,6 @@ public class Robot extends TimedRobot {
                 mAutoModeExecutor.setAutoMode(autoMode.get());
             }
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -630,7 +628,6 @@ public class Robot extends TimedRobot {
         try {
             manualControl();
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
 

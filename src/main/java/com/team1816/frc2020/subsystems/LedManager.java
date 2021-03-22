@@ -63,15 +63,6 @@ public class LedManager extends Subsystem {
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_6_PwmInputs3, 255, 10);
     }
 
-    @Deprecated
-    public void forceSetLedColor(int r, int g, int b) {
-        if (this.ledR != r || this.ledG != g || this.ledB != b) {
-            canifier.setLEDOutput((ledG / 255.0), CANifier.LEDChannel.LEDChannelA);
-            canifier.setLEDOutput((ledR / 255.0), CANifier.LEDChannel.LEDChannelB);
-            canifier.setLEDOutput((ledB / 255.0), CANifier.LEDChannel.LEDChannelC);
-        }
-    }
-
     public void setCameraLed(boolean cameraLedOn) {
         if (this.cameraLedOn != cameraLedOn) {
             this.cameraLedOn = cameraLedOn;
@@ -94,7 +85,7 @@ public class LedManager extends Subsystem {
      * @param b      LED color blue value (0-255)
      * @param period milliseconds
      */
-    public void setLedColorBlink(int r, int g, int b, int period) {
+    private void setLedColorBlink(int r, int g, int b, int period) {
         // Period is in milliseconds
         setLedColor(r, g, b);
         blinkMode = true;
@@ -102,7 +93,7 @@ public class LedManager extends Subsystem {
         outputsChanged = true;
     }
 
-    public void setLedColorBlink(int r, int g, int b) {
+    private void setLedColorBlink(int r, int g, int b) {
         // Default period of 1 second
         setLedColorBlink(r, g, b, 1000);
     }
@@ -217,16 +208,18 @@ public class LedManager extends Subsystem {
     @Override
     public void initSendable(SendableBuilder builder) {}
 
+    private static final int MAX = (int) factory.getConstant(NAME, "maxLevel", 255);
+
     public enum RobotStatus {
-        ENABLED(0, 255, 0), // green
-        DISABLED(255, 64, 0), // orange
-        ERROR(255, 0, 0), // red
-        AUTONOMOUS(0, 255, 255), // cyan (we can also try 42, 161, 152)
-        ENDGAME(0, 0, 255), // blue
-        SEEN_TARGET(255, 0, 255), // magenta
-        ON_TARGET(255, 0, 20), // deep magenta
-        DRIVETRAIN_FLIPPED(255, 255, 0), // yellow,
-        MANUAL_TURRET(255, 255, 255), // white
+        ENABLED(0, MAX, 0), // green
+        DISABLED(MAX, MAX / 5, 0), // orange
+        ERROR(MAX, 0, 0), // red
+        AUTONOMOUS(0, MAX, MAX), // cyan
+        ENDGAME(0, 0, MAX), // blue
+        SEEN_TARGET(MAX, 0, MAX), // magenta
+        ON_TARGET(MAX, 0, 20), // deep magenta
+        DRIVETRAIN_FLIPPED(MAX, MAX, 0), // yellow,
+        MANUAL_TURRET(MAX, MAX, MAX), // white
         OFF(0, 0, 0); // off
 
         int red;

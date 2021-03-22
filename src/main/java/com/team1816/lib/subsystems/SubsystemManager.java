@@ -1,11 +1,8 @@
 package com.team1816.lib.subsystems;
 
-import com.team1816.frc2020.Robot;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.loops.Looper;
-import edu.wpi.first.wpilibj.DriverStation;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +35,7 @@ public class SubsystemManager implements ILooper {
         boolean ret_val = true;
 
         for (Subsystem s : mAllSubsystems) {
-            System.out.println("SUBSYSTEM: " + s.getName() + ": " + s.checkSystem());
+            System.out.println("SUBSYSTEM: " + s.getName());
             ret_val &= s.checkSystem();
         }
 
@@ -57,9 +54,8 @@ public class SubsystemManager implements ILooper {
         mAllSubsystems = Arrays.asList(allSubsystems);
         for (Subsystem subsystem : mAllSubsystems) {
             if (!subsystem.isImplemented()) {
-                DriverStation.reportWarning(
-                    "Warning: " + subsystem.getName() + " is not implemented",
-                    false
+                System.out.println(
+                    "  Warning: " + subsystem.getName() + " is not implemented"
                 );
             }
         }

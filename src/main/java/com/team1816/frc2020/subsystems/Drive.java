@@ -27,7 +27,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Drive extends Subsystem implements SwerveDrivetrain, TrackableDrivetrain, PidProvider {
+public class Drive
+    extends Subsystem
+    implements SwerveDrivetrain, TrackableDrivetrain, PidProvider {
 
     private static Drive mInstance;
     private static final String NAME = "drivetrain";
@@ -622,7 +624,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, TrackableDrive
     public boolean checkSystem() {
         setBrakeMode(false);
 
-        //        Timer.delay(3);
         boolean modulesPassed = true;
         for (SwerveModule module : mModules) {
             modulesPassed = modulesPassed && module.checkSystem();
@@ -631,11 +632,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, TrackableDrive
         boolean checkPigeon = mPigeon == null;
 
         System.out.println(modulesPassed && checkPigeon);
-        if (modulesPassed && checkPigeon) {
-            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
-        } else {
-            ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
-        }
         return modulesPassed;
     }
 
@@ -714,26 +710,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, TrackableDrive
                 },
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
-        // builder.addDoubleProperty("Drive/OpenLoopRampRateSetter", null, this::setOpenLoopRampRate);
-        // builder.addDoubleProperty("Drive/OpenLoopRampRateValue", this::getOpenLoopRampRate, null);
-
-        // SmartDashboard.putNumber("Right Linear Velocity", getRightLinearVelocity());
-        // SmartDashboard.putNumber("Left Linear Velocity", getLeftLinearVelocity());
-
-        // SmartDashboard.putNumber("X Error", mPeriodicIO.error.getTranslation().x());
-        // SmartDashboard.putNumber("Y error", mPeriodicIO.error.getTranslation().y());
-        // SmartDashboard.putNumber("Theta Error", mPeriodicIO.error.getRotation().getDegrees());
-
-        // SmartDashboard.putNumber("Left Voltage Kf", mPeriodicIO.left_voltage / getLeftLinearVelocity());
-        // SmartDashboard.putNumber("Right Voltage Kf", mPeriodicIO.right_voltage / getRightLinearVelocity());
-
-        // if (mPathFollower != null) {
-        //     SmartDashboard.putNumber("Drive LTE", mPathFollower.getAlongTrackError());
-        //     SmartDashboard.putNumber("Drive CTE", mPathFollower.getCrossTrackError());
-        // } else {
-        //     SmartDashboard.putNumber("Drive LTE", 0.0);
-        //     SmartDashboard.putNumber("Drive CTE", 0.0);
-        // }
     }
 
     public synchronized double getTimestamp() {

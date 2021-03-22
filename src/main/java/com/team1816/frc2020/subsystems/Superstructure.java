@@ -69,7 +69,7 @@ public class Superstructure extends Subsystem {
 
     @Override
     public boolean checkSystem() {
-        return false;
+        return true;
     }
 
     @Override

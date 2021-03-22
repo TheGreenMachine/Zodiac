@@ -73,11 +73,7 @@ public class RobotFactory {
             } // Never make the victor a master
         }
         if (motor == null) {
-            reportGhostWarning(
-                "Motor",
-                subsystemName,
-                name
-            );
+            reportGhostWarning("Motor", subsystemName, name);
             motor = CtreMotorFactory.createGhostTalon();
         }
 
@@ -152,7 +148,6 @@ public class RobotFactory {
         return hardwareId != null && hardwareId > -1;
     }
 
-    @Nonnull
     public SwerveModule getSwerveModule(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
         SwerveModuleConfig module = subsystem.swerveModules.get(name);
@@ -289,14 +284,14 @@ public class RobotFactory {
         String subsystemName,
         String componentName
     ) {
-        DriverStation.reportWarning(
+        System.out.println(
+            "  " +
             type +
             "  " +
             componentName +
             " not defined or invalid in config for subsystem " +
             subsystemName +
-            ", using ghost!",
-            false
+            ", using ghost!"
         );
     }
 }

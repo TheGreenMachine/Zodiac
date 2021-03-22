@@ -197,12 +197,6 @@ public class Shooter extends Subsystem implements PidProvider {
             new EnhancedMotorChecker.NamedMotor("shooterMain", shooterMain)
         );
 
-        System.out.println(checkShooter);
-        if (checkShooter) {
-            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
-        } else {
-            ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
-        }
         return checkShooter;
     }
 
