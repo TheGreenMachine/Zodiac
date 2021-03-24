@@ -1,7 +1,5 @@
 package com.team1816.frc2020;
 
-import static com.team1816.frc2020.controlboard.ControlUtils.*;
-
 import badlog.lib.BadLog;
 import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
@@ -32,6 +30,8 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
+
+import static com.team1816.frc2020.controlboard.ControlUtils.*;
 
 public class Robot extends TimedRobot {
 
@@ -102,7 +102,7 @@ public class Robot extends TimedRobot {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             var robotName = System.getenv("ROBOT_NAME");
             if (robotName == null) robotName = "default";
-            var filePath = " /home/lvuser/" + robotName + "_" + logFile + ".bag";
+            var filePath = "/home/lvuser/" + robotName + "_" + logFile + ".bag";
             // if there is a usb drive use it
             if (Files.exists(Path.of("/media/sda1"))) {
                 filePath = "/media/sda1/" + robotName + "_" + logFile + ".bag";
