@@ -5,6 +5,8 @@ import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IDriveControlBoard;
 import com.team1816.lib.controlboard.LogitechController;
 
+import static com.team1816.frc2020.controlboard.ControlUtils.getControllerInstance;
+
 public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     private static GamepadDriveControlBoard mInstance = null;
@@ -20,7 +22,8 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     private final Controller mController;
 
     private GamepadDriveControlBoard() {
-        mController = new LogitechController(Constants.kDriveGamepadPort);
+
+        mController = getControllerInstance(Constants.kDriveGamepadPort);
     }
 
     @Override
