@@ -1,0 +1,17 @@
+{
+  "name": "cheesy-path",
+  "version": "1.0.0",
+  "description": "Interactive path planner for FRC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "watch": "webpack --watch --mode development"
+  },
+  "author": "",
+  "license": "MIT",
+  "private": "true",
+  "devDependencies": {
+    "webpack": "^5.28.0",
+    "webpack-cli": "^4.5.0"
+  }
+}

@@ -7,3 +7,4 @@ target/
 .settings/
 .vscode/
 build/
+node_modules/
