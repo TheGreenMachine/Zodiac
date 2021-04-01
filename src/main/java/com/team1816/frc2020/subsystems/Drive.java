@@ -22,6 +22,7 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.SwerveDriveHelper;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -140,6 +141,14 @@ public class Drive
         double left_error;
         double right_error;
 
+        // SWERVE
+        public double forward;
+        public double strafe;
+        public double rotation;
+        public boolean low_power;
+        public boolean field_relative;
+        public boolean use_heading_controller;
+
         // OUTPUTS
         public double[] wheel_speeds = new double[] { 0, 0, 0, 0 };
         public Rotation2d[] wheel_azimuths = new Rotation2d[] {
@@ -200,6 +209,9 @@ public class Drive
                     synchronized (Drive.this) {
                         switch (mDriveControlState) {
                             case OPEN_LOOP:
+                                setOpenLoop(SwerveDriveHelper.calculateDriveSignal(mPeriodicIO.forward,
+                                    mPeriodicIO.strafe, mPeriodicIO.rotation, mPeriodicIO.low_power,
+                                    mPeriodicIO.field_relative, mPeriodicIO.use_heading_controller));
                                 break;
                             case PATH_FOLLOWING:
                                 if (mPathFollower != null) {
@@ -274,6 +286,19 @@ public class Drive
         for (SwerveModule module : mModules) {
             module.setOpenLoopRampRate(openLoopRampRate);
         }
+    }
+
+    public void setTeleopInputs(double forward, double strafe, double rotation, boolean low_power, boolean field_relative, boolean use_heading_controller) {
+        if (mDriveControlState != DriveControlState.OPEN_LOOP) {
+            mDriveControlState = DriveControlState.OPEN_LOOP;
+        }
+
+        mPeriodicIO.forward = forward;
+        mPeriodicIO.strafe = strafe;
+        mPeriodicIO.rotation = rotation;
+        mPeriodicIO.low_power = low_power;
+        mPeriodicIO.field_relative = field_relative;
+        mPeriodicIO.use_heading_controller = use_heading_controller;
     }
 
     public double getOpenLoopRampRate() {

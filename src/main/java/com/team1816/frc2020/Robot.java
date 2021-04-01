@@ -17,11 +17,13 @@ import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
 import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
+import com.team254.lib.control.SwerveHeadingController;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
+import com.team254.lib.util.TimeDelayedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -76,6 +78,7 @@ public class Robot extends TimedRobot {
 
     private ActionManager actionManager;
     private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
+    private final SwerveHeadingController swerveHeadingController = SwerveHeadingController.getInstance();
     private AsyncTimer blinkTimer;
 
     // private PowerDistributionPanel pdp = new PowerDistributionPanel();
@@ -637,6 +640,9 @@ public class Robot extends TimedRobot {
         }
     }
 
+    TimeDelayedBoolean mShouldMaintainAzimuth = new TimeDelayedBoolean();
+    LatchedBoolean shouldChangeAzimuthSetpoint = new LatchedBoolean();
+
     public void manualControl() {
         // boolean arcadeDrive = false;
         actionManager.update();
@@ -644,35 +650,35 @@ public class Robot extends TimedRobot {
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
 
-        DriveSignal driveSignal;
-        //        boolean maintainAzimuth = mShouldMaintainAzimuth.update(mControlBoard.getRotation() == 0, 0.2);
-        //        boolean changeAzimuthSetpoint = shouldChangeAzimuthSetpoint.update(maintainAzimuth);
-        //
-        //
-        //        if (mControlBoard.getDPad() != -1) {
-        //            mSwerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.SNAP);
-        //            double heading_goal = mControlBoard.getDPad();
-        //            SmartDashboard.putNumber("Heading Goal", heading_goal);
-        //            mSwerveHeadingController.setGoal(heading_goal);
-        //        } else {
-        //            if (!maintainAzimuth) {
-        //                mSwerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.OFF);
-        //            } else if ((mSwerveHeadingController
-        //                .getHeadingControllerState() == SwerveHeadingController.HeadingControllerState.SNAP
-        //                && mSwerveHeadingController.isAtGoal()) || changeAzimuthSetpoint) {
-        //                mSwerveHeadingController
-        //                    .setHeadingControllerState(SwerveHeadingController.HeadingControllerState.MAINTAIN);
-        //                mSwerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
-        //            }
-        //        }
-        //
-        //        if (mSwerveHeadingController.getHeadingControllerState() != SwerveHeadingController.HeadingControllerState.OFF) {
-        //            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), mSwerveHeadingController.update(),
-        //                mControlBoard.getDriveLowPower(), mControlBoard.getFieldRelative(), true);
-        //        } else {
-        //            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), mControlBoard.getRotation(),
-        //                mControlBoard.getDriveLowPower(), mControlBoard.getFieldRelative(), false);
-        //        }
+//        DriveSignal driveSignal;
+//        boolean maintainAzimuth = mShouldMaintainAzimuth.update(mControlBoard.getTurn() == 0, 0.2);
+//        boolean changeAzimuthSetpoint = shouldChangeAzimuthSetpoint.update(maintainAzimuth);
+//
+//
+//        if (mControlBoard.getDPad() != -1) {
+//            swerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.SNAP);
+//            double heading_goal = mControlBoard.getDPad();
+//            SmartDashboard.putNumber("Heading Goal", heading_goal);
+//            swerveHeadingController.setGoal(heading_goal);
+//        } else {
+//            if (!maintainAzimuth) {
+//                swerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.OFF);
+//            } else if ((swerveHeadingController
+//                .getHeadingControllerState() == SwerveHeadingController.HeadingControllerState.SNAP
+//                && swerveHeadingController.isAtGoal()) || changeAzimuthSetpoint) {
+//                swerveHeadingController
+//                    .setHeadingControllerState(SwerveHeadingController.HeadingControllerState.MAINTAIN);
+//                swerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
+//            }
+//        }
+//
+//        if (swerveHeadingController.getHeadingControllerState() != SwerveHeadingController.HeadingControllerState.OFF) {
+//            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), swerveHeadingController.update(),
+//                mControlBoard.getSlowMode(), mControlBoard.getFieldRelative(), true);
+//        } else {
+//            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), mControlBoard.getTurn(),
+//                mControlBoard.getSlowMode(), mControlBoard.getFieldRelative(), false);
+//        }
     }
 
     @Override

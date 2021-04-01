@@ -4,6 +4,7 @@ import com.team1816.frc2020.Constants;
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IDriveControlBoard;
 import com.team1816.lib.controlboard.LogitechController;
+import com.team1816.lib.controlboard.XboxController;
 
 import static com.team1816.frc2020.controlboard.ControlUtils.getControllerInstance;
 
@@ -40,6 +41,15 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
             LogitechController.Side.RIGHT,
             LogitechController.Axis.X
         );
+    }
+
+    @Override
+    public double getStrafe() {
+        return mController.getJoystick
+            (
+                XboxController.Side.LEFT,
+                XboxController.Axis.X
+            );
     }
 
     @Override

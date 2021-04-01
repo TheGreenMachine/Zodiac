@@ -5,6 +5,8 @@ public interface IDriveControlBoard {
 
     double getTurn();
 
+    double getStrafe();
+
     boolean getQuickTurn();
 
     boolean getSlowMode();
