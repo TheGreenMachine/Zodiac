@@ -17,7 +17,7 @@ public class TrajectorySet {
     }
     public Trajectory<TimedState<Pose2dWithCurvature>> DriveStraightCustom(int dist){
         //return dist>0 ? new DriveStraight(dist).generateTrajectory() : new DriveStraight(dist).generateReversedTrajectory();
-        return new DriveStraight(dist).generateReversedTrajectory();
+        return new DriveStraight(dist).generateTrajectory();
     }
 
     public final Trajectory<TimedState<Pose2dWithCurvature>> DRIVE_STRAIGHT;
@@ -43,7 +43,7 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> TEN_BALL_AUTO;
 
     private TrajectorySet() {
-        this.DRIVE_STRAIGHT = new DriveStraight(12).generateTrajectory();
+        this.DRIVE_STRAIGHT = new DriveStraight(100).generateTrajectory();
         this.DRIVE_STRAIGHT_TRENCH = new DriveStraight(178, 100).generateTrajectory();
         this.DRIVE_STRAIGHT_TRENCH_REVERSE =
             new DriveStraight(100).generateReversedTrajectory();

@@ -38,6 +38,7 @@ public class AutoModeSelector {
         DRIVE_STRAIGHT_SHOOT,
         SIX_BALL_ALLIANCE_STRAIGHT,
         SHOOTER_CHALLENGE_1,
+        SHOOTER_CHALLENGE_2,
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -106,7 +107,12 @@ public class AutoModeSelector {
             DesiredMode.TEN_BALL_AUTO
         );
         mModeChooser.addOption("Shooter Challenge 1",DesiredMode.SHOOTER_CHALLENGE_1);
+
+
+        mModeChooser.addOption("Shooter Challenge 2",DesiredMode.SHOOTER_CHALLENGE_2);
+
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
+
 
     }
 
@@ -185,6 +191,8 @@ public class AutoModeSelector {
                 return (Optional.of(new SixBallAllianceStraightMode()));
             case SHOOTER_CHALLENGE_1:
                 return (Optional.of(new ShooterChallengeMode()));
+            case SHOOTER_CHALLENGE_2:
+                return (Optional.of(new ShooterChallengeMode2()));
             default:
                 break;
         }

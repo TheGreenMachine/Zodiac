@@ -368,18 +368,27 @@ public class Robot extends TimedRobot {
                                 mDrive.setOpenLoop(DriveSignal.BRAKE);
                                 shooter.startShooter(); // Uses ZED distance
                                 turret.lockTurret();
+                                System.out.println("Shooting Mode");
                             } else {
                                 turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
                                 shooter.stopShooter();
                             }
                             hopper.lockToShooter(shooting, true);
                             hopper.setIntake(shooting ? 1 : 0);
-                            collector.setIntakePow(shooting ? -0.25 : 0);
+                            collector.setIntakePow(shooting ? -0.2 : 0);
+
                         }
                     ),
                     createHoldAction(
                         mControlBoard::getCollectorBackSpin,
                         pressed -> collector.setIntakePow(pressed ? 0.2 : 0)
+                    ),
+                    createHoldAction(
+                        mControlBoard::getElevatorUp,
+                        elevatorUp -> {
+                            shooter.setHoodRod(elevatorUp);
+                        }
+
                     )
                 );
 

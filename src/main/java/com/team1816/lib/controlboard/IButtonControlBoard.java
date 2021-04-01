@@ -30,4 +30,6 @@ public interface IButtonControlBoard {
     boolean getClimberDeploy();
 
     boolean getFieldFollowing();
+
+    boolean getElevatorUp();
 }

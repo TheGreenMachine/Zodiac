@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Hopper extends Subsystem {
 
@@ -24,6 +25,8 @@ public class Hopper extends Subsystem {
     private final IMotorControllerEnhanced elevator;
     private final DistanceManager distanceManager = DistanceManager.getInstance();
     private final Camera camera = Camera.getInstance();
+    private final DigitalInput ballSensor = new DigitalInput(0);
+    boolean hasBall= ballSensor.get();
 
     // State
     private boolean feederFlapOut;
@@ -78,6 +81,13 @@ public class Hopper extends Subsystem {
         this.waitForShooterLoopCounter = 0;
     }
 
+    public boolean getHasBall(){
+        hasBall=ballSensor.get();
+        System.out.println(hasBall);
+        return hasBall;
+
+    }
+
     @Override
     public void writePeriodicOutputs() {
         if (lockToShooter) {
@@ -107,6 +117,7 @@ public class Hopper extends Subsystem {
             this.feederFlap.set(feederFlapOut);
             outputsChanged = false;
         }
+        hasBall=ballSensor.get();
     }
 
     @Override

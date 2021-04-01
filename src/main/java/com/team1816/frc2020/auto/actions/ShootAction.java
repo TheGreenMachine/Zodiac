@@ -12,15 +12,17 @@ public class ShootAction implements Action {
     private AsyncTimer shooterTimer;
     private Collector collector;
     private Turret turret;
+    private int zone;
 
     private boolean unjam;
 
-    public ShootAction(double duration, boolean unjam, double velocity) {
+    public ShootAction(double duration, boolean unjam, int zone) {
         this(duration, unjam);
+        this.zone=zone;
         this.shooterTimer =
             new AsyncTimer(
                 duration,
-                () -> shooter.setVelocity(velocity),
+                () -> shooter.setZone(zone),
                 shooter::stopShooter
             );
     }
@@ -44,9 +46,10 @@ public class ShootAction implements Action {
     public void start() {
         // turret.setTurretAngle(turretAngle);
         ledManager.setCameraLed(true);
+        turret.setZone(zone);
         turret.setControlMode(Turret.ControlMode.CAMERA_FOLLOWING);
         shooterTimer.update();
-        collector.setIntakePow(0.5);
+        collector.setIntakePow(-0.2);
         hopper.lockToShooter(true, unjam);
         hopper.setIntake(1);
     }

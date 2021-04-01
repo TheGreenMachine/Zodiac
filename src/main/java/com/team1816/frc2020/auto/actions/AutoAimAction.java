@@ -8,6 +8,13 @@ public class AutoAimAction implements Action {
 
     private Turret turret;
     private Camera camera;
+    private int zone;
+
+
+    public AutoAimAction(int zone) {
+        this();
+        this.zone=zone;
+    }
 
     public AutoAimAction() {
         turret = Turret.getInstance();
@@ -16,6 +23,7 @@ public class AutoAimAction implements Action {
 
     @Override
     public void start() {
+        turret.setZone(zone);
         turret.setControlMode(Turret.ControlMode.CAMERA_FOLLOWING);
     }
 

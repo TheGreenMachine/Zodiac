@@ -108,4 +108,7 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     public boolean getClimberDeploy() {
         return mController.getDPad() == 0;
     }
+
+    @Override
+    public boolean getElevatorUp() { return mController.getButton(LogitechController.Button.BACK);}
 }

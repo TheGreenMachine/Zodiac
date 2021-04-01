@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.hardware.MotorUtil;
+import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -28,6 +29,7 @@ public class Shooter extends Subsystem implements PidProvider {
     // Components
     private final IMotorControllerEnhanced shooterMain;
     private final IMotorControllerEnhanced shooterFollower;
+    private final ISolenoid hoodRod;
     private final Camera camera = Camera.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
 
@@ -36,11 +38,14 @@ public class Shooter extends Subsystem implements PidProvider {
 
     private PeriodicIO mPeriodicIO = new PeriodicIO();
 
+    private boolean rodIn;
+
     // Constants
     private final double kP;
     private final double kI;
     private final double kD;
     private final double kF;
+    private int zone;
     public static final int MAX_VELOCITY = 11_800; // Far
     public static final int NEAR_VELOCITY = 11_100; // Initiation line
     public static final int MID_VELOCITY = 9_900; // Trench this also worked from initiation
@@ -63,6 +68,7 @@ public class Shooter extends Subsystem implements PidProvider {
                 "shooterFollower",
                 shooterMain
             );
+        this.hoodRod = factory.getSolenoid(NAME, "hood");
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
@@ -115,12 +121,22 @@ public class Shooter extends Subsystem implements PidProvider {
         setVelocity(shooting ? velocityChooser.getSelected() : 0);
     }
 
+    public void setZone(int zone){
+        this.zone=zone;
+    }
+
     public void startShooter() {
-        setVelocity(distanceManager.getShooterVelocity(camera.getDistance()));
+        setVelocity(distanceManager.getShooterVelocity((zone)));
     }
 
     public void stopShooter() {
         setVelocity(0);
+    }
+
+    public void setHoodRod(boolean rodIn) {
+        outputsChanged=true;
+        this.rodIn=!rodIn;
+        System.out.println("Rod setting: "+rodIn);
     }
 
     public double getActualVelocity() {
@@ -139,6 +155,7 @@ public class Shooter extends Subsystem implements PidProvider {
         return Math.abs(this.getError()) < VELOCITY_THRESHOLD;
     }
 
+
     @Override
     public void readPeriodicInputs() {
         mPeriodicIO.actualShooterVelocity = shooterMain.getSelectedSensorVelocity(0);
@@ -153,8 +170,11 @@ public class Shooter extends Subsystem implements PidProvider {
             } else {
                 this.shooterMain.set(ControlMode.Velocity, mPeriodicIO.velocityDemand);
             }
+            hoodRod.set(rodIn);
             outputsChanged = false;
         }
+//        System.out.println("Shooter Velocity: "+mPeriodicIO.actualShooterVelocity);
+//        System.out.println("Zone: "+zone);
     }
 
     @Override

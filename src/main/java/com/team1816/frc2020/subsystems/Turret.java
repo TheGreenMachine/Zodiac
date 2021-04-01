@@ -44,6 +44,7 @@ public class Turret extends Subsystem implements PidProvider {
     private double turretAngleRelativeToField;
     private double followTargetTurretSetAngle;
     private ControlMode controlMode = ControlMode.MANUAL;
+    private int zone;
 
     // Constants
     private static final int kPIDLoopIDx = 0;
@@ -178,6 +179,10 @@ public class Turret extends Subsystem implements PidProvider {
         return kF;
     }
 
+    public void setZone(int zone){
+        this.zone=zone;
+    }
+
     public void setTurretSpeed(double speed) {
         setControlMode(ControlMode.MANUAL);
         turretSpeed = speed;
@@ -291,6 +296,7 @@ public class Turret extends Subsystem implements PidProvider {
                 manualControl();
                 break;
         }
+        //System.out.println("Turret Bias: "+distanceManager.getTurretBias(zone));
     }
 
     private void autoHome() {
@@ -299,12 +305,12 @@ public class Turret extends Subsystem implements PidProvider {
             setTurretAngleInternal(
                 getTurretPositionDegrees() +
                     camera.getDeltaXAngle() +
-                    distanceManager.getTurretBias(camera.getDistance())
+                    distanceManager.getTurretBias(zone)
 
             );
             lastAngle=getTurretPositionDegrees() +
                 camera.getDeltaXAngle() +
-                distanceManager.getTurretBias(camera.getDistance());
+                distanceManager.getTurretBias(zone);
 
         }
         else{

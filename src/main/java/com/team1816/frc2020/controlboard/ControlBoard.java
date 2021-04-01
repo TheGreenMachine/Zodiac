@@ -153,4 +153,7 @@ public class ControlBoard implements IControlBoard {
     public boolean getClimberDeploy() {
         return mButtonControlBoard.getClimberDeploy();
     }
+
+    @Override
+    public boolean getElevatorUp() {return mButtonControlBoard.getElevatorUp();}
 }

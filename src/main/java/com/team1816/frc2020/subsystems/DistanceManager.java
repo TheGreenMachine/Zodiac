@@ -46,29 +46,31 @@ public class DistanceManager {
         //        new Entry(315, 10_200, 1, 1.25),
         //        new Entry(360, 10_400, 1, 1.25),
         //        new Entry(400, 10_600, 1, 1.25)
-        new Entry(125, 6100, 2, 0),//1.7),/* 167, 198 were 1.5 */
-        new Entry(170, 6500, 1, 0),//1.7),
-        new Entry(265, 6850, 1, 0),//1.6),
-        new Entry(290, 7500, 1, 0),//1.5),
+        new Entry(1, 6100, 1, 1.5),//1.7),/* 167, 198 were 1.5 */
+        new Entry(2, 10500, 1, 1.8),//1.7),
+        new Entry(3, 8700, 1, 1.6),//1.6),
+        new Entry(4, 8900, 0.5,1.65),
+        new Entry(5, 9300, 0.5, 1.55),//1.5),
 
     };
 
-    public double getShooterVelocity(double distance) {
+    public double getShooterVelocity(double zone) {
         for (Entry bucket : buckets) {
-            if (distance <= bucket.distance) {
+            if (zone == bucket.distance) {
+                System.out.println("Zone is"+zone);
                 return bucket.shooterVelocity;
             }
         }
-        return Shooter.MAX_VELOCITY;
+        return 9300;
     }
 
-    public double getTurretBias(double distance) {
+    public double getTurretBias(double zone) {
         for (Entry bucket : buckets) {
-            if (distance <= bucket.distance) {
-                return 0;//bucket.turretBias;
+            if (zone <= bucket.distance) {
+                return bucket.turretBias;
             }
         }
-        return 1.25;
+        return 1.1;
     }
 
     public double getSpindexerOutput(double distance) {
