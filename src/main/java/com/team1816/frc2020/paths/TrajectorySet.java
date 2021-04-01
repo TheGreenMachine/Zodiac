@@ -51,12 +51,10 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> SLALOM_PATH;
     public final Trajectory<TimedState<Pose2dWithCurvature>> BARREL_PATH;
     public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_1;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_2_F;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_2_R;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_2;
     public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_3;
     public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_4;
 
-    public final Trajectory<TimedState<Pose2dWithCurvature>> U_TURN_PATH;
 
 
     private TrajectorySet() {
@@ -105,11 +103,8 @@ public class TrajectorySet {
         this.SLALOM_PATH = new SlalomPath().generateTrajectory();
         this.BARREL_PATH = new BarrelPath().generateTrajectory();
         this.BOUNCE_PATH_1 = new BouncePath1().generateTrajectory();
-        this.BOUNCE_PATH_2_F = new BouncePath2().generateTrajectory();
-        //TODO: Get rid of the reverse path
-        this.BOUNCE_PATH_2_R = new BouncePath2().generateReversedTrajectory();
+        this.BOUNCE_PATH_2 = new BouncePath2().generateTrajectory();
         this.BOUNCE_PATH_3 = new BouncePath3().generateTrajectory();
         this.BOUNCE_PATH_4 = new BouncePath4().generateTrajectory();
-        this.U_TURN_PATH = new UTurnPath().generateTrajectory();
     }
 }

@@ -45,9 +45,7 @@ public class AutoModeSelector {
         BLUE_PATHA,
         SLALOM,
         BARREL,
-        BOUNCE_F,
-        BOUNCE_R,
-        U_TURN
+        BOUNCE,
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -126,10 +124,7 @@ public class AutoModeSelector {
         mModeChooser.addOption("Blue Path A", DesiredMode.BLUE_PATHA);
         mModeChooser.addOption("Slalom Mode", DesiredMode.SLALOM);
         mModeChooser.addOption("Barrel Run", DesiredMode.BARREL);
-        mModeChooser.addOption("Bounce Forward", DesiredMode.BOUNCE_F);
-        mModeChooser.addOption("Bounce Reverse", DesiredMode.BOUNCE_R);
-
-        mModeChooser.addOption("U Turn", DesiredMode.U_TURN);
+        mModeChooser.addOption("Bounce Forward", DesiredMode.BOUNCE);
 
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
@@ -221,12 +216,8 @@ public class AutoModeSelector {
                 return (Optional.of(new SlalomMode()));
             case BARREL:
                 return (Optional.of(new BarrelMode()));
-            case BOUNCE_F:
+            case BOUNCE:
                 return (Optional.of(new BounceMode()));
-            case BOUNCE_R:
-                return (Optional.of(new BounceReverseMode()));
-            case U_TURN:
-                return (Optional.of(new UTurnMode()));
             default:
                 break;
         }
