@@ -16,14 +16,14 @@ public class SlalomPath implements PathContainer {
     public List<Pose2d> buildWaypoints() {
         return List.of(
             new Pose2d(20, 30, 0),
-            new Pose2d(80, 36, 55),
-            new Pose2d(180, 116, 0),
-            new Pose2d(270, 60, -60),
-            new Pose2d(330, 66, 90),
-            new Pose2d(270, 60, 240),
+            new Pose2d(95, 73, 55),
+            new Pose2d(179, 107, 0),
+            new Pose2d(273, 52, -60),
+            new Pose2d(338, 63, 90),
+            new Pose2d(275, 74, -120),
             new Pose2d(180, 24, 180),
-            new Pose2d(110, 40, 150),
-            new Pose2d(50, 96, 160)
+            new Pose2d(116, 33, 150),
+            new Pose2d(73, 85, 125)
         );
     }
 

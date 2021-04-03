@@ -380,14 +380,14 @@ public class RobotState {
         SmartDashboard.putNumber("Estimated Pose X", getEstimatedX());
         SmartDashboard.putNumber("Estimated Pose Y", getEstimatedY());
 
-        SmartDashboard.putNumber("Field to Turret", getLatestFieldToTurret());
-        SmartDashboard.putNumber(
-            "Vehicle to Turret",
-            getLatestVehicleToTurret().getValue().getDegrees()
-        );
-        SmartDashboard.putNumber(
-            "Heading Relative to Initial",
-            getHeadingRelativeToInitial().getDegrees()
-        );
+    //    SmartDashboard.putNumber("Field to Turret", getLatestFieldToTurret());
+//        SmartDashboard.putNumber(
+//            "Vehicle to Turret",
+//            getLatestVehicleToTurret().getValue().getDegrees()
+//        );
+//        SmartDashboard.putNumber(
+//            "Heading Relative to Initial",
+//            getHeadingRelativeToInitial().getDegrees()
+//        );
     }
 }

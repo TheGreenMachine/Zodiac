@@ -216,13 +216,13 @@ public class Robot extends TimedRobot {
                     turret::getPositionError
                 );
 
-                BadLog.createTopic(
-                    "Turret/FieldToTurret",
-                    "Degrees",
-                    mRobotState::getLatestFieldToTurret,
-                    "hide",
-                    "join:Tracking/Angles"
-                );
+//                BadLog.createTopic(
+//                    "Turret/FieldToTurret",
+//                    "Degrees",
+//                    mRobotState::getLatestFieldToTurret,
+//                    "hide",
+//                    "join:Tracking/Angles"
+//                );
                 BadLog.createTopic(
                     "Drive/HeadingRelativeToInitial",
                     "Degrees",

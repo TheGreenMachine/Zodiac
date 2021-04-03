@@ -75,47 +75,47 @@ public class AutoModeSelector {
         mModeChooser.addOption("Tune Drivetrain Reverse", DesiredMode.TUNE_DRIVETRAIN_REVERSE);
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
         SmartDashboard.putData("Auto mode", mModeChooser);
-
-        // CheezeCurd
-        mModeChooser.addOption("Living Room", DesiredMode.LIVING_ROOM);
-        //        mModeChooser.addOption("Shop", DesiredMode.SHOP);
-        //        mModeChooser.addOption("PID", DesiredMode.PID);
+//
+//        // CheezeCurd
+//        mModeChooser.addOption("Living Room", DesiredMode.LIVING_ROOM);
+//        //        mModeChooser.addOption("Shop", DesiredMode.SHOP);
+//        //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
-        mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
-        mModeChooser.addOption(
-            "Auto Trench Turn Right",
-            DesiredMode.AUTO_TRENCH_TURN_RIGHT
-        );
-        mModeChooser.addOption(
-            "Auto Trench Turn Right",
-            DesiredMode.AUTO_TRENCH_TURN_RIGHT
-        );
-
-        mModeChooser.addOption("Drive Straight Shoot", DesiredMode.DRIVE_STRAIGHT_SHOOT);
-
-        // ALLIANCE
-        mModeChooser.addOption("6 Ball Alliance Trench", DesiredMode.SIX_BALL_ALLIANCE);
-        mModeChooser.addOption(
-            "6 Ball Alliance Straight",
-            DesiredMode.SIX_BALL_ALLIANCE_STRAIGHT
-        );
-        mModeChooser.addOption("8 Ball Alliance Trench", DesiredMode.EIGHT_BALL_ALLIANCE);
-        mModeChooser.addOption(
-            "8 Ball Alliance Trench ALT (NOT TESTED)",
-            DesiredMode.EIGHT_BALL_ALLIANCE_ALT
-        );
-
-        // OPPOSING
-        mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
-        mModeChooser.addOption(
-            "8 Ball Opposing Trench (NOT TESTED)",
-            DesiredMode.EIGHT_BALL_OPPOSE
-        );
-
-        mModeChooser.addOption(
-            "10 Ball Trench (Not yet implemented DO NOT USE)",
-            DesiredMode.TEN_BALL_AUTO
-        );
+//        mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
+//        mModeChooser.addOption(
+//            "Auto Trench Turn Right",
+//            DesiredMode.AUTO_TRENCH_TURN_RIGHT
+//        );
+//        mModeChooser.addOption(
+//            "Auto Trench Turn Right",
+//            DesiredMode.AUTO_TRENCH_TURN_RIGHT
+//        );
+//
+//        mModeChooser.addOption("Drive Straight Shoot", DesiredMode.DRIVE_STRAIGHT_SHOOT);
+//
+//        // ALLIANCE
+//        mModeChooser.addOption("6 Ball Alliance Trench", DesiredMode.SIX_BALL_ALLIANCE);
+//        mModeChooser.addOption(
+//            "6 Ball Alliance Straight",
+//            DesiredMode.SIX_BALL_ALLIANCE_STRAIGHT
+//        );
+//        mModeChooser.addOption("8 Ball Alliance Trench", DesiredMode.EIGHT_BALL_ALLIANCE);
+//        mModeChooser.addOption(
+//            "8 Ball Alliance Trench ALT (NOT TESTED)",
+//            DesiredMode.EIGHT_BALL_ALLIANCE_ALT
+//        );
+//
+//        // OPPOSING
+//        mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
+//        mModeChooser.addOption(
+//            "8 Ball Opposing Trench (NOT TESTED)",
+//            DesiredMode.EIGHT_BALL_OPPOSE
+//        );
+//
+//        mModeChooser.addOption(
+//            "10 Ball Trench (Not yet implemented DO NOT USE)",
+//            DesiredMode.TEN_BALL_AUTO
+//        );
 
         // 2021
 
@@ -124,7 +124,7 @@ public class AutoModeSelector {
         mModeChooser.addOption("Blue Path A", DesiredMode.BLUE_PATHA);
         mModeChooser.addOption("Slalom Mode", DesiredMode.SLALOM);
         mModeChooser.addOption("Barrel Run", DesiredMode.BARREL);
-        mModeChooser.addOption("Bounce Forward", DesiredMode.BOUNCE);
+        mModeChooser.addOption("Bounce", DesiredMode.BOUNCE);
 
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
