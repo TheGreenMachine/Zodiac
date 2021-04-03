@@ -19,7 +19,7 @@ public class BlueRedPathB implements PathContainer {
             new Pose2d(40, 125, Rotation2d.fromDegrees(0)),
             new Pose2d(150, 58, Rotation2d.fromDegrees(-10)),
             new Pose2d(220, 120, Rotation2d.fromDegrees(10)),
-            new Pose2d(335, 55, Rotation2d.fromDegrees(0))
+            new Pose2d(343, 54, Rotation2d.fromDegrees(0))
         );
     }
 

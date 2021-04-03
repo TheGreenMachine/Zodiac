@@ -16,7 +16,7 @@ public class CollectAction implements Action {
     public void start() {
         System.out.println("Modifying collector!");
         Collector.getInstance().setDeployed(isCollecting);
-        Hopper.getInstance().setSpindexer(isCollecting ? -1 : 0);
+        Hopper.getInstance().setSpindexer(isCollecting ? 1 : 0);
     }
 
     @Override

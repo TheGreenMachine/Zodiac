@@ -11,6 +11,7 @@ subsystems:
         invertMotor:
             - elevator
     shooter:
+        implemented: false
         falcons:
             shooterMain: 3
             shooterFollower: 2

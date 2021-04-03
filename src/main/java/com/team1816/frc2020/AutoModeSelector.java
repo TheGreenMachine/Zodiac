@@ -41,11 +41,11 @@ public class AutoModeSelector {
 
         // 2021
         BLUE_RED_PATHB,
-        RED_PATHA,
-        BLUE_PATHA,
+        PATH_A,
         SLALOM,
         BARREL,
         BOUNCE,
+
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -120,8 +120,7 @@ public class AutoModeSelector {
         // 2021
 
         mModeChooser.addOption("Blue & Red Path B", DesiredMode.BLUE_RED_PATHB);
-        mModeChooser.addOption("Red Path A", DesiredMode.RED_PATHA);
-        mModeChooser.addOption("Blue Path A", DesiredMode.BLUE_PATHA);
+        mModeChooser.addOption("Path A", DesiredMode.PATH_A);
         mModeChooser.addOption("Slalom Mode", DesiredMode.SLALOM);
         mModeChooser.addOption("Barrel Run", DesiredMode.BARREL);
         mModeChooser.addOption("Bounce", DesiredMode.BOUNCE);
@@ -208,10 +207,8 @@ public class AutoModeSelector {
             // 2021
             case BLUE_RED_PATHB:
                 return (Optional.of(new BlueRedPathBMode()));
-            case RED_PATHA:
-                return (Optional.of(new RedPathAMode()));
-            case BLUE_PATHA:
-                return (Optional.of(new BluePathAMode()));
+            case PATH_A:
+                return (Optional.of(new PathAMode()));
             case SLALOM:
                 return (Optional.of(new SlalomMode()));
             case BARREL:
