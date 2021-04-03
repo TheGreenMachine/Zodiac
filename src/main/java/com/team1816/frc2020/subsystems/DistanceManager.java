@@ -46,12 +46,13 @@ public class DistanceManager {
         //        new Entry(315, 10_200, 1, 1.25),
         //        new Entry(360, 10_400, 1, 1.25),
         //        new Entry(400, 10_600, 1, 1.25)
-        new Entry(1, 6100, 1, 1.5),//1.7),/* 167, 198 were 1.5 */
-        new Entry(2, 10500, 1, 1.8),//1.7),
-        new Entry(3, 8700, 1, 1.6),//1.6),
-        new Entry(4, 8900, 0.5,1.65),
-        new Entry(5, 9300, 0.5, 1.55),//1.5),
 
+        // Positive rotates turret right
+        new Entry(1, 7000, .75, 1.5),//1.7),/* 167, 198 were 1.5 */
+        new Entry(2, 10500, .75, 1.8),//1.7),
+        new Entry(3, 8700, 1, 1.45),//1.6),
+        new Entry(4, 8900, 0.5,1.65),
+        new Entry(5, 9100, 0.4, 1.45),//1.5),
     };
 
     public double getShooterVelocity(double zone) {
