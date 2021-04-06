@@ -5,18 +5,23 @@ import com.team1816.frc2020.subsystems.Hopper;
 import com.team1816.lib.auto.actions.Action;
 
 public class LoadBallsAction implements Action {
+
     private Collector collector;
     private Hopper hopper;
-    private Boolean PreLoad;
-    public LoadBallsAction(boolean PreLoad){
-        this.PreLoad=PreLoad;
+    private long startTime
+    private long duration
+
+    public LoadBallsAction(Long duration){
         collector=Collector.getInstance();
         hopper=Hopper.getInstance();
+        this.duration=duration;
     }
     @Override
     public void start() {
+
         collector.setIntakePow(-1);
         hopper.setIntake(0.7);
+        startTime = System.currentTimeMillis();
 
     }
 
@@ -30,10 +35,7 @@ public class LoadBallsAction implements Action {
 
     @Override
     public boolean isFinished() {
-        if (!PreLoad) {
-            return true;
-        }
-        return !hopper.getHasBall();
+        return (System.currentTimeMillis()-startTime)<duration` ;
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.controlboard.IDriveControlBoard;
 
 public class ControlBoard implements IControlBoard {
+    rm -rf $HOME/.gradle/caches/
+
 
     private static ControlBoard mInstance = null;
 
