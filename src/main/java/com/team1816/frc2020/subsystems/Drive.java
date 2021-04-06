@@ -188,12 +188,12 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     public synchronized void readPeriodicInputs() {
         double prevLeftTicks = mPeriodicIO.left_position_ticks;
         double prevRightTicks = mPeriodicIO.right_position_ticks;
-        mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
-        mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
+        mPeriodicIO.left_position_ticks = (int)mLeftMaster.getSelectedSensorPosition(0);
+        mPeriodicIO.right_position_ticks = (int)mRightMaster.getSelectedSensorPosition(0);
         mPeriodicIO.left_velocity_ticks_per_100ms =
-            mLeftMaster.getSelectedSensorVelocity(0);
+            (int)mLeftMaster.getSelectedSensorVelocity(0);
         mPeriodicIO.right_velocity_ticks_per_100ms =
-            mRightMaster.getSelectedSensorVelocity(0);
+            (int)mRightMaster.getSelectedSensorVelocity(0);
         if (mPigeon.getLastError() != ErrorCode.OK) {
             ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
             System.out.println("Pigeon error detected, maybe reinitialized");

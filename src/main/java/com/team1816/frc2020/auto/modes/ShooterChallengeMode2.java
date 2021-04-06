@@ -21,6 +21,8 @@ public class ShooterChallengeMode2 extends AutoModeBase {
     private DriveTrajectory mDriveFoward100F;
     private DriveTrajectory mDriveFoward100G;
     private DriveTrajectory mDriveFoward100H;
+    private DriveTrajectory mDriveFoward100I;
+    private DriveTrajectory mDriveFoward100J;
     private DriveTrajectory mDriveBackward100A;
     private DriveTrajectory mDriveBackward100B;
     private DriveTrajectory mDriveBackward100C;
@@ -29,7 +31,8 @@ public class ShooterChallengeMode2 extends AutoModeBase {
     private DriveTrajectory mDriveBackward100F;
     private DriveTrajectory mDriveBackward100G;
     private DriveTrajectory mDriveBackward100H;
-
+    private DriveTrajectory mDriveBackward100I;
+    private DriveTrajectory mDriveBackward100J;
 
 
 
@@ -42,14 +45,18 @@ public class ShooterChallengeMode2 extends AutoModeBase {
         mDriveBackward100F = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(-100), true);
         mDriveBackward100G = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(-100), true);
         mDriveBackward100H = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(-100), true);
+        mDriveBackward100I = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(-100), true);
+        mDriveBackward100J = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(-100), true);
         mDriveFoward100A = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(100),true);
-        mDriveFoward100B = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(100), true);
-        mDriveFoward100C = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(101),true);
-        mDriveFoward100D = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(100), true);
-        mDriveFoward100E = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(101), true);
-        mDriveFoward100F = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(100), true);
-        mDriveFoward100G = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(100), true);
-        mDriveFoward100H = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(100), true);
+        mDriveFoward100B = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(101), true);
+        mDriveFoward100C = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(102),true);
+        mDriveFoward100D = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(101), true);
+        mDriveFoward100E = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(102), true);
+        mDriveFoward100F = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(102), true);
+        mDriveFoward100G = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(101), true);
+        mDriveFoward100H = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(102), true);
+        mDriveFoward100I = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(101), true);
+        mDriveFoward100J = new DriveTrajectory(TrajectorySet.getInstance().DriveStraightCustom(101), true);
     }
 
     @Override
@@ -114,6 +121,20 @@ public class ShooterChallengeMode2 extends AutoModeBase {
                 new WaitAction(0.6),
                 new ParallelAction(
                     mDriveFoward100H,
+                    new PrepareToShootAction(Turret.CARDINAL_NORTH,4, true)
+                ),
+                new ShootAction(1.2, true, 4),
+                mDriveBackward100I,
+                new WaitAction(0.6),
+                new ParallelAction(
+                    mDriveFoward100I,
+                    new PrepareToShootAction(Turret.CARDINAL_NORTH,4, true)
+                ),
+                new ShootAction(1.2, true, 4),
+                mDriveBackward100J,
+                new WaitAction(0.6),
+                new ParallelAction(
+                    mDriveFoward100J,
                     new PrepareToShootAction(Turret.CARDINAL_NORTH,4, true)
                 ),
                 new ShootAction(1.2, true, 4)

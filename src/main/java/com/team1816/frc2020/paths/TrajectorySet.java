@@ -17,7 +17,8 @@ public class TrajectorySet {
     }
     public Trajectory<TimedState<Pose2dWithCurvature>> DriveStraightCustom(int dist){
         //return dist>0 ? new DriveStraight(dist).generateTrajectory() : new DriveStraight(dist).generateReversedTrajectory();
-        return new DriveStraight(dist).generateTrajectory();
+            return new DriveStraight(dist).generateTrajectory();
+
     }
 
     public final Trajectory<TimedState<Pose2dWithCurvature>> DRIVE_STRAIGHT;

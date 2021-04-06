@@ -15,8 +15,8 @@ public class LoadBallsAction implements Action {
     }
     @Override
     public void start() {
-        collector.setIntakePow(-0.5);
-        hopper.setIntake(0.6);
+        collector.setIntakePow(-1);
+        hopper.setIntake(0.7);
 
     }
 
@@ -30,10 +30,11 @@ public class LoadBallsAction implements Action {
 
     @Override
     public boolean isFinished() {
-        if (!PreLoad) {
-            return true;
-        }
-        return !hopper.getHasBall();
+//        if (!PreLoad) {
+//            return true;
+//        }
+//        return !hopper.getHasBall();
+        return true;
     }
 
     @Override
