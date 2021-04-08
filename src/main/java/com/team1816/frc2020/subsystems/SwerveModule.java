@@ -172,7 +172,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         double final_setpoint = getRawAngle() + raw_error;
         // double adjusted_speed = speed * Math.abs(Math.cos(raw_error));
 
-        mPeriodicIO.drive_demand = 0/*speed*/;
+        mPeriodicIO.drive_demand = speed;
         mPeriodicIO.azimuth_demand = radiansToEncoderUnits(final_setpoint);
     }
 
@@ -252,6 +252,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public void zeroSensors() {
+        System.out.println("ZEROING SENSORRSSSSSSS -----------------");
         mDriveMotor.setSelectedSensorPosition(0, 0, Constants.kCANTimeoutMs);
         int absolutePosition = getAzimuthPosAbsolute();
         if (mAzimuthMotor instanceof TalonSRX) {
