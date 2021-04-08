@@ -9,10 +9,7 @@ public class PrepareToShootAction extends ParallelAction {
             new TurretAction(turretAngle),
             new AutoAimAction(zone),
             new RampUpShooterAction(zone),
-            new SeriesAction(
-                new LoadBallsAction(preLoad),
-                new LoadBallsActionTimed(0.2)
-            )
+            new LoadBallsAction(preLoad)
 
 
 

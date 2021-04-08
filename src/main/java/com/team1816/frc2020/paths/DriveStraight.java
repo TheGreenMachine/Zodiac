@@ -45,7 +45,7 @@ public class DriveStraight implements PathContainer {
         }
         else{
             waypoints.add(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0)));
-            waypoints.add(new Pose2d(driveDistance, -2, Rotation2d.fromDegrees(0)));
+            waypoints.add(new Pose2d(driveDistance, -3, Rotation2d.fromDegrees(2)));
         }
         return waypoints;
     }

@@ -51,7 +51,7 @@ public class DistanceManager {
         new Entry(1, 7000, .75, 1.5),//1.7),/* 167, 198 were 1.5 */
         new Entry(2, 10500, .75, 1.8),//1.7),
         new Entry(3, 8700, 1, 1.45),//1.6),
-        new Entry(4, 9100, 0.5,1.65),
+        new Entry(4, 8900, 0.5,1.45),
         new Entry(5, 9100, 0.4, 1.45),//1.5),
     };
 

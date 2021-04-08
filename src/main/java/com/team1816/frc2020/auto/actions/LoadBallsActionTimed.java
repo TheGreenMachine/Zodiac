@@ -4,14 +4,14 @@ import com.team1816.frc2020.subsystems.Collector;
 import com.team1816.frc2020.subsystems.Hopper;
 import com.team1816.lib.auto.actions.Action;
 
-public class LoadBallsAction implements Action {
+public class LoadBallsActionTimed implements Action {
 
     private Collector collector;
     private Hopper hopper;
-    private long startTime
-    private long duration
+    private long startTime;
+    private long duration;
 
-    public LoadBallsAction(Long duration){
+    public LoadBallsActionTimed(Long duration){
         collector=Collector.getInstance();
         hopper=Hopper.getInstance();
         this.duration=duration;
@@ -35,7 +35,7 @@ public class LoadBallsAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return (System.currentTimeMillis()-startTime)<duration` ;
+        return (System.currentTimeMillis()-startTime)<duration;
     }
 
     @Override

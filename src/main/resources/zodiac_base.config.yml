@@ -83,8 +83,8 @@ subsystems:
 pcm: 8
 constants:
     trackWidth: 25 #inches
-    maxVel: 200 #inch/s
-    maxAccel: 150 #inch/s^2
+    maxVel: 160 #200 #inch/s
+    maxAccel: 130 #150 #inch/s^2
     sensorPhase: 0
     kLooperDt: .015
     kTrackScrubFactor: 1.0

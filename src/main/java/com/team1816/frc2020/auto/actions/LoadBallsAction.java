@@ -16,7 +16,7 @@ public class LoadBallsAction implements Action {
     @Override
     public void start() {
         collector.setIntakePow(-1);
-        hopper.setIntake(0.7);
+        hopper.setIntake(0.5);
 
     }
 
