@@ -51,53 +51,26 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
         // azimuth motion
         public PidConfig kAzimuthPid = PidConfig.EMPTY;
-        public int kAzimuthIZone = 25;
-        public int kAzimuthCruiseVelocity = 1698;
-        public int kAzimuthAcceleration = 20379; // 12 * kAzimuthCruiseVelocity
         public int kAzimuthClosedLoopAllowableError = (int) factory.getConstant(
             "drivetrain",
             "azimuthAllowableErrorTicks"
         );
 
         // azimuth current/voltage
-        public int kAzimuthContinuousCurrentLimit = 30; // amps
-        public int kAzimuthPeakCurrentLimit = 60; // amps
-        public int kAzimuthPeakCurrentDuration = 200; // ms
-        public boolean kAzimuthEnableCurrentLimit = true;
-        public double kAzimuthMaxVoltage = 10.0; // volts
-        public int kAzimuthVoltageMeasurementFilter = 8; // # of samples in rolling average
-
-        // azimuth measurement
-        public int kAzimuthStatusFrame2UpdateRate = 10; // feedback for selected sensor, ms
-        public int kAzimuthStatusFrame10UpdateRate = 10; // motion magic, ms
         public VelocityMeasPeriod kAzimuthVelocityMeasurementPeriod =
             VelocityMeasPeriod.Period_100Ms; // dt for velocity measurements, ms
-        public int kAzimuthVelocityMeasurementWindow = 64; // # of samples in rolling average
 
         // general drive
         public PidConfig kDrivePid = PidConfig.EMPTY;
-        public boolean kInvertDrive = true;
-        public boolean kInvertDriveSensorPhase = false;
-        public NeutralMode kDriveInitNeutralMode = NeutralMode.Brake; // neutral mode could change
         public double kWheelDiameter = Constants.kDriveWheelDiameterInches; // Probably should tune for each individual wheel maybe
         public double kDriveTicksPerUnitDistance =
             (1.0 / 4096.0) * (18.0 / 28.0 * 15.0 / 45.0) * (Math.PI * kWheelDiameter);
         public double kDriveDeadband = 0.01;
 
         // drive current/voltage
-        public int kDriveContinuousCurrentLimit = 30; // amps
-        public int kDrivePeakCurrentLimit = 50; // amps
-        public int kDrivePeakCurrentDuration = 200; // ms
-        public boolean kDriveEnableCurrentLimit = true;
-        public double kDriveMaxVoltage = 10.0; // volts
-        public int kDriveVoltageMeasurementFilter = 8; // # of samples in rolling average
 
         // drive measurement
-        public int kDriveStatusFrame2UpdateRate = 15; // feedback for selected sensor, ms
-        public int kDriveStatusFrame10UpdateRate = 200; // motion magic, ms
-        public VelocityMeasPeriod kDriveVelocityMeasurementPeriod =
-            VelocityMeasPeriod.Period_100Ms; // dt for velocity measurements, ms
-        public int kDriveVelocityMeasurementWindow = 64; // # of samples in rolling average
+        public VelocityMeasPeriod kDriveVelocityMeasurementPeriod = VelocityMeasPeriod.Period_100Ms; // dt for velocity measurements, ms
     }
 
     // Components
@@ -155,25 +128,9 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             mControlState = ControlState.OPEN_LOOP;
         }
 
-        Rotation2d current = getAngle();
-
-        double raw_error = current.distance(azimuth);
-        if (Math.abs(raw_error) > Math.PI) {
-            raw_error -= (Math.PI * 2 * Math.signum(raw_error));
-        }
-
-        // error is -180 to 180
-        // is wheel reversible logic
-        if (Math.abs(raw_error) > Math.PI / 2) {
-            speed *= -1;
-            raw_error -= Math.PI * Math.signum(raw_error);
-        }
-
-        double final_setpoint = getRawAngle() + raw_error;
-        // double adjusted_speed = speed * Math.abs(Math.cos(raw_error));
 
         mPeriodicIO.drive_demand = speed;
-        mPeriodicIO.azimuth_demand = radiansToEncoderUnits(final_setpoint);
+        mPeriodicIO.azimuth_demand = (int)radiansToEncoderUnits(azimuth.getRadians() - mConstants.kAzimuthEncoderHomeOffset) & 0xFFF;
     }
 
     @Override
@@ -252,12 +209,12 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public void zeroSensors() {
-        System.out.println("ZEROING SENSORRSSSSSSS -----------------");
-        mDriveMotor.setSelectedSensorPosition(0, 0, Constants.kCANTimeoutMs);
-        int absolutePosition = getAzimuthPosAbsolute();
         if (mAzimuthMotor instanceof TalonSRX) {
-            ((TalonSRX) mAzimuthMotor).getSensorCollection()
-                .setQuadraturePosition(absolutePosition, Constants.kLongCANTimeoutMs);
+            var sensors = ((TalonSRX) mAzimuthMotor).getSensorCollection();
+               sensors.setQuadraturePosition(
+                   sensors.getPulseWidthPosition() & 0xFFF,
+                   Constants.kLongCANTimeoutMs
+               );
         }
     }
 
@@ -274,7 +231,6 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     @Override
     public void stop() {
         mDriveMotor.set(ControlMode.PercentOutput, 0.0);
-        mAzimuthMotor.set(ControlMode.PercentOutput, 0.0);
     }
 
     @Override

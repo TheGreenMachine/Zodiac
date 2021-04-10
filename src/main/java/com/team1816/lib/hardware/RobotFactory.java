@@ -53,6 +53,7 @@ public class RobotFactory {
         String name,
         List<PidConfig> pidConfigs
     ) {
+
         IMotorControllerEnhanced motor = null;
         var subsystem = getSubsystem(subsystemName);
 
@@ -62,13 +63,19 @@ public class RobotFactory {
                 motor =
                     CtreMotorFactory.createDefaultTalon(
                         subsystem.talons.get(name),
-                        false
+                        name,
+                        false,
+                        subsystem,
+                        pidConfigs
                     );
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
                 motor =
                     CtreMotorFactory.createDefaultTalon(
                         subsystem.falcons.get(name),
-                        true
+                        name,
+                        true,
+                        subsystem,
+                        pidConfigs
                     );
             } // Never make the victor a master
         }
@@ -80,16 +87,8 @@ public class RobotFactory {
         // Motor configuration
         if (subsystem.isImplemented() && subsystem.invertMotor.contains(name)) {
             System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
-            motor.setInverted(true);
         }
 
-        for (int i = 0; i < Math.min(pidConfigs.size(), 4); i++) {
-            var pid = pidConfigs.get(i);
-            motor.config_kP(i, pid.kP, Constants.kLongCANTimeoutMs);
-            motor.config_kI(i, pid.kI, Constants.kLongCANTimeoutMs);
-            motor.config_kD(i, pid.kD, Constants.kLongCANTimeoutMs);
-            motor.config_kF(i, pid.kF, Constants.kLongCANTimeoutMs);
-        }
 
         return motor;
     }
@@ -111,15 +110,22 @@ public class RobotFactory {
                 motor =
                     CtreMotorFactory.createPermanentSlaveTalon(
                         subsystem.talons.get(name),
+                        name,
                         false,
-                        master
+                        master,
+                        subsystem,
+                        subsystem.pid
+
                     );
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
                 motor =
                     CtreMotorFactory.createPermanentSlaveTalon(
                         subsystem.falcons.get(name),
+                        name,
                         true,
-                        master
+                        master,
+                        subsystem,
+                        subsystem.pid
                     );
             } else if (isHardwareValid(subsystem.victors.get(name))) {
                 // Victors can follow Talons or another Victor.
@@ -137,9 +143,6 @@ public class RobotFactory {
                 name
             );
             motor = CtreMotorFactory.createGhostTalon();
-        }
-        if (master != null) {
-            motor.setInverted(master.getInverted());
         }
         return motor;
     }

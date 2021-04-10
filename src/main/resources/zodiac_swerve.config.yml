@@ -31,7 +31,7 @@ subsystems:
             backRight:
                 drive: brDrive
                 azimuth: brAzimuth
-                encoderOffset: -2561
+                encoderOffset: -1457
                 invertSensorPhase: true
         drivePid:
             kP: 0.1

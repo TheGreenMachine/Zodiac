@@ -1,9 +1,11 @@
 package com.team1816.lib.hardware.components.motor;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.BaseTalonConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-public class LazyTalonFX extends TalonFX implements ILazyMotorControllerEnhanced {
+public class LazyTalonFX extends TalonFX implements IConfigurableMotorController {
 
     protected double mLastSet = Double.NaN;
     protected ControlMode mLastControlMode = null;
@@ -24,5 +26,11 @@ public class LazyTalonFX extends TalonFX implements ILazyMotorControllerEnhanced
             mLastControlMode = mode;
             super.set(mode, value);
         }
+    }
+
+    @Override
+    public ErrorCode configAllSettings(BaseTalonConfiguration allConfigs, int timeoutMs) {
+        return super.configAllSettings(allConfigs,timeoutMs);
+
     }
 }

@@ -40,21 +40,21 @@ public class SubsystemConfig {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SubsystemConfig that = (SubsystemConfig) o;
+        SubsystemConfig subsystemConfig = (SubsystemConfig) o;
         return (
-            Objects.equals(implemented, that.implemented) &&
-            talons.equals(that.talons) &&
-            falcons.equals(that.falcons) &&
-            victors.equals(that.victors) &&
-            swerveModules.equals(that.swerveModules) &&
-            solenoids.equals(that.solenoids) &&
-            doubleSolenoids.equals(that.doubleSolenoids) &&
-            constants.equals(that.constants) &&
-            Objects.equals(pid, that.pid) &&
-            Objects.equals(azimuthPid, that.azimuthPid) &&
-            Objects.equals(drivePid, that.drivePid) &&
-            Objects.equals(canifier, that.canifier) &&
-            invertMotor.equals(that.invertMotor)
+            Objects.equals(implemented, subsystemConfig.implemented) &&
+            talons.equals(subsystemConfig.talons) &&
+            falcons.equals(subsystemConfig.falcons) &&
+            victors.equals(subsystemConfig.victors) &&
+            swerveModules.equals(subsystemConfig.swerveModules) &&
+            solenoids.equals(subsystemConfig.solenoids) &&
+            doubleSolenoids.equals(subsystemConfig.doubleSolenoids) &&
+            constants.equals(subsystemConfig.constants) &&
+            Objects.equals(pid, subsystemConfig.pid) &&
+            Objects.equals(azimuthPid, subsystemConfig.azimuthPid) &&
+            Objects.equals(drivePid, subsystemConfig.drivePid) &&
+            Objects.equals(canifier, subsystemConfig.canifier) &&
+            invertMotor.equals(subsystemConfig.invertMotor)
         );
     }
 
