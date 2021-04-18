@@ -12,6 +12,10 @@ subsystems:
             frAzimuth: 11
             blAzimuth: 3
             brAzimuth: 12
+        invertMotor:
+            - frAzimuth
+            - blAzimuth
+            - brAzimuth
         swerveModules:
             frontLeft:
                 drive: flDrive
@@ -21,18 +25,18 @@ subsystems:
             frontRight:
                 drive: frDrive
                 azimuth: frAzimuth
-                encoderOffset: -3362
-                invertSensorPhase: true
+                encoderOffset: 3366
+                invertSensorPhase: false
             backLeft:
                 drive: blDrive
                 azimuth: blAzimuth
-                encoderOffset: -3425
-                invertSensorPhase: true
+                encoderOffset: 3447
+                invertSensorPhase: false
             backRight:
                 drive: brDrive
                 azimuth: brAzimuth
-                encoderOffset: -1457
-                invertSensorPhase: true
+                encoderOffset: 2549
+                invertSensorPhase: false
         drivePid:
             kP: 0.1
             kI: 0.0001

@@ -14,6 +14,7 @@ import com.team1816.lib.subsystems.ISwerveModule;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.Util;
+
 import java.util.List;
 
 public class SwerveModule extends Subsystem implements ISwerveModule {
@@ -95,9 +96,9 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         mConstants = constants;
         System.out.println(
             "Configuring Swerve Module " +
-            constants.kName +
-            " on subsystem " +
-            subsystemName
+                constants.kName +
+                " on subsystem " +
+                subsystemName
         );
 
         mDriveMotor =
@@ -119,7 +120,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             constants.kAzimuthClosedLoopAllowableError,
             Constants.kLongCANTimeoutMs
         );
-        System.out.println("  " + toString());
+        System.out.println("  " + this);
         zeroSensors();
     }
 
@@ -130,7 +131,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
 
         mPeriodicIO.drive_demand = speed;
-        mPeriodicIO.azimuth_demand = (int)radiansToEncoderUnits(azimuth.getRadians() - mConstants.kAzimuthEncoderHomeOffset) & 0xFFF;
+        mPeriodicIO.azimuth_demand = (int) radiansToEncoderUnits(azimuth.getRadians());
     }
 
     @Override
@@ -141,7 +142,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         mPeriodicIO.velocity_ticks_per_100ms = mDriveMotor.getSelectedSensorVelocity(0);
         mPeriodicIO.azimuth_encoder_ticks =
             mAzimuthMotor.getSelectedSensorPosition(0) -
-            mConstants.kAzimuthEncoderHomeOffset;
+                mConstants.kAzimuthEncoderHomeOffset;
     }
 
     public void setOpenLoopRampRate(double openLoopRampRate) {
@@ -167,10 +168,9 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                 mDriveMotor.set(ControlMode.PercentOutput, mPeriodicIO.drive_demand);
             }
         }
-        mAzimuthMotor.set(
-            ControlMode.Position,
-            mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset
-        );
+        var offsetDemand = ((int) (mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset)) & 0xFFF;
+        System.out.println(mConstants.kAzimuthMotorName + " act: " + mPeriodicIO.azimuth_demand + " demmand: " + offsetDemand);
+        mAzimuthMotor.set(ControlMode.Position, offsetDemand);
     }
 
     @Override
@@ -211,10 +211,10 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     public void zeroSensors() {
         if (mAzimuthMotor instanceof TalonSRX) {
             var sensors = ((TalonSRX) mAzimuthMotor).getSensorCollection();
-               sensors.setQuadraturePosition(
-                   sensors.getPulseWidthPosition() & 0xFFF,
-                   Constants.kLongCANTimeoutMs
-               );
+            sensors.setQuadraturePosition(
+                sensors.getPulseWidthPosition() & 0xFFF,
+                Constants.kLongCANTimeoutMs
+            );
         }
     }
 
@@ -222,7 +222,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         if (mAzimuthMotor instanceof TalonSRX) {
             int rawValue =
                 ((TalonSRX) mAzimuthMotor).getSensorCollection().getPulseWidthPosition() &
-                0xFFF;
+                    0xFFF;
             return rawValue;
         }
         return 0;
@@ -261,8 +261,8 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     public double getAzimuthPosition() {
         return (
             (mConstants.kInvertAzimuthSensorPhase ? -1 : 1) *
-            ((int) mAzimuthMotor.getSelectedSensorPosition(0) & 0xFFF) -
-            mConstants.kAzimuthEncoderHomeOffset
+                ((int) mAzimuthMotor.getSelectedSensorPosition(0) & 0xFFF) -
+                mConstants.kAzimuthEncoderHomeOffset
         );
     }
 
@@ -356,14 +356,13 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     @Override
     public String toString() {
         return (
-            "SwerveModule{ " +
-            mConstants.kDriveMotorName +
-            " id: " +
-            mDriveMotor.getDeviceID() +
-            "  " +
-            mConstants.kAzimuthMotorName +
-            " id: " +
-            mAzimuthMotor.getDeviceID() +
+            "SwerveModule{ " + mConstants.kDriveMotorName +
+            " id: " + mDriveMotor.getDeviceID() +
+            "  " + mConstants.kAzimuthMotorName +
+            " id: " + mAzimuthMotor.getDeviceID() +
+            " offset: " + mConstants.kAzimuthEncoderHomeOffset +
+            " invertSensor: " + mConstants.kInvertAzimuthSensorPhase +
+            " invertAzimuth: " + mConstants.kInvertAzimuth +
             " }"
         );
     }
