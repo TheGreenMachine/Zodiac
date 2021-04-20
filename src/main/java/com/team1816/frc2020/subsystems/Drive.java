@@ -21,11 +21,13 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.util.DriveHelper;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.SwerveDriveHelper;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drive
@@ -60,6 +62,7 @@ public class Drive
     private boolean mOverrideTrajectory = false;
 
     private boolean isSlowMode;
+    private SendableChooser<DriveHelper> driveHelperChooser;
 
     public static synchronized Drive getInstance() {
         if (mInstance == null) {
@@ -209,9 +212,17 @@ public class Drive
                     synchronized (Drive.this) {
                         switch (mDriveControlState) {
                             case OPEN_LOOP:
-                                setOpenLoop(SwerveDriveHelper.calculateDriveSignal(mPeriodicIO.forward,
-                                    mPeriodicIO.strafe, mPeriodicIO.rotation, mPeriodicIO.low_power,
-                                    mPeriodicIO.field_relative, mPeriodicIO.use_heading_controller));
+                                var driveHelper = driveHelperChooser.getSelected();
+                                setOpenLoop(
+                                    driveHelper.calculateDriveSignal(
+                                        mPeriodicIO.forward,
+                                        mPeriodicIO.strafe,
+                                        mPeriodicIO.rotation,
+                                        mPeriodicIO.low_power,
+                                        mPeriodicIO.field_relative,
+                                        mPeriodicIO.use_heading_controller
+                                    )
+                                );
                                 break;
                             case PATH_FOLLOWING:
                                 if (mPathFollower != null) {
@@ -712,6 +723,10 @@ public class Drive
             () -> this.mPigeon.getLastError() == ErrorCode.OK,
             null
         );
+
+        driveHelperChooser = new SendableChooser<>();
+        driveHelperChooser.setDefaultOption("Swerve Classic", DriveHelper.SWERVE_CLASSIC);
+        SmartDashboard.putData("Drive Algorithm", driveHelperChooser);
 
         SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
         SmartDashboard

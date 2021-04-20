@@ -7,7 +7,7 @@ import com.team254.lib.geometry.Translation2d;
 /**
  * Class based on Team 1323's sendInput method to make driving feel better
  */
-public class SwerveDriveHelper {
+public class SwerveDriveHelper implements DriveHelper {
     private final static double kHighAdjustmentPower = 1.75 + 0.4375;
     private final static double kLowAdjustmentPower = 1.50;
     private final static double kMaxSpeed = 1.0;
@@ -19,7 +19,9 @@ public class SwerveDriveHelper {
     private final static double kDeadband = 0.25;
     private final static double kRotationDeadband = 0.15;
 
-    public static DriveSignal calculateDriveSignal(double forwardInput, double strafeInput, double rotationInput,
+    SwerveDriveHelper() {}
+
+    public DriveSignal calculateDriveSignal(double forwardInput, double strafeInput, double rotationInput,
                                                    boolean low_power, boolean field_relative, boolean use_heading_controller) {
 
         Translation2d translationalInput = new Translation2d(forwardInput, strafeInput);
