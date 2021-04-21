@@ -175,9 +175,9 @@ public class CtreMotorFactory {
 
         BaseTalonConfiguration talonConfiguration;
 
-        if (motor instanceof LazyTalonFX) {
+        if (motor instanceof TalonFX) {
             talonConfiguration = new TalonFXConfiguration();
-        } else if (motor instanceof LazyTalonSRX) {
+        } else if (motor instanceof TalonSRX) {
             talonConfiguration = new TalonSRXConfiguration();
         }
         else{
@@ -299,18 +299,16 @@ public class CtreMotorFactory {
             20
         );
 
-        if (motor instanceof TalonSRX) {
-            ((TalonSRX) motor).enableCurrentLimit(config.ENABLE_CURRENT_LIMIT);
-        } else {
-            ((TalonFX) motor).configSupplyCurrentLimit(
-                new SupplyCurrentLimitConfiguration(
-                    config.ENABLE_CURRENT_LIMIT,
-                    0,
-                    0,
-                    0
-                )
-            );
-        }
+        motor.configSupplyCurrentLimit(
+            new SupplyCurrentLimitConfiguration(
+                config.ENABLE_CURRENT_LIMIT,
+                0,
+                0,
+                0
+            ),
+            kTimeoutMs
+        );
+
         motor.configAllSettings(talonConfiguration, kTimeoutMs);
 
         motor.setInverted(subsystem.invertMotor.contains(name));
