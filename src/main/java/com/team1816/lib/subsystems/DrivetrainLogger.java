@@ -1,6 +1,7 @@
 package com.team1816.lib.subsystems;
 
 import badlog.lib.BadLog;
+import com.team1816.frc2020.subsystems.SwerveModule;
 
 public class DrivetrainLogger {
 
@@ -78,7 +79,8 @@ public class DrivetrainLogger {
     }
 
     public static void initSwerve(SwerveDrivetrain drivetrain) {
-        for (ISwerveModule module : drivetrain.getSwerveModules()) {
+        {
+            var module = drivetrain.getSwerveModules()[SwerveModule.kFrontLeft];
             var name = module.getName();
             var prefix = "Drivetrain/" + name;
 
