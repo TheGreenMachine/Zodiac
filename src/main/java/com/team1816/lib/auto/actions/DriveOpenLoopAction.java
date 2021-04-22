@@ -19,7 +19,7 @@ public class DriveOpenLoopAction implements Action {
 
     @Override
     public void start() {
-        mDrive.setOpenLoop(DriveSignal.fromTank(mLeft, mRight));
+        mDrive.setOpenLoop(new DriveSignal(mLeft, mRight));
         mStartTime = Timer.getFPGATimestamp();
     }
 

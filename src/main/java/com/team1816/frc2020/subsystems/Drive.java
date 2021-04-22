@@ -29,13 +29,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.Arrays;
+
 public class Drive
     extends Subsystem
     implements SwerveDrivetrain, TrackableDrivetrain, PidProvider {
 
     private static Drive mInstance;
     private static final String NAME = "drivetrain";
-    private static double DRIVE_ENCODER_PPR;
+    public static double DRIVE_ENCODER_PPR;
 
     // Components
     private final SwerveModule[] mModules = new SwerveModule[4];
@@ -185,10 +187,17 @@ public class Drive
     public synchronized void writePeriodicOutputs() {
         for (int i = 0; i < mModules.length; i++) {
             if (mModules[i] != null) {
-                mModules[i].setOpenLoop(
+                if (mDriveControlState == DriveControlState.OPEN_LOOP) {
+                    mModules[i].setOpenLoop(
                         mPeriodicIO.wheel_speeds[i],
                         mPeriodicIO.wheel_azimuths[i]
                     );
+                } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
+                    mModules[i].setVelocity(
+                        mPeriodicIO.wheel_speeds[i],
+                        mPeriodicIO.wheel_azimuths[i]
+                    );
+                }
                 mModules[i].writePeriodicOutputs();
             }
         }
@@ -286,7 +295,6 @@ public class Drive
             System.out.println(signal);
             mDriveControlState = DriveControlState.OPEN_LOOP;
         }
-        System.out.println(mPeriodicIO.wheel_speeds);
         mPeriodicIO.wheel_speeds = signal.getWheelSpeeds();
         mPeriodicIO.wheel_azimuths = signal.getWheelAzimuths();
     }
@@ -327,8 +335,8 @@ public class Drive
             // mLeftMaster.configNeutralDeadband(0.0, 0);
             // mRightMaster.configNeutralDeadband(0.0, 0);
         }
-        // mPeriodicIO.left_demand = signal.getLeft();
-        // mPeriodicIO.right_demand = signal.getRight();
+        mPeriodicIO.wheel_speeds = signal.getWheelSpeeds();
+        mPeriodicIO.wheel_azimuths = signal.getWheelAzimuths();
         // mPeriodicIO.left_feedforward = feedforward.getLeft();
         // mPeriodicIO.right_feedforward = feedforward.getRight();
     }
@@ -576,26 +584,26 @@ public class Drive
 
             mPeriodicIO.error = mMotionPlanner.error();
             mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
-            // if (!mOverrideTrajectory) {
-            //     setVelocity(
-            //         new DriveSignal(
-            //             radiansPerSecondToTicksPer100ms(output.left_velocity),
-            //             radiansPerSecondToTicksPer100ms(output.right_velocity)
-            //         ),
-            //         new DriveSignal(
-            //             output.left_feedforward_voltage / 12.0,
-            //             output.right_feedforward_voltage / 12.0
-            //         )
-            //     );
-            //
-            //     mPeriodicIO.left_accel =
-            //         radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
-            //     mPeriodicIO.right_accel =
-            //         radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
-            // } else {
-            //     setVelocity(DriveSignal.BRAKE, DriveSignal.BRAKE);
-            //     mPeriodicIO.left_accel = mPeriodicIO.right_accel = 0.0;
-            // }
+            if (!mOverrideTrajectory) {
+                setVelocity(
+                    new DriveSignal(
+                        radiansPerSecondToTicksPer100ms(output.left_velocity),
+                        radiansPerSecondToTicksPer100ms(output.right_velocity)
+                    ),
+                    new DriveSignal(
+                        output.left_feedforward_voltage / 12.0,
+                        output.right_feedforward_voltage / 12.0
+                    )
+                );
+
+                // mPeriodicIO.left_accel =
+                //     radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
+                // mPeriodicIO.right_accel =
+                //     radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
+            } else {
+                setVelocity(DriveSignal.BRAKE, DriveSignal.BRAKE);
+                // mPeriodicIO.left_accel = mPeriodicIO.right_accel = 0.0;
+            }
         } else {
             DriverStation.reportError("drive is not in path following state", false);
         }

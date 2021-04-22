@@ -114,6 +114,20 @@ public class DrivetrainLogger {
                 "join:Drivetrain/DriveVelocity"
             );
             BadLog.createTopic(
+                prefix + "DriveVelocityDemand",
+                "ticks",
+                module::getDriveVelocityDemand,
+                "hide",
+                "join:Drivetrain/DriveVelocity"
+            );
+            BadLog.createTopic(
+                prefix + "DriveDistance",
+                "ticks",
+                module::getDriveDistance,
+                "hide",
+                "join:Drivetrain/DriveDistance"
+            );
+            BadLog.createTopic(
                 prefix + "DriveError",
                 "ticks",
                 module::getDriveError,

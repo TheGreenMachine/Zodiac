@@ -8,5 +8,7 @@ public interface ISwerveModule {
     double getAzimuthError();
 
     double getDriveVelocity();
+    double getDriveVelocityDemand();
+    double getDriveDistance();
     double getDriveError();
 }

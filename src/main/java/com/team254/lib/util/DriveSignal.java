@@ -1,5 +1,6 @@
 package com.team254.lib.util;
 
+import com.team1816.frc2020.subsystems.SwerveModule;
 import com.team254.lib.geometry.Rotation2d;
 
 import java.text.DecimalFormat;
@@ -22,6 +23,17 @@ public class DriveSignal {
         this(ZERO_SPEED, ZERO_AZIMUTH, false);
     }
 
+    public DriveSignal(double left, double right) {
+        mWheelSpeeds = new double[4];
+        mWheelSpeeds[SwerveModule.kFrontLeft] = left;
+        mWheelSpeeds[SwerveModule.kBackLeft] = left;
+        mWheelSpeeds[SwerveModule.kFrontRight] = right;
+        mWheelSpeeds[SwerveModule.kBackRight] = right;
+
+        mWheelAzimuths = ZERO_AZIMUTH;
+        mBrakeMode = false;
+    }
+
     public DriveSignal(double[] wheelSpeeds, Rotation2d[] wheelAzimuths, boolean brakeMode) {
         mWheelSpeeds = wheelSpeeds;
         mWheelAzimuths = wheelAzimuths;
@@ -38,14 +50,6 @@ public class DriveSignal {
 
     public boolean getBrakeMode() {
         return mBrakeMode;
-    }
-
-    public static DriveSignal fromTank(double left, double right) {
-        return new DriveSignal(
-            new double[] {left, right, left, right},
-            ZERO_AZIMUTH,
-            false
-        );
     }
 
     @Override

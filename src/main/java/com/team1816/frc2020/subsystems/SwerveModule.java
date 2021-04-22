@@ -34,7 +34,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     }
 
     public enum ControlState {
-        OPEN_LOOP,
+        OPEN_LOOP, VELOCITY
     }
 
     public static class SwerveModuleConstants {
@@ -134,6 +134,15 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         mPeriodicIO.azimuth_demand = (int) radiansToEncoderUnits(azimuth.getRadians());
     }
 
+    public synchronized void setVelocity(double speed, Rotation2d azimuth) {
+        if (mControlState != ControlState.VELOCITY) {
+            mControlState = ControlState.VELOCITY;
+        }
+
+        mPeriodicIO.drive_demand = speed;
+        mPeriodicIO.azimuth_demand = (int) radiansToEncoderUnits(azimuth.getRadians());
+    }
+
     @Override
     public void readPeriodicInputs() {
         mPeriodicIO.drive_encoder_ticks = mDriveMotor.getSelectedSensorPosition(0);
@@ -162,14 +171,14 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                 // throttle is 0
                 stop();
             } else {
-                System.out.println(
-                    "Swerve Module Drive Demand: " + mPeriodicIO.drive_demand
-                );
+                System.out.println(mConstants.kName + " drive demand: " + mPeriodicIO.drive_demand);
                 mDriveMotor.set(ControlMode.PercentOutput, mPeriodicIO.drive_demand);
             }
+        } else if (mControlState == ControlState.VELOCITY) {
+            System.out.println(mConstants.kName + " drive demand: " + mPeriodicIO.drive_demand);
+            mDriveMotor.set(ControlMode.Velocity, mPeriodicIO.drive_demand);
         }
         var offsetDemand = ((int) (mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset)) & 0xFFF;
-        System.out.println(mConstants.kAzimuthMotorName + " act: " + mPeriodicIO.azimuth_demand + " demmand: " + offsetDemand);
         mAzimuthMotor.set(ControlMode.Position, offsetDemand);
     }
 
@@ -189,6 +198,8 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                     synchronized (SwerveModule.this) {
                         switch (mControlState) {
                             case OPEN_LOOP:
+                                break;
+                            case VELOCITY:
                                 break;
                             default:
                                 System.out.println(
@@ -216,6 +227,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                 Constants.kLongCANTimeoutMs
             );
         }
+        mDriveMotor.setSelectedSensorPosition(0, 0, Constants.kCANTimeoutMs);
     }
 
     private int getAzimuthPosAbsolute() {
@@ -277,8 +289,19 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     }
 
     @Override
+    public double getDriveVelocityDemand() {
+        return mPeriodicIO.drive_demand;
+    }
+
+    @Override
     public double getDriveError() {
         return mDriveMotor.getClosedLoopError(0);
+    }
+
+    @Override
+    public double getDriveDistance() {
+        return (mDriveMotor.getSelectedSensorPosition(0) / Drive.DRIVE_ENCODER_PPR)
+            * Constants.kDriveWheelDiameterInches * Math.PI;
     }
 
     /**
@@ -363,6 +386,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             " offset: " + mConstants.kAzimuthEncoderHomeOffset +
             " invertSensor: " + mConstants.kInvertAzimuthSensorPhase +
             " invertAzimuth: " + mConstants.kInvertAzimuth +
+            " encPPR: " + Drive.DRIVE_ENCODER_PPR +
             " }"
         );
     }

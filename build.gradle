@@ -34,11 +34,6 @@ deploy {
             targets << "roborio"
             directory = '/home/lvuser/deploy'
         }
-        fileTreeArtifact('visionDeploy') {
-            files = fileTree(dir: 'ZodiacVision')
-            targets << 'roborio'
-            directory = '/home/lvuser/ZodiacVision'
-        }
     }
 }
 
