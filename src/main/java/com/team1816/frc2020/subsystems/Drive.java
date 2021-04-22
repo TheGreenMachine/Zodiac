@@ -29,8 +29,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.util.Arrays;
-
 public class Drive
     extends Subsystem
     implements SwerveDrivetrain, TrackableDrivetrain, PidProvider {
@@ -238,7 +236,8 @@ public class Drive
                                         // mLogger.updateTopics();
                                         // mLogger.log();
                                     }
-                                    updatePathFollower(timestamp);
+                                  //  updatePathFollower(timestamp);
+                                    break;
                                 }
                             case TRAJECTORY_FOLLOWING:
                                 if (Constants.kIsBadlogEnabled) {
