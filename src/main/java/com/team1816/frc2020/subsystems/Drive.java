@@ -264,7 +264,7 @@ public class Drive
         );
     }
 
-    private static double rotationsToInches(double rotations) {
+    public static double rotationsToInches(double rotations) {
         return rotations * (Constants.kDriveWheelDiameterInches * Math.PI);
     }
 

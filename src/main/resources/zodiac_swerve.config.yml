@@ -57,7 +57,7 @@ subsystems:
 pcm: 8
 constants:
     trackWidth: 25 #inches
-    wheelDiameter: 4.33 #inches
+    wheelDiameter: 3.8989736842 #inches
     maxVel: 120  # 22560 native units
     maxAccel: 60
     logTeleOp: 1

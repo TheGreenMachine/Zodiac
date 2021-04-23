@@ -86,7 +86,7 @@ public class Kinematics {
         );
     }
 
-    public static Twist2d forwardKinematics(
+    public static Twist2d  forwardKinematics(
         double[] wheel_speeds,
         Rotation2d[] wheel_azimuths,
         Rotation2d prev_heading,

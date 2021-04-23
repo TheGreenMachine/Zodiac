@@ -65,7 +65,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         public PidConfig kDrivePid = PidConfig.EMPTY;
         public double kWheelDiameter = Constants.kDriveWheelDiameterInches; // Probably should tune for each individual wheel maybe
         public double kDriveTicksPerUnitDistance =
-            (1.0 / 4096.0) * (18.0 / 28.0 * 15.0 / 45.0) * (Math.PI * kWheelDiameter);
+            (1 / Drive.DRIVE_ENCODER_PPR) * (Math.PI * kWheelDiameter);
         public double kDriveDeadband = 0.01;
 
         // drive current/voltage
@@ -115,6 +115,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             );
 
         mAzimuthMotor.setSensorPhase(constants.kInvertAzimuthSensorPhase);
+        mAzimuthMotor.setNeutralMode(NeutralMode.Brake);
         mAzimuthMotor.configAllowableClosedloopError(
             0,
             constants.kAzimuthClosedLoopAllowableError,
@@ -300,8 +301,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public double getDriveDistance() {
-        return (mDriveMotor.getSelectedSensorPosition(0) / Drive.DRIVE_ENCODER_PPR)
-            * Constants.kDriveWheelDiameterInches * Math.PI;
+        return Drive.rotationsToInches(mDriveMotor.getSelectedSensorPosition(0) / Drive.DRIVE_ENCODER_PPR);
     }
 
     /**

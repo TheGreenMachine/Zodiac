@@ -59,7 +59,7 @@ constants:
     maxVel: 120 #inch/s
     maxAccel: 60 #inch/s^2
     sensorPhase: 0
-    kLooperDt: .030
+    kLooperDt: .010
     kTrackScrubFactor: 1.0
     pathKs: 2
     verbose: 0 # 0 or 1
