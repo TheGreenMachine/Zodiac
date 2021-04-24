@@ -4,8 +4,13 @@ import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.SwerveModule;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.util.DriveSignal;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provides forward and inverse kinematics equations for the robot modeling the
@@ -17,8 +22,21 @@ import com.team254.lib.util.DriveSignal;
 
 public class Kinematics {
 
+    private static Translation2d[] moduleRelativePositions = Constants.kModulePositions;
+    private static List<Translation2d> moduleRotationDirections = updateRotationDirections();
+
+    private static List<Translation2d> updateRotationDirections(){
+        List<Translation2d> directions = new ArrayList<>(moduleRelativePositions.length);
+        for(Translation2d position : moduleRelativePositions){
+            directions.add(position.rotateBy(Rotation2d.fromDegrees(90)));
+        }
+        return directions;
+    }
+
+
+
     private static final double L = Constants.kDriveWheelTrackWidthInches;
-    private static final double W = Constants.kDriveWheelTrackWidthInches;
+    private static final double W = Constants.kDriveWheelbaseLengthInches; // Intentional
     private static final double R = Math.hypot(L, W);
 
     /**
@@ -177,4 +195,31 @@ public class Kinematics {
 
         return new DriveSignal(wheel_speeds, wheel_azimuths, false);
     }
+
+    public static List<Translation2d> updateDriveVectors(Translation2d translationalVector, double rotationalMagnitude,
+                                                  Pose2d robotPose, boolean robotCentric){
+        SmartDashboard.putNumber("Vector Direction", translationalVector.direction().getDegrees());
+        //SmartDashboard.putNumber("Vector Magnitude", translationalVector.norm());
+        SmartDashboard.putNumber("Robot Velocity", translationalVector.norm());
+
+        if(!robotCentric)
+            translationalVector = translationalVector.rotateBy(robotPose.getRotation().inverse());
+        List<Translation2d> driveVectors = new ArrayList<>(4);
+        for(int i = 0; i < 4; i++){
+            driveVectors.add(translationalVector.translateBy(moduleRotationDirections.get(i).scale(rotationalMagnitude)));
+        }
+        double maxMagnitude = 1.0;
+        for(Translation2d t : driveVectors){
+            double magnitude = t.norm();
+            if(magnitude > maxMagnitude){
+                maxMagnitude = magnitude;
+            }
+        }
+        for(int i = 0; i < 4; i++){
+            Translation2d driveVector = driveVectors.get(i);
+            driveVectors.set(i, driveVector.scale(1.0/maxMagnitude));
+        }
+        return driveVectors;
+    }
+
 }

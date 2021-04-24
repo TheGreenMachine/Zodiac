@@ -1,89 +1,100 @@
 package com.team1816.frc2020.planners;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.team1816.frc2020.Constants;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.physics.DCMotorTransmission;
-import com.team254.lib.physics.DifferentialDrive;
-import com.team254.lib.trajectory.*;
-import com.team254.lib.trajectory.timing.DifferentialDriveDynamicsConstraint;
+import com.team254.lib.trajectory.DistanceView;
+import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.TrajectoryIterator;
+import com.team254.lib.trajectory.TrajectorySamplePoint;
+import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import com.team254.lib.trajectory.timing.TimingUtil;
 import com.team254.lib.util.CSVWritable;
-import com.team254.lib.util.Units;
 import com.team254.lib.util.Util;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveMotionPlanner implements CSVWritable {
+    private static DriveMotionPlanner INSTANCE;
 
-    private static final DriveMotionPlanner INSTANCE = new DriveMotionPlanner();
+    public static DriveMotionPlanner getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new DriveMotionPlanner();
+        }
+        return new DriveMotionPlanner();
+    }
 
     private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
     private static final double kMaxDTheta = Math.toRadians(5.0);
 
+    private double defaultCook = 0.5;
+    private boolean useDefaultCook = true;
+
+    private Translation2d followingCenter = Translation2d.identity();
+
     public enum FollowerType {
-        FEEDFORWARD_ONLY,
-        PURE_PURSUIT,
-        PID,
-        NONLINEAR_FEEDBACK,
+        PURE_PURSUIT
     }
 
-    FollowerType mFollowerType = FollowerType.NONLINEAR_FEEDBACK;
+    FollowerType mFollowerType = FollowerType.PURE_PURSUIT;
 
     public void setFollowerType(FollowerType type) {
         mFollowerType = type;
     }
 
-    final com.team254.lib.physics.DifferentialDrive mModel;
-
     TrajectoryIterator<TimedState<Pose2dWithCurvature>> mCurrentTrajectory;
+    public Trajectory<TimedState<Pose2dWithCurvature>> getTrajectory(){
+        return mCurrentTrajectory.trajectory();
+    }
+    public double getRemainingProgress(){
+        if(mCurrentTrajectory != null){
+            return mCurrentTrajectory.getRemainingProgress();
+        }
+        return 0.0;
+    }
     boolean mIsReversed = false;
     double mLastTime = Double.POSITIVE_INFINITY;
-    public TimedState<Pose2dWithCurvature> mSetpoint = new TimedState<>(
-        Pose2dWithCurvature.identity()
-    );
+    public TimedState<Pose2dWithCurvature> mSetpoint = new TimedState<>(Pose2dWithCurvature.identity());
     Pose2d mError = Pose2d.identity();
-    Output mOutput = new Output();
+    Translation2d mOutput = Translation2d.identity();
+    double currentTrajectoryLength = 0.0;
 
-    DifferentialDrive.ChassisState prev_velocity_ = new DifferentialDrive.ChassisState();
     double mDt = 0.0;
 
-    public DriveMotionPlanner() {
-        final DCMotorTransmission transmission = new DCMotorTransmission(
-            1.0 / Constants.kDriveKv,
-            Units.inches_to_meters(Constants.kDriveWheelRadiusInches) *
-            Units.inches_to_meters(Constants.kDriveWheelRadiusInches) *
-            Constants.kRobotLinearInertia /
-            (2.0 * Constants.kDriveKa),
-            Constants.kDriveVIntercept
-        );
-        mModel =
-            new DifferentialDrive(
-                Constants.kRobotLinearInertia,
-                Constants.kRobotAngularInertia,
-                Constants.kRobotAngularDrag,
-                Units.inches_to_meters(Constants.kDriveWheelDiameterInches / 2.0),
-                Units.inches_to_meters(
-                    Constants.kDriveWheelTrackWidthInches /
-                    2.0 *
-                    Constants.kTrackScrubFactor
-                ),
-                transmission,
-                transmission
-            );
+    public double getMaxRotationSpeed(){
+        final double kStartPoint = 0.2;
+        final double kPivotPoint = 0.5;
+        final double kEndPoint = 0.8;
+        final double kMaxSpeed = 1.0;
+        double normalizedProgress = mCurrentTrajectory.getProgress() / currentTrajectoryLength;
+        double scalar = 0.0;
+        if(kStartPoint <= normalizedProgress && normalizedProgress <= kEndPoint){
+            if(normalizedProgress <= kPivotPoint){
+                scalar = (normalizedProgress - kStartPoint) / (kPivotPoint - kStartPoint);
+            }else{
+                scalar = 1.0 - ((normalizedProgress - kPivotPoint) / (kEndPoint - kPivotPoint));
+            }
+        }
+
+        return kMaxSpeed * scalar;
     }
 
-    public void setTrajectory(
-        final TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
-    ) {
+    public DriveMotionPlanner() {
+    }
+
+    public void setTrajectory(final TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory) {
         mCurrentTrajectory = trajectory;
         mSetpoint = trajectory.getState();
+        defaultCook = trajectory.trajectory().defaultVelocity();
+        currentTrajectoryLength = trajectory.trajectory().getLastState().t();
         for (int i = 0; i < trajectory.trajectory().length(); ++i) {
             if (trajectory.trajectory().getState(i).velocity() > Util.kEpsilon) {
                 mIsReversed = false;
@@ -97,8 +108,9 @@ public class DriveMotionPlanner implements CSVWritable {
 
     public void reset() {
         mError = Pose2d.identity();
-        mOutput = new Output();
+        mOutput = Translation2d.identity();
         mLastTime = Double.POSITIVE_INFINITY;
+        useDefaultCook = true;
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory(
@@ -117,8 +129,24 @@ public class DriveMotionPlanner implements CSVWritable {
             0.0,
             max_vel,
             max_accel,
-            max_voltage
+            max_voltage,
+            0.0,
+            0.0,
+            0
         );
+    }
+
+    public Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory(
+        boolean reversed,
+        final List<Pose2d> waypoints,
+        final List<TimingConstraint<Pose2dWithCurvature>> constraints,
+        double max_vel,  // inches/s
+        double max_accel,  // inches/s^2
+        double max_voltage,
+        double default_vel,
+        int slowdown_chunks) {
+        return generateTrajectory(reversed, waypoints, constraints, 0.0, 0.0, max_vel, max_accel, max_accel, max_voltage,
+            default_vel, slowdown_chunks);
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory(
@@ -127,10 +155,12 @@ public class DriveMotionPlanner implements CSVWritable {
         final List<TimingConstraint<Pose2dWithCurvature>> constraints,
         double start_vel,
         double end_vel,
-        double max_vel, // inches/s
-        double max_accel, // inches/s^2
-        double max_voltage
-    ) {
+        double max_vel,  // inches/s
+        double max_accel,  // inches/s^2
+        double max_decel,
+        double max_voltage,
+        double default_vel,
+        int slowdown_chunks) {
         List<Pose2d> waypoints_maybe_flipped = waypoints;
         final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
         // TODO re-architect the spline generator to support reverse.
@@ -143,384 +173,144 @@ public class DriveMotionPlanner implements CSVWritable {
 
         // Create a trajectory from splines.
         Trajectory<Pose2dWithCurvature> trajectory = TrajectoryUtil.trajectoryFromSplineWaypoints(
-            waypoints_maybe_flipped,
-            kMaxDx,
-            kMaxDy,
-            kMaxDTheta
-        );
+            waypoints_maybe_flipped, kMaxDx, kMaxDy, kMaxDTheta);
 
         if (reversed) {
             List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
             for (int i = 0; i < trajectory.length(); ++i) {
-                flipped.add(
-                    new Pose2dWithCurvature(
-                        trajectory.getState(i).getPose().transformBy(flip),
-                        -trajectory.getState(i).getCurvature(),
-                        trajectory.getState(i).getDCurvatureDs()
-                    )
-                );
+                flipped.add(new Pose2dWithCurvature(trajectory.getState(i).getPose().transformBy(flip), -trajectory
+                    .getState(i).getCurvature(), trajectory.getState(i).getDCurvatureDs()));
             }
             trajectory = new Trajectory<>(flipped);
         }
         // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
         // than the specified voltage.
-        final DifferentialDriveDynamicsConstraint<Pose2dWithCurvature> drive_constraints = new DifferentialDriveDynamicsConstraint<>(
-            mModel,
-            max_voltage
-        );
+        //final CurvatureVelocityConstraint velocity_constraints = new CurvatureVelocityConstraint();
         List<TimingConstraint<Pose2dWithCurvature>> all_constraints = new ArrayList<>();
-        all_constraints.add(drive_constraints);
+        //all_constraints.add(velocity_constraints);
         if (constraints != null) {
             all_constraints.addAll(constraints);
         }
         // Generate the timed trajectory.
-        /*System.out.println("TrajectoryGenerator reversed condition: " + reversed);
-        System.out.println("################### START OF A BUNCH OF PRINTS:");
-        System.out.println(
-            "start_Vel:" +
-            start_vel +
-            ", end_vel:" +
-            end_vel +
-            ", max_vel:" +
-            max_vel +
-            ", max_accel: " +
-            max_accel
-        );*/
-        Trajectory<TimedState<Pose2dWithCurvature>> timed_trajectory = TimingUtil.timeParameterizeTrajectory(
-            reversed,
-            new DistanceView<>(trajectory),
-            kMaxDx,
-            all_constraints,
-            start_vel,
-            end_vel,
-            max_vel,
-            max_accel
-        );
+        Trajectory<TimedState<Pose2dWithCurvature>> timed_trajectory = TimingUtil.timeParameterizeTrajectory
+            (reversed, new
+                    DistanceView<>(trajectory), kMaxDx, all_constraints, start_vel, end_vel, max_vel, max_accel,
+                max_decel, slowdown_chunks);
+        timed_trajectory.setDefaultVelocity(default_vel / Constants.kPathFollowingMaxVel);
         return timed_trajectory;
+    }
+
+    /**
+     * @param followingCenter the followingCenter to set (relative to the robot's center)
+     */
+    public void setFollowingCenter(Translation2d followingCenter) {
+        this.followingCenter = followingCenter;
     }
 
     @Override
     public String toCSV() {
-        DecimalFormat fmt = new DecimalFormat("#0.000");
-        return (
-            fmt.format(mOutput.left_velocity) +
-            "," +
-            fmt.format(mOutput.right_velocity) +
-            "," +
-            fmt.format(mOutput.left_feedforward_voltage) +
-            "," +
-            fmt.format(mOutput.right_feedforward_voltage) +
-            "," +
-            mSetpoint.toCSV()
-        );
+        return mOutput.toCSV();
     }
 
-    public static class Output {
-
-        public Output() {}
-
-        public Output(
-            double left_velocity,
-            double right_velocity,
-            double left_accel,
-            double right_accel,
-            double left_feedforward_voltage,
-            double right_feedforward_voltage
-        ) {
-            this.left_velocity = left_velocity;
-            this.right_velocity = right_velocity;
-            this.left_accel = left_accel;
-            this.right_accel = right_accel;
-            this.left_feedforward_voltage = left_feedforward_voltage;
-            this.right_feedforward_voltage = right_feedforward_voltage;
-        }
-
-        public double left_velocity; // rad/s
-        public double right_velocity; // rad/s
-
-        public double left_accel; // rad/s^2
-        public double right_accel; // rad/s^2
-
-        public double left_feedforward_voltage;
-        public double right_feedforward_voltage;
-
-        public void flip() {
-            double tmp_left_velocity = left_velocity;
-            left_velocity = -right_velocity;
-            right_velocity = -tmp_left_velocity;
-
-            double tmp_left_accel = left_accel;
-            left_accel = -right_accel;
-            right_accel = -tmp_left_accel;
-
-            double tmp_left_feedforward = left_feedforward_voltage;
-            left_feedforward_voltage = -right_feedforward_voltage;
-            right_feedforward_voltage = -tmp_left_feedforward;
-        }
-    }
-
-    protected Output updatePID(
-        DifferentialDrive.DriveDynamics dynamics,
-        Pose2d current_state
-    ) {
-        DifferentialDrive.ChassisState adjusted_velocity = new DifferentialDrive.ChassisState();
-        // Feedback on longitudinal error (distance).
-        final double kPathKX = 5.0;
-        final double kPathKY = 1.0;
-        final double kPathKTheta = 5.0;
-        adjusted_velocity.linear =
-            dynamics.chassis_velocity.linear +
-            kPathKX *
-            Units.inches_to_meters(mError.getTranslation().x());
-        adjusted_velocity.angular =
-            dynamics.chassis_velocity.angular +
-            dynamics.chassis_velocity.linear *
-            kPathKY *
-            Units.inches_to_meters(mError.getTranslation().y()) +
-            kPathKTheta *
-            mError.getRotation().getRadians();
-
-        double curvature = adjusted_velocity.angular / adjusted_velocity.linear;
-        if (Double.isInfinite(curvature)) {
-            adjusted_velocity.linear = 0.0;
-            adjusted_velocity.angular = dynamics.chassis_velocity.angular;
-        }
-
-        // Compute adjusted left and right wheel velocities.
-        final DifferentialDrive.WheelState wheel_velocities = mModel.solveInverseKinematics(
-            adjusted_velocity
-        );
-        final double left_voltage =
-            dynamics.voltage.left +
-            (wheel_velocities.left - dynamics.wheel_velocity.left) /
-            mModel.left_transmission().speed_per_volt();
-        final double right_voltage =
-            dynamics.voltage.right +
-            (wheel_velocities.right - dynamics.wheel_velocity.right) /
-            mModel.right_transmission().speed_per_volt();
-
-        return new Output(
-            wheel_velocities.left,
-            wheel_velocities.right,
-            dynamics.wheel_acceleration.left,
-            dynamics.wheel_acceleration.right,
-            left_voltage,
-            right_voltage
-        );
-    }
-
-    protected Output updatePurePursuit(
-        DifferentialDrive.DriveDynamics dynamics,
-        Pose2d current_state
-    ) {
+    protected Translation2d updatePurePursuit(Pose2d current_state) {
         double lookahead_time = Constants.kPathLookaheadTime;
         final double kLookaheadSearchDt = 0.01;
-        TimedState<Pose2dWithCurvature> lookahead_state = mCurrentTrajectory
-            .preview(lookahead_time)
-            .state();
-        double actual_lookahead_distance = mSetpoint
-            .state()
-            .distance(lookahead_state.state());
-        while (
-            actual_lookahead_distance < Constants.kPathMinLookaheadDistance &&
-            mCurrentTrajectory.getRemainingProgress() > lookahead_time
-        ) {
+        TimedState<Pose2dWithCurvature> lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
+        double actual_lookahead_distance = mSetpoint.state().distance(lookahead_state.state());
+        while (actual_lookahead_distance < Constants.kPathMinLookaheadDistance &&
+            mCurrentTrajectory.getRemainingProgress() > lookahead_time) {
             lookahead_time += kLookaheadSearchDt;
             lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
-            actual_lookahead_distance =
-                mSetpoint.state().distance(lookahead_state.state());
+            actual_lookahead_distance = mSetpoint.state().distance(lookahead_state.state());
         }
         if (actual_lookahead_distance < Constants.kPathMinLookaheadDistance) {
-            lookahead_state =
-                new TimedState<>(
-                    new Pose2dWithCurvature(
-                        lookahead_state
-                            .state()
-                            .getPose()
-                            .transformBy(
-                                Pose2d.fromTranslation(
-                                    new Translation2d(
-                                        (mIsReversed ? -1.0 : 1.0) *
-                                        (
-                                            Constants.kPathMinLookaheadDistance -
-                                            actual_lookahead_distance
-                                        ),
-                                        0.0
-                                    )
-                                )
-                            ),
-                        0.0
-                    ),
-                    lookahead_state.t(),
-                    lookahead_state.velocity(),
-                    lookahead_state.acceleration()
-                );
+            lookahead_state = new TimedState<>(new Pose2dWithCurvature(lookahead_state.state()
+                .getPose().transformBy(Pose2d.fromTranslation(new Translation2d(
+                    (mIsReversed ? -1.0 : 1.0) * (Constants.kPathMinLookaheadDistance -
+                        actual_lookahead_distance), 0.0))), 0.0), lookahead_state.t()
+                , lookahead_state.velocity(), lookahead_state.acceleration());
         }
 
-        DifferentialDrive.ChassisState adjusted_velocity = new DifferentialDrive.ChassisState();
-        // Feedback on longitudinal error (distance).
-        adjusted_velocity.linear =
-            dynamics.chassis_velocity.linear +
-            Constants.kPathKX *
-            Units.inches_to_meters(mError.getTranslation().x());
+        SmartDashboard.putNumber("Path X", lookahead_state.state().getTranslation().x());
+        SmartDashboard.putNumber("Path Y", lookahead_state.state().getTranslation().y());
+        SmartDashboard.putNumber("Path Velocity", lookahead_state.velocity() / Constants.kPathFollowingMaxVel);
 
-        // Use pure pursuit to peek ahead along the trajectory and generate a new curvature.
-        final PurePursuitController.Arc<Pose2dWithCurvature> arc = new PurePursuitController.Arc<>(
-            current_state,
-            lookahead_state.state()
-        );
+        Translation2d lookaheadTranslation = new Translation2d(current_state.getTranslation(),
+            lookahead_state.state().getTranslation());
+        Rotation2d steeringDirection = lookaheadTranslation.direction();
+        double normalizedSpeed = Math.abs(mSetpoint.velocity()) / Constants.kPathFollowingMaxVel;
 
-        double curvature = 1.0 / Units.inches_to_meters(arc.radius);
-        if (Double.isInfinite(curvature)) {
-            adjusted_velocity.linear = 0.0;
-            adjusted_velocity.angular = dynamics.chassis_velocity.angular;
-        } else {
-            adjusted_velocity.angular = curvature * dynamics.chassis_velocity.linear;
+        //System.out.println("Lookahead point: " + lookahead_state.state().getTranslation().toString() + " Current State: " + current_state.getTranslation().toString() + " Lookahad translation: " + lookaheadTranslation.toString());
+
+        //System.out.println("Speed: " + normalizedSpeed + " DefaultCook: " + defaultCook + " setpoint t:" + mSetpoint.t() + " Length: " + currentTrajectoryLength);
+        if(normalizedSpeed > defaultCook || mSetpoint.t() > (currentTrajectoryLength / 2.0)){
+            useDefaultCook = false;
+        }
+        if(useDefaultCook){
+            normalizedSpeed = defaultCook;
         }
 
-        dynamics.chassis_velocity = adjusted_velocity;
-        dynamics.wheel_velocity = mModel.solveInverseKinematics(adjusted_velocity);
-        return new Output(
-            dynamics.wheel_velocity.left,
-            dynamics.wheel_velocity.right,
-            dynamics.wheel_acceleration.left,
-            dynamics.wheel_acceleration.right,
-            dynamics.voltage.left,
-            dynamics.voltage.right
-        );
+        //System.out.println("Steering direction " + steeringDirection.getDegrees() + " Speed: " + normalizedSpeed);
+
+        final Translation2d steeringVector = Translation2d.fromPolar(steeringDirection, normalizedSpeed);
+
+        //System.out.println("Pure pursuit updated, vector is: " + steeringVector.toString());
+        return steeringVector;
     }
 
-    protected Output updateNonlinearFeedback(
-        DifferentialDrive.DriveDynamics dynamics,
-        Pose2d current_state
-    ) {
-        // Implements eqn. 5.12 from https://www.dis.uniroma1.it/~labrob/pub/papers/Ramsete01.pdf
-        final double kBeta = 2.0; // >0.
-        final double kZeta = 0.7; // Damping coefficient, [0, 1].
-
-        // Compute gain parameter.
-        final double k =
-            2.0 *
-            kZeta *
-            Math.sqrt(
-                kBeta *
-                dynamics.chassis_velocity.linear *
-                dynamics.chassis_velocity.linear +
-                dynamics.chassis_velocity.angular *
-                dynamics.chassis_velocity.angular
-            );
-
-        // Compute error components.
-        final double angle_error_rads = mError.getRotation().getRadians();
-        final double sin_x_over_x = Util.epsilonEquals(angle_error_rads, 0.0, 1E-2)
-            ? 1.0
-            : mError.getRotation().sin() / angle_error_rads;
-        final DifferentialDrive.ChassisState adjusted_velocity = new DifferentialDrive.ChassisState(
-            dynamics.chassis_velocity.linear *
-            mError.getRotation().cos() +
-            k *
-            Units.inches_to_meters(mError.getTranslation().x()),
-            dynamics.chassis_velocity.angular +
-            k *
-            angle_error_rads +
-            dynamics.chassis_velocity.linear *
-            kBeta *
-            sin_x_over_x *
-            Units.inches_to_meters(mError.getTranslation().y())
-        );
-
-        // Compute adjusted left and right wheel velocities.
-        dynamics.chassis_velocity = adjusted_velocity;
-        dynamics.wheel_velocity = mModel.solveInverseKinematics(adjusted_velocity);
-
-        dynamics.chassis_acceleration.linear =
-            mDt == 0
-                ? 0.0
-                : (dynamics.chassis_velocity.linear - prev_velocity_.linear) / mDt;
-        dynamics.chassis_acceleration.angular =
-            mDt == 0
-                ? 0.0
-                : (dynamics.chassis_velocity.angular - prev_velocity_.angular) / mDt;
-
-        prev_velocity_ = dynamics.chassis_velocity;
-
-        DifferentialDrive.WheelState feedforward_voltages = mModel.solveInverseDynamics(
-            dynamics.chassis_velocity,
-            dynamics.chassis_acceleration
-        )
-            .voltage;
-
-        return new Output(
-            dynamics.wheel_velocity.left,
-            dynamics.wheel_velocity.right,
-            dynamics.wheel_acceleration.left,
-            dynamics.wheel_acceleration.right,
-            feedforward_voltages.left,
-            feedforward_voltages.right
-        );
-    }
-
-    public Output update(double timestamp, Pose2d current_state) {
-        if (mCurrentTrajectory == null) return new Output();
-
+    public Translation2d update(double timestamp, Pose2d current_state) {
+        if (mCurrentTrajectory == null){
+            //System.out.println("Trajectory is null, returning zero trajectory");
+            return Translation2d.identity();
+        }
         if (mCurrentTrajectory.getProgress() == 0.0 && !Double.isFinite(mLastTime)) {
             mLastTime = timestamp;
         }
 
         mDt = timestamp - mLastTime;
         mLastTime = timestamp;
-        TrajectorySamplePoint<TimedState<Pose2dWithCurvature>> sample_point = mCurrentTrajectory.advance(
-            mDt
-        );
+
+        current_state = current_state.transformBy(Pose2d.fromTranslation(followingCenter));
+
+        double searchStepSize = 1.0;
+        double previewQuantity = 0.0;
+        double searchDirection = 1.0;
+        double forwardDistance = distance(current_state, previewQuantity + searchStepSize);
+        double reverseDistance = distance(current_state, previewQuantity - searchStepSize);
+        searchDirection = Math.signum(reverseDistance - forwardDistance);
+        while(searchStepSize > 0.001){
+            if(Util.epsilonEquals(distance(current_state, previewQuantity), 0.0, 0.001)) break;
+            while(/* next point is closer than current point */ distance(current_state, previewQuantity + searchStepSize*searchDirection) <
+                distance(current_state, previewQuantity)) {
+                /* move to next point */
+                previewQuantity += searchStepSize*searchDirection;
+            }
+            searchStepSize /= 10.0;
+            searchDirection *= -1;
+        }
+
+        TrajectorySamplePoint<TimedState<Pose2dWithCurvature>> sample_point = mCurrentTrajectory.advance(previewQuantity);
         mSetpoint = sample_point.state();
+        /*SmartDashboard.putNumber("Path X", mSetpoint.state().getTranslation().x());
+        SmartDashboard.putNumber("Path Y", mSetpoint.state().getTranslation().y());
+        SmartDashboard.putNumber("Path Velocity", mSetpoint.velocity() / Constants.kSwerveMaxSpeedFeetPerSecond);*/
 
         if (!mCurrentTrajectory.isDone()) {
-            // Generate feedforward voltages.
-            final double velocity_m = Units.inches_to_meters(mSetpoint.velocity());
-            final double curvature_m = Units.meters_to_inches(
-                mSetpoint.state().getCurvature()
-            );
-            final double dcurvature_ds_m = Units.meters_to_inches(
-                Units.meters_to_inches(mSetpoint.state().getDCurvatureDs())
-            );
-            final double acceleration_m = Units.inches_to_meters(
-                mSetpoint.acceleration()
-            );
-            final DifferentialDrive.DriveDynamics dynamics = mModel.solveInverseDynamics(
-                new DifferentialDrive.ChassisState(velocity_m, velocity_m * curvature_m),
-                new DifferentialDrive.ChassisState(
-                    acceleration_m,
-                    acceleration_m *
-                    curvature_m +
-                    velocity_m *
-                    velocity_m *
-                    dcurvature_ds_m
-                )
-            );
             mError = current_state.inverse().transformBy(mSetpoint.state().getPose());
 
-            if (mFollowerType == FollowerType.FEEDFORWARD_ONLY) {
-                mOutput =
-                    new Output(
-                        dynamics.wheel_velocity.left,
-                        dynamics.wheel_velocity.right,
-                        dynamics.wheel_acceleration.left,
-                        dynamics.wheel_acceleration.right,
-                        dynamics.voltage.left,
-                        dynamics.voltage.right
-                    );
-            } else if (mFollowerType == FollowerType.PURE_PURSUIT) {
-                mOutput = updatePurePursuit(dynamics, current_state);
-            } else if (mFollowerType == FollowerType.PID) {
-                mOutput = updatePID(dynamics, current_state);
-            } else if (mFollowerType == FollowerType.NONLINEAR_FEEDBACK) {
-                mOutput = updateNonlinearFeedback(dynamics, current_state);
+            if (mFollowerType == FollowerType.PURE_PURSUIT) {
+                mOutput = updatePurePursuit(current_state);
             }
         } else {
             // TODO Possibly switch to a pose stabilizing controller?
-            mOutput = new Output();
+            mOutput = Translation2d.identity();
+            // System.out.println("Motion planner done, returning zero trajectory");
         }
         return mOutput;
+    }
+
+    private double distance(Pose2d current_state, double additional_progress){
+        return mCurrentTrajectory.preview(additional_progress).state().state().getPose().distance(current_state);
     }
 
     public boolean isDone() {
@@ -533,9 +323,5 @@ public class DriveMotionPlanner implements CSVWritable {
 
     public TimedState<Pose2dWithCurvature> setpoint() {
         return mSetpoint;
-    }
-
-    public static DriveMotionPlanner getInstance() {
-        return INSTANCE;
     }
 }

@@ -5,24 +5,24 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
+import com.team1816.frc2020.Kinematics;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.planners.DriveMotionPlanner;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
-import com.team1816.lib.subsystems.PidProvider;
-import com.team1816.lib.subsystems.Subsystem;
-import com.team1816.lib.subsystems.SwerveDrivetrain;
-import com.team1816.lib.subsystems.TrackableDrivetrain;
+import com.team1816.lib.subsystems.*;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
 import com.team254.lib.control.PathFollower;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveHelper;
 import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.Util;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -46,6 +46,7 @@ public class Drive
     private Path mCurrentPath = null;
 
     // control states
+    private DriveMotionPlanner motionPlanner = DriveMotionPlanner.getInstance();
     private DriveControlState mDriveControlState;
     private PigeonIMU mPigeon;
 
@@ -552,6 +553,9 @@ public class Drive
     }
 
     private void updatePathFollower(double timestamp) {
+
+        double rotationCorrection = headingController.updateRotationCorrection(pose.getRotation().getUnboundedDegrees(), timestamp);
+
         if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
             // RobotState robot_state = RobotState.getInstance();
             // Pose2d field_to_vehicle = robot_state.getLatestFieldToVehicle().getValue();
@@ -576,25 +580,32 @@ public class Drive
             //     }
             // }
         } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-            DriveMotionPlanner.Output output = mMotionPlanner.update(
-                timestamp,
-                RobotState.getInstance().getFieldToVehicle(timestamp)
-            );
+            if (!motionPlanner.isDone()) {
+                Translation2d driveVector = motionPlanner.update(timestamp, RobotState.getInstance().getRobot());
+                System.out.println("Entered====================================================================");
+                System.out.println("DRIVE VECTOR" + driveVector);
+                mPeriodicIO.forward = driveVector.x();
+                mPeriodicIO.strafe = driveVector.y();
+                mPeriodicIO.rotation = 0;
+                Kinematics.updateDriveVectors(driveVector, rotationInput);
 
-            mPeriodicIO.error = mMotionPlanner.error();
-            mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
-            if (!mOverrideTrajectory) {
-                setVelocity(
-                    new DriveSignal(
-                        radiansPerSecondToTicksPer100ms(output.left_velocity),
-                        radiansPerSecondToTicksPer100ms(output.right_velocity)
-                    ),
-                    new DriveSignal(
-                        output.left_feedforward_voltage / 12.0,
-                        output.right_feedforward_voltage / 12.0
-                    )
-                );
-
+                mPeriodicIO.error = mMotionPlanner.error();
+                mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
+                if (!mOverrideTrajectory) {
+                    setVelocity(
+                        DriveHelper.SWERVE_CLASSIC.calculateDriveSignal(
+                            mPeriodicIO.forward,
+                            mPeriodicIO.strafe,
+                            0,
+                            false,
+                            true,
+                            false
+                        ),
+                        new DriveSignal(
+                            0, 0
+                        )
+                    );
+                }
                 // mPeriodicIO.left_accel =
                 //     radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
                 // mPeriodicIO.right_accel =
