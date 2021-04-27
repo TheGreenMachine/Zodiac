@@ -189,7 +189,8 @@ public class Kinematics {
             Rotation2d.fromRadians(Math.atan2(B, C));
         wheel_azimuths[SwerveModule.kFrontRight] =
             Rotation2d.fromRadians(Math.atan2(B, D));
-        wheel_azimuths[SwerveModule.kBackLeft] = Rotation2d.fromRadians(Math.atan2(A, D));
+        wheel_azimuths[SwerveModule.kBackLeft] =
+            Rotation2d.fromRadians(Math.atan2(A, D));
         wheel_azimuths[SwerveModule.kBackRight] =
             Rotation2d.fromRadians(Math.atan2(A, C));
 

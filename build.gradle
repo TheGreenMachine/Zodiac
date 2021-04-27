@@ -62,6 +62,9 @@ dependencies {
     implementation 'org.yaml:snakeyaml:1.23'
     implementation 'gov.nist.math:jama:1.0.3'
 
+    simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
+    simulation wpi.deps.sim.driverstation(wpi.platforms.desktop, false)
+
     testImplementation 'org.mockito:mockito-core:3.6.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest:2.1'

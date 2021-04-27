@@ -23,6 +23,8 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
     protected double cos_angle_ = Double.NaN;
     protected double sin_angle_ = Double.NaN;
     protected double radians_ = Double.NaN;
+    protected double theta_degrees = 0;
+    protected double theta_radians = 0;
 
     protected Rotation2d(double x, double y, double radians) {
         cos_angle_ = x;
@@ -58,12 +60,20 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
             cos_angle_ = x;
             sin_angle_ = y;
         }
+        theta_degrees = Math.toDegrees(Math.atan2(sin_angle_, cos_angle_));
     }
 
     public Rotation2d(final Rotation2d other) {
         cos_angle_ = other.cos_angle_;
         sin_angle_ = other.sin_angle_;
         radians_ = other.radians_;
+        theta_degrees = Math.toDegrees(Math.atan2(sin_angle_, cos_angle_));
+    }
+
+    public Rotation2d(double theta_degrees){
+        cos_angle_ = Math.cos(Math.toRadians(theta_degrees));
+        sin_angle_ = Math.sin(Math.toRadians(theta_degrees));
+        this.theta_degrees = theta_degrees;
     }
 
     public Rotation2d(final Translation2d direction, boolean normalize) {
@@ -75,7 +85,7 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
     }
 
     public static Rotation2d fromDegrees(double angle_degrees) {
-        return fromRadians(Math.toRadians(angle_degrees));
+        return new Rotation2d(angle_degrees);
     }
 
     public double cos() {
@@ -107,6 +117,10 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
 
     public double getDegrees() {
         return Math.toDegrees(getRadians());
+    }
+
+    public double getUnboundedDegrees() {
+        return theta_degrees;
     }
 
     /**

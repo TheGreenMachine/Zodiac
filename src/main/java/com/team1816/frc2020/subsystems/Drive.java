@@ -14,6 +14,7 @@ import com.team1816.lib.subsystems.*;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
 import com.team254.lib.control.PathFollower;
+import com.team254.lib.control.SwerveHeadingController;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
@@ -47,6 +48,7 @@ public class Drive
 
     // control states
     private DriveMotionPlanner motionPlanner = DriveMotionPlanner.getInstance();
+    private SwerveHeadingController headingController = SwerveHeadingController.getInstance();
     private DriveControlState mDriveControlState;
     private PigeonIMU mPigeon;
 
@@ -62,6 +64,8 @@ public class Drive
     private boolean mOverrideTrajectory = false;
 
     private boolean isSlowMode;
+    private double rotationScalar = 1;
+    private boolean robotCentric = false;
     private SendableChooser<DriveHelper> driveHelperChooser;
 
     public static synchronized Drive getInstance() {
@@ -553,8 +557,8 @@ public class Drive
     }
 
     private void updatePathFollower(double timestamp) {
-
-        double rotationCorrection = headingController.updateRotationCorrection(pose.getRotation().getUnboundedDegrees(), timestamp);
+        headingController.setGoal(RobotState.getInstance().getRobot().getRotation().getUnboundedDegrees());
+        double rotationCorrection = headingController.update();
 
         if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
             // RobotState robot_state = RobotState.getInstance();
@@ -584,10 +588,17 @@ public class Drive
                 Translation2d driveVector = motionPlanner.update(timestamp, RobotState.getInstance().getRobot());
                 System.out.println("Entered====================================================================");
                 System.out.println("DRIVE VECTOR" + driveVector);
+
                 mPeriodicIO.forward = driveVector.x();
                 mPeriodicIO.strafe = driveVector.y();
                 mPeriodicIO.rotation = 0;
-                Kinematics.updateDriveVectors(driveVector, rotationInput);
+
+                double rotationInput = Util.deadBand(Util.limit(rotationCorrection
+                    * rotationScalar  * driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
+
+
+
+                Kinematics.updateDriveVectors(driveVector, rotationInput, RobotState.getInstance().getRobot(), robotCentric);
 
                 mPeriodicIO.error = mMotionPlanner.error();
                 mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();

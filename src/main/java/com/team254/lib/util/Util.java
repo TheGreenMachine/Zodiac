@@ -30,6 +30,10 @@ public class Util {
         return inRange(v, -maxMagnitude, maxMagnitude);
     }
 
+    public static double deadBand(double val, double deadband){
+        return (Math.abs(val) > Math.abs(deadband)) ? val : 0.0;
+    }
+
     /**
      * Checks if the given input is within the range (min, max), both exclusive.
      */
