@@ -6,6 +6,8 @@ plugins {
     id "com.diffplug.spotless" version "5.8.2"
 }
 
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 def ROBOT_MAIN_CLASS = "com.team1816.frc2020.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
@@ -113,7 +115,12 @@ processResources {
 task run(type: JavaExec) {
     String jniDir = "${project.buildDir}/tmp/jniExtractDir"
     environment "PATH", jniDir
-    String hal = fileTree(dir: 'build/tmp/expandedArchives', include: '**/halsim*.*' ).asPath
+    String hal = fileTree(dir: "${project.buildDir}/tmp/expandedArchives", include: 'halsim*/**/*.*').asPath
+    if (DefaultNativePlatform.currentOperatingSystem.isMacOsX()) {
+        environment "LD_LIBRARY_PATH", jniDir
+        environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
+        environment "DYLD_LIBRARY_PATH", jniDir
+    }
     environment "HALSIM_EXTENSIONS", hal
     environment "ROBOT_NAME", "zodiac_swerve"
     dependsOn(jar, simulateExternalJava)

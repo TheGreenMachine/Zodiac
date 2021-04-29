@@ -105,15 +105,17 @@ public class Robot extends TimedRobot {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             var robotName = System.getenv("ROBOT_NAME");
             if (robotName == null) robotName = "default";
-            var filePath = "/home/lvuser/" + robotName + "_" + logFile + ".bag";
+            var logFileDir = "/home/lvuser/";
             // if there is a usb drive use it
             if (Files.exists(Path.of("/media/sda1"))) {
-                filePath = "/media/sda1/" + robotName + "_" + logFile + ".bag";
+                logFileDir = "/media/sda1/";
             }
             if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                filePath =
-                    System.getenv("temp") + "\\" + robotName + "_" + logFile + ".bag";
+                logFileDir = System.getenv("temp") + "\\";
+            } else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+                logFileDir = System.getProperty("user.dir") + "/";
             }
+            var filePath = logFileDir + robotName + "_" + logFile + ".bag";
             logger = BadLog.init(filePath);
 
             BadLog.createValue(
