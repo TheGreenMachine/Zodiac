@@ -116,7 +116,7 @@ task run(type: JavaExec) {
     String jniDir = "${project.buildDir}/tmp/jniExtractDir"
     environment "PATH", jniDir
     String hal = fileTree(dir: "${project.buildDir}/tmp/expandedArchives", include: 'halsim*/**/*.*').asPath
-    if (DefaultNativePlatform.currentOperatingSystem.isMacOsX()) {
+    if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
         environment "LD_LIBRARY_PATH", jniDir
         environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
         environment "DYLD_LIBRARY_PATH", jniDir
