@@ -1,25 +1,20 @@
 package com.team1816.frc2020.planners;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.team1816.frc2020.Constants;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.trajectory.DistanceView;
-import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.TrajectoryIterator;
-import com.team254.lib.trajectory.TrajectorySamplePoint;
-import com.team254.lib.trajectory.TrajectoryUtil;
+import com.team254.lib.trajectory.*;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import com.team254.lib.trajectory.timing.TimingUtil;
 import com.team254.lib.util.CSVWritable;
 import com.team254.lib.util.Util;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DriveMotionPlanner implements CSVWritable {
     private static DriveMotionPlanner INSTANCE;
@@ -50,10 +45,12 @@ public class DriveMotionPlanner implements CSVWritable {
         mFollowerType = type;
     }
 
-    TrajectoryIterator<TimedState<Pose2dWithCurvature>> mCurrentTrajectory;
+    static TrajectoryIterator<TimedState<Pose2dWithCurvature>> mCurrentTrajectory;
+
     public Trajectory<TimedState<Pose2dWithCurvature>> getTrajectory(){
         return mCurrentTrajectory.trajectory();
     }
+
     public double getRemainingProgress(){
         if(mCurrentTrajectory != null){
             return mCurrentTrajectory.getRemainingProgress();
@@ -87,7 +84,8 @@ public class DriveMotionPlanner implements CSVWritable {
         return kMaxSpeed * scalar;
     }
 
-    public DriveMotionPlanner() {
+    private DriveMotionPlanner() {
+        mCurrentTrajectory = null;
     }
 
     public void setTrajectory(final TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory) {
@@ -95,6 +93,7 @@ public class DriveMotionPlanner implements CSVWritable {
         mSetpoint = trajectory.getState();
         defaultCook = trajectory.trajectory().defaultVelocity();
         currentTrajectoryLength = trajectory.trajectory().getLastState().t();
+        System.out.println("CURRENT TRAJECTORY LENGTH======= " + currentTrajectoryLength);
         for (int i = 0; i < trajectory.trajectory().length(); ++i) {
             if (trajectory.trajectory().getState(i).velocity() > Util.kEpsilon) {
                 mIsReversed = false;
@@ -314,6 +313,7 @@ public class DriveMotionPlanner implements CSVWritable {
     }
 
     public boolean isDone() {
+//        System.out.println("CURRENT TRAJECTORY IN .isDone(): " + (mCurrentTrajectory != null));
         return mCurrentTrajectory != null && mCurrentTrajectory.isDone();
     }
 

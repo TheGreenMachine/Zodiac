@@ -176,7 +176,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                 mDriveMotor.set(ControlMode.PercentOutput, mPeriodicIO.drive_demand);
             }
         } else if (mControlState == ControlState.VELOCITY) {
-            System.out.println(mConstants.kName + " drive demand: " + mPeriodicIO.drive_demand);
+//            System.out.println(mConstants.kName + " drive demand: " + mPeriodicIO.drive_demand);
             mDriveMotor.set(ControlMode.Velocity, mPeriodicIO.drive_demand);
         }
         var offsetDemand = ((int) (mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset)) & 0xFFF;

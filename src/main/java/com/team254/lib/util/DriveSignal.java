@@ -1,9 +1,12 @@
 package com.team254.lib.util;
 
+import com.team1816.frc2020.Constants;
+import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.SwerveModule;
 import com.team254.lib.geometry.Rotation2d;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 /**
  * A drivetrain signal containing the speed and azimuth for each wheel
@@ -42,6 +45,18 @@ public class DriveSignal {
 
     public double[] getWheelSpeeds() {
         return mWheelSpeeds;
+    }
+
+    public DriveSignal toVelocity() {
+        return new DriveSignal(
+            Arrays.stream(this.mWheelSpeeds)
+                .map(x ->
+                    x * Drive.inchesPerSecondToTicksPer100ms(Constants.kPathFollowingMaxVel)
+                )
+                .toArray(),
+            this.mWheelAzimuths,
+            this.mBrakeMode
+        );
     }
 
     public Rotation2d[] getWheelAzimuths() {

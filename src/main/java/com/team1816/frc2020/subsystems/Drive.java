@@ -10,7 +10,10 @@ import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.planners.DriveMotionPlanner;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
-import com.team1816.lib.subsystems.*;
+import com.team1816.lib.subsystems.PidProvider;
+import com.team1816.lib.subsystems.Subsystem;
+import com.team1816.lib.subsystems.SwerveDrivetrain;
+import com.team1816.lib.subsystems.TrackableDrivetrain;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
 import com.team254.lib.control.PathFollower;
@@ -49,7 +52,7 @@ public class Drive
     // control states
     private DriveMotionPlanner motionPlanner = DriveMotionPlanner.getInstance();
     private SwerveHeadingController headingController = SwerveHeadingController.getInstance();
-    private DriveControlState mDriveControlState;
+    private DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
     private PigeonIMU mPigeon;
 
     // hardware states
@@ -99,7 +102,7 @@ public class Drive
         mIsBrakeMode = false;
         setBrakeMode(mIsBrakeMode);
 
-        mMotionPlanner = new DriveMotionPlanner();
+        mMotionPlanner = DriveMotionPlanner.getInstance();
     }
 
     public double getHeadingDegrees() {
@@ -281,7 +284,7 @@ public class Drive
         return inches / (Constants.kDriveWheelDiameterInches * Math.PI);
     }
 
-    private static double inchesPerSecondToTicksPer100ms(double inches_per_second) {
+    public static double inchesPerSecondToTicksPer100ms(double inches_per_second) {
         return inchesToRotations(inches_per_second) * DRIVE_ENCODER_PPR / 10.0;
     }
 
@@ -586,8 +589,7 @@ public class Drive
         } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             if (!motionPlanner.isDone()) {
                 Translation2d driveVector = motionPlanner.update(timestamp, RobotState.getInstance().getRobot());
-                System.out.println("Entered====================================================================");
-                System.out.println("DRIVE VECTOR" + driveVector);
+//                System.out.println("DRIVE VECTOR" + driveVector);
 
                 mPeriodicIO.forward = driveVector.x();
                 mPeriodicIO.strafe = driveVector.y();
@@ -595,8 +597,6 @@ public class Drive
 
                 double rotationInput = Util.deadBand(Util.limit(rotationCorrection
                     * rotationScalar  * driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
-
-
 
                 Kinematics.updateDriveVectors(driveVector, rotationInput, RobotState.getInstance().getRobot(), robotCentric);
 
@@ -611,7 +611,7 @@ public class Drive
                             false,
                             true,
                             false
-                        ),
+                        ).toVelocity(),
                         new DriveSignal(
                             0, 0
                         )
