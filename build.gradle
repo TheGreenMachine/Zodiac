@@ -110,6 +110,16 @@ processResources {
     }
 }
 
+task run(type: JavaExec) {
+    environment "PATH", "D:\\Source\\GreenMachine\\Zodiac\\build\\tmp\\jniExtractDir"
+    ConfigurableFileTree hal = fileTree(dir: 'build/tmp/expandedArchives', include: '**/halsim*.dll' )
+    environment "HALSIM_EXTENSIONS","D:\\Source\\GreenMachine\\Zodiac\\build\\tmp\\expandedArchives\\halsim_gui-2021.3.1-windowsx86-64.zip_323ba05d82fed35fbc1ea2c04141a0a5\\windows\\x86-64\\shared\\halsim_gui.dll;D:\\Source\\GreenMachine\\Zodiac\\build\\tmp\\expandedArchives\\halsim_ds_socket-2021.3.1-windowsx86-64.zip_5f77b11b08590618ca2ba5550844833c\\windows\\x86-64\\shared\\halsim_ds_socket.dll"
+    environment "ROBOT_NAME", "zodiac_swerve"
+    dependsOn(jar, simulateExternalJava)
+    classpath = files(jar)
+    jvmArgs "-Djava.library.path=D:\\Source\\GreenMachine\\Zodiac\\build\\tmp\\jniExtractDir"
+}
+
 wrapper {
     gradleVersion = '6.7.1'
 }
