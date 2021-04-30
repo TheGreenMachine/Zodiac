@@ -110,10 +110,12 @@ public class Robot extends TimedRobot {
             if (Files.exists(Path.of("/media/sda1"))) {
                 logFileDir = "/media/sda1/";
             }
-            if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                logFileDir = System.getenv("temp") + "\\";
-            } else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-                logFileDir = System.getProperty("user.dir") + "/";
+            if (RobotBase.isSimulation()) {
+                if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                    logFileDir = System.getenv("temp") + "\\";
+                } else {
+                    logFileDir = System.getProperty("user.dir") + "/";
+                }
             }
             var filePath = logFileDir + robotName + "_" + logFile + ".bag";
             logger = BadLog.init(filePath);
