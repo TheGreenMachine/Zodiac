@@ -29,6 +29,7 @@ import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Util;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -70,6 +71,8 @@ public class Drive
     private double rotationScalar = 1;
     private boolean robotCentric = false;
     private SendableChooser<DriveHelper> driveHelperChooser;
+
+    private final Field2d smartDashboardField = new Field2d();
 
     public static synchronized Drive getInstance() {
         if (mInstance == null) {
@@ -191,6 +194,13 @@ public class Drive
 
     @Override
     public synchronized void writePeriodicOutputs() {
+        var fieldToVehicle = RobotState.getInstance().getFieldToVehicle(getTimestamp());
+        var pose = new edu.wpi.first.wpilibj.geometry.Pose2d(
+            fieldToVehicle.getTranslation().x(),
+            fieldToVehicle.getTranslation().y(),
+            fieldToVehicle.getRotation()
+        );
+        smartDashboardField.setRobotPose(pose);
         for (int i = 0; i < mModules.length; i++) {
             if (mModules[i] != null) {
                 if (mDriveControlState == DriveControlState.OPEN_LOOP) {
@@ -521,8 +531,8 @@ public class Drive
             setBrakeMode(true);
             mOverrideTrajectory = false;
             mMotionPlanner.reset();
-            mMotionPlanner.setTrajectory(trajectory);
             mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
+            mMotionPlanner.setTrajectory(trajectory);
         }
     }
 
@@ -588,7 +598,10 @@ public class Drive
             // }
         } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             if (!motionPlanner.isDone()) {
-                Translation2d driveVector = motionPlanner.update(timestamp, RobotState.getInstance().getRobot());
+                System.out.println("CURRENT ROBOT STATE: " + RobotState.getInstance().getFieldToVehicle(timestamp));
+                System.out.println("=========[===============================");
+                System.out.println("OTHER ROBOT STATE: " + RobotState.getInstance().getLatestFieldToVehicle());
+                Translation2d driveVector = motionPlanner.update(timestamp, RobotState.getInstance().getFieldToVehicle(timestamp));
 //                System.out.println("DRIVE VECTOR" + driveVector);
 
                 mPeriodicIO.forward = driveVector.x();
@@ -598,7 +611,7 @@ public class Drive
                 double rotationInput = Util.deadBand(Util.limit(rotationCorrection
                     * rotationScalar  * driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
 
-                Kinematics.updateDriveVectors(driveVector, rotationInput, RobotState.getInstance().getRobot(), robotCentric);
+                Kinematics.updateDriveVectors(driveVector, rotationInput, RobotState.getInstance().getFieldToVehicle(timestamp), robotCentric);
 
                 mPeriodicIO.error = mMotionPlanner.error();
                 mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
@@ -755,6 +768,7 @@ public class Drive
         driveHelperChooser = new SendableChooser<>();
         driveHelperChooser.setDefaultOption("Swerve Classic", DriveHelper.SWERVE_CLASSIC);
         SmartDashboard.putData("Drive Algorithm", driveHelperChooser);
+        SmartDashboard.putData("Field", smartDashboardField);
 
         SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
         SmartDashboard

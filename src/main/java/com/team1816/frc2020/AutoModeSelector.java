@@ -131,7 +131,7 @@ public class AutoModeSelector {
     }
 
     public void setHardwareFailure(boolean hasFailed) {
-        hardwareFailure = hasFailed;
+//        hardwareFailure = hasFailed;
     }
 
     public void updateModeCreator() {
