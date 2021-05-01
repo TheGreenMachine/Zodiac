@@ -35,6 +35,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Drive
     extends Subsystem
     implements SwerveDrivetrain, TrackableDrivetrain, PidProvider {
@@ -57,6 +61,15 @@ public class Drive
     private DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
     private PigeonIMU mPigeon;
     private final RobotState mRobotState = RobotState.getInstance();
+
+    //Odometry variables
+    Pose2d pose;
+    double distanceTraveled;
+    double currentVelocity = 0;
+    double lastUpdateTimestamp = 0;
+    public Pose2d getPose(){
+        return pose;
+    }
 
     // hardware states
     private boolean mIsBrakeMode;
@@ -90,10 +103,10 @@ public class Drive
         mPeriodicIO = new PeriodicIO();
 
         // start all Talons in open loop mode
-        mModules[SwerveModule.kFrontLeft] = factory.getSwerveModule(NAME, "frontLeft");
-        mModules[SwerveModule.kFrontRight] = factory.getSwerveModule(NAME, "frontRight");
-        mModules[SwerveModule.kBackLeft] = factory.getSwerveModule(NAME, "backLeft");
-        mModules[SwerveModule.kBackRight] = factory.getSwerveModule(NAME, "backRight");
+        mModules[SwerveModule.kFrontLeft] = factory.getSwerveModule(NAME, "frontLeft", Constants.kFrontLeftModulePosition);
+        mModules[SwerveModule.kFrontRight] = factory.getSwerveModule(NAME, "frontRight", Constants.kFrontRightModulePosition);
+        mModules[SwerveModule.kBackLeft] = factory.getSwerveModule(NAME, "backLeft", Constants.kBackLeftModulePosition);
+        mModules[SwerveModule.kBackRight] = factory.getSwerveModule(NAME, "backRight", Constants.kBackRightModulePosition);
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
@@ -213,6 +226,56 @@ public class Drive
                 }
                 mModules[i].writePeriodicOutputs();
             }
+        }
+    }
+
+    public synchronized void alternatePoseUpdate(){
+        double x = 0.0;
+        double y = 0.0;
+        Rotation2d heading = Rotation2d.fromDegrees(-mPigeon.getFusedHeading());  // temporary heading, some yaw calculation is being done here
+
+        double[] distances = new double[4];
+
+        for(int i = 0; i < 4; i++){
+            mModules[i].updatePose(heading);
+            double distance = mModules[i].getEstimatedRobotPose().getTranslation().distance(pose.getTranslation());
+            distances[i] = distance;
+        }
+
+        Arrays.sort(distances); // Doing some kind of sort for some reason, not sure why
+
+        List<SwerveModule> modulesToUse = new ArrayList<>();
+        double firstDifference = distances[1] - distances[0];
+        double secondDifference = distances[2] - distances[1];
+        double thirdDifference = distances[3] - distances[2];
+        if(secondDifference > (1.5 * firstDifference)){
+            modulesToUse.add(mModules[0]);
+            modulesToUse.add(mModules[1]);
+        }else if(thirdDifference > (1.5 * firstDifference)){
+            modulesToUse.add(mModules[0]);
+            modulesToUse.add(mModules[1]);
+            modulesToUse.add(mModules[2]);
+        }else{
+            modulesToUse.add(mModules[0]);
+            modulesToUse.add(mModules[1]);
+            modulesToUse.add(mModules[2]);
+            modulesToUse.add(mModules[3]);
+        }
+
+        SmartDashboard.putNumber("Modules Used", modulesToUse.size());
+
+        for(SwerveModule m : modulesToUse){
+            x += m.getEstimatedRobotPose().getTranslation().x();
+            y += m.getEstimatedRobotPose().getTranslation().y();
+        }
+
+        Pose2d updatedPose = new Pose2d(new Translation2d(x / modulesToUse.size(), y / modulesToUse.size()), heading);
+        double deltaPos = updatedPose.getTranslation().distance(pose.getTranslation());
+        distanceTraveled += deltaPos;
+        pose = updatedPose;
+
+        for (SwerveModule mModule : mModules) {
+            mModule.resetPose(pose);
         }
     }
 
@@ -569,6 +632,7 @@ public class Drive
     private void updatePathFollower(double timestamp) {
         headingController.setGoal(RobotState.getInstance().getRobot().getRotation().getUnboundedDegrees());
         double rotationCorrection = headingController.update();
+        alternatePoseUpdate();
 
         if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
             // RobotState robot_state = RobotState.getInstance();
@@ -598,7 +662,7 @@ public class Drive
                 System.out.println("CURRENT ROBOT STATE: " + RobotState.getInstance().getFieldToVehicle(timestamp));
                 System.out.println("=========[===============================");
                 System.out.println("OTHER ROBOT STATE: " + RobotState.getInstance().getLatestFieldToVehicle());
-                Translation2d driveVector = motionPlanner.update(timestamp, RobotState.getInstance().getFieldToVehicle(timestamp));
+                Translation2d driveVector = motionPlanner.update(timestamp, pose);
 //                System.out.println("DRIVE VECTOR" + driveVector);
 
                 mPeriodicIO.forward = driveVector.x();
@@ -608,7 +672,7 @@ public class Drive
                 double rotationInput = Util.deadBand(Util.limit(rotationCorrection
                     * rotationScalar  * driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
 
-                Kinematics.updateDriveVectors(driveVector, rotationInput, RobotState.getInstance().getFieldToVehicle(timestamp), robotCentric);
+                Kinematics.updateDriveVectors(driveVector, rotationInput, pose, robotCentric);
 
                 mPeriodicIO.error = mMotionPlanner.error();
                 mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();

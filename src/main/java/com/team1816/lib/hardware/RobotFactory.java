@@ -2,15 +2,16 @@ package com.team1816.lib.hardware;
 
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.subsystems.SwerveModule;
 import com.team1816.lib.hardware.components.CanifierImpl;
 import com.team1816.lib.hardware.components.GhostCanifier;
 import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.hardware.components.pcm.*;
+import com.team254.lib.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import java.util.List;
+
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public class RobotFactory {
 
@@ -151,7 +152,7 @@ public class RobotFactory {
         return hardwareId != null && hardwareId > -1;
     }
 
-    public SwerveModule getSwerveModule(String subsystemName, String name) {
+    public SwerveModule getSwerveModule(String subsystemName, String name, Translation2d startPos) {
         var subsystem = getSubsystem(subsystemName);
         SwerveModuleConfig module = subsystem.swerveModules.get(name);
         if (module == null) {
@@ -171,7 +172,7 @@ public class RobotFactory {
         swerveConstants.kAzimuthEncoderHomeOffset = module.encoderOffset;
         swerveConstants.kInvertAzimuthSensorPhase = module.invertSensorPhase;
 
-        return new SwerveModule(subsystemName, swerveConstants);
+        return new SwerveModule(subsystemName, swerveConstants, startPos);
     }
 
     @Nonnull

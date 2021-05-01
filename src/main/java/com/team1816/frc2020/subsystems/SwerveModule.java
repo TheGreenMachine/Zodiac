@@ -12,7 +12,9 @@ import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.ISwerveModule;
 import com.team1816.lib.subsystems.Subsystem;
+import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -83,6 +85,10 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     private ControlState mControlState = ControlState.OPEN_LOOP;
     private boolean isBrakeMode = false;
     private double driveEncoderSimPosition = 0;
+    private double previousEncDistance = 0;
+    private Translation2d position;
+    private final Translation2d startingPosition;
+    private Pose2d estimatedRobotPose = new Pose2d();
 
     // Constants
     private final SwerveModuleConstants mConstants;
@@ -93,7 +99,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     public static final int kBackRight = 2;
     public static final int kBackLeft = 3;
 
-    public SwerveModule(String subsystemName, SwerveModuleConstants constants) {
+    public SwerveModule(String subsystemName, SwerveModuleConstants constants, Translation2d startingPosition) {
         super(constants.kName);
         mConstants = constants;
         System.out.println(
@@ -124,7 +130,71 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             Constants.kLongCANTimeoutMs
         );
         System.out.println("  " + this);
+
+
+        this.startingPosition = startingPosition;
         zeroSensors();
+    }
+
+    public synchronized void updatePose(Rotation2d robotHeading) {
+        double currentEncDistance = getDriveDistance();
+        double deltaEncDistance = (currentEncDistance - previousEncDistance);
+        Rotation2d currentWheelAngle = getFieldCentricAngle(robotHeading);
+        Translation2d deltaPosition = new Translation2d(currentWheelAngle.cos() * deltaEncDistance,
+            currentWheelAngle.sin() * deltaEncDistance);
+
+//        double xScrubFactor = Constants.kXScrubFactor;
+//        double yScrubFactor = Constants.kYScrubFactor;
+//
+//        if (Util.epsilonEquals(Math.signum(deltaPosition.x()), 1.0)) {
+//            if (standardCarpetDirection) {
+//                xScrubFactor = 1.0;
+//            } else {
+//
+//            }
+//        } else {
+//            if (standardCarpetDirection) {
+//
+//            } else {
+//                xScrubFactor = 1.0;
+//            }
+//        }
+//        if (Util.epsilonEquals(Math.signum(deltaPosition.y()), 1.0)) {
+//            if (standardCarpetDirection) {
+//                yScrubFactor = 1.0;
+//            } else {
+//
+//            }
+//        } else {
+//            if (standardCarpetDirection) {
+//
+//            } else {
+//                yScrubFactor = 1.0;
+//            }
+//        }
+
+        deltaPosition = new Translation2d(deltaPosition.x() /* * xScrubFactor */ ,
+            deltaPosition.y() /* * yScrubFactor */);
+        Translation2d updatedPosition = position.translateBy(deltaPosition);
+        Pose2d staticWheelPose = new Pose2d(updatedPosition, robotHeading);
+        Pose2d robotPose = staticWheelPose.transformBy(Pose2d.fromTranslation(startingPosition).inverse());
+        position = updatedPosition;
+        estimatedRobotPose = robotPose;
+        previousEncDistance = currentEncDistance;
+    }
+
+    public Rotation2d getFieldCentricAngle(Rotation2d robotHeading) {
+        Rotation2d normalizedAngle = getAngleToDegrees();
+        return normalizedAngle.rotateBy(robotHeading);
+    }
+
+    public Pose2d getEstimatedRobotPose() {
+        return estimatedRobotPose;
+    }
+
+    public synchronized void resetPose(Pose2d robotPose) {
+        Translation2d modulePosition = robotPose.transformBy(Pose2d.fromTranslation(startingPosition)).getTranslation();
+        position = modulePosition;
     }
 
     public synchronized void setOpenLoop(double speed, Rotation2d azimuth) {
@@ -167,6 +237,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     public void setOpenLoopRampRate(double openLoopRampRate) {
         mDriveMotor.configOpenloopRamp(openLoopRampRate, Constants.kCANTimeoutMs);
     }
+
 
     @Override
     public void writePeriodicOutputs() {
@@ -343,6 +414,10 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     public synchronized Rotation2d getAngle() {
         return Rotation2d.fromRadians((encoderUnitsToRadians(getAngleEncoderUnits())));
+    }
+
+    public synchronized Rotation2d getAngleToDegrees() {
+        return Rotation2d.fromDegrees((180 / Math.PI) * ((encoderUnitsToRadians(getAngleEncoderUnits()))));
     }
 
     public synchronized double getRawAngle() {
