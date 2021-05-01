@@ -26,6 +26,7 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveHelper;
 import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.Units;
 import com.team254.lib.util.Util;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -55,6 +56,7 @@ public class Drive
     private SwerveHeadingController headingController = SwerveHeadingController.getInstance();
     private DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
     private PigeonIMU mPigeon;
+    private final RobotState mRobotState = RobotState.getInstance();
 
     // hardware states
     private boolean mIsBrakeMode;
@@ -194,13 +196,8 @@ public class Drive
 
     @Override
     public synchronized void writePeriodicOutputs() {
-        var fieldToVehicle = RobotState.getInstance().getFieldToVehicle(getTimestamp());
-        var pose = new edu.wpi.first.wpilibj.geometry.Pose2d(
-            fieldToVehicle.getTranslation().x(),
-            fieldToVehicle.getTranslation().y(),
-            fieldToVehicle.getRotation()
-        );
-        smartDashboardField.setRobotPose(pose);
+        var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
+        smartDashboardField.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY())+3.5, rot2d);
         for (int i = 0; i < mModules.length; i++) {
             if (mModules[i] != null) {
                 if (mDriveControlState == DriveControlState.OPEN_LOOP) {
