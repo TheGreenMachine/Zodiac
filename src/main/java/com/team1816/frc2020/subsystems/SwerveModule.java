@@ -14,6 +14,7 @@ import com.team1816.lib.subsystems.ISwerveModule;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.Util;
+import edu.wpi.first.wpilibj.RobotBase;
 
 import java.util.List;
 
@@ -82,9 +83,11 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     private PeriodicIO mPeriodicIO = new PeriodicIO();
     private ControlState mControlState = ControlState.OPEN_LOOP;
     private boolean isBrakeMode = false;
+    private double driveEncoderSimPosition = 0;
 
     // Constants
     private final SwerveModuleConstants mConstants;
+    private static final double TICK_RATIO_PER_LOOP = Constants.kLooperDt / 0.1;
 
     public static final int kFrontLeft = 0;
     public static final int kFrontRight = 1;
@@ -146,13 +149,23 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public void readPeriodicInputs() {
-        mPeriodicIO.drive_encoder_ticks = mDriveMotor.getSelectedSensorPosition(0);
-        mPeriodicIO.distance =
-            (int) encoderUnitsToDistance(mPeriodicIO.drive_encoder_ticks);
-        mPeriodicIO.velocity_ticks_per_100ms = mDriveMotor.getSelectedSensorVelocity(0);
-        mPeriodicIO.azimuth_encoder_ticks =
-            mAzimuthMotor.getSelectedSensorPosition(0) -
-                mConstants.kAzimuthEncoderHomeOffset;
+        if (RobotBase.isSimulation()) {
+            driveEncoderSimPosition += mPeriodicIO.drive_demand * TICK_RATIO_PER_LOOP;
+            mPeriodicIO.drive_encoder_ticks = driveEncoderSimPosition;
+            mPeriodicIO.distance = (int) encoderUnitsToDistance(mPeriodicIO.drive_encoder_ticks);
+            mPeriodicIO.velocity_ticks_per_100ms = mPeriodicIO.drive_demand;
+            mPeriodicIO.azimuth_encoder_ticks = mPeriodicIO.azimuth_demand;
+
+        } else {
+            mPeriodicIO.drive_encoder_ticks = mDriveMotor.getSelectedSensorPosition(0);
+            mPeriodicIO.distance =
+                (int) encoderUnitsToDistance(mPeriodicIO.drive_encoder_ticks);
+            mPeriodicIO.velocity_ticks_per_100ms = mDriveMotor.getSelectedSensorVelocity(0);
+            mPeriodicIO.azimuth_encoder_ticks =
+                (mConstants.kInvertAzimuthSensorPhase ? -1 : 1) *
+                    ((int) mAzimuthMotor.getSelectedSensorPosition(0) & 0xFFF) -
+                    mConstants.kAzimuthEncoderHomeOffset;
+        }
     }
 
     public void setOpenLoopRampRate(double openLoopRampRate) {
@@ -272,11 +285,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public double getAzimuthPosition() {
-        return (
-            (mConstants.kInvertAzimuthSensorPhase ? -1 : 1) *
-                ((int) mAzimuthMotor.getSelectedSensorPosition(0) & 0xFFF) -
-                mConstants.kAzimuthEncoderHomeOffset
-        );
+        return mPeriodicIO.azimuth_encoder_ticks;
     }
 
     @Override
@@ -286,7 +295,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public double getDriveVelocity() {
-        return mDriveMotor.getSelectedSensorVelocity(0);
+        return mPeriodicIO.velocity_ticks_per_100ms;
     }
 
     @Override

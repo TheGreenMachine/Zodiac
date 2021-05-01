@@ -4,6 +4,7 @@ import com.team1816.frc2020.auto.modes.modes2020.*;
 import com.team1816.frc2020.auto.modes.modes2021.*;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Optional;
@@ -131,7 +132,9 @@ public class AutoModeSelector {
     }
 
     public void setHardwareFailure(boolean hasFailed) {
-//        hardwareFailure = hasFailed;
+        if (RobotBase.isReal()) {
+            hardwareFailure = hasFailed;
+        }
     }
 
     public void updateModeCreator() {
