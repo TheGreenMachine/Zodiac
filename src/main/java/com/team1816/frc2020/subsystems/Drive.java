@@ -26,7 +26,10 @@ import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider {
@@ -61,6 +64,12 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private boolean mOverrideTrajectory = false;
 
     private boolean isSlowMode;
+
+    private final RobotState mRobotState = RobotState.getInstance();
+
+    private final Field2d fieldSim = new Field2d();
+    private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
+    private final double tickRatioPerLoop = Constants.kLooperDt/.1d;
 
     public static synchronized Drive getInstance() {
         if (mInstance == null) {
@@ -195,25 +204,33 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public synchronized void readPeriodicInputs() {
-        double prevLeftTicks = mPeriodicIO.left_position_ticks;
-        double prevRightTicks = mPeriodicIO.right_position_ticks;
-        mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
-        mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
-        mPeriodicIO.left_velocity_ticks_per_100ms =
-            mLeftMaster.getSelectedSensorVelocity(0);
-        mPeriodicIO.right_velocity_ticks_per_100ms =
-            mRightMaster.getSelectedSensorVelocity(0);
-        if (mPigeon.getLastError() != ErrorCode.OK) {
-            ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
-            //    System.out.println("Pigeon error detected, maybe reinitialized");
+        if(RobotBase.isSimulation()) {
+            leftEncoderSimPosition += mPeriodicIO.left_demand * tickRatioPerLoop;
+            rightEncoderSimPosition += mPeriodicIO.right_demand * tickRatioPerLoop;
+            mPeriodicIO.left_position_ticks = leftEncoderSimPosition;
+            mPeriodicIO.right_position_ticks = rightEncoderSimPosition;
+            mPeriodicIO.left_velocity_ticks_per_100ms = mPeriodicIO.left_demand;
+            mPeriodicIO.right_velocity_ticks_per_100ms = mPeriodicIO.right_demand;
+            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(getDesiredHeading());
+            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
+            fieldSim.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY())+3.5, rot2d);
+        } else {
+            mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
+            mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
+            mPeriodicIO.left_velocity_ticks_per_100ms =
+                mLeftMaster.getSelectedSensorVelocity(0);
+            mPeriodicIO.right_velocity_ticks_per_100ms =
+                mRightMaster.getSelectedSensorVelocity(0);
+            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
         }
-        mPeriodicIO.gyro_heading_no_offset =
-            Rotation2d.fromDegrees(mPigeon.getFusedHeading());
-        mPeriodicIO.gyro_heading =
-            mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
-        mPeriodicIO.left_error = mLeftMaster.getClosedLoopError(0);
-        mPeriodicIO.right_error = mRightMaster.getClosedLoopError(0);
-        // System.out.println("control state: " + mDriveControlState + ", left: " + mPeriodicIO.left_demand + ", right: " + mPeriodicIO.right_demand);
+        mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
+        if (mDriveControlState == DriveControlState.OPEN_LOOP) {
+            mPeriodicIO.left_error = 0;
+            mPeriodicIO.right_error = 0;
+        } else {
+            mPeriodicIO.left_error = mLeftMaster.getClosedLoopError(0);
+            mPeriodicIO.right_error = mRightMaster.getClosedLoopError(0);
+        }
     }
 
     @Override
