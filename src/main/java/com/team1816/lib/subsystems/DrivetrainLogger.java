@@ -1,6 +1,7 @@
 package com.team1816.lib.subsystems;
 
 import badlog.lib.BadLog;
+import badlog.lib.DataInferMode;
 import com.team1816.frc2020.subsystems.SwerveModule;
 
 public class DrivetrainLogger {
@@ -137,5 +138,8 @@ public class DrivetrainLogger {
                 "join:Drivetrain/DriveError"
             );
         }
+        BadLog.createTopicSubscriber("OdometryTwist/X", "in", DataInferMode.DEFAULT);
+        BadLog.createTopicSubscriber("OdometryTwist/Y", "in", DataInferMode.DEFAULT);
+        BadLog.createTopicSubscriber("OdometryTwist/Theta", "deg", DataInferMode.DEFAULT);
     }
 }

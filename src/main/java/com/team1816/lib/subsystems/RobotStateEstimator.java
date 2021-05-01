@@ -1,5 +1,6 @@
 package com.team1816.lib.subsystems;
 
+import badlog.lib.BadLog;
 import com.team1816.frc2020.Kinematics;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.subsystems.Drive;
@@ -78,6 +79,11 @@ public class RobotStateEstimator extends Subsystem {
                             dt
                         )
                         .scaled(dt);
+
+                BadLog.publish("OdometryTwist/X", odometry_twist.dx);
+                BadLog.publish("OdometryTwist/Y", odometry_twist.dy);
+                BadLog.publish("OdometryTwist/Theta", odometry_twist.dtheta);
+
             }
             final Twist2d measured_velocity = Kinematics.forwardKinematics(
                 wheel_speeds,
