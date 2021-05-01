@@ -90,8 +90,8 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     public static final int kFrontLeft = 0;
     public static final int kFrontRight = 1;
-    public static final int kBackLeft = 2;
-    public static final int kBackRight = 3;
+    public static final int kBackRight = 2;
+    public static final int kBackLeft = 3;
 
     public SwerveModule(String subsystemName, SwerveModuleConstants constants) {
         super(constants.kName);
