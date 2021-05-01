@@ -26,7 +26,6 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         public double drive_encoder_ticks;
         public double azimuth_encoder_ticks; // actual position of module in encoder units, adjusted for home offset
         public int position_ticks;
-        public int distance;
         public double velocity_ticks_per_100ms;
 
         // OUTPUTS
@@ -152,14 +151,11 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         if (RobotBase.isSimulation()) {
             driveEncoderSimPosition += mPeriodicIO.drive_demand * TICK_RATIO_PER_LOOP;
             mPeriodicIO.drive_encoder_ticks = driveEncoderSimPosition;
-            mPeriodicIO.distance = (int) encoderUnitsToDistance(mPeriodicIO.drive_encoder_ticks);
             mPeriodicIO.velocity_ticks_per_100ms = mPeriodicIO.drive_demand;
             mPeriodicIO.azimuth_encoder_ticks = mPeriodicIO.azimuth_demand;
 
         } else {
             mPeriodicIO.drive_encoder_ticks = mDriveMotor.getSelectedSensorPosition(0);
-            mPeriodicIO.distance =
-                (int) encoderUnitsToDistance(mPeriodicIO.drive_encoder_ticks);
             mPeriodicIO.velocity_ticks_per_100ms = mDriveMotor.getSelectedSensorVelocity(0);
             mPeriodicIO.azimuth_encoder_ticks =
                 (mConstants.kInvertAzimuthSensorPhase ? -1 : 1) *
