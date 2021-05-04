@@ -63,7 +63,7 @@ public class Drive
     private final RobotState mRobotState = RobotState.getInstance();
 
     //Odometry variables
-    Pose2d pose;
+    Pose2d pose = Pose2d.identity();
     double distanceTraveled;
     double currentVelocity = 0;
     double lastUpdateTimestamp = 0;
@@ -277,6 +277,10 @@ public class Drive
         }
     }
 
+    public Pose2d getPose() {
+        return pose;
+    }
+
     @Override
     public void registerEnabledLoops(ILooper in) {
         in.register(
@@ -401,7 +405,7 @@ public class Drive
     /**
      * Configure talons for velocity control
      */
-    public synchronized void setVelocity(DriveSignal signal, DriveSignal feedforward) {
+    public synchronized void setVelocity(List<Translation2d> driveVectors) {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
             System.out.println("Switching to Velocity");
@@ -410,8 +414,19 @@ public class Drive
             // mLeftMaster.configNeutralDeadband(0.0, 0);
             // mRightMaster.configNeutralDeadband(0.0, 0);
         }
-        mPeriodicIO.wheel_speeds = signal.getWheelSpeeds();
-        mPeriodicIO.wheel_azimuths = signal.getWheelAzimuths();
+        for (int i = 0; i < mModules.length; i++){
+            if(Util.shouldReverse(driveVectors.get(i).direction().getDegrees(), mModules[i].getAngle().getDegrees())){
+                mPeriodicIO.wheel_azimuths[i] = driveVectors.get(i).direction().rotateBy(Rotation2d.fromDegrees(180.0));
+                mPeriodicIO.wheel_speeds[i] = inchesPerSecondToTicksPer100ms(
+                    -driveVectors.get(i).norm() * Constants.kPathFollowingMaxVel
+                );
+            }else{
+                mPeriodicIO.wheel_azimuths[i] = driveVectors.get(i).direction();
+                mPeriodicIO.wheel_speeds[i] = inchesPerSecondToTicksPer100ms(
+                    driveVectors.get(i).norm() * Constants.kPathFollowingMaxVel
+                );
+            }
+        }
         // mPeriodicIO.left_feedforward = feedforward.getLeft();
         // mPeriodicIO.right_feedforward = feedforward.getRight();
     }
@@ -670,23 +685,11 @@ public class Drive
                 double rotationInput = Util.deadBand(Util.limit(rotationCorrection
                     * rotationScalar * driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
 
-                Kinematics.updateDriveVectors(driveVector, rotationInput, pose, robotCentric);
-
                 mPeriodicIO.error = mMotionPlanner.error();
                 mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
                 if (!mOverrideTrajectory) {
                     setVelocity(
-                        DriveHelper.SWERVE_CLASSIC.calculateDriveSignal(
-                            mPeriodicIO.forward,
-                            mPeriodicIO.strafe,
-                            0,
-                            false,
-                            true,
-                            false
-                        ).toVelocity(),
-                        new DriveSignal(
-                            0, 0
-                        )
+                        Kinematics.updateDriveVectors(driveVector, rotationInput, pose, robotCentric)
                     );
                 }
                 // mPeriodicIO.left_accel =

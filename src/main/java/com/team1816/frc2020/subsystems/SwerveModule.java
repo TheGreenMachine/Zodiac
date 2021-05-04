@@ -377,7 +377,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public double getDriveDistance() {
-        return Drive.rotationsToInches(mDriveMotor.getSelectedSensorPosition(0) / Drive.DRIVE_ENCODER_PPR);
+        return Drive.rotationsToInches(mPeriodicIO.drive_encoder_ticks / Drive.DRIVE_ENCODER_PPR);
     }
 
     /**
