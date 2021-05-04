@@ -592,7 +592,12 @@ public class Drive
             mDriveControlState = DriveControlState.PATH_FOLLOWING;
             mCurrentPath = path;
         } else {
-            setVelocity(DriveSignal.NEUTRAL, DriveSignal.NEUTRAL);
+            setVelocity(List.of(
+                Translation2d.identity(),
+                Translation2d.identity(),
+                Translation2d.identity(),
+                Translation2d.identity()
+            ));
         }
     }
 
@@ -697,7 +702,14 @@ public class Drive
                 // mPeriodicIO.right_accel =
                 //     radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
             } else {
-                setVelocity(DriveSignal.BRAKE, DriveSignal.BRAKE);
+                setVelocity(
+                    List.of(
+                        Translation2d.identity(),
+                        Translation2d.identity(),
+                        Translation2d.identity(),
+                        Translation2d.identity()
+                    )
+                );
                 // mPeriodicIO.left_accel = mPeriodicIO.right_accel = 0.0;
             }
         } else {

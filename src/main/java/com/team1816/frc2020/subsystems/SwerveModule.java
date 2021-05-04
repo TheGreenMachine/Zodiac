@@ -86,8 +86,8 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     private boolean isBrakeMode = false;
     private double driveEncoderSimPosition = 0;
     private double previousEncDistance = 0;
-    private Translation2d position;
-    private final Translation2d startingPosition;
+    private Translation2d position = Translation2d.identity();
+    private final Translation2d startingPosition = Translation2d.identity();
     private Pose2d estimatedRobotPose = new Pose2d();
 
     // Constants
