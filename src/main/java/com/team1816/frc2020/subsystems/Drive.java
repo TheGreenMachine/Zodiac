@@ -67,9 +67,6 @@ public class Drive
     double distanceTraveled;
     double currentVelocity = 0;
     double lastUpdateTimestamp = 0;
-    public Pose2d getPose(){
-        return pose;
-    }
 
     // hardware states
     private boolean mIsBrakeMode;
@@ -178,8 +175,8 @@ public class Drive
         public boolean use_heading_controller;
 
         // OUTPUTS
-        public double[] wheel_speeds = new double[] { 0, 0, 0, 0 };
-        public Rotation2d[] wheel_azimuths = new Rotation2d[] {
+        public double[] wheel_speeds = new double[]{0, 0, 0, 0};
+        public Rotation2d[] wheel_azimuths = new Rotation2d[]{
             Rotation2d.identity(),
             Rotation2d.identity(),
             Rotation2d.identity(),
@@ -210,7 +207,7 @@ public class Drive
     @Override
     public synchronized void writePeriodicOutputs() {
         var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
-        smartDashboardField.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY())+3.5, rot2d);
+        smartDashboardField.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5, rot2d);
         for (int i = 0; i < mModules.length; i++) {
             if (mModules[i] != null) {
                 if (mDriveControlState == DriveControlState.OPEN_LOOP) {
@@ -229,14 +226,14 @@ public class Drive
         }
     }
 
-    public synchronized void alternatePoseUpdate(){
+    public synchronized void alternatePoseUpdate() {
         double x = 0.0;
         double y = 0.0;
-        Rotation2d heading = Rotation2d.fromDegrees(-mPigeon.getFusedHeading());  // temporary heading, some yaw calculation is being done here
+        Rotation2d heading = Rotation2d.fromDegrees(-getHeadingDegrees());  // temporary heading, some yaw calculation is being done here
 
         double[] distances = new double[4];
 
-        for(int i = 0; i < 4; i++){
+        for (int i = 0; i < 4; i++) {
             mModules[i].updatePose(heading);
             double distance = mModules[i].getEstimatedRobotPose().getTranslation().distance(pose.getTranslation());
             distances[i] = distance;
@@ -248,14 +245,15 @@ public class Drive
         double firstDifference = distances[1] - distances[0];
         double secondDifference = distances[2] - distances[1];
         double thirdDifference = distances[3] - distances[2];
-        if(secondDifference > (1.5 * firstDifference)){
+
+        if (secondDifference > (1.5 * firstDifference)) {
             modulesToUse.add(mModules[0]);
             modulesToUse.add(mModules[1]);
-        }else if(thirdDifference > (1.5 * firstDifference)){
+        } else if (thirdDifference > (1.5 * firstDifference)) {
             modulesToUse.add(mModules[0]);
             modulesToUse.add(mModules[1]);
             modulesToUse.add(mModules[2]);
-        }else{
+        } else {
             modulesToUse.add(mModules[0]);
             modulesToUse.add(mModules[1]);
             modulesToUse.add(mModules[2]);
@@ -264,7 +262,7 @@ public class Drive
 
         SmartDashboard.putNumber("Modules Used", modulesToUse.size());
 
-        for(SwerveModule m : modulesToUse){
+        for (SwerveModule m : modulesToUse) {
             x += m.getEstimatedRobotPose().getTranslation().x();
             y += m.getEstimatedRobotPose().getTranslation().y();
         }
@@ -314,7 +312,7 @@ public class Drive
                                         // mLogger.updateTopics();
                                         // mLogger.log();
                                     }
-                                  //  updatePathFollower(timestamp);
+                                    //  updatePathFollower(timestamp);
                                     break;
                                 }
                             case TRAJECTORY_FOLLOWING:
@@ -327,7 +325,7 @@ public class Drive
                             default:
                                 System.out.println(
                                     "unexpected drive control state: " +
-                                    mDriveControlState
+                                        mDriveControlState
                                 );
                                 break;
                         }
@@ -537,7 +535,7 @@ public class Drive
     public double getAngularVelocity() {
         return (
             (getRightLinearVelocity() - getLeftLinearVelocity()) /
-            Constants.kDriveWheelTrackWidthInches
+                Constants.kDriveWheelTrackWidthInches
         );
     }
 
@@ -599,7 +597,7 @@ public class Drive
     public boolean isDoneWithTrajectory() {
         if (
             mMotionPlanner == null ||
-            mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING
+                mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING
         ) {
             return false;
         }
@@ -609,7 +607,7 @@ public class Drive
     public synchronized boolean isDoneWithPath() {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-            mPathFollower != null
+                mPathFollower != null
         ) {
             return mPathFollower.isFinished();
         } else {
@@ -621,7 +619,7 @@ public class Drive
     public synchronized void forceDoneWithPath() {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-            mPathFollower != null
+                mPathFollower != null
         ) {
             mPathFollower.forceFinish();
         } else {
@@ -670,7 +668,7 @@ public class Drive
                 mPeriodicIO.rotation = 0;
 
                 double rotationInput = Util.deadBand(Util.limit(rotationCorrection
-                    * rotationScalar  * driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
+                    * rotationScalar * driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
 
                 Kinematics.updateDriveVectors(driveVector, rotationInput, pose, robotCentric);
 
@@ -707,7 +705,7 @@ public class Drive
     public synchronized boolean hasPassedMarker(String marker) {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-            mPathFollower != null
+                mPathFollower != null
         ) {
             return mPathFollower.hasPassedMarker(marker);
         } else {
