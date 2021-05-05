@@ -138,6 +138,20 @@ public class DrivetrainLogger {
                 "join:Drivetrain/DriveError"
             );
         }
+        BadLog.createTopic(
+            "Drivetrain/ActualHeading",
+            "Angle",
+            drivetrain::getHeadingDegrees,
+            "hide",
+            "join:Drivetrain/Heading"
+        );
+        BadLog.createTopic(
+            "Drivetrain/Heading",
+            "Angle",
+            drivetrain::getDesiredHeading,
+            "hide",
+            "join:Drivetrain/Heading"
+        );
         BadLog.createTopicSubscriber("OdometryTwist/X", "in", DataInferMode.DEFAULT);
         BadLog.createTopicSubscriber("OdometryTwist/Y", "in", DataInferMode.DEFAULT);
         BadLog.createTopicSubscriber("OdometryTwist/Theta", "deg", DataInferMode.DEFAULT);
