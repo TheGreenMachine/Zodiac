@@ -24,6 +24,8 @@ import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -95,11 +97,22 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         try {
+            DriverStation.getInstance().silenceJoystickConnectionWarning(true);
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
-            logger =
-                BadLog.init(
-                    "/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag"
-                );
+            var robotName = System.getenv("ROBOT_NAME");
+            if (robotName == null) robotName = "default";
+            var logFileDir = "/home/lvuser/";
+            // if there is a usb drive use it
+            if (Files.exists(Path.of("/media/sda1"))) {
+                logFileDir = "/media/sda1/";
+            }
+            if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                logFileDir = System.getenv("temp") + "\\";
+            } else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+                logFileDir = System.getProperty("user.dir") + "/";
+            }
+            var filePath = logFileDir + robotName + "_" + logFile + ".bag";
+            logger = BadLog.init(filePath);
 
             BadLog.createValue(
                 "Max Velocity",
