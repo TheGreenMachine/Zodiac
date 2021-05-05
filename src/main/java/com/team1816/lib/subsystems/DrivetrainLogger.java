@@ -94,13 +94,6 @@ public class DrivetrainLogger {
                 "join:Drivetrain/AzimuthPosition"
             );
             BadLog.createTopic(
-                prefix + "AzimuthVelocity",
-                "ticks",
-                module::getAzimuthVelocity,
-                "hide",
-                "join:Drivetrain/AzimuthVelocity"
-            );
-            BadLog.createTopic(
                 prefix + "AzimuthError",
                 "ticks",
                 module::getAzimuthError,
