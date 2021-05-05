@@ -202,7 +202,6 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             mControlState = ControlState.OPEN_LOOP;
         }
 
-
         mPeriodicIO.drive_demand = speed;
         mPeriodicIO.azimuth_demand = (int) radiansToEncoderUnits(azimuth.getRadians());
     }

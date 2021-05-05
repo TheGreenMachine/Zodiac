@@ -228,10 +228,63 @@ public class Drive
         }
     }
 
+    /** The tried and true algorithm for keeping track of position */
+    public synchronized void updatePose(double timestamp){
+        double x = 0.0;
+        double y = 0.0;
+        Rotation2d heading = getHeading();
+
+        double averageDistance = 0.0;
+        double[] distances = new double[4];
+        for (int i = 0; i < mModules.length; i++) {
+            SwerveModule m = mModules[i];
+            m.updatePose(heading);
+            double distance = m.getEstimatedRobotPose().getTranslation().translateBy(pose.getTranslation().inverse()).norm();
+            distances[i] = distance;
+            averageDistance += distance;
+        }
+        averageDistance /= mModules.length;
+
+        int minDevianceIndex = 0;
+        double minDeviance = 100.0;
+        List<SwerveModule> modulesToUse = new ArrayList<>();
+        for (int i = 0; i < mModules.length; i++) {
+            SwerveModule m = mModules[i];
+            double deviance = Math.abs(distances[i] - averageDistance);
+            if (deviance < minDeviance) {
+                minDeviance = deviance;
+                minDevianceIndex = i;
+            }
+            if (deviance <= 0.01) {
+                modulesToUse.add(m);
+            }
+        }
+
+        if(modulesToUse.isEmpty()){
+            modulesToUse.add(mModules[minDevianceIndex]);
+        }
+
+        //SmartDashboard.putNumber("Modules Used", modulesToUse.size());
+
+        for(SwerveModule m : modulesToUse){
+            x += m.getEstimatedRobotPose().getTranslation().x();
+            y += m.getEstimatedRobotPose().getTranslation().y();
+        }
+
+        Pose2d updatedPose = new Pose2d(new Translation2d(x / modulesToUse.size(), y / modulesToUse.size()), heading);
+        double deltaPos = updatedPose.getTranslation().translateBy(pose.getTranslation().inverse()).norm();
+        distanceTraveled += deltaPos;
+        currentVelocity = deltaPos / (timestamp - lastUpdateTimestamp);
+        pose = updatedPose;
+        for (SwerveModule module : mModules) {
+            module.resetPose(pose);
+        }
+    }
+
     public synchronized void alternatePoseUpdate() {
         double x = 0.0;
         double y = 0.0;
-        Rotation2d heading = Rotation2d.fromDegrees(-getHeadingDegrees());  // temporary heading, some yaw calculation is being done here
+        Rotation2d heading = Rotation2d.fromDegrees(getHeadingDegrees());  // temporary heading, some yaw calculation is being done here
 
         double[] distances = new double[4];
 
@@ -293,6 +346,7 @@ public class Drive
                         stop();
                         setBrakeMode(false);
                     }
+                    lastUpdateTimestamp = timestamp;
                 }
 
                 @Override
@@ -336,6 +390,7 @@ public class Drive
                                 break;
                         }
                     }
+                    lastUpdateTimestamp = timestamp;
                 }
 
                 @Override
@@ -645,7 +700,8 @@ public class Drive
     private void updatePathFollower(double timestamp) {
         headingController.setGoal(RobotState.getInstance().getRobot().getRotation().getUnboundedDegrees());
         double rotationCorrection = headingController.update();
-        alternatePoseUpdate();
+        updatePose(getTimestamp());
+        // alternatePoseUpdate();
 
         if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
             // RobotState robot_state = RobotState.getInstance();
