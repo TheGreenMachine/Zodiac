@@ -46,6 +46,8 @@ public class Drive
     private static Drive mInstance;
     private static final String NAME = "drivetrain";
     public static double DRIVE_ENCODER_PPR;
+    public static final List<Translation2d> ZeroDriveVector = List.of(Translation2d.identity(),Translation2d.identity(),Translation2d.identity(),Translation2d.identity());
+
 
     // Components
     private final SwerveModule[] mModules = new SwerveModule[4];
@@ -415,17 +417,10 @@ public class Drive
             // mRightMaster.configNeutralDeadband(0.0, 0);
         }
         for (int i = 0; i < mModules.length; i++){
-            if(Util.shouldReverse(driveVectors.get(i).direction().getDegrees(), mModules[i].getAngle().getDegrees())){
-                mPeriodicIO.wheel_azimuths[i] = driveVectors.get(i).direction().rotateBy(Rotation2d.fromDegrees(180.0));
-                mPeriodicIO.wheel_speeds[i] = inchesPerSecondToTicksPer100ms(
-                    -driveVectors.get(i).norm() * Constants.kPathFollowingMaxVel
-                );
-            }else{
-                mPeriodicIO.wheel_azimuths[i] = driveVectors.get(i).direction();
-                mPeriodicIO.wheel_speeds[i] = inchesPerSecondToTicksPer100ms(
-                    driveVectors.get(i).norm() * Constants.kPathFollowingMaxVel
-                );
-            }
+            mPeriodicIO.wheel_azimuths[i] = driveVectors.get(i).direction();
+            mPeriodicIO.wheel_speeds[i] = inchesPerSecondToTicksPer100ms(
+                driveVectors.get(i).norm() * Constants.kPathFollowingMaxVel
+            );
         }
         // mPeriodicIO.left_feedforward = feedforward.getLeft();
         // mPeriodicIO.right_feedforward = feedforward.getRight();

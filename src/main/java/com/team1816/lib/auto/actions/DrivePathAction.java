@@ -3,7 +3,7 @@ package com.team1816.lib.auto.actions;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.lib.paths.PathContainer;
 import com.team254.lib.control.Path;
-import com.team254.lib.util.DriveSignal;
+
 
 /**
  * Drives the robot along the Path defined in the PathContainer object. The action finishes once the robot reaches the
@@ -46,7 +46,7 @@ public class DrivePathAction implements Action {
     @Override
     public void done() {
         if (mStopWhenDone) {
-            mDrive.setVelocity(DriveSignal.BRAKE, DriveSignal.BRAKE);
+            mDrive.setVelocity(Drive.ZeroDriveVector);
         }
     }
 }
