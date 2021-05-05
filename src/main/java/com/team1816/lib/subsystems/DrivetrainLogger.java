@@ -94,6 +94,13 @@ public class DrivetrainLogger {
                 "join:Drivetrain/AzimuthPosition"
             );
             BadLog.createTopic(
+                prefix + "AzimuthPosition",
+                "ticks",
+                module::getAzimuthPositionDemand,
+                "hide",
+                "join:Drivetrain/AzimuthPosition"
+            );
+            BadLog.createTopic(
                 prefix + "AzimuthError",
                 "ticks",
                 module::getAzimuthError,
@@ -145,8 +152,5 @@ public class DrivetrainLogger {
             "hide",
             "join:Drivetrain/Heading"
         );
-        BadLog.createTopicSubscriber("OdometryTwist/X", "in", DataInferMode.DEFAULT);
-        BadLog.createTopicSubscriber("OdometryTwist/Y", "in", DataInferMode.DEFAULT);
-        BadLog.createTopicSubscriber("OdometryTwist/Theta", "deg", DataInferMode.DEFAULT);
     }
 }

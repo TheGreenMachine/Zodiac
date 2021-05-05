@@ -192,12 +192,6 @@ public class Robot extends TimedRobot {
 
                 // BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
 
-                BadLog.createTopicSubscriber(
-                    "Pigeon Error",
-                    BadLog.UNITLESS,
-                    DataInferMode.DEFAULT
-                );
-
                 DrivetrainLogger.initSwerve(mDrive);
 
                 BadLog.createValue("Drivetrain PID", mDrive.pidToString());

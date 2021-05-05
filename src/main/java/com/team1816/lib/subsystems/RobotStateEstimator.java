@@ -80,10 +80,6 @@ public class RobotStateEstimator extends Subsystem {
                         )
                         .scaled(dt);
 
-                BadLog.publish("OdometryTwist/X", odometry_twist.dx);
-                BadLog.publish("OdometryTwist/Y", odometry_twist.dy);
-                BadLog.publish("OdometryTwist/Theta", odometry_twist.dtheta);
-
             }
             final Twist2d measured_velocity = Kinematics.forwardKinematics(
                 wheel_speeds,

@@ -355,6 +355,11 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     }
 
     @Override
+    public double getAzimuthPositionDemand() {
+        return mPeriodicIO.azimuth_demand;
+    }
+
+    @Override
     public double getAzimuthError() {
         return mAzimuthMotor.getClosedLoopError(0);
     }
