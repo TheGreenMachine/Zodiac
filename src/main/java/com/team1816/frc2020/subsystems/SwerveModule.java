@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
-import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.hardware.PidConfig;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
@@ -17,6 +16,7 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 
 import java.util.List;
 
@@ -89,10 +89,12 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     private Translation2d position = Translation2d.identity();
     private final Translation2d startingPosition;
     private Pose2d estimatedRobotPose = new Pose2d();
+    private final boolean driveMotorIsInverted;
 
     // Constants
     private final SwerveModuleConstants mConstants;
     private static final double TICK_RATIO_PER_LOOP = Constants.kLooperDt / 0.1;
+    public static final int AZIMUTH_TICK_MASK = 0xFFF;
 
     public static final int kFrontLeft = 0;
     public static final int kFrontRight = 1;
@@ -115,6 +117,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                 constants.kDriveMotorName,
                 List.of(constants.kDrivePid)
             );
+        driveMotorIsInverted = mDriveMotor.getInverted();
         mAzimuthMotor =
             factory.getMotor(
                 subsystemName,
@@ -212,7 +215,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         }
 
         mPeriodicIO.drive_demand = speed;
-        mPeriodicIO.azimuth_demand = (int) radiansToEncoderUnits(azimuth.getRadians());
+        mPeriodicIO.azimuth_demand = 0; // (int) radiansToEncoderUnits(azimuth.getRadians());
     }
 
     @Override
@@ -226,10 +229,13 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         } else {
             mPeriodicIO.drive_encoder_ticks = mDriveMotor.getSelectedSensorPosition(0);
             mPeriodicIO.velocity_ticks_per_100ms = mDriveMotor.getSelectedSensorVelocity(0);
-            mPeriodicIO.azimuth_encoder_ticks =
-                (mConstants.kInvertAzimuthSensorPhase ? -1 : 1) *
-                    ((int) mAzimuthMotor.getSelectedSensorPosition(0) & 0xFFF) -
-                    mConstants.kAzimuthEncoderHomeOffset;
+
+            var normalizedEncoderTicks = (int) (
+                mAzimuthMotor.getSelectedSensorPosition(0)
+                    - mConstants.kAzimuthEncoderHomeOffset
+            );
+
+            mPeriodicIO.azimuth_encoder_ticks = (normalizedEncoderTicks & AZIMUTH_TICK_MASK);
         }
     }
 
@@ -327,21 +333,31 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public boolean checkSystem() {
-        boolean driveMotorPassed = EnhancedMotorChecker.checkMotors(
-            this,
-            EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, mDriveMotor),
-            new EnhancedMotorChecker.NamedMotor(mConstants.kDriveMotorName, mDriveMotor)
-        );
-        boolean azimuthMotorPassed = EnhancedMotorChecker.checkMotors(
-            this,
-            EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, mAzimuthMotor),
-            new EnhancedMotorChecker.NamedMotor(
-                mConstants.kAzimuthMotorName,
-                mAzimuthMotor
-            )
-        );
+        // boolean driveMotorPassed = EnhancedMotorChecker.checkMotors(
+        //     this,
+        //     EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, mDriveMotor),
+        //     new EnhancedMotorChecker.NamedMotor(mConstants.kDriveMotorName, mDriveMotor)
+        // );
+        // boolean azimuthMotorPassed = EnhancedMotorChecker.checkMotors(
+        //     this,
+        //     EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, mAzimuthMotor),
+        //     new EnhancedMotorChecker.NamedMotor(
+        //         mConstants.kAzimuthMotorName,
+        //         mAzimuthMotor
+        //     )
+        // );
         zeroSensors();
-        return driveMotorPassed && azimuthMotorPassed;
+        mAzimuthMotor.set(ControlMode.Position, mConstants.kAzimuthEncoderHomeOffset);
+        Timer.delay(1);
+        mAzimuthMotor.set(ControlMode.Position, radiansToEncoderUnits(Math.PI) + mConstants.kAzimuthEncoderHomeOffset);
+        Timer.delay(1);
+        mAzimuthMotor.set(ControlMode.Position, radiansToEncoderUnits(Math.PI / 2.0) + mConstants.kAzimuthEncoderHomeOffset);
+        Timer.delay(1);
+        mAzimuthMotor.set(ControlMode.Position, radiansToEncoderUnits(-Math.PI / 2.0) + mConstants.kAzimuthEncoderHomeOffset);
+        Timer.delay(1);
+        zeroSensors();
+        return true;
+        // return driveMotorPassed && azimuthMotorPassed;
     }
 
     @Override
@@ -412,24 +428,23 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         return distance / mConstants.kDriveTicksPerUnitDistance;
     }
 
-    public synchronized double getAngleEncoderUnits() {
-        return mPeriodicIO.azimuth_encoder_ticks;
-    }
-
     public synchronized Rotation2d getAngle() {
-        return Rotation2d.fromRadians((encoderUnitsToRadians(getAngleEncoderUnits())));
+        return Rotation2d.fromRadians((encoderUnitsToRadians(getAzimuthPosition())));
     }
 
     public synchronized Rotation2d getAngleToDegrees() {
-        return Rotation2d.fromDegrees((180 / Math.PI) * ((encoderUnitsToRadians(getAngleEncoderUnits()))));
+        var azimuthPosition = getAzimuthPosition();
+        var radians = encoderUnitsToRadians(azimuthPosition);
+        var degrees = (180 / Math.PI) * radians;
+        return Rotation2d.fromDegrees(degrees);
     }
 
     public synchronized double getRawAngle() {
-        return encoderUnitsToRadians(getAngleEncoderUnits());
+        return encoderUnitsToRadians(getAzimuthPosition());
     }
 
     public synchronized double getUnwrappedAngleDegrees() {
-        return Math.toDegrees(encoderUnitsToRadians(getAngleEncoderUnits()));
+        return Math.toDegrees(encoderUnitsToRadians(getAzimuthPosition()));
     }
 
     public synchronized double getRawLinearVelocity() {
@@ -455,7 +470,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     public synchronized boolean isAzimuthAtTarget() {
         return Util.epsilonEquals(
             mPeriodicIO.azimuth_demand,
-            getAngleEncoderUnits(),
+            getAzimuthPosition(),
             mConstants.kAzimuthClosedLoopAllowableError
         );
     }

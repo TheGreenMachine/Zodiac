@@ -199,9 +199,8 @@ public class Kinematics {
 
     public static List<Translation2d> updateDriveVectors(Translation2d translationalVector, double rotationalMagnitude,
                                                   Pose2d robotPose, boolean robotCentric){
-        SmartDashboard.putNumber("Vector Direction", translationalVector.direction().getDegrees());
-        //SmartDashboard.putNumber("Vector Magnitude", translationalVector.norm());
-        SmartDashboard.putNumber("Robot Velocity", translationalVector.norm());
+        SmartDashboard.putNumber("Drive/Vector Direction", translationalVector.direction().getDegrees());
+        SmartDashboard.putNumber("Drive/Robot Velocity", translationalVector.norm());
 
         if(!robotCentric)
             translationalVector = translationalVector.rotateBy(robotPose.getRotation().inverse());

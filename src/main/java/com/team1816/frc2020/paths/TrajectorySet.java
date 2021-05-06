@@ -58,7 +58,7 @@ public class TrajectorySet {
         this.DRIVE_STRAIGHT_TRENCH_REVERSE =
             new DriveStraight(100).generateReversedTrajectory();
 
-        this.TUNE_DRIVETRAIN = new DriveStraight(480).generateTrajectory();
+        this.TUNE_DRIVETRAIN = new DriveStraight(190).generateTrajectory();
         this.TUNE_DRIVETRAIN_REVERSE = new DriveStraight(-190).generateTrajectory();
         this.LIVING_ROOM = new LivingRoomPath().generateTrajectory();
         this.AUTO_TRENCH_TURN_RIGHT = new AutoTrenchTurnRightPath().generateTrajectory();

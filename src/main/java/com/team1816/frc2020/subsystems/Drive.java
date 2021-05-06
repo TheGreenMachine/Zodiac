@@ -895,6 +895,8 @@ public class Drive
         SmartDashboard.putData("Drive Algorithm", driveHelperChooser);
         SmartDashboard.putData("Field", smartDashboardField);
 
+        SmartDashboard.putNumber("Drive/Vector Direction", 0);
+        SmartDashboard.putNumber("Drive/Robot Velocity", 0);
         SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
         SmartDashboard
             .getEntry("Drive/OpenLoopRampRate")
