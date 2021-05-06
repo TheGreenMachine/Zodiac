@@ -213,8 +213,9 @@ public class Drive
         for (int i = 0; i < mModules.length; i++) {
             if (mModules[i] != null) {
                 if (mDriveControlState == DriveControlState.OPEN_LOOP) {
-                    mModules[i].setOpenLoop(
-                        mPeriodicIO.wheel_speeds[i],
+                    // TODO: 5/5/21 fix
+                    mModules[i].setVelocity(
+                        6000,
                         mPeriodicIO.wheel_azimuths[i]
                     );
                 } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
@@ -457,6 +458,11 @@ public class Drive
 
     public double getOpenLoopRampRate() {
         return this.openLoopRampRate;
+    }
+
+    public synchronized void setDebug(int velocity) {
+        mPeriodicIO.wheel_azimuths = DriveSignal.ZERO_AZIMUTH;
+        mPeriodicIO.wheel_speeds = new double[]{velocity, velocity, velocity, velocity};
     }
 
     /**
