@@ -65,4 +65,4 @@ constants:
     logAuto: 1
     badLogEnabled: 1
     compressorEnabled: 0
-    kLooperDt: .050 # seconds
+    kLooperDt: .030 # seconds
