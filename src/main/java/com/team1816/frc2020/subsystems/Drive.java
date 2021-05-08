@@ -32,8 +32,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
@@ -56,10 +54,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     // control states
     private DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
     private final RobotState mRobotState = RobotState.getInstance();
-
-    // Odometry variables
-    private Pose2d pose = Pose2d.identity();
-    private double lastUpdateTimestamp = 0;
 
     // hardware states
     private boolean mIsBrakeMode;
@@ -241,135 +235,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         }
     }
 
-    /** The tried and true algorithm for keeping track of position */
-    public synchronized void updatePose(double timestamp) {
-        double x = 0.0;
-        double y = 0.0;
-        Rotation2d heading = getHeading();
-
-        double averageDistance = 0.0;
-        double[] distances = new double[4];
-        for (int i = 0; i < swerveModules.length; i++) {
-            SwerveModule m = swerveModules[i];
-            m.updatePose(heading);
-            double distance = m
-                .getEstimatedRobotPose()
-                .getTranslation()
-                .translateBy(pose.getTranslation().inverse())
-                .norm();
-            distances[i] = distance;
-            averageDistance += distance;
-        }
-        averageDistance /= swerveModules.length;
-
-        int minDevianceIndex = 0;
-        double minDeviance = 100.0;
-        List<SwerveModule> modulesToUse = new ArrayList<>();
-        for (int i = 0; i < swerveModules.length; i++) {
-            SwerveModule m = swerveModules[i];
-            double deviance = Math.abs(distances[i] - averageDistance);
-            if (deviance < minDeviance) {
-                minDeviance = deviance;
-                minDevianceIndex = i;
-            }
-            if (deviance <= 0.01) {
-                modulesToUse.add(m);
-            }
-        }
-
-        if (modulesToUse.isEmpty()) {
-            modulesToUse.add(swerveModules[minDevianceIndex]);
-        }
-
-        //SmartDashboard.putNumber("Modules Used", modulesToUse.size());
-
-        for (SwerveModule m : modulesToUse) {
-            x += m.getEstimatedRobotPose().getTranslation().x();
-            y += m.getEstimatedRobotPose().getTranslation().y();
-        }
-
-        Pose2d updatedPose = new Pose2d(
-            new Translation2d(x / modulesToUse.size(), y / modulesToUse.size()),
-            heading
-        );
-        double deltaPos = updatedPose
-            .getTranslation()
-            .translateBy(pose.getTranslation().inverse())
-            .norm();
-        mPeriodicIO.drive_distance_inches += deltaPos;
-        mPeriodicIO.velocity_inches_per_second = deltaPos / (timestamp - lastUpdateTimestamp);
-        pose = updatedPose;
-        for (SwerveModule module : swerveModules) {
-            module.resetPose(pose);
-        }
-    }
-
-    public synchronized void alternatePoseUpdate(double timestamp) {
-        double x = 0.0;
-        double y = 0.0;
-        Rotation2d heading = Rotation2d.fromDegrees(getHeadingDegrees()); // temporary heading, some yaw calculation is being done here
-
-        double[] distances = new double[4];
-
-        for (int i = 0; i < 4; i++) {
-            swerveModules[i].updatePose(heading);
-            double distance =
-                swerveModules[i].getEstimatedRobotPose()
-                    .getTranslation()
-                    .distance(pose.getTranslation());
-            distances[i] = distance;
-        }
-
-        Arrays.sort(distances); // Doing some kind of sort for some reason, not sure why
-
-        List<SwerveModule> modulesToUse = new ArrayList<>();
-        double firstDifference = distances[1] - distances[0];
-        double secondDifference = distances[2] - distances[1];
-        double thirdDifference = distances[3] - distances[2];
-
-        if (secondDifference > (1.5 * firstDifference)) {
-            modulesToUse.add(swerveModules[0]);
-            modulesToUse.add(swerveModules[1]);
-        } else if (thirdDifference > (1.5 * firstDifference)) {
-            modulesToUse.add(swerveModules[0]);
-            modulesToUse.add(swerveModules[1]);
-            modulesToUse.add(swerveModules[2]);
-        } else {
-            modulesToUse.add(swerveModules[0]);
-            modulesToUse.add(swerveModules[1]);
-            modulesToUse.add(swerveModules[2]);
-            modulesToUse.add(swerveModules[3]);
-        }
-
-        SmartDashboard.putNumber("Modules Used", modulesToUse.size());
-
-        for (SwerveModule m : modulesToUse) {
-            x += m.getEstimatedRobotPose().getTranslation().x();
-            y += m.getEstimatedRobotPose().getTranslation().y();
-        }
-
-        Pose2d updatedPose = new Pose2d(
-            new Translation2d(x / modulesToUse.size(), y / modulesToUse.size()),
-            heading
-        );
-        double deltaPos = updatedPose.getTranslation().distance(pose.getTranslation());
-        mPeriodicIO.drive_distance_inches += deltaPos;
-        mPeriodicIO.velocity_inches_per_second = deltaPos / (timestamp - lastUpdateTimestamp);
-        pose = updatedPose;
-
-        for (SwerveModule mModule : swerveModules) {
-            mModule.resetPose(pose);
-        }
-    }
-
-    public Pose2d getPose() {
-        return pose;
-    }
-
-    public void resetPose(Pose2d pose) {
-        this.pose = pose;
-    }
-
     @Override
     public void registerEnabledLoops(ILooper in) {
         in.register(
@@ -380,7 +245,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                         stop();
                         setBrakeMode(false);
                     }
-                    lastUpdateTimestamp = timestamp;
                 }
 
                 @Override
@@ -416,7 +280,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                                 break;
                         }
                     }
-                    lastUpdateTimestamp = timestamp;
                 }
 
                 @Override
@@ -507,6 +370,11 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                     driveVectors.get(i).norm() * Constants.kPathFollowingMaxVel
                 );
         }
+    }
+
+    public void updateOdometry(double deltaDistance, double velocity) {
+        mPeriodicIO.drive_distance_inches += deltaDistance;
+        mPeriodicIO.velocity_inches_per_second = velocity;
     }
 
     public boolean isBrakeMode() {
@@ -653,12 +521,10 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     }
 
     private void updatePathFollower(double timestamp) {
-        headingController.setGoal(
-            RobotState.getInstance().getRobot().getRotation().getUnboundedDegrees()
-        );
+        var pose = mRobotState.getFieldToVehicle(timestamp);
+
+        headingController.setGoal(pose.getRotation().getUnboundedDegrees());
         double rotationCorrection = headingController.update();
-        updatePose(timestamp);
-        // alternatePoseUpdate(timestamp);
 
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             if (!motionPlanner.isDone()) {
@@ -725,7 +591,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         System.out.println("Zeroing drive sensors!");
         resetPigeon();
         setHeading(Rotation2d.identity());
-        resetPose(Pose2d.identity());
 
         for (SwerveModule module : swerveModules) {
             if (module != null) {

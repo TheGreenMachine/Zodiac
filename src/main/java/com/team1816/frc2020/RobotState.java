@@ -362,10 +362,6 @@ public class RobotState {
         return Optional.of(params);
     }
 
-    public Pose2d getRobot() {
-        return new Pose2d();
-    }
-
     public synchronized Pose2d getVisionTargetToGoalOffset() {
         // if (SuperstructureCommands.isInCargoShipPosition() && EndEffector.getInstance().getObservedGamePiece() == GamePiece.BALL) {
         //     return Pose2d.fromTranslation(new Translation2d(-6.0, 0.0));
