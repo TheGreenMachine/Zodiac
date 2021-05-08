@@ -17,13 +17,17 @@ public class LedManager extends Subsystem {
 
     private static LedManager INSTANCE;
 
+    public enum LedControlState {
+        RAVE, BLINK, STANDARD
+    }
+
     // Components
     private final ICanifier canifier;
     private final ICanifier cameraCanifier;
 
     // State
-    private boolean blinkMode;
-    private boolean blinkLedOn = false;
+    private LedControlState controlState = LedControlState.STANDARD;
+    private RobotStatus defaultStatus = RobotStatus.DISABLED;
     private boolean outputsChanged = true;
 
     private int ledR;
@@ -31,11 +35,17 @@ public class LedManager extends Subsystem {
     private int ledB;
     private boolean cameraLedOn;
 
+    private boolean blinkLedOn = false;
     private int period; // ms
     private long lastWriteTime = System.currentTimeMillis();
-    private RobotStatus defaultStatus = RobotStatus.DISABLED;
-    private boolean rave;
+
     private float raveHue = 0f;
+
+    // Constants
+    private static final boolean RAVE_ENABLED = factory.getConstant(NAME, "raveEnabled") > 0;
+    private static final double RAVE_SPEED = factory.getConstant(NAME, "raveSpeed", 0.01);
+    private static final int MAX = (int) factory.getConstant(NAME, "maxLevel", 255);
+
 
     private LedManager() {
         super(NAME);
@@ -83,8 +93,8 @@ public class LedManager extends Subsystem {
         }
     }
 
-    public void setRave(boolean rave) {
-        this.rave = rave;
+    public void setControlState(LedControlState controlState) {
+        this.controlState = controlState;
     }
 
     /**
@@ -96,7 +106,7 @@ public class LedManager extends Subsystem {
     private void setLedColorBlink(int r, int g, int b, int period) {
         // Period is in milliseconds
         setLedColor(r, g, b);
-        blinkMode = true;
+        setControlState(LedControlState.BLINK);
         this.period = period;
         outputsChanged = true;
     }
@@ -107,12 +117,16 @@ public class LedManager extends Subsystem {
     }
 
     public void indicateStatus(RobotStatus status) {
-        blinkMode = false;
+        setControlState(LedControlState.STANDARD);
         setLedColor(status.getRed(), status.getGreen(), status.getBlue());
     }
 
     public void indicateDefaultStatus() {
-        indicateStatus(defaultStatus);
+        if (RAVE_ENABLED && defaultStatus != RobotStatus.DISABLED) {
+            setControlState(LedControlState.RAVE);
+        } else {
+            indicateStatus(defaultStatus);
+        }
     }
 
     public void blinkStatus(RobotStatus status) {
@@ -132,8 +146,8 @@ public class LedManager extends Subsystem {
         return new int[] { ledR, ledG, ledB };
     }
 
-    public boolean isBlinkMode() {
-        return blinkMode;
+    public LedControlState getControlState() {
+        return controlState;
     }
 
     public double getPeriod() {
@@ -157,26 +171,30 @@ public class LedManager extends Subsystem {
             }
         }
         if (canifier != null) {
-            if (rave) {
-                var color = Color.getHSBColor(raveHue, 1.0f, 1.0f);
-                writeLedHardware(color.getRed(), color.getGreen(), color.getBlue());
-                raveHue += factory.getConstant(NAME, "raveSpeed", 0.01);
-                return;
-            }
-            if (blinkMode) {
-                if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
-                    if (blinkLedOn) {
-                        writeLedHardware(0, 0, 0);
-                        blinkLedOn = false;
-                    } else {
-                        writeLedHardware(ledR, ledG, ledB);
-                        blinkLedOn = true;
+            switch (controlState) {
+                case RAVE:
+                    var color = Color.getHSBColor(raveHue, 1.0f, 1.0f);
+                    writeLedHardware(color.getRed(), color.getGreen(), color.getBlue());
+                    raveHue += RAVE_SPEED;
+                    break;
+                case BLINK:
+                    if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
+                        if (blinkLedOn) {
+                            writeLedHardware(0, 0, 0);
+                            blinkLedOn = false;
+                        } else {
+                            writeLedHardware(ledR, ledG, ledB);
+                            blinkLedOn = true;
+                        }
+                        lastWriteTime = System.currentTimeMillis();
                     }
-                    lastWriteTime = System.currentTimeMillis();
-                }
-            } else if (outputsChanged) {
-                writeLedHardware(ledR, ledG, ledB);
-                outputsChanged = false;
+                    break;
+                case STANDARD:
+                    if (outputsChanged) {
+                        writeLedHardware(ledR, ledG, ledB);
+                        outputsChanged = false;
+                    }
+                    break;
             }
         }
     }
@@ -221,8 +239,6 @@ public class LedManager extends Subsystem {
 
     @Override
     public void initSendable(SendableBuilder builder) {}
-
-    private static final int MAX = (int) factory.getConstant(NAME, "maxLevel", 255);
 
     public enum RobotStatus {
         ENABLED(0, MAX, 0), // green

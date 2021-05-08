@@ -58,6 +58,7 @@ subsystems:
         implemented: true
         canifier: 18
         constants:
+            raveEnabled: 1
             raveSpeed: 0.075
 pcm: 8
 constants:

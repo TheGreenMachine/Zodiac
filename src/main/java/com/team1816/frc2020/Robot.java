@@ -61,10 +61,6 @@ public class Robot extends TimedRobot {
     private final Climber climber = Climber.getInstance();
     private final Camera camera = Camera.getInstance();
 
-    // button placed on the robot to allow the drive team to zero the robot right
-    // before the start of a match
-    DigitalInput resetRobotButton = new DigitalInput(Constants.kResetButtonChannel);
-
     private boolean mHasBeenEnabled = false;
 
     private LatchedBoolean mWantsAutoExecution = new LatchedBoolean();
@@ -411,7 +407,6 @@ public class Robot extends TimedRobot {
         try {
             mEnabledLooper.stop();
 
-            ledManager.setRave(false);
             ledManager.setDefaultStatus(LedManager.RobotStatus.DISABLED);
 
             // shooter
@@ -439,8 +434,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         try {
             mDisabledLooper.stop();
-            // ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
-            ledManager.setRave(true);
+            ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
 
             // Robot starts forwards.
             mRobotState.reset(
@@ -556,7 +550,7 @@ public class Robot extends TimedRobot {
                 mDrive.setHeading(Rotation2d.identity());
                 ledManager.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
             } else {
-                ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
+                ledManager.indicateDefaultStatus();
             }
 
             // Update auto modes
