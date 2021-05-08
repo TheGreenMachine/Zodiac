@@ -45,7 +45,7 @@ subsystems:
             kD: 4.0
             kF: 0.0499
         azimuthPid:
-            kP: 1
+            kP: 2.0
             kI: 0
             kD: 30
             kF: 0

@@ -19,6 +19,8 @@ import java.util.List;
 
 public class SwerveModule extends Subsystem implements ISwerveModule {
 
+    public static final int AZIMUTH_TICK_MASK = 0xFFF;
+
     public static class PeriodicIO {
 
         // INPUTS
@@ -149,9 +151,13 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         mPeriodicIO.distance =
             (int) encoderUnitsToDistance(mPeriodicIO.drive_encoder_ticks);
         mPeriodicIO.velocity_ticks_per_100ms = mDriveMotor.getSelectedSensorVelocity(0);
-        mPeriodicIO.azimuth_encoder_ticks =
-            mAzimuthMotor.getSelectedSensorPosition(0) -
-                mConstants.kAzimuthEncoderHomeOffset;
+
+        var normalizedEncoderTicks = (int) (
+            mAzimuthMotor.getSelectedSensorPosition(0)
+                - mConstants.kAzimuthEncoderHomeOffset
+        );
+
+        mPeriodicIO.azimuth_encoder_ticks = (normalizedEncoderTicks & AZIMUTH_TICK_MASK);
     }
 
     public void setOpenLoopRampRate(double openLoopRampRate) {
@@ -271,11 +277,12 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public double getAzimuthPosition() {
-        return (
-            (mConstants.kInvertAzimuthSensorPhase ? -1 : 1) *
-                ((int) mAzimuthMotor.getSelectedSensorPosition(0) & 0xFFF) -
-                mConstants.kAzimuthEncoderHomeOffset
-        );
+        return mPeriodicIO.azimuth_encoder_ticks;
+    }
+
+    @Override
+    public double getAzimuthPositionDemand() {
+        return mPeriodicIO.azimuth_demand;
     }
 
     @Override
