@@ -59,8 +59,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
     // Odometry variables
     private Pose2d pose = Pose2d.identity();
-    private double distanceTraveled;
-    private double currentVelocity = 0;
     private double lastUpdateTimestamp = 0;
 
     // hardware states
@@ -173,6 +171,8 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         // no_offset = Relative to initial position, unaffected by reset
         public Rotation2d gyro_heading_no_offset = Rotation2d.identity();
         public Pose2d error = Pose2d.identity();
+        private double drive_distance_inches;
+        private double velocity_inches_per_second = 0;
 
         // SWERVE
         public double forward;
@@ -296,15 +296,15 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             .getTranslation()
             .translateBy(pose.getTranslation().inverse())
             .norm();
-        distanceTraveled += deltaPos;
-        currentVelocity = deltaPos / (timestamp - lastUpdateTimestamp);
+        mPeriodicIO.drive_distance_inches += deltaPos;
+        mPeriodicIO.velocity_inches_per_second = deltaPos / (timestamp - lastUpdateTimestamp);
         pose = updatedPose;
         for (SwerveModule module : swerveModules) {
             module.resetPose(pose);
         }
     }
 
-    public synchronized void alternatePoseUpdate() {
+    public synchronized void alternatePoseUpdate(double timestamp) {
         double x = 0.0;
         double y = 0.0;
         Rotation2d heading = Rotation2d.fromDegrees(getHeadingDegrees()); // temporary heading, some yaw calculation is being done here
@@ -353,7 +353,8 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             heading
         );
         double deltaPos = updatedPose.getTranslation().distance(pose.getTranslation());
-        distanceTraveled += deltaPos;
+        mPeriodicIO.drive_distance_inches += deltaPos;
+        mPeriodicIO.velocity_inches_per_second = deltaPos / (timestamp - lastUpdateTimestamp);
         pose = updatedPose;
 
         for (SwerveModule mModule : swerveModules) {
@@ -656,20 +657,11 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             RobotState.getInstance().getRobot().getRotation().getUnboundedDegrees()
         );
         double rotationCorrection = headingController.update();
-        updatePose(getTimestamp());
-        // alternatePoseUpdate();
+        updatePose(timestamp);
+        // alternatePoseUpdate(timestamp);
 
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             if (!motionPlanner.isDone()) {
-                System.out.println(
-                    "CURRENT ROBOT STATE: " +
-                    RobotState.getInstance().getFieldToVehicle(timestamp)
-                );
-                System.out.println("=========[===============================");
-                System.out.println(
-                    "OTHER ROBOT STATE: " +
-                    RobotState.getInstance().getLatestFieldToVehicle()
-                );
                 Translation2d driveVector = motionPlanner.update(timestamp, pose);
                 //                System.out.println("DRIVE VECTOR" + driveVector);
 
