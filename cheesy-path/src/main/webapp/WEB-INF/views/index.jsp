@@ -3,7 +3,7 @@
 <html>
     <head>
         <title>Cheesy Path</title>
-        
+
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
         <script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
         <script type='text/javascript' src='<c:url value='/resources/js/script.js' />'></script>
@@ -20,15 +20,17 @@
             <svg id='interactive'></svg>
         </div>
         <div class='buttonContainer'>
-            <button onclick='addPoint()' class="icon-button"><i class="material-icons">add</i></button>
-            <button onclick='update(false)' class="icon-button"><i class="material-icons">refresh</i></button>
-            <button onclick='draw(3)' class="icon-button"><i class="material-icons">play_arrow</i></button>
+            <button onclick='addPoint()' class="icon-button" title="Add Point"><i class="material-icons">add</i></button>
+            <button onclick='update(false)' class="icon-button" title="Refresh"><i class="material-icons">refresh</i></button>
+            <button onclick='draw(3)' class="icon-button" title="Animate"><i class="material-icons">play_arrow</i></button>
             <button onclick="showWaypointsList()">Waypoints Code</button>
+            <button id="resetButton" onclick="restoreFromFile()" class="icon-button" title="Restore from file"><i class="material-icons">sync</i></button>
             <button id="openButton" onclick="openFile()" class="btn-pair-left">Open</button>
-            <button id="saveButton" onclick="saveFile()" class="btn-pair-right">
+            <button id="saveButton" onclick="saveFile()" class="btn-pair-center">
                 Save
                 <span class="modified-indicator">&bull;</span>
             </button>
+            <button id="saveAsButton" onclick="saveFileAs()" class="btn-pair-right">Save As</button>
             <div class="spacer"></div>
             <select onchange='changeField(this.value)'>
                 <option value="6_field1" selected>6_field1</option>
@@ -37,7 +39,7 @@
                 <option value="7_field2">7_field2</option>
                 <option value="7_field3">7_field3</option>
             </select>
-            <label class='checkbox'>Is reversed: <input type='checkbox' id='isReversed'></label>
+            <label class='checkbox'>Is reversed: <input type='checkbox' class='data-input' id='isReversed'></label>
         </div>
         <table>
             <thead>
@@ -68,8 +70,9 @@
         <dialog id="waypointsDialog">
             <button onclick='this.parentElement.close()' class="close-button">&times;</button>
             <h3>Waypoints List</h3>
-            <pre><code id="waypointsOutput"></code></pre>
+            <pre onclick="copyToClipboard()"><code id="waypointsOutput"></code></pre>
         </dialog>
+        <div class="toast" id="clipboardToast">Copied to clipboard!</div>
     </body>
 </html>
 
@@ -79,7 +82,7 @@
         update: update,
         forcePlaceholderSize: true,
     }).disableSelection();
-        
+
     function fixWidthHelper(e, ui) {
         ui.children().each(function() {
             $(this).width($(this).width());

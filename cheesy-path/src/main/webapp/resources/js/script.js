@@ -11,6 +11,8 @@ let waypointsOutput;
 let waypointsDialog;
 let titleInput;
 let interactive;
+let clipboardToast;
+let isReversedCheckbox;
 
 const fieldWidth = 360; // inches
 const fieldHeight = 180; // inches
@@ -70,7 +72,7 @@ class Translation2d {
     inverse() {
 		return new Translation2d(-this.x, -this.y);
     }
-    
+
     interpolate(other, x) {
         if (x <= 0) {
             return new Translation2d(this.x, this.y);
@@ -91,7 +93,7 @@ class Translation2d {
     static dot(a, b) {
 		return a.x * b.x + a.y * b.y;
     }
-    
+
     static getAngle(a, b) {
         let cos_angle = this.dot(a, b) / (a.norm() * b.norm());
         if (Double.isNaN(cos_angle)) {
@@ -228,7 +230,7 @@ class Pose2d {
         return new Pose2d(new Translation2d(delta.dx * s - delta.dy * c, delta.dx * c + delta.dy * s),
                 new Rotation2d(cos_theta, sin_theta, false));
     }
-    
+
     static log(transform) {
         let dtheta = transform.getRotation().getRadians();
         let half_dtheta = 0.5 * dtheta;
@@ -316,7 +318,7 @@ class Pose2d {
 
         interactive.appendChild(point);
     }
-	
+
 	toString() {
 		return "new Pose2d(new Translation2d(" + this.translation.x + ", " + this.translation.y + "), new Rotation2d(" + this.rotation.cos + ", " + this.rotation.sin + ", " + this.rotation.normalize + "))";
 	}
@@ -417,8 +419,10 @@ function init() {
 
 	titleInput = document.getElementById("title");
 
+    isReversedCheckbox = document.getElementById('isReversed');
     waypointsDialog = document.getElementById('waypointsDialog');
     waypointsOutput = document.getElementById('waypointsOutput');
+    clipboardToast = document.getElementById('clipboardToast');
 
     document.addEventListener('keydown', (e) => {
         if (e.code === 'KeyS' && (e.ctrlKey || e.metaKey)) {
@@ -529,10 +533,7 @@ function handleWaypointDrag(event) {
         waypoints[index].translation.x = x;
         waypoints[index].translation.y = y;
 
-        const data = waypoints.map(point => (
-            `${point.translation.x},${point.translation.y},${Math.round(point.rotation.getDegrees())}`
-        )).join(';');
-        recalculateSplines(data, 4);
+        recalculateSplines(waypoints, 4);
     }
 }
 
@@ -607,7 +608,6 @@ function update(modified = true) {
         let enabled = ($($($(this).children()).children()[5]).prop('checked'));
 		if (enabled) {
             waypoints.push(new Pose2d(new Translation2d(x, y), Rotation2d.fromDegrees(heading), comment));
-            data += `${x},${y},${heading};`;
         }
     });
 
@@ -617,10 +617,15 @@ function update(modified = true) {
         setModified(true);
     }
 
-    recalculateSplines(data, 2);
+    recalculateSplines(waypoints, 2);
 }
 
-function recalculateSplines(data, drawStyle) {
+function recalculateSplines(waypointsList, drawStyle) {
+    const orderedWaypoints = isReversedCheckbox.checked ? waypointsList.slice(0).reverse() : waypointsList;
+    const data = orderedWaypoints.map(point => (
+        `${point.translation.x},${point.translation.y},${Math.round(point.rotation.getDegrees())}`
+    )).join(';');
+
     if (data.length !== 0) {
         $.post({
             url: "api/calculate_splines",
@@ -698,7 +703,8 @@ function drawSplines(fill, animate) {
             splinePoint.draw(false, splineWidth);
 
             if (fill) {
-                let hue = Math.round(180 * (i++ / splinePoints.length));
+                let index = isReversedCheckbox.checked ? (splinePoints.length - i++) : i++;
+                let hue = Math.round(180 * (index / splinePoints.length));
                 fillRobot(splinePoint, splinePoint.rotation.getRadians(), 'hsla(' + hue + ', 100%, 50%, 0.025)');
             } else {
                 drawRobot(splinePoint, splinePoint.rotation.getRadians());
@@ -710,6 +716,24 @@ function drawSplines(fill, animate) {
 function showWaypointsList() {
     waypointsOutput.textContent = generateWaypointsList();
     waypointsDialog.showModal();
+}
+
+async function copyToClipboard() {
+    let range = new Range();
+    range.selectNode(waypointsOutput);
+    window.getSelection().empty();
+    window.getSelection().addRange(range);
+    await navigator.clipboard.writeText(waypointsOutput.textContent);
+    showToast(clipboardToast);
+}
+
+const TOAST_DURATION = 1000; // ms
+
+function showToast(toastEl) {
+    toastEl.classList.add('shown');
+    setTimeout(() => {
+        toastEl.classList.remove('shown');
+    }, TOAST_DURATION);
 }
 
 function generateWaypointsList() {
@@ -733,18 +757,21 @@ function loadWaypoints(data) {
 }
 
 class CSV {
-    constructor(data = []) {
+    constructor(data = [], isReversed) {
         this.data = data;
+        this.isReversed = isReversed;
     }
 
     static load(text) {
         const rows = text.split("\n");
-        rows.shift(); // remove headers;
+        const headers = rows.shift(); // gets and removes headers
+        const reversedText = headers.split(',')[3]?.trim();
+        const reversed = !!(reversedText && reversedText === 'true'); // ignore truthy values, explicit true
         const data = rows.map(row => {
             const [ x, y, heading ] = row.split(",");
             return { x, y, heading };
         });
-        return new CSV(data);
+        return new CSV(data, reversed);
     }
 
     addRow({ x, y, heading }) {
@@ -752,7 +779,7 @@ class CSV {
     }
 
     toString() {
-        let returnVal = "x,y,heading\n";
+        let returnVal = `x,y,heading,${this.isReversed}\n`;
         returnVal += this.data.map(({x, y, heading}) => `${x},${y},${heading}`).join('\n');
         return returnVal;
     }
@@ -785,9 +812,21 @@ let fileHandle;
 async function openFile() {
     [fileHandle] = await window.showOpenFilePicker(filePickerOptions);
     const file = await fileHandle.getFile();
+    await loadFromFile(file);
+}
+
+async function restoreFromFile() {
+    if (fileHandle) {
+        const file = await fileHandle.getFile();
+        await loadFromFile(file);
+    }
+}
+
+async function loadFromFile(file) {
     titleInput.value = file.name.slice(0, -4);
     const text = await file.text();
     const output = CSV.load(text);
+    isReversedCheckbox.checked = output.isReversed;
     loadWaypoints(output.data);
 }
 
@@ -803,7 +842,8 @@ function generateCSV() {
             x: point.translation.x,
             y: point.translation.y,
             heading: Math.round(point.rotation.getDegrees()),
-        }))
+        })),
+        isReversedCheckbox.checked
     );
     return csv.toString();
 }
