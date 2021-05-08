@@ -160,7 +160,9 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public double getDPad() { return mDriveControlBoard.getDPad(); }
+    public double getDPad() {
+        return mDriveControlBoard.getDPad();
+    }
 
     @Override
     public boolean getFieldRelative() {

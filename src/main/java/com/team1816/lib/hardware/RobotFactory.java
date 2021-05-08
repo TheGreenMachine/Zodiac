@@ -9,9 +9,8 @@ import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.hardware.components.pcm.*;
 import com.team254.lib.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-
-import javax.annotation.Nonnull;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public class RobotFactory {
 
@@ -54,7 +53,6 @@ public class RobotFactory {
         String name,
         List<PidConfig> pidConfigs
     ) {
-
         IMotorControllerEnhanced motor = null;
         var subsystem = getSubsystem(subsystemName);
 
@@ -90,7 +88,6 @@ public class RobotFactory {
             System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
         }
 
-
         return motor;
     }
 
@@ -116,7 +113,6 @@ public class RobotFactory {
                         master,
                         subsystem,
                         subsystem.pid
-
                     );
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
                 motor =
@@ -152,7 +148,11 @@ public class RobotFactory {
         return hardwareId != null && hardwareId > -1;
     }
 
-    public SwerveModule getSwerveModule(String subsystemName, String name, Translation2d startPos) {
+    public SwerveModule getSwerveModule(
+        String subsystemName,
+        String name,
+        Translation2d startPos
+    ) {
         var subsystem = getSubsystem(subsystemName);
         SwerveModuleConfig module = subsystem.swerveModules.get(name);
         if (module == null) {

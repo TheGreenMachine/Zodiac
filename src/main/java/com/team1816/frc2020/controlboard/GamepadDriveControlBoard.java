@@ -1,13 +1,13 @@
 package com.team1816.frc2020.controlboard;
 
+import static com.team1816.frc2020.controlboard.ControlUtils.getControllerInstance;
+
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IDriveControlBoard;
 import com.team1816.lib.controlboard.LogitechController;
 import com.team1816.lib.controlboard.XboxController;
 import com.team254.lib.geometry.Rotation2d;
-
-import static com.team1816.frc2020.controlboard.ControlUtils.getControllerInstance;
 
 public class GamepadDriveControlBoard implements IDriveControlBoard {
 
@@ -24,7 +24,6 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     private final Controller mController;
 
     private GamepadDriveControlBoard() {
-
         mController = getControllerInstance(Constants.kDriveGamepadPort);
     }
 
@@ -46,11 +45,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public double getStrafe() {
-        return mController.getJoystick
-            (
-                XboxController.Side.LEFT,
-                XboxController.Axis.X
-            );
+        return mController.getJoystick(XboxController.Side.LEFT, XboxController.Axis.X);
     }
 
     @Override
@@ -105,13 +100,17 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
         }
 
         if (mController.getTrigger(XboxController.Side.LEFT)) {
-            double degs = SwerveCardinal.findClosest(Rotation2d.fromDegrees(mController.getDPad()), true).rotation.getDegrees();
+            double degs = SwerveCardinal
+                .findClosest(Rotation2d.fromDegrees(mController.getDPad()), true)
+                .rotation.getDegrees();
             if (degs < 0) {
                 degs += 360;
             }
             return degs;
         } else {
-            double degs = SwerveCardinal.findClosest(Rotation2d.fromDegrees(mController.getDPad()), false).rotation.getDegrees();
+            double degs = SwerveCardinal
+                .findClosest(Rotation2d.fromDegrees(mController.getDPad()), false)
+                .rotation.getDegrees();
             if (degs < 0) {
                 degs += 360;
             }
@@ -138,17 +137,28 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
             this(degrees, degrees, false);
         }
 
-        SwerveCardinal(double degrees, double inputDirectionDegrees, boolean isARocketCardinal) {
+        SwerveCardinal(
+            double degrees,
+            double inputDirectionDegrees,
+            boolean isARocketCardinal
+        ) {
             rotation = Rotation2d.fromDegrees(degrees);
             inputDirection = Rotation2d.fromDegrees(inputDirectionDegrees);
             this.isARocketCardinal = isARocketCardinal;
         }
 
-        public static SwerveCardinal findClosest(double xAxis, double yAxis, boolean isARocketCardinal) {
+        public static SwerveCardinal findClosest(
+            double xAxis,
+            double yAxis,
+            boolean isARocketCardinal
+        ) {
             return findClosest(new Rotation2d(yAxis, -xAxis, true), isARocketCardinal);
         }
 
-        public static SwerveCardinal findClosest(Rotation2d stickDirection, boolean isARocketCardinal) {
+        public static SwerveCardinal findClosest(
+            Rotation2d stickDirection,
+            boolean isARocketCardinal
+        ) {
             var values = SwerveCardinal.values();
 
             SwerveCardinal closest = null;
@@ -158,7 +168,9 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
                     continue;
                 }
                 var checkDirection = values[i];
-                var distance = Math.abs(stickDirection.distance(checkDirection.inputDirection));
+                var distance = Math.abs(
+                    stickDirection.distance(checkDirection.inputDirection)
+                );
                 if (distance < closestDistance) {
                     closestDistance = distance;
                     closest = checkDirection;
@@ -168,7 +180,12 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
         }
 
         public static boolean isDiagonal(SwerveCardinal cardinal) {
-            return cardinal == FRONT_LEFT || cardinal == FRONT_RIGHT || cardinal == BACK_LEFT || cardinal == BACK_RIGHT;
+            return (
+                cardinal == FRONT_LEFT ||
+                cardinal == FRONT_RIGHT ||
+                cardinal == BACK_LEFT ||
+                cardinal == BACK_RIGHT
+            );
         }
     }
 

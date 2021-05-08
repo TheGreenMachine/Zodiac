@@ -17,7 +17,6 @@ import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-
 import java.util.List;
 
 public class SwerveModule extends Subsystem implements ISwerveModule {
@@ -36,7 +35,8 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     }
 
     public enum ControlState {
-        OPEN_LOOP, VELOCITY
+        OPEN_LOOP,
+        VELOCITY,
     }
 
     public static class SwerveModuleConstants {
@@ -73,7 +73,8 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         // drive current/voltage
 
         // drive measurement
-        public VelocityMeasPeriod kDriveVelocityMeasurementPeriod = VelocityMeasPeriod.Period_100Ms; // dt for velocity measurements, ms
+        public VelocityMeasPeriod kDriveVelocityMeasurementPeriod =
+            VelocityMeasPeriod.Period_100Ms; // dt for velocity measurements, ms
     }
 
     // Components
@@ -101,14 +102,18 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     public static final int kBackRight = 2;
     public static final int kBackLeft = 3;
 
-    public SwerveModule(String subsystemName, SwerveModuleConstants constants, Translation2d startingPosition) {
+    public SwerveModule(
+        String subsystemName,
+        SwerveModuleConstants constants,
+        Translation2d startingPosition
+    ) {
         super(constants.kName);
         mConstants = constants;
         System.out.println(
             "Configuring Swerve Module " +
-                constants.kName +
-                " on subsystem " +
-                subsystemName
+            constants.kName +
+            " on subsystem " +
+            subsystemName
         );
 
         mDriveMotor =
@@ -134,7 +139,6 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         );
         System.out.println("  " + this);
 
-
         this.startingPosition = startingPosition;
         zeroSensors();
     }
@@ -143,44 +147,52 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         double currentEncDistance = getDriveDistance();
         double deltaEncDistance = (currentEncDistance - previousEncDistance);
         Rotation2d currentWheelAngle = getFieldCentricAngle(robotHeading);
-        Translation2d deltaPosition = new Translation2d(currentWheelAngle.cos() * deltaEncDistance,
-            currentWheelAngle.sin() * deltaEncDistance);
+        Translation2d deltaPosition = new Translation2d(
+            currentWheelAngle.cos() * deltaEncDistance,
+            currentWheelAngle.sin() * deltaEncDistance
+        );
 
-//        double xScrubFactor = Constants.kXScrubFactor;
-//        double yScrubFactor = Constants.kYScrubFactor;
-//
-//        if (Util.epsilonEquals(Math.signum(deltaPosition.x()), 1.0)) {
-//            if (standardCarpetDirection) {
-//                xScrubFactor = 1.0;
-//            } else {
-//
-//            }
-//        } else {
-//            if (standardCarpetDirection) {
-//
-//            } else {
-//                xScrubFactor = 1.0;
-//            }
-//        }
-//        if (Util.epsilonEquals(Math.signum(deltaPosition.y()), 1.0)) {
-//            if (standardCarpetDirection) {
-//                yScrubFactor = 1.0;
-//            } else {
-//
-//            }
-//        } else {
-//            if (standardCarpetDirection) {
-//
-//            } else {
-//                yScrubFactor = 1.0;
-//            }
-//        }
+        //        double xScrubFactor = Constants.kXScrubFactor;
+        //        double yScrubFactor = Constants.kYScrubFactor;
+        //
+        //        if (Util.epsilonEquals(Math.signum(deltaPosition.x()), 1.0)) {
+        //            if (standardCarpetDirection) {
+        //                xScrubFactor = 1.0;
+        //            } else {
+        //
+        //            }
+        //        } else {
+        //            if (standardCarpetDirection) {
+        //
+        //            } else {
+        //                xScrubFactor = 1.0;
+        //            }
+        //        }
+        //        if (Util.epsilonEquals(Math.signum(deltaPosition.y()), 1.0)) {
+        //            if (standardCarpetDirection) {
+        //                yScrubFactor = 1.0;
+        //            } else {
+        //
+        //            }
+        //        } else {
+        //            if (standardCarpetDirection) {
+        //
+        //            } else {
+        //                yScrubFactor = 1.0;
+        //            }
+        //        }
 
-        deltaPosition = new Translation2d(deltaPosition.x() /* * xScrubFactor */ ,
-            deltaPosition.y() /* * yScrubFactor */);
+        deltaPosition =
+            new Translation2d(
+                deltaPosition.x()/* * xScrubFactor */,
+                deltaPosition.y()
+                /* * yScrubFactor */
+            );
         Translation2d updatedPosition = position.translateBy(deltaPosition);
         Pose2d staticWheelPose = new Pose2d(updatedPosition, robotHeading);
-        Pose2d robotPose = staticWheelPose.transformBy(Pose2d.fromTranslation(startingPosition).inverse());
+        Pose2d robotPose = staticWheelPose.transformBy(
+            Pose2d.fromTranslation(startingPosition).inverse()
+        );
         position = updatedPosition;
         estimatedRobotPose = robotPose;
         previousEncDistance = currentEncDistance;
@@ -196,7 +208,9 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     }
 
     public synchronized void resetPose(Pose2d robotPose) {
-        Translation2d modulePosition = robotPose.transformBy(Pose2d.fromTranslation(startingPosition)).getTranslation();
+        Translation2d modulePosition = robotPose
+            .transformBy(Pose2d.fromTranslation(startingPosition))
+            .getTranslation();
         position = modulePosition;
     }
 
@@ -225,24 +239,24 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             mPeriodicIO.drive_encoder_ticks = driveEncoderSimPosition;
             mPeriodicIO.velocity_ticks_per_100ms = mPeriodicIO.drive_demand;
             mPeriodicIO.azimuth_encoder_ticks = mPeriodicIO.azimuth_demand;
-
         } else {
             mPeriodicIO.drive_encoder_ticks = mDriveMotor.getSelectedSensorPosition(0);
-            mPeriodicIO.velocity_ticks_per_100ms = mDriveMotor.getSelectedSensorVelocity(0);
+            mPeriodicIO.velocity_ticks_per_100ms =
+                mDriveMotor.getSelectedSensorVelocity(0);
 
             var normalizedEncoderTicks = (int) (
-                mAzimuthMotor.getSelectedSensorPosition(0)
-                    - mConstants.kAzimuthEncoderHomeOffset
+                mAzimuthMotor.getSelectedSensorPosition(0) -
+                mConstants.kAzimuthEncoderHomeOffset
             );
 
-            mPeriodicIO.azimuth_encoder_ticks = (normalizedEncoderTicks & AZIMUTH_TICK_MASK);
+            mPeriodicIO.azimuth_encoder_ticks =
+                (normalizedEncoderTicks & AZIMUTH_TICK_MASK);
         }
     }
 
     public void setOpenLoopRampRate(double openLoopRampRate) {
         mDriveMotor.configOpenloopRamp(openLoopRampRate, Constants.kCANTimeoutMs);
     }
-
 
     @Override
     public void writePeriodicOutputs() {
@@ -257,14 +271,18 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                 // throttle is 0
                 stop();
             } else {
-                System.out.println(mConstants.kName + " drive demand: " + mPeriodicIO.drive_demand);
+                System.out.println(
+                    mConstants.kName + " drive demand: " + mPeriodicIO.drive_demand
+                );
                 mDriveMotor.set(ControlMode.PercentOutput, mPeriodicIO.drive_demand);
             }
         } else if (mControlState == ControlState.VELOCITY) {
-//            System.out.println(mConstants.kName + " drive demand: " + mPeriodicIO.drive_demand);
+            //            System.out.println(mConstants.kName + " drive demand: " + mPeriodicIO.drive_demand);
             mDriveMotor.set(ControlMode.Velocity, mPeriodicIO.drive_demand);
         }
-        var offsetDemand = ((int) (mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset)) & 0xFFF;
+        var offsetDemand =
+            ((int) (mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset)) &
+            0xFFF;
         mAzimuthMotor.set(ControlMode.Position, offsetDemand);
     }
 
@@ -320,7 +338,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         if (mAzimuthMotor instanceof TalonSRX) {
             int rawValue =
                 ((TalonSRX) mAzimuthMotor).getSensorCollection().getPulseWidthPosition() &
-                    0xFFF;
+                0xFFF;
             return rawValue;
         }
         return 0;
@@ -349,11 +367,20 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         zeroSensors();
         mAzimuthMotor.set(ControlMode.Position, mConstants.kAzimuthEncoderHomeOffset);
         Timer.delay(1);
-        mAzimuthMotor.set(ControlMode.Position, radiansToEncoderUnits(Math.PI) + mConstants.kAzimuthEncoderHomeOffset);
+        mAzimuthMotor.set(
+            ControlMode.Position,
+            radiansToEncoderUnits(Math.PI) + mConstants.kAzimuthEncoderHomeOffset
+        );
         Timer.delay(1);
-        mAzimuthMotor.set(ControlMode.Position, radiansToEncoderUnits(Math.PI / 2.0) + mConstants.kAzimuthEncoderHomeOffset);
+        mAzimuthMotor.set(
+            ControlMode.Position,
+            radiansToEncoderUnits(Math.PI / 2.0) + mConstants.kAzimuthEncoderHomeOffset
+        );
         Timer.delay(1);
-        mAzimuthMotor.set(ControlMode.Position, radiansToEncoderUnits(-Math.PI / 2.0) + mConstants.kAzimuthEncoderHomeOffset);
+        mAzimuthMotor.set(
+            ControlMode.Position,
+            radiansToEncoderUnits(-Math.PI / 2.0) + mConstants.kAzimuthEncoderHomeOffset
+        );
         Timer.delay(1);
         zeroSensors();
         return true;
@@ -397,7 +424,9 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public double getDriveDistance() {
-        return Drive.rotationsToInches(mPeriodicIO.drive_encoder_ticks / Drive.DRIVE_ENCODER_PPR);
+        return Drive.rotationsToInches(
+            mPeriodicIO.drive_encoder_ticks / Drive.DRIVE_ENCODER_PPR
+        );
     }
 
     /**
@@ -478,14 +507,22 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     @Override
     public String toString() {
         return (
-            "SwerveModule{ " + mConstants.kDriveMotorName +
-            " id: " + mDriveMotor.getDeviceID() +
-            "  " + mConstants.kAzimuthMotorName +
-            " id: " + mAzimuthMotor.getDeviceID() +
-            " offset: " + mConstants.kAzimuthEncoderHomeOffset +
-            " invertSensor: " + mConstants.kInvertAzimuthSensorPhase +
-            " invertAzimuth: " + mConstants.kInvertAzimuth +
-            " encPPR: " + Drive.DRIVE_ENCODER_PPR +
+            "SwerveModule{ " +
+            mConstants.kDriveMotorName +
+            " id: " +
+            mDriveMotor.getDeviceID() +
+            "  " +
+            mConstants.kAzimuthMotorName +
+            " id: " +
+            mAzimuthMotor.getDeviceID() +
+            " offset: " +
+            mConstants.kAzimuthEncoderHomeOffset +
+            " invertSensor: " +
+            mConstants.kInvertAzimuthSensorPhase +
+            " invertAzimuth: " +
+            mConstants.kInvertAzimuth +
+            " encPPR: " +
+            Drive.DRIVE_ENCODER_PPR +
             " }"
         );
     }

@@ -1,7 +1,8 @@
 package com.team1816.frc2020;
 
+import static com.team1816.frc2020.controlboard.ControlUtils.*;
+
 import badlog.lib.BadLog;
-import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
 import com.team1816.frc2020.paths.TrajectorySet;
@@ -20,20 +21,16 @@ import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.control.SwerveHeadingController;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import com.team254.lib.util.TimeDelayedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
-
-import static com.team1816.frc2020.controlboard.ControlUtils.*;
 
 public class Robot extends TimedRobot {
 
@@ -492,7 +489,6 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         try {
-
             double initTime = System.currentTimeMillis();
 
             ledManager.blinkStatus(LedManager.RobotStatus.DRIVETRAIN_FLIPPED);
@@ -622,33 +618,62 @@ public class Robot extends TimedRobot {
         double turn = mControlBoard.getTurn();
 
         DriveSignal driveSignal;
-        boolean maintainAzimuth = mShouldMaintainAzimuth.update(mControlBoard.getTurn() == 0, 0.2);
-        boolean changeAzimuthSetpoint = shouldChangeAzimuthSetpoint.update(maintainAzimuth);
-
+        boolean maintainAzimuth = mShouldMaintainAzimuth.update(
+            mControlBoard.getTurn() == 0,
+            0.2
+        );
+        boolean changeAzimuthSetpoint = shouldChangeAzimuthSetpoint.update(
+            maintainAzimuth
+        );
 
         if (mControlBoard.getDPad() != -1) {
-            swerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.SNAP);
+            swerveHeadingController.setHeadingControllerState(
+                SwerveHeadingController.HeadingControllerState.SNAP
+            );
             double heading_goal = mControlBoard.getDPad();
             SmartDashboard.putNumber("Heading Goal", heading_goal);
             swerveHeadingController.setGoal(heading_goal);
         } else {
             if (!maintainAzimuth) {
-                swerveHeadingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.OFF);
-            } else if ((swerveHeadingController
-                .getHeadingControllerState() == SwerveHeadingController.HeadingControllerState.SNAP
-                && swerveHeadingController.isAtGoal()) || changeAzimuthSetpoint) {
-                swerveHeadingController
-                    .setHeadingControllerState(SwerveHeadingController.HeadingControllerState.MAINTAIN);
+                swerveHeadingController.setHeadingControllerState(
+                    SwerveHeadingController.HeadingControllerState.OFF
+                );
+            } else if (
+                (
+                    swerveHeadingController.getHeadingControllerState() ==
+                    SwerveHeadingController.HeadingControllerState.SNAP &&
+                    swerveHeadingController.isAtGoal()
+                ) ||
+                changeAzimuthSetpoint
+            ) {
+                swerveHeadingController.setHeadingControllerState(
+                    SwerveHeadingController.HeadingControllerState.MAINTAIN
+                );
                 swerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
             }
         }
 
-        if (swerveHeadingController.getHeadingControllerState() != SwerveHeadingController.HeadingControllerState.OFF) {
-            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), swerveHeadingController.update(),
-                mControlBoard.getSlowMode(), mControlBoard.getFieldRelative(), true);
+        if (
+            swerveHeadingController.getHeadingControllerState() !=
+            SwerveHeadingController.HeadingControllerState.OFF
+        ) {
+            mDrive.setTeleopInputs(
+                mControlBoard.getThrottle(),
+                mControlBoard.getStrafe(),
+                swerveHeadingController.update(),
+                mControlBoard.getSlowMode(),
+                mControlBoard.getFieldRelative(),
+                true
+            );
         } else {
-            mDrive.setTeleopInputs(mControlBoard.getThrottle(), mControlBoard.getStrafe(), mControlBoard.getTurn(),
-                mControlBoard.getSlowMode(), mControlBoard.getFieldRelative(), false);
+            mDrive.setTeleopInputs(
+                mControlBoard.getThrottle(),
+                mControlBoard.getStrafe(),
+                mControlBoard.getTurn(),
+                mControlBoard.getSlowMode(),
+                mControlBoard.getFieldRelative(),
+                false
+            );
         }
     }
 

@@ -4,12 +4,10 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
-import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.motor.IConfigurableMotorController;
 import com.team1816.lib.hardware.components.motor.LazyTalonFX;
 import com.team1816.lib.hardware.components.motor.LazyTalonSRX;
-
 import java.util.*;
 
 /**
@@ -69,8 +67,21 @@ public class CtreMotorFactory {
     }
 
     // Create a CANTalon with the default (out of the box) configuration.
-    public static IMotorControllerEnhanced createDefaultTalon(int id, String name, boolean isFalcon, SubsystemConfig subsystems, List<PidConfig> pidConfigList) {
-        return createTalon(id, name, kDefaultConfiguration, isFalcon, subsystems, pidConfigList);
+    public static IMotorControllerEnhanced createDefaultTalon(
+        int id,
+        String name,
+        boolean isFalcon,
+        SubsystemConfig subsystems,
+        List<PidConfig> pidConfigList
+    ) {
+        return createTalon(
+            id,
+            name,
+            kDefaultConfiguration,
+            isFalcon,
+            subsystems,
+            pidConfigList
+        );
     }
 
     public static IMotorControllerEnhanced createPermanentSlaveTalon(
@@ -80,7 +91,7 @@ public class CtreMotorFactory {
         IMotorController master,
         SubsystemConfig subsystem,
         List<PidConfig> pidConfigList
-        ) {
+    ) {
         final IMotorControllerEnhanced talon = createTalon(
             id,
             name,
@@ -88,7 +99,6 @@ public class CtreMotorFactory {
             isFalcon,
             subsystem,
             pidConfigList
-
         );
         System.out.println(
             "Slaving talon on " + id + " to talon on " + master.getDeviceID()
@@ -105,9 +115,10 @@ public class CtreMotorFactory {
         SubsystemConfig subsystem,
         List<PidConfig> pidConfigList
     ) {
-        IConfigurableMotorController talon = isFalcon ? new LazyTalonFX(id) : new LazyTalonSRX(id);
-        configureMotorController(talon, name,config, isFalcon, subsystem, pidConfigList);
-
+        IConfigurableMotorController talon = isFalcon
+            ? new LazyTalonFX(id)
+            : new LazyTalonSRX(id);
+        configureMotorController(talon, name, config, isFalcon, subsystem, pidConfigList);
 
         return talon;
     }
@@ -135,7 +146,6 @@ public class CtreMotorFactory {
     public static IMotorController createVictor(int id, Configuration config) {
         VictorSPX victor = new VictorSPX(id);
         //configureMotorController(victor, config);
-
 
         victor.configReverseLimitSwitchSource(
             RemoteLimitSwitchSource.Deactivated,
@@ -170,7 +180,6 @@ public class CtreMotorFactory {
         SubsystemConfig subsystem,
         List<PidConfig> pidConfigList
     ) {
-
         motor.configFactoryDefault(kTimeoutMs);
 
         BaseTalonConfiguration talonConfiguration;
@@ -179,8 +188,7 @@ public class CtreMotorFactory {
             talonConfiguration = new TalonFXConfiguration();
         } else if (motor instanceof TalonSRX) {
             talonConfiguration = new TalonSRXConfiguration();
-        }
-        else{
+        } else {
             return;
         }
         talonConfiguration.forwardSoftLimitThreshold = config.FORWARD_SOFT_LIMIT;
@@ -189,32 +197,30 @@ public class CtreMotorFactory {
         talonConfiguration.reverseSoftLimitThreshold = config.REVERSE_SOFT_LIMIT;
         talonConfiguration.reverseSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
 
-
-        if(pidConfigList.size()>0) {
+        if (pidConfigList.size() > 0) {
             talonConfiguration.slot0.kP = pidConfigList.get(0).kP;
             talonConfiguration.slot0.kI = pidConfigList.get(0).kI;
             talonConfiguration.slot0.kD = pidConfigList.get(0).kD;
             talonConfiguration.slot0.kF = pidConfigList.get(0).kF;
         }
-        if(pidConfigList.size()>1) {
+        if (pidConfigList.size() > 1) {
             talonConfiguration.slot1.kP = pidConfigList.get(1).kP;
             talonConfiguration.slot1.kI = pidConfigList.get(1).kI;
             talonConfiguration.slot1.kD = pidConfigList.get(1).kD;
             talonConfiguration.slot1.kF = pidConfigList.get(1).kF;
         }
-        if(pidConfigList.size()>2) {
+        if (pidConfigList.size() > 2) {
             talonConfiguration.slot2.kP = pidConfigList.get(2).kP;
             talonConfiguration.slot2.kI = pidConfigList.get(2).kI;
             talonConfiguration.slot2.kD = pidConfigList.get(2).kD;
             talonConfiguration.slot2.kF = pidConfigList.get(2).kF;
         }
-        if(pidConfigList.size()>3) {
+        if (pidConfigList.size() > 3) {
             talonConfiguration.slot3.kP = pidConfigList.get(3).kP;
             talonConfiguration.slot3.kI = pidConfigList.get(3).kI;
             talonConfiguration.slot3.kD = pidConfigList.get(3).kD;
             talonConfiguration.slot3.kF = pidConfigList.get(3).kF;
         }
-
 
         motor.overrideLimitSwitchesEnable(config.ENABLE_LIMIT_SWITCH);
 
@@ -229,7 +235,6 @@ public class CtreMotorFactory {
         talonConfiguration.peakOutputForward = 1.0;
         talonConfiguration.peakOutputReverse = -1.0;
 
-
         talonConfiguration.velocityMeasurementPeriod = config.VELOCITY_MEASUREMENT_PERIOD;
 
         motor.setNeutralMode(config.NEUTRAL_MODE);
@@ -239,7 +244,6 @@ public class CtreMotorFactory {
             config.VELOCITY_MEASUREMENT_PERIOD,
             kTimeoutMs
         );
-
 
         if (code != ErrorCode.OK) {
             System.out.println(
@@ -300,18 +304,12 @@ public class CtreMotorFactory {
         );
 
         motor.configSupplyCurrentLimit(
-            new SupplyCurrentLimitConfiguration(
-                config.ENABLE_CURRENT_LIMIT,
-                0,
-                0,
-                0
-            ),
+            new SupplyCurrentLimitConfiguration(config.ENABLE_CURRENT_LIMIT, 0, 0, 0),
             kTimeoutMs
         );
 
         motor.configAllSettings(talonConfiguration, kTimeoutMs);
 
         motor.setInverted(subsystem.invertMotor.contains(name));
-
     }
 }

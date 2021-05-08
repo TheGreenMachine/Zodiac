@@ -1,13 +1,13 @@
 package com.team1816.frc2020.controlboard;
 
+import static com.team1816.frc2020.controlboard.ControlUtils.getControllerInstance;
+
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.lib.controlboard.LogitechController;
 import com.team254.lib.util.DelayedBoolean;
 import edu.wpi.first.wpilibj.Timer;
-
-import static com.team1816.frc2020.controlboard.ControlUtils.getControllerInstance;
 
 public class GamepadButtonControlBoard implements IButtonControlBoard {
 

@@ -376,8 +376,8 @@ public class RobotState {
 
     public synchronized void outputToSmartDashboard() {
         SmartDashboard.putString("Robot Velocity", getMeasuredVelocity().toString());
-    //    SmartDashboard.putNumber("Estimated Pose X", getEstimatedX());
-    //    SmartDashboard.putNumber("Estimated Pose Y", getEstimatedY());
+        //    SmartDashboard.putNumber("Estimated Pose X", getEstimatedX());
+        //    SmartDashboard.putNumber("Estimated Pose Y", getEstimatedY());
 
         SmartDashboard.putNumber("Field to Turret", getLatestFieldToTurret());
         SmartDashboard.putNumber(

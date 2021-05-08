@@ -30,7 +30,6 @@ public class LazyTalonFX extends TalonFX implements IConfigurableMotorController
 
     @Override
     public ErrorCode configAllSettings(BaseTalonConfiguration allConfigs, int timeoutMs) {
-        return super.configAllSettings(allConfigs,timeoutMs);
-
+        return super.configAllSettings(allConfigs, timeoutMs);
     }
 }

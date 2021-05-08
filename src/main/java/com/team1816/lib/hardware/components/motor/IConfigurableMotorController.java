@@ -7,8 +7,4 @@ public interface IConfigurableMotorController extends ILazyMotorControllerEnhanc
     ErrorCode configAllSettings(BaseTalonConfiguration allConfigs, int timeoutMs);
 
     ErrorCode configFactoryDefault(int timeoutMs);
-
-
-
-
 }

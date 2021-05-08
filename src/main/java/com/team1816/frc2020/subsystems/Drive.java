@@ -12,7 +12,6 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team1816.lib.subsystems.SwerveDrivetrain;
-import com.team1816.lib.subsystems.TrackableDrivetrain;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
 import com.team254.lib.control.PathFollower;
@@ -33,19 +32,15 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Drive
-    extends Subsystem
-    implements SwerveDrivetrain, PidProvider {
+public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
     private static final String NAME = "drivetrain";
 
     private static Drive INSTANCE;
-
 
     // Components
     private final SwerveModule[] swerveModules = new SwerveModule[4];
@@ -81,7 +76,7 @@ public class Drive
     private boolean robotCentric = false;
     private SendableChooser<DriveHelper> driveHelperChooser;
 
-    private final Field2d smartDashboardField = new Field2d();
+    private final Field2d fieldSim = new Field2d();
 
     // Constants
     public static final double DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
@@ -105,10 +100,26 @@ public class Drive
         mPeriodicIO = new PeriodicIO();
 
         // start all Talons in open loop mode
-        swerveModules[SwerveModule.kFrontLeft] = factory.getSwerveModule(NAME, "frontLeft", Constants.kFrontLeftModulePosition);
-        swerveModules[SwerveModule.kFrontRight] = factory.getSwerveModule(NAME, "frontRight", Constants.kFrontRightModulePosition);
-        swerveModules[SwerveModule.kBackLeft] = factory.getSwerveModule(NAME, "backLeft", Constants.kBackLeftModulePosition);
-        swerveModules[SwerveModule.kBackRight] = factory.getSwerveModule(NAME, "backRight", Constants.kBackRightModulePosition);
+        swerveModules[SwerveModule.kFrontLeft] =
+            factory.getSwerveModule(
+                NAME,
+                "frontLeft",
+                Constants.kFrontLeftModulePosition
+            );
+        swerveModules[SwerveModule.kFrontRight] =
+            factory.getSwerveModule(
+                NAME,
+                "frontRight",
+                Constants.kFrontRightModulePosition
+            );
+        swerveModules[SwerveModule.kBackLeft] =
+            factory.getSwerveModule(NAME, "backLeft", Constants.kBackLeftModulePosition);
+        swerveModules[SwerveModule.kBackRight] =
+            factory.getSwerveModule(
+                NAME,
+                "backRight",
+                Constants.kBackRightModulePosition
+            );
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
@@ -161,7 +172,7 @@ public class Drive
         public Rotation2d gyro_heading = Rotation2d.identity();
         // no_offset = Relative to initial position, unaffected by reset
         public Rotation2d gyro_heading_no_offset = Rotation2d.identity();
-        public Pose2d error = Pose2d.identity();;
+        public Pose2d error = Pose2d.identity();
 
         // SWERVE
         public double forward;
@@ -172,7 +183,7 @@ public class Drive
         public boolean use_heading_controller;
 
         // OUTPUTS
-        public double[] wheel_speeds = new double[] {0, 0, 0, 0};
+        public double[] wheel_speeds = new double[] { 0, 0, 0, 0 };
         public Rotation2d[] wheel_azimuths = new Rotation2d[] {
             Rotation2d.identity(),
             Rotation2d.identity(),
@@ -203,21 +214,27 @@ public class Drive
 
     @Override
     public synchronized void writePeriodicOutputs() {
-        var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
-        smartDashboardField.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5, rot2d);
+        var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(
+            mPeriodicIO.gyro_heading_no_offset.getRadians()
+        );
+        fieldSim.setRobotPose(
+            Units.inches_to_meters(mRobotState.getEstimatedX()),
+            Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5,
+            rot2d
+        );
         for (int i = 0; i < swerveModules.length; i++) {
             if (swerveModules[i] != null) {
                 if (mDriveControlState == DriveControlState.OPEN_LOOP) {
                     // TODO: 5/5/21 fix
                     swerveModules[i].setVelocity(
-                        mPeriodicIO.wheel_speeds[i],
-                        mPeriodicIO.wheel_azimuths[i]
-                    );
+                            mPeriodicIO.wheel_speeds[i],
+                            mPeriodicIO.wheel_azimuths[i]
+                        );
                 } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
                     swerveModules[i].setVelocity(
-                        mPeriodicIO.wheel_speeds[i],
-                        mPeriodicIO.wheel_azimuths[i]
-                    );
+                            mPeriodicIO.wheel_speeds[i],
+                            mPeriodicIO.wheel_azimuths[i]
+                        );
                 }
                 swerveModules[i].writePeriodicOutputs();
             }
@@ -225,7 +242,7 @@ public class Drive
     }
 
     /** The tried and true algorithm for keeping track of position */
-    public synchronized void updatePose(double timestamp){
+    public synchronized void updatePose(double timestamp) {
         double x = 0.0;
         double y = 0.0;
         Rotation2d heading = getHeading();
@@ -235,7 +252,11 @@ public class Drive
         for (int i = 0; i < swerveModules.length; i++) {
             SwerveModule m = swerveModules[i];
             m.updatePose(heading);
-            double distance = m.getEstimatedRobotPose().getTranslation().translateBy(pose.getTranslation().inverse()).norm();
+            double distance = m
+                .getEstimatedRobotPose()
+                .getTranslation()
+                .translateBy(pose.getTranslation().inverse())
+                .norm();
             distances[i] = distance;
             averageDistance += distance;
         }
@@ -256,19 +277,25 @@ public class Drive
             }
         }
 
-        if(modulesToUse.isEmpty()){
+        if (modulesToUse.isEmpty()) {
             modulesToUse.add(swerveModules[minDevianceIndex]);
         }
 
         //SmartDashboard.putNumber("Modules Used", modulesToUse.size());
 
-        for(SwerveModule m : modulesToUse){
+        for (SwerveModule m : modulesToUse) {
             x += m.getEstimatedRobotPose().getTranslation().x();
             y += m.getEstimatedRobotPose().getTranslation().y();
         }
 
-        Pose2d updatedPose = new Pose2d(new Translation2d(x / modulesToUse.size(), y / modulesToUse.size()), heading);
-        double deltaPos = updatedPose.getTranslation().translateBy(pose.getTranslation().inverse()).norm();
+        Pose2d updatedPose = new Pose2d(
+            new Translation2d(x / modulesToUse.size(), y / modulesToUse.size()),
+            heading
+        );
+        double deltaPos = updatedPose
+            .getTranslation()
+            .translateBy(pose.getTranslation().inverse())
+            .norm();
         distanceTraveled += deltaPos;
         currentVelocity = deltaPos / (timestamp - lastUpdateTimestamp);
         pose = updatedPose;
@@ -280,13 +307,16 @@ public class Drive
     public synchronized void alternatePoseUpdate() {
         double x = 0.0;
         double y = 0.0;
-        Rotation2d heading = Rotation2d.fromDegrees(getHeadingDegrees());  // temporary heading, some yaw calculation is being done here
+        Rotation2d heading = Rotation2d.fromDegrees(getHeadingDegrees()); // temporary heading, some yaw calculation is being done here
 
         double[] distances = new double[4];
 
         for (int i = 0; i < 4; i++) {
             swerveModules[i].updatePose(heading);
-            double distance = swerveModules[i].getEstimatedRobotPose().getTranslation().distance(pose.getTranslation());
+            double distance =
+                swerveModules[i].getEstimatedRobotPose()
+                    .getTranslation()
+                    .distance(pose.getTranslation());
             distances[i] = distance;
         }
 
@@ -318,7 +348,10 @@ public class Drive
             y += m.getEstimatedRobotPose().getTranslation().y();
         }
 
-        Pose2d updatedPose = new Pose2d(new Translation2d(x / modulesToUse.size(), y / modulesToUse.size()), heading);
+        Pose2d updatedPose = new Pose2d(
+            new Translation2d(x / modulesToUse.size(), y / modulesToUse.size()),
+            heading
+        );
         double deltaPos = updatedPose.getTranslation().distance(pose.getTranslation());
         distanceTraveled += deltaPos;
         pose = updatedPose;
@@ -377,7 +410,7 @@ public class Drive
                             default:
                                 System.out.println(
                                     "unexpected drive control state: " +
-                                        mDriveControlState
+                                    mDriveControlState
                                 );
                                 break;
                         }
@@ -434,7 +467,14 @@ public class Drive
         }
     }
 
-    public void setTeleopInputs(double forward, double strafe, double rotation, boolean low_power, boolean field_relative, boolean use_heading_controller) {
+    public void setTeleopInputs(
+        double forward,
+        double strafe,
+        double rotation,
+        boolean low_power,
+        boolean field_relative,
+        boolean use_heading_controller
+    ) {
         if (mDriveControlState != DriveControlState.OPEN_LOOP) {
             mDriveControlState = DriveControlState.OPEN_LOOP;
         }
@@ -459,11 +499,12 @@ public class Drive
             setBrakeMode(false);
             System.out.println("Switching to Velocity");
         }
-        for (int i = 0; i < swerveModules.length; i++){
+        for (int i = 0; i < swerveModules.length; i++) {
             mPeriodicIO.wheel_azimuths[i] = driveVectors.get(i).direction();
-            mPeriodicIO.wheel_speeds[i] = inchesPerSecondToTicksPer100ms(
-                driveVectors.get(i).norm() * Constants.kPathFollowingMaxVel
-            );
+            mPeriodicIO.wheel_speeds[i] =
+                inchesPerSecondToTicksPer100ms(
+                    driveVectors.get(i).norm() * Constants.kPathFollowingMaxVel
+                );
         }
     }
 
@@ -581,9 +622,7 @@ public class Drive
     }
 
     public boolean isDoneWithTrajectory() {
-        if (
-            mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING
-        ) {
+        if (mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING) {
             return false;
         }
         return motionPlanner.isDone() || mOverrideTrajectory;
@@ -592,7 +631,7 @@ public class Drive
     public synchronized boolean isDoneWithPath() {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-                mPathFollower != null
+            mPathFollower != null
         ) {
             return mPathFollower.isFinished();
         } else {
@@ -604,7 +643,7 @@ public class Drive
     public synchronized void forceDoneWithPath() {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-                mPathFollower != null
+            mPathFollower != null
         ) {
             mPathFollower.forceFinish();
         } else {
@@ -613,31 +652,49 @@ public class Drive
     }
 
     private void updatePathFollower(double timestamp) {
-        headingController.setGoal(RobotState.getInstance().getRobot().getRotation().getUnboundedDegrees());
+        headingController.setGoal(
+            RobotState.getInstance().getRobot().getRotation().getUnboundedDegrees()
+        );
         double rotationCorrection = headingController.update();
         updatePose(getTimestamp());
         // alternatePoseUpdate();
 
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             if (!motionPlanner.isDone()) {
-                System.out.println("CURRENT ROBOT STATE: " + RobotState.getInstance().getFieldToVehicle(timestamp));
+                System.out.println(
+                    "CURRENT ROBOT STATE: " +
+                    RobotState.getInstance().getFieldToVehicle(timestamp)
+                );
                 System.out.println("=========[===============================");
-                System.out.println("OTHER ROBOT STATE: " + RobotState.getInstance().getLatestFieldToVehicle());
+                System.out.println(
+                    "OTHER ROBOT STATE: " +
+                    RobotState.getInstance().getLatestFieldToVehicle()
+                );
                 Translation2d driveVector = motionPlanner.update(timestamp, pose);
-//                System.out.println("DRIVE VECTOR" + driveVector);
+                //                System.out.println("DRIVE VECTOR" + driveVector);
 
                 mPeriodicIO.forward = driveVector.x();
                 mPeriodicIO.strafe = driveVector.y();
                 mPeriodicIO.rotation = 0;
 
-                double rotationInput = Util.deadBand(Util.limit(rotationCorrection
-                    * rotationScalar * driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
+                double rotationInput = Util.deadBand(
+                    Util.limit(
+                        rotationCorrection * rotationScalar * driveVector.norm(),
+                        motionPlanner.getMaxRotationSpeed()
+                    ),
+                    0.01
+                );
 
                 mPeriodicIO.error = motionPlanner.error();
                 mPeriodicIO.path_setpoint = motionPlanner.setpoint();
                 if (!mOverrideTrajectory) {
                     setVelocity(
-                        Kinematics.updateDriveVectors(driveVector, rotationInput, pose, robotCentric)
+                        Kinematics.updateDriveVectors(
+                            driveVector,
+                            rotationInput,
+                            pose,
+                            robotCentric
+                        )
                     );
                 }
             } else {
@@ -651,7 +708,7 @@ public class Drive
     public synchronized boolean hasPassedMarker(String marker) {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-                mPathFollower != null
+            mPathFollower != null
         ) {
             return mPathFollower.hasPassedMarker(marker);
         } else {
@@ -735,7 +792,7 @@ public class Drive
         driveHelperChooser = new SendableChooser<>();
         driveHelperChooser.setDefaultOption("Swerve Classic", DriveHelper.SWERVE_CLASSIC);
         SmartDashboard.putData("Drive Algorithm", driveHelperChooser);
-        SmartDashboard.putData("Field", smartDashboardField);
+        SmartDashboard.putData("Field", fieldSim);
 
         SmartDashboard.putNumber("Drive/Vector Direction", 0);
         SmartDashboard.putNumber("Drive/Robot Velocity", 0);

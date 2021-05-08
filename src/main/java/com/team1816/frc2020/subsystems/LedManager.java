@@ -8,7 +8,6 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-
 import java.awt.*;
 
 public class LedManager extends Subsystem {
@@ -18,7 +17,9 @@ public class LedManager extends Subsystem {
     private static LedManager INSTANCE;
 
     public enum LedControlState {
-        RAVE, BLINK, STANDARD
+        RAVE,
+        BLINK,
+        STANDARD,
     }
 
     // Components
@@ -42,10 +43,10 @@ public class LedManager extends Subsystem {
     private float raveHue = 0f;
 
     // Constants
-    private static final boolean RAVE_ENABLED = factory.getConstant(NAME, "raveEnabled") > 0;
+    private static final boolean RAVE_ENABLED =
+        factory.getConstant(NAME, "raveEnabled") > 0;
     private static final double RAVE_SPEED = factory.getConstant(NAME, "raveSpeed", 0.01);
     private static final int MAX = (int) factory.getConstant(NAME, "maxLevel", 255);
-
 
     private LedManager() {
         super(NAME);

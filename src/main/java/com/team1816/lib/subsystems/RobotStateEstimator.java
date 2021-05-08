@@ -76,7 +76,6 @@ public class RobotStateEstimator extends Subsystem {
                             dt
                         )
                         .scaled(dt);
-
             }
             final Twist2d measured_velocity = Kinematics.forwardKinematics(
                 wheel_speeds,
@@ -86,7 +85,7 @@ public class RobotStateEstimator extends Subsystem {
                 dt
             );
             mRobotState.addFieldToVehicleObservation(timestamp, mDrive.getPose());
-        //    mRobotState.addObservations(timestamp, odometry_twist, measured_velocity);
+            //    mRobotState.addObservations(timestamp, odometry_twist, measured_velocity);
 
             prev_heading_ = gyro_angle;
             prev_timestamp_ = timestamp;

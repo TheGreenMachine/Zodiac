@@ -5,7 +5,6 @@ import com.team1816.lib.controlboard.LogitechController;
 import com.team1816.lib.controlboard.XboxController;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.Joystick;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;

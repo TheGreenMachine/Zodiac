@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  * commands. (By default the Talon flushes the Tx buffer on every set call).
  */
 public class LazyTalonSRX extends TalonSRX implements IConfigurableMotorController {
+
     protected double mLastSet = Double.NaN;
     protected ControlMode mLastControlMode = null;
 
@@ -30,7 +31,6 @@ public class LazyTalonSRX extends TalonSRX implements IConfigurableMotorControll
             super.set(mode, value);
         }
     }
-
 
     @Override
     public ErrorCode configAllSettings(BaseTalonConfiguration allConfigs, int timeoutMs) {
