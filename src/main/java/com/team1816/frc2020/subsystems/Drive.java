@@ -368,6 +368,9 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
     public void resetPose(Pose2d pose) {
         this.pose = pose;
+        for (SwerveModule module : swerveModules) {
+            module.resetPose(pose);
+        }
     }
 
     @Override

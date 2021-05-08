@@ -442,10 +442,10 @@ public class Robot extends TimedRobot {
 
             mInfrastructure.setIsManualControl(true); // turn on compressor when superstructure is not moving
 
+            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
+
             mDrive.zeroSensors();
             turret.zeroSensors();
-
-            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
 
             System.out.println("Auto init - " + mDriveByCameraInAuto);
             if (!mDriveByCameraInAuto) {

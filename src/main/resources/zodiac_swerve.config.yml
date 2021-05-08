@@ -59,7 +59,7 @@ subsystems:
         canifier: 18
         constants:
             raveEnabled: 1
-            raveSpeed: 0.075
+            raveSpeed: 0.05
 pcm: 8
 constants:
     trackWidth: 21 #inches
