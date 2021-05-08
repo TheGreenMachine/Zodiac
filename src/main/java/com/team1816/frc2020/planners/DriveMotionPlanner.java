@@ -17,14 +17,7 @@ import java.util.List;
 
 public class DriveMotionPlanner implements CSVWritable {
 
-    private static DriveMotionPlanner INSTANCE;
-
-    public static DriveMotionPlanner getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new DriveMotionPlanner();
-        }
-        return new DriveMotionPlanner();
-    }
+    // Should not be a singleton
 
     private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
@@ -90,7 +83,7 @@ public class DriveMotionPlanner implements CSVWritable {
         return kMaxSpeed * scalar;
     }
 
-    private DriveMotionPlanner() {
+    public DriveMotionPlanner() {
         mCurrentTrajectory = null;
     }
 

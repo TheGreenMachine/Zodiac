@@ -50,7 +50,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     // Controllers
     private PathFollower mPathFollower;
     private Path mCurrentPath = null;
-    private final DriveMotionPlanner motionPlanner = DriveMotionPlanner.getInstance();
+    private final DriveMotionPlanner motionPlanner;
     private final SwerveHeadingController headingController = SwerveHeadingController.getInstance();
 
     // control states
@@ -130,6 +130,8 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         // force a CAN message across
         mIsBrakeMode = false;
         setBrakeMode(mIsBrakeMode);
+
+        motionPlanner = new DriveMotionPlanner();
     }
 
     public double getHeadingDegrees() {
@@ -391,6 +393,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                 @Override
                 public void onLoop(double timestamp) {
                     synchronized (Drive.this) {
+                        mPeriodicIO.timestamp = timestamp;
                         switch (mDriveControlState) {
                             case OPEN_LOOP:
                                 var driveHelper = driveHelperChooser.getSelected();

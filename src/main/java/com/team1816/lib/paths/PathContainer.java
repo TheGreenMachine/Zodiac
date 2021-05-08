@@ -42,8 +42,7 @@ public interface PathContainer {
         boolean isReversed,
         List<Pose2d> waypoints
     ) {
-        return DriveMotionPlanner
-            .getInstance()
+        return (new DriveMotionPlanner())
             .generateTrajectory(
                 isReversed,
                 waypoints,
