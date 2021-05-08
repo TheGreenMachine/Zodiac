@@ -46,7 +46,7 @@ public class DrivePathAction implements Action {
     @Override
     public void done() {
         if (mStopWhenDone) {
-            mDrive.setVelocity(Drive.ZeroDriveVector);
+            mDrive.setVelocity(Drive.ZERO_DRIVE_VECTOR);
         }
     }
 }

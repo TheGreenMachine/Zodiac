@@ -1,6 +1,5 @@
 package com.team1816.frc2020.subsystems;
 
-import badlog.lib.BadLog;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.team1816.frc2020.AutoModeSelector;
@@ -41,44 +40,40 @@ import java.util.List;
 
 public class Drive
     extends Subsystem
-    implements SwerveDrivetrain, TrackableDrivetrain, PidProvider {
+    implements SwerveDrivetrain, PidProvider {
 
-    private static Drive mInstance;
     private static final String NAME = "drivetrain";
-    public static double DRIVE_ENCODER_PPR;
-    public static final List<Translation2d> ZeroDriveVector = List.of(Translation2d.identity(),Translation2d.identity(),Translation2d.identity(),Translation2d.identity());
+
+    private static Drive INSTANCE;
 
 
     // Components
-    private final SwerveModule[] mModules = new SwerveModule[4];
+    private final SwerveModule[] swerveModules = new SwerveModule[4];
     private final LedManager ledManager = LedManager.getInstance();
+    private final PigeonIMU mPigeon;
 
     // Controllers
     private PathFollower mPathFollower;
     private Path mCurrentPath = null;
+    private final DriveMotionPlanner motionPlanner = DriveMotionPlanner.getInstance();
+    private final SwerveHeadingController headingController = SwerveHeadingController.getInstance();
 
     // control states
-    private DriveMotionPlanner motionPlanner = DriveMotionPlanner.getInstance();
-    private SwerveHeadingController headingController = SwerveHeadingController.getInstance();
     private DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
-    private PigeonIMU mPigeon;
     private final RobotState mRobotState = RobotState.getInstance();
 
-    //Odometry variables
-    Pose2d pose = Pose2d.identity();
-    double distanceTraveled;
-    double currentVelocity = 0;
-    double lastUpdateTimestamp = 0;
+    // Odometry variables
+    private Pose2d pose = Pose2d.identity();
+    private double distanceTraveled;
+    private double currentVelocity = 0;
+    private double lastUpdateTimestamp = 0;
 
     // hardware states
     private boolean mIsBrakeMode;
     private Rotation2d mGyroOffset = Rotation2d.identity();
-    private double mLastDriveCurrentSwitchTime = -1;
     private double openLoopRampRate;
-    private BadLog mLogger;
 
     private PeriodicIO mPeriodicIO;
-    private DriveMotionPlanner mMotionPlanner;
     private boolean mOverrideTrajectory = false;
 
     private boolean isSlowMode;
@@ -88,24 +83,32 @@ public class Drive
 
     private final Field2d smartDashboardField = new Field2d();
 
+    // Constants
+    public static final double DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
+    public static final List<Translation2d> ZERO_DRIVE_VECTOR = List.of(
+        Translation2d.identity(),
+        Translation2d.identity(),
+        Translation2d.identity(),
+        Translation2d.identity()
+    );
+
     public static synchronized Drive getInstance() {
-        if (mInstance == null) {
-            mInstance = new Drive();
+        if (INSTANCE == null) {
+            INSTANCE = new Drive();
         }
 
-        return mInstance;
+        return INSTANCE;
     }
 
     private Drive() {
         super(NAME);
-        DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
         mPeriodicIO = new PeriodicIO();
 
         // start all Talons in open loop mode
-        mModules[SwerveModule.kFrontLeft] = factory.getSwerveModule(NAME, "frontLeft", Constants.kFrontLeftModulePosition);
-        mModules[SwerveModule.kFrontRight] = factory.getSwerveModule(NAME, "frontRight", Constants.kFrontRightModulePosition);
-        mModules[SwerveModule.kBackLeft] = factory.getSwerveModule(NAME, "backLeft", Constants.kBackLeftModulePosition);
-        mModules[SwerveModule.kBackRight] = factory.getSwerveModule(NAME, "backRight", Constants.kBackRightModulePosition);
+        swerveModules[SwerveModule.kFrontLeft] = factory.getSwerveModule(NAME, "frontLeft", Constants.kFrontLeftModulePosition);
+        swerveModules[SwerveModule.kFrontRight] = factory.getSwerveModule(NAME, "frontRight", Constants.kFrontRightModulePosition);
+        swerveModules[SwerveModule.kBackLeft] = factory.getSwerveModule(NAME, "backLeft", Constants.kBackLeftModulePosition);
+        swerveModules[SwerveModule.kBackRight] = factory.getSwerveModule(NAME, "backRight", Constants.kBackRightModulePosition);
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
@@ -118,8 +121,6 @@ public class Drive
         // force a CAN message across
         mIsBrakeMode = false;
         setBrakeMode(mIsBrakeMode);
-
-        mMotionPlanner = DriveMotionPlanner.getInstance();
     }
 
     public double getHeadingDegrees() {
@@ -157,16 +158,10 @@ public class Drive
 
         // INPUTS
         public double timestamp;
-        public double left_position_ticks;
-        public double right_position_ticks;
-        public double left_velocity_ticks_per_100ms;
-        public double right_velocity_ticks_per_100ms;
         public Rotation2d gyro_heading = Rotation2d.identity();
         // no_offset = Relative to initial position, unaffected by reset
         public Rotation2d gyro_heading_no_offset = Rotation2d.identity();
-        public Pose2d error = Pose2d.identity();
-        double left_error;
-        double right_error;
+        public Pose2d error = Pose2d.identity();;
 
         // SWERVE
         public double forward;
@@ -177,8 +172,8 @@ public class Drive
         public boolean use_heading_controller;
 
         // OUTPUTS
-        public double[] wheel_speeds = new double[]{0, 0, 0, 0};
-        public Rotation2d[] wheel_azimuths = new Rotation2d[]{
+        public double[] wheel_speeds = new double[] {0, 0, 0, 0};
+        public Rotation2d[] wheel_azimuths = new Rotation2d[] {
             Rotation2d.identity(),
             Rotation2d.identity(),
             Rotation2d.identity(),
@@ -201,7 +196,7 @@ public class Drive
         mPeriodicIO.gyro_heading =
             mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
         // System.out.println("control state: " + mDriveControlState + ", left: " + mPeriodicIO.left_demand + ", right: " + mPeriodicIO.right_demand);
-        for (SwerveModule module : mModules) {
+        for (SwerveModule module : swerveModules) {
             module.readPeriodicInputs();
         }
     }
@@ -210,21 +205,21 @@ public class Drive
     public synchronized void writePeriodicOutputs() {
         var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
         smartDashboardField.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5, rot2d);
-        for (int i = 0; i < mModules.length; i++) {
-            if (mModules[i] != null) {
+        for (int i = 0; i < swerveModules.length; i++) {
+            if (swerveModules[i] != null) {
                 if (mDriveControlState == DriveControlState.OPEN_LOOP) {
                     // TODO: 5/5/21 fix
-                    mModules[i].setVelocity(
+                    swerveModules[i].setVelocity(
                         mPeriodicIO.wheel_speeds[i],
                         mPeriodicIO.wheel_azimuths[i]
                     );
                 } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-                    mModules[i].setVelocity(
+                    swerveModules[i].setVelocity(
                         mPeriodicIO.wheel_speeds[i],
                         mPeriodicIO.wheel_azimuths[i]
                     );
                 }
-                mModules[i].writePeriodicOutputs();
+                swerveModules[i].writePeriodicOutputs();
             }
         }
     }
@@ -237,20 +232,20 @@ public class Drive
 
         double averageDistance = 0.0;
         double[] distances = new double[4];
-        for (int i = 0; i < mModules.length; i++) {
-            SwerveModule m = mModules[i];
+        for (int i = 0; i < swerveModules.length; i++) {
+            SwerveModule m = swerveModules[i];
             m.updatePose(heading);
             double distance = m.getEstimatedRobotPose().getTranslation().translateBy(pose.getTranslation().inverse()).norm();
             distances[i] = distance;
             averageDistance += distance;
         }
-        averageDistance /= mModules.length;
+        averageDistance /= swerveModules.length;
 
         int minDevianceIndex = 0;
         double minDeviance = 100.0;
         List<SwerveModule> modulesToUse = new ArrayList<>();
-        for (int i = 0; i < mModules.length; i++) {
-            SwerveModule m = mModules[i];
+        for (int i = 0; i < swerveModules.length; i++) {
+            SwerveModule m = swerveModules[i];
             double deviance = Math.abs(distances[i] - averageDistance);
             if (deviance < minDeviance) {
                 minDeviance = deviance;
@@ -262,7 +257,7 @@ public class Drive
         }
 
         if(modulesToUse.isEmpty()){
-            modulesToUse.add(mModules[minDevianceIndex]);
+            modulesToUse.add(swerveModules[minDevianceIndex]);
         }
 
         //SmartDashboard.putNumber("Modules Used", modulesToUse.size());
@@ -277,7 +272,7 @@ public class Drive
         distanceTraveled += deltaPos;
         currentVelocity = deltaPos / (timestamp - lastUpdateTimestamp);
         pose = updatedPose;
-        for (SwerveModule module : mModules) {
+        for (SwerveModule module : swerveModules) {
             module.resetPose(pose);
         }
     }
@@ -290,8 +285,8 @@ public class Drive
         double[] distances = new double[4];
 
         for (int i = 0; i < 4; i++) {
-            mModules[i].updatePose(heading);
-            double distance = mModules[i].getEstimatedRobotPose().getTranslation().distance(pose.getTranslation());
+            swerveModules[i].updatePose(heading);
+            double distance = swerveModules[i].getEstimatedRobotPose().getTranslation().distance(pose.getTranslation());
             distances[i] = distance;
         }
 
@@ -303,17 +298,17 @@ public class Drive
         double thirdDifference = distances[3] - distances[2];
 
         if (secondDifference > (1.5 * firstDifference)) {
-            modulesToUse.add(mModules[0]);
-            modulesToUse.add(mModules[1]);
+            modulesToUse.add(swerveModules[0]);
+            modulesToUse.add(swerveModules[1]);
         } else if (thirdDifference > (1.5 * firstDifference)) {
-            modulesToUse.add(mModules[0]);
-            modulesToUse.add(mModules[1]);
-            modulesToUse.add(mModules[2]);
+            modulesToUse.add(swerveModules[0]);
+            modulesToUse.add(swerveModules[1]);
+            modulesToUse.add(swerveModules[2]);
         } else {
-            modulesToUse.add(mModules[0]);
-            modulesToUse.add(mModules[1]);
-            modulesToUse.add(mModules[2]);
-            modulesToUse.add(mModules[3]);
+            modulesToUse.add(swerveModules[0]);
+            modulesToUse.add(swerveModules[1]);
+            modulesToUse.add(swerveModules[2]);
+            modulesToUse.add(swerveModules[3]);
         }
 
         SmartDashboard.putNumber("Modules Used", modulesToUse.size());
@@ -328,13 +323,17 @@ public class Drive
         distanceTraveled += deltaPos;
         pose = updatedPose;
 
-        for (SwerveModule mModule : mModules) {
+        for (SwerveModule mModule : swerveModules) {
             mModule.resetPose(pose);
         }
     }
 
     public Pose2d getPose() {
         return pose;
+    }
+
+    public void resetPose(Pose2d pose) {
+        this.pose = pose;
     }
 
     @Override
@@ -369,18 +368,10 @@ public class Drive
                                 break;
                             case PATH_FOLLOWING:
                                 if (mPathFollower != null) {
-                                    if (Constants.kIsBadlogEnabled) {
-                                        // mLogger.updateTopics();
-                                        // mLogger.log();
-                                    }
                                     //  updatePathFollower(timestamp);
                                     break;
                                 }
                             case TRAJECTORY_FOLLOWING:
-                                if (Constants.kIsBadlogEnabled) {
-                                    // mLogger.updateTopics();
-                                    // mLogger.log();
-                                }
                                 updatePathFollower(timestamp);
                                 break;
                             default:
@@ -438,7 +429,7 @@ public class Drive
 
     public void setOpenLoopRampRate(double openLoopRampRate) {
         this.openLoopRampRate = openLoopRampRate;
-        for (SwerveModule module : mModules) {
+        for (SwerveModule module : swerveModules) {
             module.setOpenLoopRampRate(openLoopRampRate);
         }
     }
@@ -460,11 +451,6 @@ public class Drive
         return this.openLoopRampRate;
     }
 
-    public synchronized void setDebug(int velocity) {
-        mPeriodicIO.wheel_azimuths = DriveSignal.ZERO_AZIMUTH;
-        mPeriodicIO.wheel_speeds = new double[]{velocity, velocity, velocity, velocity};
-    }
-
     /**
      * Configure talons for velocity control
      */
@@ -472,19 +458,13 @@ public class Drive
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
             System.out.println("Switching to Velocity");
-            // mLeftMaster.selectProfileSlot(0, 0);
-            // mRightMaster.selectProfileSlot(0, 0);
-            // mLeftMaster.configNeutralDeadband(0.0, 0);
-            // mRightMaster.configNeutralDeadband(0.0, 0);
         }
-        for (int i = 0; i < mModules.length; i++){
+        for (int i = 0; i < swerveModules.length; i++){
             mPeriodicIO.wheel_azimuths[i] = driveVectors.get(i).direction();
             mPeriodicIO.wheel_speeds[i] = inchesPerSecondToTicksPer100ms(
                 driveVectors.get(i).norm() * Constants.kPathFollowingMaxVel
             );
         }
-        // mPeriodicIO.left_feedforward = feedforward.getLeft();
-        // mPeriodicIO.right_feedforward = feedforward.getRight();
     }
 
     public boolean isBrakeMode() {
@@ -495,12 +475,8 @@ public class Drive
         isSlowMode = slowMode;
     }
 
-    public void setLogger(BadLog logger) {
-        mLogger = logger;
-    }
-
     public synchronized void setBrakeMode(boolean on) {
-        for (SwerveModule module : mModules) {
+        for (SwerveModule module : swerveModules) {
             module.setDriveBrakeMode(on);
         }
     }
@@ -524,18 +500,18 @@ public class Drive
     }
 
     public synchronized double[] getModuleVelocities() {
-        double[] ret_val = new double[mModules.length];
+        double[] ret_val = new double[swerveModules.length];
         for (int i = 0; i < ret_val.length; i++) {
-            ret_val[i] = mModules[i].getLinearVelocity();
+            ret_val[i] = swerveModules[i].getLinearVelocity();
         }
 
         return ret_val;
     }
 
     public synchronized Rotation2d[] getModuleAzimuths() {
-        Rotation2d[] ret_val = new Rotation2d[mModules.length];
+        Rotation2d[] ret_val = new Rotation2d[swerveModules.length];
         for (int i = 0; i < ret_val.length; i++) {
-            ret_val[i] = mModules[i].getAngle();
+            ret_val[i] = swerveModules[i].getAngle();
         }
 
         return ret_val;
@@ -545,69 +521,8 @@ public class Drive
         mPigeon.setFusedHeading(0);
     }
 
-    /* public synchronized void resetEncoders() {
-        mLeftMaster.setSelectedSensorPosition(0, 0, 0);
-        mRightMaster.setSelectedSensorPosition(0, 0, 0);
-        mPeriodicIO = new PeriodicIO();
-    } */
-
     public DriveControlState getDriveControlState() {
         return mDriveControlState;
-    }
-
-    public double getLeftEncoderRotations() {
-        return mPeriodicIO.left_position_ticks / DRIVE_ENCODER_PPR;
-    }
-
-    public double getRightEncoderRotations() {
-        return mPeriodicIO.right_position_ticks / DRIVE_ENCODER_PPR;
-    }
-
-    @Override
-    public double getLeftEncoderDistance() {
-        return rotationsToInches(getLeftEncoderRotations());
-    }
-
-    @Override
-    public double getRightEncoderDistance() {
-        return rotationsToInches(getRightEncoderRotations());
-    }
-
-    @Override
-    public double getRightVelocityNativeUnits() {
-        return mPeriodicIO.right_velocity_ticks_per_100ms;
-    }
-
-    public double getRightLinearVelocity() {
-        return rotationsToInches(
-            getRightVelocityNativeUnits() * 10.0 / DRIVE_ENCODER_PPR
-        );
-    }
-
-    @Override
-    public double getLeftVelocityNativeUnits() {
-        return mPeriodicIO.left_velocity_ticks_per_100ms;
-    }
-
-    public double getLeftLinearVelocity() {
-        return rotationsToInches(getLeftVelocityNativeUnits() * 10.0 / DRIVE_ENCODER_PPR);
-    }
-
-    public double getLinearVelocity() {
-        return (getLeftLinearVelocity() + getRightLinearVelocity()) / 2.0;
-    }
-
-    public double getAverageDriveVelocityMagnitude() {
-        return (
-            Math.abs(getLeftLinearVelocity()) + Math.abs(getRightLinearVelocity()) / 2.0
-        );
-    }
-
-    public double getAngularVelocity() {
-        return (
-            (getRightLinearVelocity() - getLeftLinearVelocity()) /
-                Constants.kDriveWheelTrackWidthInches
-        );
     }
 
     /**
@@ -648,36 +563,30 @@ public class Drive
             mDriveControlState = DriveControlState.PATH_FOLLOWING;
             mCurrentPath = path;
         } else {
-            setVelocity(List.of(
-                Translation2d.identity(),
-                Translation2d.identity(),
-                Translation2d.identity(),
-                Translation2d.identity()
-            ));
+            setVelocity(ZERO_DRIVE_VECTOR);
         }
     }
 
     public synchronized void setTrajectory(
         TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
     ) {
-        if (mMotionPlanner != null) {
+        if (motionPlanner != null) {
             System.out.println("Now setting trajectory");
             setBrakeMode(true);
             mOverrideTrajectory = false;
-            mMotionPlanner.reset();
+            motionPlanner.reset();
             mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
-            mMotionPlanner.setTrajectory(trajectory);
+            motionPlanner.setTrajectory(trajectory);
         }
     }
 
     public boolean isDoneWithTrajectory() {
         if (
-            mMotionPlanner == null ||
-                mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING
+            mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING
         ) {
             return false;
         }
-        return mMotionPlanner.isDone() || mOverrideTrajectory;
+        return motionPlanner.isDone() || mOverrideTrajectory;
     }
 
     public synchronized boolean isDoneWithPath() {
@@ -709,30 +618,7 @@ public class Drive
         updatePose(getTimestamp());
         // alternatePoseUpdate();
 
-        if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
-            // RobotState robot_state = RobotState.getInstance();
-            // Pose2d field_to_vehicle = robot_state.getLatestFieldToVehicle().getValue();
-            // Twist2d command = mPathFollower.update(
-            //     timestamp,
-            //     field_to_vehicle,
-            //     robot_state.getDistanceDriven(),
-            //     robot_state.getPredictedVelocity().dx
-            // );
-            // if (!mPathFollower.isFinished()) {
-            //     DriveSignal setpoint = Kinematics.inverseKinematics(command);
-            //     setVelocity(
-            //         new DriveSignal(
-            //             inchesPerSecondToTicksPer100ms(setpoint.getLeft()),
-            //             inchesPerSecondToTicksPer100ms(setpoint.getRight())
-            //         ),
-            //         new DriveSignal(0, 0)
-            //     );
-            // } else {
-            //     if (!mPathFollower.isForceFinished()) {
-            //         setVelocity(new DriveSignal(0, 0), new DriveSignal(0, 0));
-            //     }
-            // }
-        } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
+        if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             if (!motionPlanner.isDone()) {
                 System.out.println("CURRENT ROBOT STATE: " + RobotState.getInstance().getFieldToVehicle(timestamp));
                 System.out.println("=========[===============================");
@@ -747,27 +633,15 @@ public class Drive
                 double rotationInput = Util.deadBand(Util.limit(rotationCorrection
                     * rotationScalar * driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
 
-                mPeriodicIO.error = mMotionPlanner.error();
-                mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
+                mPeriodicIO.error = motionPlanner.error();
+                mPeriodicIO.path_setpoint = motionPlanner.setpoint();
                 if (!mOverrideTrajectory) {
                     setVelocity(
                         Kinematics.updateDriveVectors(driveVector, rotationInput, pose, robotCentric)
                     );
                 }
-                // mPeriodicIO.left_accel =
-                //     radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
-                // mPeriodicIO.right_accel =
-                //     radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
             } else {
-                setVelocity(
-                    List.of(
-                        Translation2d.identity(),
-                        Translation2d.identity(),
-                        Translation2d.identity(),
-                        Translation2d.identity()
-                    )
-                );
-                // mPeriodicIO.left_accel = mPeriodicIO.right_accel = 0.0;
+                setVelocity(ZERO_DRIVE_VECTOR);
             }
         } else {
             DriverStation.reportError("drive is not in path following state", false);
@@ -794,7 +668,7 @@ public class Drive
 
     @Override
     public SwerveModule[] getSwerveModules() {
-        return mModules;
+        return swerveModules;
     }
 
     @Override
@@ -802,9 +676,11 @@ public class Drive
         System.out.println("Zeroing drive sensors!");
         resetPigeon();
         setHeading(Rotation2d.identity());
-        for (int i = 0; i < mModules.length; i++) {
-            if (mModules != null && mModules[i] != null) {
-                mModules[i].zeroSensors();
+        resetPose(Pose2d.identity());
+
+        for (SwerveModule module : swerveModules) {
+            if (module != null) {
+                module.zeroSensors();
             }
         }
         if (mPigeon.getLastError() != ErrorCode.OK) {
@@ -833,7 +709,7 @@ public class Drive
         setBrakeMode(false);
 
         boolean modulesPassed = true;
-        for (SwerveModule module : mModules) {
+        for (SwerveModule module : swerveModules) {
             modulesPassed = modulesPassed && module.checkSystem();
         }
 
@@ -844,47 +720,7 @@ public class Drive
     }
 
     @Override
-    public double getLeftVelocityDemand() {
-        return 0;
-    }
-
-    @Override
-    public double getRightVelocityDemand() {
-        return 0;
-    }
-
-    @Override
-    public double getLeftVelocityError() {
-        return mPeriodicIO.left_error;
-    }
-
-    @Override
-    public double getRightVelocityError() {
-        return mPeriodicIO.right_error;
-    }
-
-    public double getRightDriveTicks() {
-        return mPeriodicIO.right_position_ticks;
-    }
-
-    public double getLeftDriveTicks() {
-        return mPeriodicIO.left_position_ticks;
-    }
-
-    @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty(
-            "Right Drive Distance",
-            this::getRightEncoderDistance,
-            null
-        );
-        builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
-        builder.addDoubleProperty(
-            "Left Drive Distance",
-            this::getLeftEncoderDistance,
-            null
-        );
-        builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
         builder.addStringProperty(
             "Drive/ControlState",
             () -> this.getDriveControlState().toString(),
@@ -907,9 +743,7 @@ public class Drive
         SmartDashboard
             .getEntry("Drive/OpenLoopRampRate")
             .addListener(
-                notification -> {
-                    setOpenLoopRampRate(notification.value.getDouble());
-                },
+                notification -> setOpenLoopRampRate(notification.value.getDouble()),
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
 

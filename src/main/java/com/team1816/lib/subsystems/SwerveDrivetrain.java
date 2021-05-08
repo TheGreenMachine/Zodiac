@@ -1,8 +1,5 @@
 package com.team1816.lib.subsystems;
 
-public interface SwerveDrivetrain {
+public interface SwerveDrivetrain extends TrackableDrivetrain{
     ISwerveModule[] getSwerveModules();
-
-    double getHeadingDegrees();
-    double getDesiredHeading();
 }

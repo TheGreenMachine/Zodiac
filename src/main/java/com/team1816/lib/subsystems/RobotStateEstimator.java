@@ -1,6 +1,5 @@
 package com.team1816.lib.subsystems;
 
-import badlog.lib.BadLog;
 import com.team1816.frc2020.Kinematics;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.subsystems.Drive;
@@ -14,21 +13,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotStateEstimator extends Subsystem {
 
-    static RobotStateEstimator mInstance = new RobotStateEstimator();
-    private RobotState mRobotState = RobotState.getInstance();
-    private Drive mDrive = Drive.getInstance();
-    private Turret turret = Turret.getInstance();
-    private double left_encoder_prev_distance_ = 0.0;
-    private double right_encoder_prev_distance_ = 0.0;
+    private static RobotStateEstimator INSTANCE = new RobotStateEstimator();
+
+    private final RobotState mRobotState = RobotState.getInstance();
+    private final Drive mDrive = Drive.getInstance();
+    private final Turret turret = Turret.getInstance();
+
     private double prev_timestamp_ = -1.0;
     private Rotation2d prev_heading_ = null;
 
     public static RobotStateEstimator getInstance() {
-        if (mInstance == null) {
-            mInstance = new RobotStateEstimator();
+        if (INSTANCE == null) {
+            INSTANCE = new RobotStateEstimator();
         }
 
-        return mInstance;
+        return INSTANCE;
     }
 
     private RobotStateEstimator() {
@@ -44,8 +43,6 @@ public class RobotStateEstimator extends Subsystem {
 
         @Override
         public synchronized void onStart(double timestamp) {
-            left_encoder_prev_distance_ = mDrive.getLeftEncoderDistance();
-            right_encoder_prev_distance_ = mDrive.getRightEncoderDistance();
             prev_timestamp_ = timestamp;
         }
 

@@ -4,7 +4,7 @@ import badlog.lib.BadLog;
 
 public class DrivetrainLogger {
 
-    public static void init(TrackableDrivetrain drivetrain) {
+    public static void init(DifferentialDrivetrain drivetrain) {
         BadLog.createTopic(
             "Drivetrain/LeftActVel",
             "NativeUnits",
@@ -47,34 +47,7 @@ public class DrivetrainLogger {
             "hide",
             "join:Drivetrain/VelocityError"
         );
-        BadLog.createTopic(
-            "Drivetrain/LeftDistance",
-            "Inches",
-            drivetrain::getLeftEncoderDistance,
-            "hide",
-            "join:Drivetrain/Distance"
-        );
-        BadLog.createTopic(
-            "Drivetrain/RightDistance",
-            "Inches",
-            drivetrain::getRightEncoderDistance,
-            "hide",
-            "join:Drivetrain/Distance"
-        );
-        BadLog.createTopic(
-            "Drivetrain/ActualHeading",
-            "Angle",
-            drivetrain::getHeadingDegrees,
-            "hide",
-            "join:Drivetrain/Heading"
-        );
-        BadLog.createTopic(
-            "Drivetrain/Heading",
-            "Angle",
-            drivetrain::getDesiredHeading,
-            "hide",
-            "join:Drivetrain/Heading"
-        );
+        baseInit(drivetrain);
     }
 
     public static void initSwerve(SwerveDrivetrain drivetrain) {
@@ -135,6 +108,10 @@ public class DrivetrainLogger {
                 "join:Drivetrain/DriveError"
             );
         }
+        baseInit(drivetrain);
+    }
+
+    private static void baseInit(TrackableDrivetrain drivetrain) {
         BadLog.createTopic(
             "Drivetrain/ActualHeading",
             "Angle",

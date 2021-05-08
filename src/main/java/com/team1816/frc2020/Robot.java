@@ -73,7 +73,6 @@ public class Robot extends TimedRobot {
     private double loopStart;
 
     private ActionManager actionManager;
-    private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
     private final SwerveHeadingController swerveHeadingController = SwerveHeadingController.getInstance();
     private AsyncTimer blinkTimer;
 
@@ -221,8 +220,6 @@ public class Robot extends TimedRobot {
                     "NativeUnits",
                     turret::getPositionError
                 );
-
-                mDrive.setLogger(logger);
             }
 
             logger.finishInitialization();
@@ -443,7 +440,6 @@ public class Robot extends TimedRobot {
                 Rotation2d.identity()
             );
             mDrive.setHeading(Rotation2d.identity());
-            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
 
             mHasBeenEnabled = true;
 
@@ -451,6 +447,8 @@ public class Robot extends TimedRobot {
 
             mDrive.zeroSensors();
             turret.zeroSensors();
+
+            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
 
             System.out.println("Auto init - " + mDriveByCameraInAuto);
             if (!mDriveByCameraInAuto) {
