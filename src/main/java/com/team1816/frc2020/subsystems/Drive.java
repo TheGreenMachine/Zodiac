@@ -51,6 +51,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     private PathFollower mPathFollower;
     private Path mCurrentPath = null;
     private final DriveMotionPlanner motionPlanner;
+    private final DriveMotionPlanner trajectoryMotionPlanner;
     private final SwerveHeadingController headingController = SwerveHeadingController.getInstance();
 
     // control states
@@ -132,6 +133,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         setBrakeMode(mIsBrakeMode);
 
         motionPlanner = new DriveMotionPlanner();
+        trajectoryMotionPlanner = new DriveMotionPlanner();
     }
 
     public double getHeadingDegrees() {
@@ -620,13 +622,13 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     public synchronized void setTrajectory(
         TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
     ) {
-        if (motionPlanner != null) {
+        if (trajectoryMotionPlanner != null) {
             System.out.println("Now setting trajectory");
             setBrakeMode(true);
             mOverrideTrajectory = false;
-            // motionPlanner.reset();
+            trajectoryMotionPlanner.reset();
             mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
-            motionPlanner.setTrajectory(trajectory);
+            trajectoryMotionPlanner.setTrajectory(trajectory);
         }
     }
 
@@ -634,7 +636,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         if (mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING) {
             return false;
         }
-        return motionPlanner.isDone() || mOverrideTrajectory;
+        return trajectoryMotionPlanner.isDone() || mOverrideTrajectory;
     }
 
     public synchronized boolean isDoneWithPath() {
@@ -685,8 +687,8 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                     0.01
                 );
 
-                // mPeriodicIO.error = motionPlanner.error();
-                // mPeriodicIO.path_setpoint = motionPlanner.setpoint();
+                mPeriodicIO.error = trajectoryMotionPlanner.error();
+                mPeriodicIO.path_setpoint = trajectoryMotionPlanner.setpoint();
                 if (!mOverrideTrajectory) {
                     setVelocity(
                         Kinematics.updateDriveVectors(
