@@ -215,7 +215,7 @@ public class Drive
                 if (mDriveControlState == DriveControlState.OPEN_LOOP) {
                     // TODO: 5/5/21 fix
                     mModules[i].setVelocity(
-                        6000,
+                        mPeriodicIO.wheel_speeds[i],
                         mPeriodicIO.wheel_azimuths[i]
                     );
                 } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {

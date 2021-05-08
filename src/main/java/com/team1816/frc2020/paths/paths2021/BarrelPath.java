@@ -14,18 +14,37 @@ public class BarrelPath implements PathContainer {
 
     @Override
     public List<Pose2d> buildWaypoints() {
+        /*
+        List.of(
+            new Pose2d(0, 0, -90),
+            new Pose2d(50, -50, 0),
+            new Pose2d(100, 0, 90),
+            new Pose2d(50, 50, 180),
+            new Pose2d(0, 0, -90),
+            new Pose2d(50, -50, 0),
+            new Pose2d(100, 0, 90),
+            new Pose2d(50, 50, 180),
+            new Pose2d(0, 0, -90),
+            new Pose2d(50, -50, 0),
+            new Pose2d(100, 0, 90),
+            new Pose2d(50, 50, 180),
+            new Pose2d(0, 0, -90)
+        );
+         */
         return List.of(
-            new Pose2d(39, 93, 0),
-            new Pose2d(150, 101, 0),
-            new Pose2d(150, 22, 180),
-            new Pose2d(143, 99, 10),
-            new Pose2d(278, 87, 30),
-            new Pose2d(255, 158, 176),
-            new Pose2d(212, 95, -60),
-            new Pose2d(271, 27, -25),
-            new Pose2d(326, 94, 132),
-            new Pose2d(208, 86, 180),
-            new Pose2d(39, 93, 180)
+            new Pose2d(0, 0, -90),
+            new Pose2d(50, -50, 0),
+            new Pose2d(100, 0, 90),
+            new Pose2d(50, 50, 180),
+            new Pose2d(0, 0, -90),
+            new Pose2d(50, -50, 0),
+            new Pose2d(100, 0, 90),
+            new Pose2d(50, 50, 180),
+            new Pose2d(0, 0, -90),
+            new Pose2d(50, -50, 0),
+            new Pose2d(100, 0, 90),
+            new Pose2d(50, 50, 180),
+            new Pose2d(0, 0, -90)
         );
     }
 

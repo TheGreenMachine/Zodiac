@@ -9,6 +9,8 @@ import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
+import java.awt.*;
+
 public class LedManager extends Subsystem {
 
     public static final String NAME = "ledmanager";
@@ -32,6 +34,8 @@ public class LedManager extends Subsystem {
     private int period; // ms
     private long lastWriteTime = System.currentTimeMillis();
     private RobotStatus defaultStatus = RobotStatus.DISABLED;
+    private boolean rave;
+    private float raveHue = 0f;
 
     private LedManager() {
         super(NAME);
@@ -77,6 +81,10 @@ public class LedManager extends Subsystem {
             this.ledB = b;
             outputsChanged = true;
         }
+    }
+
+    public void setRave(boolean rave) {
+        this.rave = rave;
     }
 
     /**
@@ -149,6 +157,12 @@ public class LedManager extends Subsystem {
             }
         }
         if (canifier != null) {
+            if (rave) {
+                var color = Color.getHSBColor(raveHue, 1.0f, 1.0f);
+                writeLedHardware(color.getRed(), color.getGreen(), color.getBlue());
+                raveHue += factory.getConstant(NAME, "raveSpeed", 0.01);
+                return;
+            }
             if (blinkMode) {
                 if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
                     if (blinkLedOn) {

@@ -411,6 +411,7 @@ public class Robot extends TimedRobot {
         try {
             mEnabledLooper.stop();
 
+            ledManager.setRave(false);
             ledManager.setDefaultStatus(LedManager.RobotStatus.DISABLED);
 
             // shooter
@@ -438,7 +439,8 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         try {
             mDisabledLooper.stop();
-            ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
+            // ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
+            ledManager.setRave(true);
 
             // Robot starts forwards.
             mRobotState.reset(
@@ -447,6 +449,7 @@ public class Robot extends TimedRobot {
                 Rotation2d.identity()
             );
             mDrive.setHeading(Rotation2d.identity());
+            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
 
             mHasBeenEnabled = true;
 

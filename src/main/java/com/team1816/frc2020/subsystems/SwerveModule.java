@@ -215,7 +215,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         }
 
         mPeriodicIO.drive_demand = speed;
-        mPeriodicIO.azimuth_demand = 0; // (int) radiansToEncoderUnits(azimuth.getRadians());
+        mPeriodicIO.azimuth_demand = (int) radiansToEncoderUnits(azimuth.getRadians());
     }
 
     @Override
