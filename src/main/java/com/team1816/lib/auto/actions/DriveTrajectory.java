@@ -53,6 +53,7 @@ public class DriveTrajectory implements Action {
             var pose = mTrajectory.getState().state().getPose();
             mDrive.setHeading(pose.getRotation());
             mRobotState.reset(Timer.getFPGATimestamp(), pose);
+            mDrive.resetPose(pose);
         }
         mDrive.setTrajectory(mTrajectory);
     }
