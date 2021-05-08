@@ -624,7 +624,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             System.out.println("Now setting trajectory");
             setBrakeMode(true);
             mOverrideTrajectory = false;
-            motionPlanner.reset();
+            // motionPlanner.reset();
             mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
             motionPlanner.setTrajectory(trajectory);
         }
@@ -685,8 +685,8 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                     0.01
                 );
 
-                mPeriodicIO.error = motionPlanner.error();
-                mPeriodicIO.path_setpoint = motionPlanner.setpoint();
+                // mPeriodicIO.error = motionPlanner.error();
+                // mPeriodicIO.path_setpoint = motionPlanner.setpoint();
                 if (!mOverrideTrajectory) {
                     setVelocity(
                         Kinematics.updateDriveVectors(
