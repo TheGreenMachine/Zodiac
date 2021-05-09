@@ -26,6 +26,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         // INPUTS
         public double drive_encoder_ticks;
         public double azimuth_encoder_ticks; // actual position of module in encoder units, adjusted for home offset
+        public double previous_azimuth_demand;
         public int position_ticks;
         public double velocity_ticks_per_100ms;
 
@@ -51,6 +52,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         public NeutralMode kAzimuthInitNeutralMode = NeutralMode.Brake; // neutral mode could change
         public double kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI); // for azimuth
         public double kAzimuthEncoderHomeOffset = 0;
+        public double kAzimuthAdjustmentOffset;
 
         // azimuth motion
         public PidConfig kAzimuthPid = PidConfig.EMPTY;
@@ -96,6 +98,11 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     private final SwerveModuleConstants mConstants;
     private static final double TICK_RATIO_PER_LOOP = Constants.kLooperDt / 0.1;
     public static final int AZIMUTH_TICK_MASK = 0xFFF;
+    public static final double AZIMUTH_ADJUSTMENT_OFFSET_DEGREES = factory.getConstant(
+        "drive",
+        "azimuthHomeAdjustmentDegrees",
+        0
+    );
 
     public static final int kFrontLeft = 0;
     public static final int kFrontRight = 1;
@@ -138,6 +145,12 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             Constants.kLongCANTimeoutMs
         );
         System.out.println("  " + this);
+
+        mConstants.kAzimuthAdjustmentOffset = radiansToEncoderUnits(
+            Rotation2d.fromDegrees(AZIMUTH_ADJUSTMENT_OFFSET_DEGREES).getRadians()
+        );
+
+        mPeriodicIO.previous_azimuth_demand = mConstants.kAzimuthEncoderHomeOffset;
 
         this.startingPosition = startingPosition;
         zeroSensors();
@@ -283,7 +296,18 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         var offsetDemand =
             ((int) (mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset)) &
             0xFFF;
-        mAzimuthMotor.set(ControlMode.Position, offsetDemand);
+
+        var deltaAzimuth = mPeriodicIO.azimuth_demand - mPeriodicIO.previous_azimuth_demand;
+
+        if (deltaAzimuth > 2048) {
+            mAzimuthMotor.set(ControlMode.Position, offsetDemand - 4096);
+        } else if (deltaAzimuth < -2048) {
+            mAzimuthMotor.set(ControlMode.Position, offsetDemand + 4096);
+        } else {
+            mAzimuthMotor.set(ControlMode.Position, offsetDemand);
+        }
+
+        mPeriodicIO.previous_azimuth_demand = mPeriodicIO.azimuth_demand;
     }
 
     @Override
@@ -327,7 +351,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         if (mAzimuthMotor instanceof TalonSRX) {
             var sensors = ((TalonSRX) mAzimuthMotor).getSensorCollection();
             sensors.setQuadraturePosition(
-                sensors.getPulseWidthPosition() & 0xFFF,
+                sensors.getPulseWidthPosition() & AZIMUTH_TICK_MASK,
                 Constants.kLongCANTimeoutMs
             );
         }
@@ -338,7 +362,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         if (mAzimuthMotor instanceof TalonSRX) {
             int rawValue =
                 ((TalonSRX) mAzimuthMotor).getSensorCollection().getPulseWidthPosition() &
-                0xFFF;
+                AZIMUTH_TICK_MASK;
             return rawValue;
         }
         return 0;
