@@ -1,5 +1,6 @@
 package com.team1816.frc2020.auto.modes.modes2020;
 
+import com.team1816.frc2020.auto.actions.actions2021.ResetPoseAction;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.DriveTrajectory;
@@ -20,6 +21,7 @@ public class TuneDrivetrainMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         System.out.println("Tune Drivetrain path");
+        runAction(new ResetPoseAction());
         runAction(new WaitAction(1));
         runAction(trajectory);
     }
