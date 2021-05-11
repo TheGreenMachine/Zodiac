@@ -15,7 +15,7 @@ subsystems:
             frontLeft:
                 drive: leftMain
                 azimuth: flAzimuth
-                encoderOffset: 1409
+                encoderOffset: 2837
             frontRight:
                 drive: rightMain
                 azimuth: frAzimuth
@@ -34,15 +34,17 @@ subsystems:
             kD: 36 # 3.6
             kF: 0.96
         azimuthPid:
-            kP: 3.0
-            kI: 0.05
-            kD: 20
+            kP: 1.0
+            kI: 0.001
+            kD: 10
             kF: 0
         invertMotor:
             - rightMain
         constants:
             pigeonId: 9
             encPPR: 999
+            azimuthEncPPR: 4096
+            azimuthAllowableErrorTicks: 10
 pcm: 8
 constants:
     maxVel: 120 # inches/s
