@@ -59,8 +59,24 @@ subsystems:
         implemented: true
         canifier: 18
         constants:
-            raveEnabled: 1
+            raveEnabled: 0
             raveSpeed: 0.05
+    turret:
+        implemented: true
+        talons:
+            turret: 9
+    shooter:
+        implemented: true
+        falcons:
+            shooterMain: 0
+            shooterFollower: 15
+    hopper:
+        implemented: true
+        talons:
+            spindexer: 10
+            elevator: 5
+        solenoids:
+            feederFlap: 4
 pcm: 8
 constants:
     trackWidth: 21 #inches
