@@ -27,6 +27,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         public double drive_encoder_ticks;
         public double azimuth_encoder_ticks; // actual position of module in encoder units, adjusted for home offset
         public double previous_azimuth_demand;
+        public double azimuth_encoder_ticks_unmasked;
         public int position_ticks;
         public double velocity_ticks_per_100ms;
 
@@ -262,8 +263,8 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                 mConstants.kAzimuthEncoderHomeOffset
             );
 
-            mPeriodicIO.azimuth_encoder_ticks =
-                (normalizedEncoderTicks & AZIMUTH_TICK_MASK);
+            mPeriodicIO.azimuth_encoder_ticks_unmasked = normalizedEncoderTicks;
+            mPeriodicIO.azimuth_encoder_ticks = normalizedEncoderTicks & AZIMUTH_TICK_MASK;
         }
     }
 
@@ -293,19 +294,25 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             //            System.out.println(mConstants.kName + " drive demand: " + mPeriodicIO.drive_demand);
             mDriveMotor.set(ControlMode.Velocity, mPeriodicIO.drive_demand);
         }
-        var offsetDemand =
-            ((int) (mPeriodicIO.azimuth_demand + mConstants.kAzimuthEncoderHomeOffset)) &
-            0xFFF;
 
-        var deltaAzimuth = mPeriodicIO.azimuth_demand - mPeriodicIO.previous_azimuth_demand;
-
-        if (deltaAzimuth > 2048) {
-            mAzimuthMotor.set(ControlMode.Position, offsetDemand - 4096);
-        } else if (deltaAzimuth < -2048) {
-            mAzimuthMotor.set(ControlMode.Position, offsetDemand + 4096);
-        } else {
-            mAzimuthMotor.set(ControlMode.Position, offsetDemand);
+        var upDistance = mPeriodicIO.azimuth_demand - mPeriodicIO.azimuth_encoder_ticks;
+        if (mPeriodicIO.azimuth_demand < mPeriodicIO.azimuth_encoder_ticks) {
+            upDistance += 4096;
         }
+
+        var downDistance = upDistance - 4096;
+
+        double demandedPosition;
+        if (Math.abs(upDistance) < Math.abs(downDistance)) {
+            demandedPosition = mPeriodicIO.azimuth_encoder_ticks_unmasked + upDistance;
+        } else {
+            demandedPosition = mPeriodicIO.azimuth_encoder_ticks_unmasked + downDistance;
+        }
+
+        var offsetDemand =
+            ((int) (demandedPosition + mConstants.kAzimuthEncoderHomeOffset));
+
+        mAzimuthMotor.set(ControlMode.Position, offsetDemand);
 
         mPeriodicIO.previous_azimuth_demand = mPeriodicIO.azimuth_demand;
     }
