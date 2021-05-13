@@ -55,7 +55,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public boolean getDrivetrainFlipped() {
-        return mController.getButton(LogitechController.Button.Y);
+        return false /* mController.getButton(LogitechController.Button.Y) */;
     }
 
     @Override
@@ -91,6 +91,10 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     @Override
     public boolean getFieldRelative() {
         return !mController.getButton(XboxController.Button.LB);
+    }
+
+    public boolean getHood(){
+        return mController.getButton(LogitechController.Button.Y);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
+import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -30,9 +31,10 @@ public class Shooter extends Subsystem implements PidProvider {
     private final IMotorControllerEnhanced shooterFollower;
     private final Camera camera = Camera.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
-
+    private final ISolenoid hood;
     // State
     private boolean outputsChanged;
+    private boolean hoodOut = false;
 
     private PeriodicIO mPeriodicIO = new PeriodicIO();
 
@@ -64,6 +66,8 @@ public class Shooter extends Subsystem implements PidProvider {
                 shooterMain
             );
 
+        this.hood = factory.getSolenoid(NAME, "hood");
+
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
         this.kD = factory.getConstant(NAME, "kD");
@@ -73,9 +77,6 @@ public class Shooter extends Subsystem implements PidProvider {
         shooterFollower.setNeutralMode(NeutralMode.Coast);
 
         configCurrentLimits(40/* amps */);
-
-        shooterMain.setInverted(true);
-        shooterFollower.setInverted(false);
 
         shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
         shooterMain.setSensorPhase(false);
@@ -117,6 +118,16 @@ public class Shooter extends Subsystem implements PidProvider {
         outputsChanged = true;
     }
 
+    public boolean isHoodOut() {
+        return hoodOut;
+    }
+
+    public void setHood(boolean in){
+        hoodOut = in;
+        this.outputsChanged = true;
+    }
+
+
     public void shootFromChooser(boolean shooting) {
         setVelocity(shooting ? velocityChooser.getSelected() : 0);
     }
@@ -154,6 +165,7 @@ public class Shooter extends Subsystem implements PidProvider {
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
+            this.hood.set(hoodOut);
             if (mPeriodicIO.velocityDemand == 0) {
                 this.shooterMain.set(ControlMode.PercentOutput, 0); // Inertia coast to 0
             } else {

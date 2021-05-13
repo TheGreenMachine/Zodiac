@@ -28,6 +28,8 @@ subsystems:
             arm: 0
     hopper:
         implemented: true
+        invertMotor:
+            - spindexer
         talons:
             spindexer: 4
             elevator: 5

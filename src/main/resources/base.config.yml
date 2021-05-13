@@ -21,22 +21,21 @@ subsystems:
         implemented: false
         invertMotor:
             - intake
-        constants:
-            kP: 0
-            kI: 0
-            kD: 0
-            kF: 0.0545
+        pid:
+            -   kP: 0
+                kI: 0
+                kD: 0
+                kF: 0.0545
     hopper:
         implemented: false
-        invertMotor:
-            - spindexer
     shooter:
         implemented: false
+        pid:
+            -   kP: 0.15 #0.30
+                kI: 0
+                kD: 2.5 #4.5
+                kF: 0.053 #0.00953253
         constants:
-            kP: 0.15 #0.30
-            kI: 0
-            kD: 2.5 #4.5
-            kF: 0.053 #0.00953253
             currentFloorCheck: .12
             currentEpsilonCheck: .2
             rpmFloorCheck: 2000

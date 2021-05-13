@@ -147,10 +147,6 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         );
         System.out.println("  " + this);
 
-        mConstants.kAzimuthAdjustmentOffset = radiansToEncoderUnits(
-            Rotation2d.fromDegrees(AZIMUTH_ADJUSTMENT_OFFSET_DEGREES).getRadians()
-        );
-
         mPeriodicIO.previous_azimuth_demand = mConstants.kAzimuthEncoderHomeOffset;
 
         this.startingPosition = startingPosition;
@@ -243,7 +239,12 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         }
 
         mPeriodicIO.drive_demand = speed;
-        mPeriodicIO.azimuth_demand = (int) radiansToEncoderUnits(azimuth.getRadians());
+        var isFront = mConstants.kName.startsWith("front");
+        var sign = isFront ? 1 : -1;
+        var azimuthAdjustmentRadians = sign * Math.toRadians(AZIMUTH_ADJUSTMENT_OFFSET_DEGREES);
+        mPeriodicIO.azimuth_demand = (int) radiansToEncoderUnits(
+            azimuth.getRadians() + azimuthAdjustmentRadians
+        );
     }
 
     @Override

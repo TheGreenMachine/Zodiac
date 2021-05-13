@@ -168,4 +168,9 @@ public class ControlBoard implements IControlBoard {
     public boolean getFieldRelative() {
         return mDriveControlBoard.getFieldRelative();
     }
+
+    @Override
+    public boolean getHood() {
+        return mDriveControlBoard.getHood();
+    }
 }

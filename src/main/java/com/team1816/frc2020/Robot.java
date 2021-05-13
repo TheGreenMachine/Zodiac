@@ -365,16 +365,16 @@ public class Robot extends TimedRobot {
                     createHoldAction(
                         mControlBoard::getShoot,
                         shooting -> {
-                            // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
-                            if (shooting) {
-                                mDrive.setOpenLoop(DriveSignal.BRAKE);
-                                shooter.startShooter(); // Uses ZED distance
-                                turret.lockTurret();
-                            } else {
-                                turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
-                                shooter.stopShooter();
-                            }
-                            hopper.lockToShooter(shooting, true);
+                            shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
+                            // if (shooting) {
+                            //     mDrive.setOpenLoop(DriveSignal.BRAKE);
+                            //     shooter.startShooter(); // Uses ZED distance
+                            //     turret.lockTurret();
+                            // } else {
+                            //     turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+                            //     shooter.stopShooter();
+                            // }
+                            hopper.lockToShooter(shooting, false);
                             hopper.setIntake(shooting ? 1 : 0);
                             collector.setIntakePow(shooting ? 0.5 : 0);
                         }
@@ -382,6 +382,10 @@ public class Robot extends TimedRobot {
                     createHoldAction(
                         mControlBoard::getCollectorBackSpin,
                         pressed -> collector.setIntakePow(pressed ? 0.2 : 0)
+                    ),
+                    createAction(
+                        mControlBoard::getHood,
+                        () -> shooter.setHood(!shooter.isHoodOut())
                     )
                 );
 

@@ -72,7 +72,7 @@ public class Collector extends Subsystem {
         isRaising = !down;
         if (down) {
             setArm(true);
-            setIntakePow(6800);
+            setIntakePow(0.75);
         } else {
             startTime = Timer.getFPGATimestamp();
             setArm(false);
@@ -98,7 +98,7 @@ public class Collector extends Subsystem {
 
         if (outputsChanged) {
             this.armPiston.set(armDown);
-            this.intake.set(ControlMode.Velocity, intakePow);
+            this.intake.set(ControlMode.PercentOutput, intakePow);
             this.outputsChanged = false;
         }
     }

@@ -45,7 +45,7 @@ subsystems:
             kD: 4.0
             kF: 0.0499
         azimuthPid:
-            kP: 2.0
+            kP: 10.0
             kI: 0
             kD: 30
             kF: 0
@@ -54,7 +54,7 @@ subsystems:
             azimuthEncPPR: 4096
             azimuthAllowableErrorTicks: 10
             pigeonId: 32
-            azimuthHomeAdjustmentDegrees: 0 # 0.4
+            azimuthHomeAdjustmentDegrees: 1
     ledmanager:
         implemented: true
         canifier: 18
@@ -65,18 +65,31 @@ subsystems:
         implemented: true
         talons:
             turret: 9
+        constants:
+            minPos: -4502
+            maxPos: -1618
     shooter:
         implemented: true
+        invertMotor:
+            - shooterMain
         falcons:
-            shooterMain: 0
+            shooterMain: 16
             shooterFollower: 15
+        solenoids:
+            hood: 1
     hopper:
         implemented: true
         talons:
             spindexer: 10
             elevator: 5
         solenoids:
-            feederFlap: 4
+            feederFlap: -4
+    collector:
+        implemented: true
+        talons:
+            intake: 7
+        solenoids:
+            arm: 0
 pcm: 8
 constants:
     trackWidth: 21 #inches

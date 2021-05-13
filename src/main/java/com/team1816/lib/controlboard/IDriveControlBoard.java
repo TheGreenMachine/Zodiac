@@ -28,4 +28,6 @@ public interface IDriveControlBoard {
     double getDPad();
 
     boolean getFieldRelative();
+
+    boolean getHood();
 }
