@@ -2,8 +2,8 @@
     "game": "Snow Path",
     "field-image": "snowPath.png",
     "field-corners": {
-        "top-left": [0, -5],
-        "bottom-right": [780, 400]
+        "top-left": [0, 0],
+        "bottom-right": [980, 490]
     },
     "field-size": [30, 15],
     "field-unit": "feet"

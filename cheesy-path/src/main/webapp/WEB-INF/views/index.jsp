@@ -38,6 +38,8 @@
                 <option value="7_field1">7_field1</option>
                 <option value="7_field2">7_field2</option>
                 <option value="7_field3">7_field3</option>
+                <option value="snowremoval">Snow Removal</option>
+                <option value="SnowThrower">Snow Thrower</option>
             </select>
             <label class='checkbox'>Is reversed: <input type='checkbox' class='data-input' id='isReversed'></label>
         </div>

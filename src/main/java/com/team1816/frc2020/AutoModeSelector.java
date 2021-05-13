@@ -47,6 +47,10 @@ public class AutoModeSelector {
         BARREL,
         BOUNCE,
 
+        // MSHSL
+        SNOW_REMOVAL,
+        SNOW_THROWER
+
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -125,6 +129,8 @@ public class AutoModeSelector {
         mModeChooser.addOption("Slalom Mode", DesiredMode.SLALOM);
         mModeChooser.addOption("Barrel Run", DesiredMode.BARREL);
         mModeChooser.addOption("Bounce", DesiredMode.BOUNCE);
+        mModeChooser.addOption("Snow Removal", DesiredMode.SNOW_REMOVAL);
+        mModeChooser.addOption("Snow Thrower", DesiredMode.SNOW_THROWER);
 
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
@@ -218,6 +224,10 @@ public class AutoModeSelector {
                 return (Optional.of(new BarrelMode()));
             case BOUNCE:
                 return (Optional.of(new BounceMode()));
+            case SNOW_REMOVAL:
+                return (Optional.of(new SnowRemovalMode()));
+            case SNOW_THROWER:
+                return (Optional.of(new SnowThrowerMode()));
             default:
                 break;
         }

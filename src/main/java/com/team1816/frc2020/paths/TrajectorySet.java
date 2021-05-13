@@ -55,6 +55,12 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_3;
     public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_4;
 
+    // MSHSL 2021
+    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_1;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_2;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_3;
+
 
 
     private TrajectorySet() {
@@ -106,5 +112,13 @@ public class TrajectorySet {
         this.BOUNCE_PATH_2 = new BouncePath2().generateTrajectory();
         this.BOUNCE_PATH_3 = new BouncePath3().generateTrajectory();
         this.BOUNCE_PATH_4 = new BouncePath4().generateTrajectory();
+
+        // MSHSL 2021
+        this.SNOW_REMOVAL = new SnowRemovalPath().generateTrajectory();
+
+        this.SNOW_THROWER_1 = new SnowThrower1().generateTrajectory();
+        this.SNOW_THROWER_2 = new SnowThrower2().generateTrajectory();
+        this.SNOW_THROWER_3 = new SnowThrower3().generateTrajectory();
+
     }
 }
