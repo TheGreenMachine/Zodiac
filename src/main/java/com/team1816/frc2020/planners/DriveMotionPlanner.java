@@ -90,6 +90,7 @@ public class DriveMotionPlanner implements CSVWritable {
     public void setTrajectory(
         final TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
     ) {
+
         mCurrentTrajectory = trajectory;
         mSetpoint = trajectory.getState();
         defaultCook = trajectory.trajectory().defaultVelocity();

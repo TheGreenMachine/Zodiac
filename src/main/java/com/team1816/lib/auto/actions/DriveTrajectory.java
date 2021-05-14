@@ -49,11 +49,13 @@ public class DriveTrajectory implements Action {
         System.out.println(
             "Starting trajectory! (length=" + mTrajectory.getRemainingProgress() + ")"
         );
+        var pose = mTrajectory.getState().state().getPose();
+
         if (mResetPose) {
-            var pose = mTrajectory.getState().state().getPose();
             mDrive.setHeading(pose.getRotation());
             mRobotState.reset(Timer.getFPGATimestamp(), pose);
-            mDrive.resetPose(pose);
+            mDrive.setStartingPose(pose);
+            mDrive.setWantReset(true);
         }
         mDrive.setTrajectory(mTrajectory);
     }

@@ -60,6 +60,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
     // Odometry variables
     private Pose2d pose = Pose2d.identity();
+    private Pose2d startingPosition = Pose2d.identity();
     private double lastUpdateTimestamp = 0;
 
     // Path control variables
@@ -68,6 +69,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     boolean modulesReady = false;
     boolean alwaysConfigureModules = false;
     boolean moduleConfigRequested = false;
+    private boolean wantReset = false;
 
     public boolean hasFinishedPath() {
         return hasFinishedPath;
@@ -398,6 +400,10 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         }
     }
 
+    public void setStartingPose(Pose2d pose) {
+        this.startingPosition = pose;
+    }
+
     @Override
     public void registerEnabledLoops(ILooper in) {
         in.register(
@@ -638,6 +644,14 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         }
     }
 
+    public void setWantReset(boolean wantReset) {
+        this.wantReset = wantReset;
+    }
+
+    public boolean wantsReset() {
+        return wantReset;
+    }
+
     public synchronized void setTrajectory(
         TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
     ) {
@@ -649,6 +663,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             setBrakeMode(true);
             mOverrideTrajectory = false;
             trajectoryMotionPlanner.reset();
+            motionPlanner.reset();
             mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
             trajectoryMotionPlanner.setTrajectory(trajectory);
         }
@@ -696,10 +711,11 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             if (!motionPlanner.isDone()) {
                 Translation2d driveVector = motionPlanner.update(timestamp, pose);
 
-                if (!hasStartedFollowing) {
-                    zeroSensors();
+                if (!hasStartedFollowing && wantReset) {
+                    zeroSensors(startingPosition);
                     System.out.println("Position reset for auto");
                     hasStartedFollowing = true;
+                    wantReset = false;
                 }
 
                 //                System.out.println("DRIVE VECTOR" + driveVector);
@@ -763,10 +779,14 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
     @Override
     public void zeroSensors() {
+        zeroSensors(Pose2d.identity());
+    }
+
+    public void zeroSensors(Pose2d pose) {
         System.out.println("Zeroing drive sensors!");
         resetPigeon();
-        setHeading(Rotation2d.identity());
-        resetPose(Pose2d.identity());
+        setHeading(pose.getRotation());
+        resetPose(pose);
 
         for (SwerveModule module : swerveModules) {
             if (module != null) {
