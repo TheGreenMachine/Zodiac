@@ -62,6 +62,25 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     private Pose2d pose = Pose2d.identity();
     private double lastUpdateTimestamp = 0;
 
+    // Path control variables
+    boolean hasStartedFollowing = false;
+    boolean hasFinishedPath = false;
+    boolean modulesReady = false;
+    boolean alwaysConfigureModules = false;
+    boolean moduleConfigRequested = false;
+
+    public boolean hasFinishedPath() {
+        return hasFinishedPath;
+    }
+
+    public void requireModuleConfiguration() {
+        modulesReady = false;
+    }
+
+    public void alwaysConfigureModules() {
+        alwaysConfigureModules = true;
+    }
+
     // hardware states
     private boolean mIsBrakeMode;
     private Rotation2d mGyroOffset = Rotation2d.identity();
@@ -623,6 +642,9 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
     ) {
         if (trajectoryMotionPlanner != null) {
+            hasStartedFollowing = false;
+            hasFinishedPath = false;
+            moduleConfigRequested = false;
             System.out.println("Now setting trajectory");
             setBrakeMode(true);
             mOverrideTrajectory = false;
@@ -673,6 +695,13 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             if (!motionPlanner.isDone()) {
                 Translation2d driveVector = motionPlanner.update(timestamp, pose);
+
+                if (!hasStartedFollowing) {
+                    zeroSensors();
+                    System.out.println("Position reset for auto");
+                    hasStartedFollowing = true;
+                }
+
                 //                System.out.println("DRIVE VECTOR" + driveVector);
 
                 mPeriodicIO.forward = driveVector.x();
@@ -701,6 +730,8 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                 }
             } else {
                 setVelocity(ZERO_DRIVE_VECTOR);
+                hasFinishedPath = true;
+                if (alwaysConfigureModules) requireModuleConfiguration();
             }
         } else {
             DriverStation.reportError("drive is not in path following state", false);
