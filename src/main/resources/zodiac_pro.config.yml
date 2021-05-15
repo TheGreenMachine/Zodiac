@@ -11,16 +11,17 @@ subsystems:
         invertMotor:
             - elevator
     shooter:
-        implemented: false
+        implemented: true
         falcons:
             shooterMain: 3
             shooterFollower: 2
     turret:
-        implemented: false
+        implemented: true
         constants:
-            minPos: 326
-            maxPos: 1054
-            absPosTicksSouth: 3415
+            minPos: -2436
+            maxPos: 616
+            absPosTicksSouth: -2036
+            invertSensorPhase: 1
     ledmanager:
         implemented: true
         canifier: 18
