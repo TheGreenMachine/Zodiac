@@ -57,6 +57,12 @@ public class TrajectorySet {
 
     // MSHSL 2021
     public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL_1;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL_2;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL_3;
+
+
+
     public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_1;
     public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_2;
     public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_3;
@@ -115,6 +121,11 @@ public class TrajectorySet {
 
         // MSHSL 2021
         this.SNOW_REMOVAL = new SnowRemovalPath().generateTrajectory();
+        this.SNOW_REMOVAL_1 = new SnowRemoval1().generateTrajectory();
+        this.SNOW_REMOVAL_2 = new SnowRemoval2().generateTrajectory();
+        this.SNOW_REMOVAL_3 = new SnowRemoval3().generateTrajectory();
+
+
 
         this.SNOW_THROWER_1 = new SnowThrower1().generateTrajectory();
         this.SNOW_THROWER_2 = new SnowThrower2().generateTrajectory();
