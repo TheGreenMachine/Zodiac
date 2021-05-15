@@ -26,6 +26,7 @@ public class SwerveDriveHelper implements DriveHelper {
 
         Translation2d translationalInput = new Translation2d(forwardInput, strafeInput);
         double inputMagnitude = translationalInput.norm();
+        field_relative = false;
 
         // Snap the translational input to its nearest pole, if it is within a certain
         // threshold of it.
@@ -73,6 +74,6 @@ public class SwerveDriveHelper implements DriveHelper {
         }
 
         return Kinematics.inverseKinematics(translationalInput.x(), translationalInput.y(), rotationInput,
-            field_relative);
+            false /*field_relative*/);
     }
 }

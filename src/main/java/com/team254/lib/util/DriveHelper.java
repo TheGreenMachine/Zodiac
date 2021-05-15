@@ -2,6 +2,7 @@ package com.team254.lib.util;
 
 public interface DriveHelper {
     public static final DriveHelper SWERVE_CLASSIC = new SwerveDriveHelper();
+    DriveHelper CHEESY = new CheesyDriveHelper();
 
     DriveSignal calculateDriveSignal(
         double forwardInput,

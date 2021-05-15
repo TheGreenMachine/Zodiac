@@ -251,10 +251,22 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             if (swerveModules[i] != null) {
                 if (mDriveControlState == DriveControlState.OPEN_LOOP) {
                     // TODO: 5/5/21 fix
-                    swerveModules[i].setVelocity(
+                    if (
+                        Util.shouldReverse(
+                            swerveModules[i].getAngle().getDegrees(),
+                            mPeriodicIO.wheel_azimuths[i].getDegrees()
+                        )
+                    ) {
+                        swerveModules[i].setOpenLoop(
+                            -mPeriodicIO.wheel_speeds[i],
+                            mPeriodicIO.wheel_azimuths[i].rotateBy(Rotation2d.fromDegrees(180))
+                        );
+                    } else {
+                        swerveModules[i].setOpenLoop(
                             mPeriodicIO.wheel_speeds[i],
                             mPeriodicIO.wheel_azimuths[i]
                         );
+                    }
                 } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
                     swerveModules[i].setVelocity(
                             mPeriodicIO.wheel_speeds[i],
@@ -843,6 +855,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         );
 
         driveHelperChooser = new SendableChooser<>();
+        driveHelperChooser.addOption("Cheesy Drive", DriveHelper.CHEESY);
         driveHelperChooser.setDefaultOption("Swerve Classic", DriveHelper.SWERVE_CLASSIC);
         SmartDashboard.putData("Drive Algorithm", driveHelperChooser);
         SmartDashboard.putData("Field", fieldSim);
