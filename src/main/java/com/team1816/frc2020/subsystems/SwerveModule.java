@@ -296,18 +296,22 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             mDriveMotor.set(ControlMode.Velocity, mPeriodicIO.drive_demand);
         }
 
-        var upDistance = mPeriodicIO.azimuth_demand - mPeriodicIO.azimuth_encoder_ticks;
-        if (mPeriodicIO.azimuth_demand < mPeriodicIO.azimuth_encoder_ticks) {
-            upDistance += 4096;
-        }
-
-        var downDistance = upDistance - 4096;
-
         double demandedPosition;
-        if (Math.abs(upDistance) < Math.abs(downDistance)) {
+        var upDistance = mPeriodicIO.azimuth_demand - mPeriodicIO.azimuth_encoder_ticks;
+        if (Util.epsilonEquals(upDistance, 2048)) {
             demandedPosition = mPeriodicIO.azimuth_encoder_ticks_unmasked + upDistance;
         } else {
-            demandedPosition = mPeriodicIO.azimuth_encoder_ticks_unmasked + downDistance;
+            if (mPeriodicIO.azimuth_demand < mPeriodicIO.azimuth_encoder_ticks) {
+                upDistance += 4096;
+            }
+
+            var downDistance = upDistance - 4096;
+
+            if (Math.abs(upDistance) < Math.abs(downDistance)) {
+                demandedPosition = mPeriodicIO.azimuth_encoder_ticks_unmasked + upDistance;
+            } else {
+                demandedPosition = mPeriodicIO.azimuth_encoder_ticks_unmasked + downDistance;
+            }
         }
 
         var offsetDemand =

@@ -1,6 +1,7 @@
 package com.team254.lib.trajectory;
 
 import com.team254.lib.geometry.State;
+import com.team254.lib.util.Util;
 
 public class TrajectoryIterator<S extends State<S>> {
     private final TrajectoryView<S> view_;
@@ -16,7 +17,7 @@ public class TrajectoryIterator<S extends State<S>> {
     }
 
     public boolean isDone() {
-        return getRemainingProgress() == 0.0;
+        return Util.epsilonEquals(getRemainingProgress(), 0.0);
     }
 
     public double getProgress() {
