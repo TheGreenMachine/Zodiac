@@ -45,7 +45,7 @@ subsystems:
             kD: 4.0
             kF: 0.0499
         azimuthPid:
-            kP: 10.0
+            kP: 6.0
             kI: 0
             kD: 30
             kF: 0
@@ -62,14 +62,14 @@ subsystems:
             raveEnabled: 0
             raveSpeed: 0.05
     turret:
-        implemented: true
+        implemented: false
         talons:
             turret: 9
         constants:
             minPos: -4502
             maxPos: -1618
     shooter:
-        implemented: true
+        implemented: false
         invertMotor:
             - shooterMain
         falcons:
@@ -78,14 +78,14 @@ subsystems:
         solenoids:
             hood: 1
     hopper:
-        implemented: true
+        implemented: false
         talons:
             spindexer: 10
             elevator: 5
         solenoids:
             feederFlap: -4
     collector:
-        implemented: true
+        implemented: false
         talons:
             intake: 7
         solenoids:
@@ -95,8 +95,8 @@ constants:
     trackWidth: 21 #inches
     wheelbaseLength: 21.5 #inche
     wheelDiameter: 3.8989736842 #inches
-    maxVel: 240  # 22560 native units
-    maxAccel: 120
+    maxVel: 40 # 240  # 22560 native units
+    maxAccel: 20 # 120
     logTeleOp: 1
     logAuto: 1
     badLogEnabled: 1
