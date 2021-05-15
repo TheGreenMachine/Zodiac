@@ -268,10 +268,22 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                         );
                     }
                 } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-                    swerveModules[i].setVelocity(
+                    if (
+                        Util.shouldReverse(
+                            swerveModules[i].getAngle().getDegrees(),
+                            mPeriodicIO.wheel_azimuths[i].getDegrees()
+                        )
+                    ) {
+                        swerveModules[i].setVelocity(
+                            -mPeriodicIO.wheel_speeds[i],
+                            mPeriodicIO.wheel_azimuths[i].rotateBy(Rotation2d.fromDegrees(180))
+                        );
+                    } else {
+                        swerveModules[i].setVelocity(
                             mPeriodicIO.wheel_speeds[i],
                             mPeriodicIO.wheel_azimuths[i]
                         );
+                    }
                 }
                 swerveModules[i].writePeriodicOutputs();
             }

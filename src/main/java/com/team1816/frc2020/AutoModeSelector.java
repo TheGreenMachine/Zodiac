@@ -47,6 +47,7 @@ public class AutoModeSelector {
         SLALOM,
         BARREL,
         BOUNCE,
+        ATROCITY,
 
         // MSHSL
         SNOW_REMOVAL,
@@ -133,6 +134,12 @@ public class AutoModeSelector {
         mModeChooser.addOption("Slalom Mode", DesiredMode.SLALOM);
         mModeChooser.addOption("Barrel Run", DesiredMode.BARREL);
         mModeChooser.addOption("Bounce", DesiredMode.BOUNCE);
+        mModeChooser.addOption("Atrocity", DesiredMode.ATROCITY);
+
+        SmartDashboard.putData("Auto mode", mModeChooser);
+
+
+
         mModeChooser.addOption("Snow Removal", DesiredMode.SNOW_REMOVAL);
         mModeChooser.addOption("Snow Thrower", DesiredMode.SNOW_THROWER);
 
@@ -235,6 +242,8 @@ public class AutoModeSelector {
                 return (Optional.of(new SnowRemovalMode()));
             case SNOW_THROWER:
                 return (Optional.of(new SnowThrowerMode()));
+            case ATROCITY:
+                return (Optional.of(new AtrocityMode()));
             default:
                 break;
         }
