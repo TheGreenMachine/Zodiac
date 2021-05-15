@@ -74,6 +74,7 @@ public class Turret extends Subsystem implements PidProvider {
         this.turret = factory.getMotor(NAME, "turret");
 
         turret.setNeutralMode(NeutralMode.Brake);
+        turret.setSensorPhase(TURRET_SENSOR_PHASE);
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
