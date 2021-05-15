@@ -18,9 +18,9 @@ subsystems:
     turret:
         implemented: true
         constants:
-            minPos: -2436
-            maxPos: 616
-            absPosTicksSouth: -2036
+            minPos: -4182
+            maxPos: -715
+            absPosTicksSouth: -3432
             invertSensorPhase: 1
     ledmanager:
         implemented: true
@@ -29,8 +29,8 @@ subsystems:
         implemented: true
         canifier: 19
 constants:
-    maxVel: 120
-    maxAccel: 90
+    maxVel: 40
+    maxAccel: 20
     wheelDiameter: 6.32 #inches
     logTeleop: 1
     logAuto: 1

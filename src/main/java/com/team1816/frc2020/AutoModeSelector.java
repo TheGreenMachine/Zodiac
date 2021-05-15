@@ -57,8 +57,8 @@ public class AutoModeSelector {
     private DesiredMode mCachedDesiredMode = null;
     private StartingPosition mCachedStartingPosition = null;
 
-    private SendableChooser<DesiredMode> mModeChooser;
-    private SendableChooser<StartingPosition> mStartPositionChooser;
+    private final SendableChooser<DesiredMode> mModeChooser;
+    private final SendableChooser<StartingPosition> mStartPositionChooser;
 
     private Optional<AutoModeBase> mAutoMode = Optional.empty();
 
@@ -70,8 +70,6 @@ public class AutoModeSelector {
             StartingPosition.CENTER_HAB_1
         );
 
-        SmartDashboard.putData("Starting Position", mStartPositionChooser);
-
         mModeChooser = new SendableChooser<>();
 
         // 2020
@@ -80,48 +78,47 @@ public class AutoModeSelector {
         mModeChooser.addOption("Tune Drivetrain", DesiredMode.TUNE_DRIVETRAIN);
         mModeChooser.addOption("Tune Drivetrain Reverse", DesiredMode.TUNE_DRIVETRAIN_REVERSE);
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
-        SmartDashboard.putData("Auto mode", mModeChooser);
 //
 //        // CheezeCurd
 //        mModeChooser.addOption("Living Room", DesiredMode.LIVING_ROOM);
 //        //        mModeChooser.addOption("Shop", DesiredMode.SHOP);
 //        //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
-//        mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
-//        mModeChooser.addOption(
-//            "Auto Trench Turn Right",
-//            DesiredMode.AUTO_TRENCH_TURN_RIGHT
-//        );
-//        mModeChooser.addOption(
-//            "Auto Trench Turn Right",
-//            DesiredMode.AUTO_TRENCH_TURN_RIGHT
-//        );
-//
-//        mModeChooser.addOption("Drive Straight Shoot", DesiredMode.DRIVE_STRAIGHT_SHOOT);
-//
-//        // ALLIANCE
-//        mModeChooser.addOption("6 Ball Alliance Trench", DesiredMode.SIX_BALL_ALLIANCE);
-//        mModeChooser.addOption(
-//            "6 Ball Alliance Straight",
-//            DesiredMode.SIX_BALL_ALLIANCE_STRAIGHT
-//        );
-//        mModeChooser.addOption("8 Ball Alliance Trench", DesiredMode.EIGHT_BALL_ALLIANCE);
-//        mModeChooser.addOption(
-//            "8 Ball Alliance Trench ALT (NOT TESTED)",
-//            DesiredMode.EIGHT_BALL_ALLIANCE_ALT
-//        );
-//
-//        // OPPOSING
-//        mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
-//        mModeChooser.addOption(
-//            "8 Ball Opposing Trench (NOT TESTED)",
-//            DesiredMode.EIGHT_BALL_OPPOSE
-//        );
-//
-//        mModeChooser.addOption(
-//            "10 Ball Trench (Not yet implemented DO NOT USE)",
-//            DesiredMode.TEN_BALL_AUTO
-//        );
+        mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
+        mModeChooser.addOption(
+            "Auto Trench Turn Right",
+            DesiredMode.AUTO_TRENCH_TURN_RIGHT
+        );
+        mModeChooser.addOption(
+            "Auto Trench Turn Right",
+            DesiredMode.AUTO_TRENCH_TURN_RIGHT
+        );
+
+        mModeChooser.addOption("Drive Straight Shoot", DesiredMode.DRIVE_STRAIGHT_SHOOT);
+
+        // ALLIANCE
+        mModeChooser.addOption("6 Ball Alliance Trench", DesiredMode.SIX_BALL_ALLIANCE);
+        mModeChooser.addOption(
+            "6 Ball Alliance Straight",
+            DesiredMode.SIX_BALL_ALLIANCE_STRAIGHT
+        );
+        mModeChooser.addOption("8 Ball Alliance Trench", DesiredMode.EIGHT_BALL_ALLIANCE);
+        mModeChooser.addOption(
+            "8 Ball Alliance Trench ALT (NOT TESTED)",
+            DesiredMode.EIGHT_BALL_ALLIANCE_ALT
+        );
+
+        // OPPOSING
+        mModeChooser.addOption("5 Ball Opposing Trench", DesiredMode.FIVE_BALL_OPPOSING);
+        mModeChooser.addOption(
+            "8 Ball Opposing Trench (NOT TESTED)",
+            DesiredMode.EIGHT_BALL_OPPOSE
+        );
+
+        mModeChooser.addOption(
+            "10 Ball Trench (Not yet implemented DO NOT USE)",
+            DesiredMode.TEN_BALL_AUTO
+        );
 
         // 2021
 
@@ -134,6 +131,7 @@ public class AutoModeSelector {
         mModeChooser.addOption("Good Snow Removal", DesiredMode.GOOD_SNOW_REMOVAL);
         mModeChooser.addOption("Snow Thrower", DesiredMode.SNOW_THROWER);
 
+        SmartDashboard.putData("Auto mode", mModeChooser);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
 
@@ -146,6 +144,12 @@ public class AutoModeSelector {
     public void updateModeCreator() {
         DesiredMode desiredMode = mModeChooser.getSelected();
         StartingPosition startingPosition = mStartPositionChooser.getSelected();
+        if (desiredMode == null) {
+            desiredMode = DesiredMode.DRIVE_STRAIGHT;
+        }
+        if (startingPosition == null) {
+            startingPosition = StartingPosition.CENTER_HAB_1;
+        }
         if (
             mCachedDesiredMode != desiredMode ||
             startingPosition != mCachedStartingPosition
