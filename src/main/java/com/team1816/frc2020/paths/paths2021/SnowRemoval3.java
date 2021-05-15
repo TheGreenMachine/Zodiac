@@ -17,9 +17,9 @@ public class SnowRemoval3 implements PathContainer {
         return List.of(
             new Pose2d(90, 54, 0),
             new Pose2d(218, 56, 5),
-            new Pose2d(300, 145, 0),
+            new Pose2d(300, 155, 0),
             new Pose2d(322, 121, -90),
-            new Pose2d(274, 59, -90),
+            new Pose2d(254, 65, -90),
             new Pose2d(299, 39, 0),
             new Pose2d(325, 60, 90),
             new Pose2d(297, 83, 180),

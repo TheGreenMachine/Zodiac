@@ -16,7 +16,7 @@ public class SnowRemoval2 implements PathContainer {
     public List<Pose2d> buildWaypoints() {
         return List.of(
             new Pose2d(211, 151, -145),
-            new Pose2d(129, 29, 180),
+            new Pose2d(129, 38, 180),
             new Pose2d(91, 54, 135)
         );
     }

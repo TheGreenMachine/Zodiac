@@ -29,8 +29,8 @@ subsystems:
         implemented: true
         canifier: 19
 constants:
-    maxVel: 40
-    maxAccel: 20
+    maxVel: 60
+    maxAccel: 30
     wheelDiameter: 6.32 #inches
     logTeleop: 1
     logAuto: 1
