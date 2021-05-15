@@ -6,7 +6,8 @@ import com.team254.lib.geometry.Pose2d;
 
 import java.util.List;
 
-public class BouncePath2 implements PathContainer {
+public class nicoTest1 implements PathContainer {
+
     @Override
     public Path buildPath() {
         return null;
@@ -15,16 +16,14 @@ public class BouncePath2 implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         return List.of(
-            new Pose2d(91, 140, -90),
-            new Pose2d(115, 66, -70),
-            new Pose2d(149, 37, 0),
-            new Pose2d(189, 97, 90),
-            new Pose2d(187, 148, 90)
+            new Pose2d(30, 90, 0),
+            new Pose2d(100, 90, 10)
         );
     }
 
+
     @Override
-    public boolean isReversed() { // to make the robot go backwards this needs to be true
+    public boolean isReversed() {
         return false;
     }
 }

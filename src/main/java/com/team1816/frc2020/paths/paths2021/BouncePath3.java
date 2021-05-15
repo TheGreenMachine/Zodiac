@@ -15,7 +15,7 @@ public class BouncePath3 implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         return List.of(
-            new Pose2d(187, 148, -91),
+            new Pose2d(187, 148, -90),
             new Pose2d(189, 106, -90),
             new Pose2d(224, 33, 0),
             new Pose2d(276, 112, 90),

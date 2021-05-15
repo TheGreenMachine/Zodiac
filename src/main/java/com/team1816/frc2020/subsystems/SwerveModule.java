@@ -242,9 +242,6 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         var isFront = mConstants.kName.startsWith("front");
         var sign = isFront ? 1 : -1;
         var azimuthAdjustmentRadians = sign * Math.toRadians(AZIMUTH_ADJUSTMENT_OFFSET_DEGREES);
-        if (mConstants.kName.equals("frontLeft")) {
-            System.out.println("AGR: " + azimuth.getRadians());
-        }
         mPeriodicIO.azimuth_demand = (int) radiansToEncoderUnits(
             azimuth.getRadians() + azimuthAdjustmentRadians
         );

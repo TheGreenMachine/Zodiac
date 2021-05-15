@@ -55,10 +55,22 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_3;
     public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_4;
     public final Trajectory<TimedState<Pose2dWithCurvature>> ATROCITY;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> NICO_TEST1;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> NICO_TEST2;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> NICO_TEST3;
+
+
+
 
 
     // MSHSL 2021
     public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL_1;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL_2;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL_3;
+
+    ;
+
     public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_1;
     public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_2;
     public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_3;
@@ -114,11 +126,23 @@ public class TrajectorySet {
         this.BOUNCE_PATH_3 = new BouncePath3().generateTrajectory();
         this.BOUNCE_PATH_4 = new BouncePath4().generateTrajectory();
         this.ATROCITY = new Atrocity().generateTrajectory();
+        this.NICO_TEST1 = new nicoTest1().generateTrajectory();
+        this.NICO_TEST2 = new nicoTest2().generateTrajectory();
+        this.NICO_TEST3 = new nicoTest3().generateTrajectory();
+
+
+
 
 
 
         // MSHSL 2021
         this.SNOW_REMOVAL = new SnowRemovalPath().generateTrajectory();
+        this.SNOW_REMOVAL_1 = new SnowRemoval1().generateTrajectory();
+        this.SNOW_REMOVAL_2 = new SnowRemoval2().generateTrajectory();
+        this.SNOW_REMOVAL_3 = new SnowRemoval3().generateTrajectory();
+
+
+
 
         this.SNOW_THROWER_1 = new SnowThrower1().generateTrajectory();
         this.SNOW_THROWER_2 = new SnowThrower2().generateTrajectory();

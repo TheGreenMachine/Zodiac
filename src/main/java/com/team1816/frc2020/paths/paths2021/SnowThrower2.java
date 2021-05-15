@@ -24,6 +24,6 @@ public class SnowThrower2 implements PathContainer {
 
     @Override
     public boolean isReversed() {
-        return true;
+        return false;
     }
 }
