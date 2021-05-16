@@ -21,7 +21,12 @@ public interface PathContainer {
     // velocities are in/sec
     double kMaxVelocity = Robot.getFactory().getConstant("maxVel");
     double kMaxAccel = Robot.getFactory().getConstant("maxAccel");
-    double kMaxCentripetalAccel = 100.0;
+    double kMaxCentripetalAccel = Robot.getFactory().getConstant("maxCentripetalAccel", 100.0);
+    double kMaxDecel = (
+        Robot.getFactory().getConstant("maxDecel", -1) == -1
+            ? kMaxAccel
+            : Robot.getFactory().getConstant("maxDecel")
+        );
     double kMaxVoltage = 9.0;
 
     Path buildPath();
@@ -51,6 +56,7 @@ public interface PathContainer {
                 ),
                 getMaxVelocity(),
                 kMaxAccel,
+                kMaxDecel,
                 kMaxVoltage
             );
     }

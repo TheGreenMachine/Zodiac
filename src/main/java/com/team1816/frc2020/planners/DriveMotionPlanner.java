@@ -120,6 +120,7 @@ public class DriveMotionPlanner implements CSVWritable {
         final List<TimingConstraint<Pose2dWithCurvature>> constraints,
         double max_vel, // inches/s
         double max_accel, // inches/s^2
+        double max_decel, // inches/s^2
         double max_voltage
     ) {
         return generateTrajectory(
@@ -130,8 +131,8 @@ public class DriveMotionPlanner implements CSVWritable {
             0.0,
             max_vel,
             max_accel,
+            max_decel,
             max_voltage,
-            0.0,
             0.0,
             0
         );
