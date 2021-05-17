@@ -16,26 +16,19 @@ public class Atrocity implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         return List.of(
-            new Pose2d(46, 88, 0),
-            new Pose2d(79, 103, 45),
-            new Pose2d(91, 155, 0),
-            new Pose2d(93, 113, -60),
-            new Pose2d(116, 77, -60),
-            new Pose2d(124, 45, -60),
-            new Pose2d(165, 29, 45),
-            new Pose2d(179, 79, 90),
-            new Pose2d(175, 118, 90),
-            new Pose2d(174, 148, 0),
-            new Pose2d(186, 120, -90),
-            new Pose2d(188, 81, -90),
-            new Pose2d(191, 32, -45),
-            new Pose2d(254, 32, 45),
-            new Pose2d(264, 65, 90),
-            new Pose2d(267, 125, 90),
-            new Pose2d(271, 158, 0),
-            new Pose2d(274, 129, -90),
-            new Pose2d(286, 92, -45),
-            new Pose2d(325, 89, 0)
+            new Pose2d(39, 98, 0),
+            new Pose2d(172, 103, 0),
+            new Pose2d(149, 6, 180),
+            new Pose2d(132, 96, 10),
+            new Pose2d(278, 82, 30),
+            new Pose2d(242, 169, 176),
+            new Pose2d(190, 136, -117),
+            new Pose2d(203, 89, -60),
+            new Pose2d(271, 27, -25),
+            new Pose2d(338, 93, 132),
+            new Pose2d(242, 111, 180),
+            new Pose2d(146, 127, 180),
+            new Pose2d(37, 136, 180)
         );
     }
 

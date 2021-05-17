@@ -139,6 +139,8 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             );
 
         mAzimuthMotor.setSensorPhase(constants.kInvertAzimuthSensorPhase);
+        mAzimuthMotor.configPeakOutputForward(.4, Constants.kLongCANTimeoutMs);
+        mAzimuthMotor.configPeakOutputReverse(-.4, Constants.kLongCANTimeoutMs);
         mAzimuthMotor.setNeutralMode(NeutralMode.Brake);
         mAzimuthMotor.configAllowableClosedloopError(
             0,

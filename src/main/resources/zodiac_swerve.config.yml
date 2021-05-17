@@ -45,8 +45,8 @@ subsystems:
             kD: 4.0
             kF: 0.0499
         azimuthPid:
-            kP: 8.0 # 6.0
-            kI: 0
+            kP: 10.0 # 6.0
+            kI: 0.0005
             kD: 30
             kF: 0
         constants:
@@ -95,10 +95,10 @@ constants:
     trackWidth: 21 #inches
     wheelbaseLength: 21.5 #inche
     wheelDiameter: 3.8989736842 #inches
-    maxVel: 40  # 22560 native units
-    maxAccel: 20
-    maxDecel: 20 # Start with this matching maxAccel and then adjust as needed
-    maxCentripetalAccel: 100
+    maxVel: 325  # 22560 native units ---30
+    maxAccel: 260
+    maxDecel: 300 # Start with this matching maxAccel and then adjust as needed
+    maxCentripetalAccel: 190
     logTeleOp: 1
     logAuto: 1
     badLogEnabled: 1

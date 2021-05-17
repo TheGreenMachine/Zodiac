@@ -55,8 +55,8 @@ subsystems:
         implemented: false
 pcm: -1
 constants:
-    maxVel: 120 #inch/s
-    maxAccel: 60 #inch/s^2
+    maxVel: 40 #inch/s
+    maxAccel: 20 #inch/s^2
     sensorPhase: 0
     kLooperDt: .010
     kTrackScrubFactor: 1.0
