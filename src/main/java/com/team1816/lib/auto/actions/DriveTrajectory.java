@@ -3,6 +3,7 @@ package com.team1816.lib.auto.actions;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
@@ -15,15 +16,25 @@ public class DriveTrajectory implements Action {
     private static final RobotState mRobotState = RobotState.getInstance();
 
     private final TrajectoryIterator<TimedState<Pose2dWithCurvature>> mTrajectory;
+    private final Rotation2d targetHeading;
     private final boolean mResetPose;
     private boolean done;
 
     public DriveTrajectory(
         Trajectory<TimedState<Pose2dWithCurvature>> trajectory,
+        Rotation2d targetHeading,
         boolean resetPose
     ) {
         mTrajectory = new TrajectoryIterator<>(new TimedView<>(trajectory));
+        this.targetHeading = targetHeading;
         mResetPose = resetPose;
+    }
+
+    public DriveTrajectory(
+        Trajectory<TimedState<Pose2dWithCurvature>> trajectory,
+        boolean resetPose
+    ) {
+        this(trajectory, Rotation2d.identity(), resetPose);
     }
 
     @Override
@@ -57,6 +68,6 @@ public class DriveTrajectory implements Action {
             mDrive.setStartingPose(pose);
             mDrive.setWantReset(true);
         }
-        mDrive.setTrajectory(mTrajectory);
+        mDrive.setTrajectory(mTrajectory, targetHeading);
     }
 }

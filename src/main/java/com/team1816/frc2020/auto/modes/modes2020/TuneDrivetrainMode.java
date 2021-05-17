@@ -5,6 +5,7 @@ import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.actions.WaitAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
+import com.team254.lib.geometry.Rotation2d;
 
 public class TuneDrivetrainMode extends AutoModeBase {
 
@@ -14,7 +15,7 @@ public class TuneDrivetrainMode extends AutoModeBase {
         var traj = isReversed
             ? TrajectorySet.getInstance().TUNE_DRIVETRAIN_REVERSE
             : TrajectorySet.getInstance().TUNE_DRIVETRAIN;
-        trajectory = new DriveTrajectory(traj, true);
+        trajectory = new DriveTrajectory(traj, Rotation2d.fromDegrees(90), true);
     }
 
     @Override

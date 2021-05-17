@@ -677,7 +677,8 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     }
 
     public synchronized void setTrajectory(
-        TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
+        TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory,
+        Rotation2d targetHeading
     ) {
         if (trajectoryMotionPlanner != null) {
             hasStartedFollowing = false;
@@ -686,6 +687,8 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             System.out.println("Now setting trajectory");
             setBrakeMode(true);
             mOverrideTrajectory = false;
+            headingController.setGoal(targetHeading.getDegrees());
+            headingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.SNAP);
             trajectoryMotionPlanner.reset();
             motionPlanner.reset();
             mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
@@ -724,9 +727,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     }
 
     private void updatePathFollower(double timestamp) {
-        headingController.setGoal(
-            RobotState.getInstance().getRobot().getRotation().getUnboundedDegrees()
-        );
         double rotationCorrection = headingController.update();
         updatePose(timestamp);
         // alternatePoseUpdate(timestamp);
