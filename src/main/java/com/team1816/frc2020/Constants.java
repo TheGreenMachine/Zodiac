@@ -45,8 +45,8 @@ public class Constants {
     public static final Translation2d[] kModulePositions = {
         kFrontLeftModulePosition,
         kFrontRightModulePosition,
-        kBackLeftModulePosition,
         kBackRightModulePosition,
+        kBackLeftModulePosition,
     };
 
     // CAN Timeouts
