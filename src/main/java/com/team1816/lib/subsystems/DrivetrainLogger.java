@@ -126,5 +126,11 @@ public class DrivetrainLogger {
             "hide",
             "join:Drivetrain/Heading"
         );
+//
+//        BadLog.createTopic(
+//            "Drivetrain/HeadingError",
+//            "Angle",
+//            drivetrain::getHeadingError
+//        );
     }
 }

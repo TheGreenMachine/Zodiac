@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
@@ -164,9 +165,13 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
     public double getDesiredHeading() {
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-            return mPeriodicIO.path_setpoint.state().getRotation().getDegrees();
+            return headingController.getTargetHeading();
         }
         return mPeriodicIO.desired_heading.getDegrees();
+    }
+
+    public double getHeadingError() {
+        return headingController.getError();
     }
 
     @Override
@@ -220,6 +225,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(
             Pose2dWithCurvature.identity()
         );
+        public Translation2d drive_vector = Translation2d.identity();
     }
 
     @Override
@@ -229,7 +235,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             //    System.out.println("Pigeon error detected, maybe reinitialized");
         }
         if (RobotBase.isSimulation()) {
-            mPeriodicIO.gyro_heading_no_offset = mPeriodicIO.path_setpoint.state().getRotation();
+//            mPeriodicIO.gyro_heading_no_offset = ;
         } else {
             mPeriodicIO.gyro_heading_no_offset =
                 Rotation2d.fromDegrees(mPigeon.getFusedHeading());
@@ -564,12 +570,23 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             setBrakeMode(false);
             System.out.println("Switching to Velocity");
         }
+        double[] speedsNorm = new double[4];
         for (int i = 0; i < swerveModules.length; i++) {
             mPeriodicIO.wheel_azimuths[i] = driveVectors.get(i).direction();
+            speedsNorm[i] = driveVectors.get(i).norm();
             mPeriodicIO.wheel_speeds[i] =
                 inchesPerSecondToTicksPer100ms(
                     driveVectors.get(i).norm() * Constants.kPathFollowingMaxVel
                 );
+        }
+        if (RobotBase.isSimulation()) {
+            mPeriodicIO.gyro_heading_no_offset.rotateBy(
+                Rotation2d.fromDegrees(
+                    Kinematics
+                        .forwardKinematics(speedsNorm, mPeriodicIO.wheel_azimuths)
+                        .dtheta
+                )
+            );
         }
     }
 
@@ -761,7 +778,8 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                 );
 
                 mPeriodicIO.error = trajectoryMotionPlanner.error();
-                mPeriodicIO.path_setpoint = trajectoryMotionPlanner.setpoint();
+                mPeriodicIO.path_setpoint = motionPlanner.setpoint();
+                mPeriodicIO.drive_vector = driveVector;
                 if (!mOverrideTrajectory) {
 //                    System.out.println("ROTATIONINPUT==" + rotationInput);
                     setVelocity(

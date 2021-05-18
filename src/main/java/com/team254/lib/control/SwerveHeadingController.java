@@ -1,11 +1,11 @@
 package com.team254.lib.control;
 
-import com.team1816.frc2020.Constants;
 import com.team254.lib.util.SynchronousPIDF;
 import edu.wpi.first.wpilibj.Timer;
 
 public class SwerveHeadingController {
     private static SwerveHeadingController INSTANCE;
+    private double mError;
 
     public static SwerveHeadingController getInstance() {
         if (INSTANCE == null) {
@@ -37,7 +37,7 @@ public class SwerveHeadingController {
     private SwerveHeadingController(){
         if (true){
             stabilizationPID = new SynchronousPIDF(0.005, 0.0, 0.0005, 0.0);
-            snapPID = new SynchronousPIDF(0.015, 0.0, 0.0, 0.0);
+            snapPID = new SynchronousPIDF(0.0020, 0.0, 0.00, 0.0);
             stationaryPID = new SynchronousPIDF(0.01, 0.0, 0.002, 0.0);
         }else{
             stabilizationPID = new SynchronousPIDF(0.005, 0.0, 0.0005, 0.0);
@@ -77,9 +77,14 @@ public class SwerveHeadingController {
         return targetHeading;
     }
 
+    public double getError() {
+        return mError;
+    }
+
     public double updateRotationCorrection(double heading, double timestamp){
         double correction = 0;
         double error = heading - targetHeading;
+        mError = error;
         double dt = timestamp - lastUpdateTimestamp;
 
         switch(currentState){
