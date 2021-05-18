@@ -630,46 +630,46 @@ public class Robot extends TimedRobot {
             maintainAzimuth
         );
 
-        if (mControlBoard.getDPad() != -1) {
-            swerveHeadingController.setHeadingControllerState(
-                SwerveHeadingController.HeadingControllerState.SNAP
-            );
-            double heading_goal = mControlBoard.getDPad();
-            SmartDashboard.putNumber("Heading Goal", heading_goal);
-            swerveHeadingController.setGoal(heading_goal);
-        } else {
-            if (!maintainAzimuth) {
-                swerveHeadingController.setHeadingControllerState(
-                    SwerveHeadingController.HeadingControllerState.OFF
-                );
-            } else if (
-                (
-                    swerveHeadingController.getHeadingControllerState() ==
-                    SwerveHeadingController.HeadingControllerState.SNAP &&
-                    swerveHeadingController.isAtGoal()
-                ) ||
-                changeAzimuthSetpoint
-            ) {
-                swerveHeadingController.setHeadingControllerState(
-                    SwerveHeadingController.HeadingControllerState.MAINTAIN
-                );
-                swerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
-            }
-        }
-
-        if (
-            swerveHeadingController.getHeadingControllerState() !=
-            SwerveHeadingController.HeadingControllerState.OFF
-        ) {
-            mDrive.setTeleopInputs(
-                mControlBoard.getThrottle(),
-                mControlBoard.getStrafe(),
-                swerveHeadingController.update(),
-                mControlBoard.getSlowMode(),
-                mControlBoard.getFieldRelative(),
-                true
-            );
-        } else {
+//        if (mControlBoard.getDPad() != -1) {
+//            swerveHeadingController.setState(
+//                SwerveHeadingController.State.Snap
+//            );
+//            double heading_goal = mControlBoard.getDPad();
+//            SmartDashboard.putNumber("Heading Goal", heading_goal);
+//            swerveHeadingController.setGoal(heading_goal);
+//        } else {
+//            if (!maintainAzimuth) {
+//                swerveHeadingController.setState(
+//                    SwerveHeadingController.State.Off
+//                );
+//            } else if (
+//                (
+//                    swerveHeadingController.getState() ==
+//                    SwerveHeadingController.State.Snap &&
+//                    swerveHeadingController.is()
+//                ) ||
+//                changeAzimuthSetpoint
+//            ) {
+//                swerveHeadingController.setState(
+//                    SwerveHeadingController.HeadingControllerState.MAINTAIN
+//                );
+//                swerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
+//            }
+//        }
+//
+//        if (
+//            swerveHeadingController.getHeadingControllerState() !=
+//            SwerveHeadingController.HeadingControllerState.OFF
+//        ) {
+//            mDrive.setTeleopInputs(
+//                mControlBoard.getThrottle(),
+//                mControlBoard.getStrafe(),
+//                swerveHeadingController.update(),
+//                mControlBoard.getSlowMode(),
+//                mControlBoard.getFieldRelative(),
+//                true
+//            );
+//        } else {
             mDrive.setTeleopInputs(
                 mControlBoard.getThrottle(),
                 mControlBoard.getStrafe(),
@@ -678,7 +678,7 @@ public class Robot extends TimedRobot {
                 mControlBoard.getFieldRelative(),
                 false
             );
-        }
+//        }
     }
 
     @Override

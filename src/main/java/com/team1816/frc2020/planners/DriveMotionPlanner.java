@@ -58,7 +58,7 @@ public class DriveMotionPlanner implements CSVWritable {
     );
     Pose2d mError = Pose2d.identity();
     Translation2d mOutput = Translation2d.identity();
-    double currentTrajectoryLength = 0.0;
+    static double currentTrajectoryLength = 0.0;
 
     double mDt = 0.0;
 

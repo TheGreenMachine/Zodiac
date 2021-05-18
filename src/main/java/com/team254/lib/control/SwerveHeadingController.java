@@ -1,83 +1,109 @@
 package com.team254.lib.control;
 
 import com.team1816.frc2020.Constants;
-import com.team1816.frc2020.subsystems.Drive;
 import com.team254.lib.util.SynchronousPIDF;
+import edu.wpi.first.wpilibj.Timer;
 
-/**
- * Controls overall swerve heading of the robot through motion profile.
- * <p>
- * All units are in degrees (for this class only) for easy integration with DPad
- */
 public class SwerveHeadingController {
-    private static SwerveHeadingController mInstance;
+    private static SwerveHeadingController INSTANCE;
 
     public static SwerveHeadingController getInstance() {
-        if (mInstance == null) {
-            mInstance = new SwerveHeadingController();
+        if (INSTANCE == null) {
+            INSTANCE = new SwerveHeadingController();
         }
 
-        return mInstance;
+        return INSTANCE;
     }
 
-    public enum HeadingControllerState {
-        OFF, SNAP, // for dpad snapping to cardinals
-        MAINTAIN, // maintaining current heading while driving
+    private double targetHeading;
+    private double disabledTimestamp;
+    private double lastUpdateTimestamp;
+    private final double disableTimeLength = 0.2;
+    private SynchronousPIDF stabilizationPID;
+    private SynchronousPIDF snapPID;
+    private SynchronousPIDF stationaryPID;
+
+    public enum State{
+        Off, Stabilize, Snap, TemporaryDisable, Stationary
+    }
+    private State currentState = State.Off;
+    public State getState(){
+        return currentState;
+    }
+    private void setState(State newState){
+        currentState = newState;
     }
 
-    private final SynchronousPIDF mPIDFController;
-    private double mSetpoint = 0.0;
-
-    private HeadingControllerState mHeadingControllerState = HeadingControllerState.OFF;
-
-    private SwerveHeadingController() {
-        mPIDFController = new SynchronousPIDF();
-    }
-
-    public HeadingControllerState getHeadingControllerState() {
-        return mHeadingControllerState;
-    }
-
-    public void setHeadingControllerState(HeadingControllerState state) {
-        mHeadingControllerState = state;
-    }
-
-    /**
-     * @param goal_pos in degrees
-     */
-    public void setGoal(double goal_pos) {
-        mSetpoint = goal_pos;
-    }
-
-    public boolean isAtGoal() {
-        return mPIDFController.onTarget(Constants.kSwerveHeadingControllerErrorTolerance);
-    }
-
-    /**
-     * Should be called from a looper at a constant dt
-     */
-    public double update() {
-        mPIDFController.setSetpoint(mSetpoint);
-        double current_angle = Drive.getInstance().getHeading().getDegrees();
-        double current_error = mSetpoint - current_angle;
-
-        if (current_error > 180) {
-            current_angle += 360;
-        } else if (current_error < -180) {
-            current_angle -= 360;
+    private SwerveHeadingController(){
+        if (true){
+            stabilizationPID = new SynchronousPIDF(0.005, 0.0, 0.0005, 0.0);
+            snapPID = new SynchronousPIDF(0.015, 0.0, 0.0, 0.0);
+            stationaryPID = new SynchronousPIDF(0.01, 0.0, 0.002, 0.0);
+        }else{
+            stabilizationPID = new SynchronousPIDF(0.005, 0.0, 0.0005, 0.0);
+            snapPID = new SynchronousPIDF(0.015, 0.0, 0.0, 0.0);
+            stationaryPID = new SynchronousPIDF(0.01, 0.0, 0.002, 0.0);
         }
 
-        switch (mHeadingControllerState) {
-            case OFF:
-                return 0.0;
-            case SNAP:
-                mPIDFController.setPID(Constants.kSnapSwerveHeadingKp, Constants.kSnapSwerveHeadingKi, Constants.kSnapSwerveHeadingKd);
+        targetHeading = 0;
+        lastUpdateTimestamp = Timer.getFPGATimestamp();
+    }
+
+    public void setStabilizationTarget(double angle){
+        targetHeading = angle;
+        setState(State.Stabilize);
+    }
+
+    public void setSnapTarget(double angle){
+        targetHeading = angle;
+        setState(State.Snap);
+    }
+
+    public void setStationaryTarget(double angle){
+        targetHeading = angle;
+        setState(State.Stationary);
+    }
+
+    public void disable(){
+        setState(State.Off);
+    }
+
+    public void temporarilyDisable(){
+        setState(State.TemporaryDisable);
+        disabledTimestamp = Timer.getFPGATimestamp();
+    }
+
+    public double getTargetHeading(){
+        return targetHeading;
+    }
+
+    public double updateRotationCorrection(double heading, double timestamp){
+        double correction = 0;
+        double error = heading - targetHeading;
+        double dt = timestamp - lastUpdateTimestamp;
+
+        switch(currentState){
+            case Off:
+
                 break;
-            case MAINTAIN:
-                mPIDFController.setPID(Constants.kMaintainSwerveHeadingKp, Constants.kMaintainSwerveHeadingKi, Constants.kMaintainSwerveHeadingKd);
+            case TemporaryDisable:
+                targetHeading = heading;
+                if(timestamp - disabledTimestamp >= disableTimeLength)
+                    setState(State.Stabilize);
+                break;
+            case Stabilize:
+                correction = stabilizationPID.calculate(error, dt);
+                break;
+            case Snap:
+                correction = snapPID.calculate(error, dt);
+                break;
+            case Stationary:
+                correction = stationaryPID.calculate(error, dt);
                 break;
         }
 
-        return mPIDFController.calculate(current_angle);
+        lastUpdateTimestamp = timestamp;
+        return correction;
     }
+
 }

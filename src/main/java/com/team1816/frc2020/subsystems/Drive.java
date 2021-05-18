@@ -28,6 +28,7 @@ import com.team254.lib.util.Units;
 import com.team254.lib.util.Util;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -227,8 +228,12 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
             //    System.out.println("Pigeon error detected, maybe reinitialized");
         }
-        mPeriodicIO.gyro_heading_no_offset =
-            Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+        if (RobotBase.isSimulation()) {
+            mPeriodicIO.gyro_heading_no_offset = mPeriodicIO.path_setpoint.state().getRotation();
+        } else {
+            mPeriodicIO.gyro_heading_no_offset =
+                Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+        }
         mPeriodicIO.gyro_heading =
             mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
         // System.out.println("control state: " + mDriveControlState + ", left: " + mPeriodicIO.left_demand + ", right: " + mPeriodicIO.right_demand);
@@ -541,7 +546,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
         mPeriodicIO.forward = forward;
         mPeriodicIO.strafe = strafe;
-        mPeriodicIO.rotation = rotation;
+        mPeriodicIO. rotation = rotation;
         mPeriodicIO.low_power = low_power;
         mPeriodicIO.field_relative = field_relative;
         mPeriodicIO.use_heading_controller = use_heading_controller;
@@ -687,8 +692,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             System.out.println("Now setting trajectory");
             setBrakeMode(true);
             mOverrideTrajectory = false;
-            headingController.setGoal(targetHeading.getDegrees());
-            headingController.setHeadingControllerState(SwerveHeadingController.HeadingControllerState.SNAP);
+            headingController.setSnapTarget(targetHeading.getDegrees());
             trajectoryMotionPlanner.reset();
             motionPlanner.reset();
             mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
@@ -727,7 +731,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     }
 
     private void updatePathFollower(double timestamp) {
-        double rotationCorrection = headingController.update();
+        double rotationCorrection = headingController.updateRotationCorrection(getHeadingDegrees(), timestamp);
         updatePose(timestamp);
         // alternatePoseUpdate(timestamp);
 
@@ -742,7 +746,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                     wantReset = false;
                 }
 
-                //                System.out.println("DRIVE VECTOR" + driveVector);
+//                                System.out.println("DRIVE VECTOR" + driveVector);
 
                 mPeriodicIO.forward = driveVector.x();
                 mPeriodicIO.strafe = driveVector.y();
@@ -759,6 +763,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                 mPeriodicIO.error = trajectoryMotionPlanner.error();
                 mPeriodicIO.path_setpoint = trajectoryMotionPlanner.setpoint();
                 if (!mOverrideTrajectory) {
+//                    System.out.println("ROTATIONINPUT==" + rotationInput);
                     setVelocity(
                         Kinematics.updateDriveVectors(
                             driveVector,
