@@ -80,6 +80,7 @@ public class Turret extends Subsystem implements PidProvider {
     public static final double MAX_ANGLE = convertTurretTicksToDegrees(
         TURRET_POSITION_MAX - TURRET_POSITION_MIN
     );
+    private static final double FIELD_TRACKING_ANGLE = 180;
 
     public Turret() {
         super(NAME);
@@ -309,7 +310,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     private void trackGyro() {
         followTargetTurretSetAngle =
-            (getTurretPositionDegrees() - turretAngleRelativeToField);
+            (getTurretPositionDegrees() - turretAngleRelativeToField) + FIELD_TRACKING_ANGLE;
         setTurretAngleInternal(followTargetTurretSetAngle);
     }
 
