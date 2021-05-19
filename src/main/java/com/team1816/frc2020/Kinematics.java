@@ -207,15 +207,10 @@ public class Kinematics {
 
         if (!robotCentric) translationalVector =
             translationalVector.rotateBy(robotPose.getRotation().inverse());
-        System.out.println("GREEN VECTOR = " + translationalVector);
         List<Translation2d> driveVectors = new ArrayList<>(4);
         for (int i = 0; i < 4; i++) {
             var rotationalVector = moduleRotationDirections.get(i).scale(rotationalMagnitude);
             var netVector = translationalVector.translateBy(rotationalVector);
-            if (i == 0) {
-                System.out.println("RED VECTOR = " + rotationalVector);
-                System.out.println("BLUE VECTOR = " + netVector);
-            }
             driveVectors.add(netVector);
         }
         double maxMagnitude = 1.0;
