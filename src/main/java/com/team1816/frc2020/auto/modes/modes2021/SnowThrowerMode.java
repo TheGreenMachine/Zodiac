@@ -29,39 +29,40 @@ public class SnowThrowerMode extends AutoModeBase {
                 new ParallelAction(
                     new RampUpShooterAction(),
                     new CollectAction(true),
-                    trajectory1,
+
                     new TurretAction(15.2),
                     new SeriesAction(
 //                        new WaitUntilInsideRegion(
 //                            new Translation2d(78, 68),
 //                            new Translation2d(180, 88)
 //                        ),
+                        trajectory1,
                         new ShootAction(false)
                     )
                 ),
                 new ParallelAction(
                     new RampUpShooterAction(),
                     new CollectAction(true),
-                    trajectory2,
                     new TurretAction(15.2),
                     new SeriesAction(
 //                        new WaitUntilInsideRegion(
 //                            new Translation2d(78, 68),
 //                            new Translation2d(180, 88)
 //                        ),
+                        trajectory2,
                         new ShootAction(false)
                     )
                 ),
                 new ParallelAction(
                     new RampUpShooterAction(),
                     new CollectAction(true),
-                    trajectory3,
                     new TurretAction(15.2),
                     new SeriesAction(
 //                        new WaitUntilInsideRegion(
 //                            new Translation2d(78, 68),
 //                            new Translation2d(180, 88)
 //                        ),
+                        trajectory3,
                         new ShootAction(false)
                     )
                 )
