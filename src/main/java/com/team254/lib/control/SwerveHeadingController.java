@@ -37,7 +37,7 @@ public class SwerveHeadingController {
     private SwerveHeadingController(){
         if (true){
             stabilizationPID = new SynchronousPIDF(0.005, 0.0, 0.0005, 0.0);
-            snapPID = new SynchronousPIDF(0.0020, 0.0, 0.00, 0.0);
+            snapPID = new SynchronousPIDF(0.0012, 0.00, 0.00, 0.0);
             stationaryPID = new SynchronousPIDF(0.01, 0.0, 0.002, 0.0);
         }else{
             stabilizationPID = new SynchronousPIDF(0.005, 0.0, 0.0005, 0.0);
