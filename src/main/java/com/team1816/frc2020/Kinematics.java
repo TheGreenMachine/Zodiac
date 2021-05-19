@@ -156,16 +156,16 @@ public class Kinematics {
             forward = temp;
         }
 
-        double A = strafe - rotation * L / R;
+        double A = strafe - rotation * L / R; // L / R = cos theta
         double B = strafe + rotation * L / R;
-        double C = forward - rotation * W / R;
+        double C = forward - rotation * W / R; // W / R = sin theta
         double D = forward + rotation * W / R;
 
         double[] wheel_speeds = new double[4];
-        wheel_speeds[SwerveModule.kFrontLeft] = Math.hypot(B, C);
-        wheel_speeds[SwerveModule.kFrontRight] = Math.hypot(B, D);
-        wheel_speeds[SwerveModule.kBackLeft] = Math.hypot(A, D);
-        wheel_speeds[SwerveModule.kBackRight] = Math.hypot(A, C);
+        wheel_speeds[SwerveModule.kFrontLeft] = Math.hypot(A, C);
+        wheel_speeds[SwerveModule.kFrontRight] = Math.hypot(A, D);
+        wheel_speeds[SwerveModule.kBackLeft] = Math.hypot(B, C);
+        wheel_speeds[SwerveModule.kBackRight] = Math.hypot(B, D);
 
         // normalize wheel speeds if above 1
         if (normalize_outputs) {
@@ -183,12 +183,12 @@ public class Kinematics {
 
         Rotation2d[] wheel_azimuths = new Rotation2d[4];
         wheel_azimuths[SwerveModule.kFrontLeft] =
-            Rotation2d.fromRadians(Math.atan2(B, C));
-        wheel_azimuths[SwerveModule.kFrontRight] =
-            Rotation2d.fromRadians(Math.atan2(B, D));
-        wheel_azimuths[SwerveModule.kBackLeft] = Rotation2d.fromRadians(Math.atan2(A, D));
-        wheel_azimuths[SwerveModule.kBackRight] =
             Rotation2d.fromRadians(Math.atan2(A, C));
+        wheel_azimuths[SwerveModule.kFrontRight] =
+            Rotation2d.fromRadians(Math.atan2(A, D));
+        wheel_azimuths[SwerveModule.kBackLeft] = Rotation2d.fromRadians(Math.atan2(B, C));
+        wheel_azimuths[SwerveModule.kBackRight] =
+            Rotation2d.fromRadians(Math.atan2(B, D));
 
         return new DriveSignal(wheel_speeds, wheel_azimuths, false);
     }
