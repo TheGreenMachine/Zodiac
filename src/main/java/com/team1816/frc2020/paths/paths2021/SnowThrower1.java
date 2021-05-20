@@ -16,10 +16,10 @@ public class SnowThrower1 implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         return List.of(
-            new Pose2d(30, 150, 0),
+            new Pose2d(38, 138, 0),
             new Pose2d(127, 98, -30),
-            new Pose2d(169, 107, 45),
-            new Pose2d(210, 149, 45)
+            new Pose2d(169, 99, 60),
+            new Pose2d(210, 149, 15)
         );
     }
 

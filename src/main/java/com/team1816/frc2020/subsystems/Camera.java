@@ -56,7 +56,9 @@ public class Camera {
             "distance",
             (table, key, entry, value, flags) -> {
                 // Use most recently available distance if distance not found
-                this.distance = value.getDouble();
+                if (value.getDouble() > 0) {
+                    this.distance = value.getDouble();
+                }
             },
             EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
         );

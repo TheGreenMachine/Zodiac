@@ -15,15 +15,15 @@ public class SnowThrower2 implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         return List.of(
-            new Pose2d(210, 149, 45),
-            new Pose2d(161, 89, 60),
-            new Pose2d(150, 30, 90)
+            new Pose2d(210, 149, -135),
+            new Pose2d(155, 88, -106),
+            new Pose2d(160, 31, -90)
         );
     }
 
 
     @Override
     public boolean isReversed() {
-        return true;
+        return false;
     }
 }

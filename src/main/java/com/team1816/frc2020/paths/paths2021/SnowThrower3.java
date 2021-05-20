@@ -15,9 +15,9 @@ public class SnowThrower3 implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         return List.of(
-            new Pose2d(150, 30, 90),
-            new Pose2d(123, 82, 180),
-            new Pose2d(87, 62, -90)
+            new Pose2d(160, 32, 85),
+            new Pose2d(119, 92, 180),
+            new Pose2d(92, 56, -94)
         );
     }
 

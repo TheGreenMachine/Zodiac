@@ -28,42 +28,47 @@ public class SnowThrowerMode extends AutoModeBase {
             new SeriesAction(
                 new ParallelAction(
                     new RampUpShooterAction(),
-                    new CollectAction(true),
-
-                    new TurretAction(15.2),
                     new SeriesAction(
-//                        new WaitUntilInsideRegion(
-//                            new Translation2d(78, 68),
-//                            new Translation2d(180, 88)
-//                        ),
+                        new WaitUntilInsideRegion(
+                            new Translation2d(140, 80),
+                            new Translation2d(240, 180)
+                        ),
+                        new CollectAction(true)
+                    ),
+                    new SeriesAction(
+                        new TurretAction(Turret.MAX_ANGLE),
                         trajectory1,
-                        new ShootAction(false)
+                        new CollectAction(false),
+                        new ShootAction(2, false)
                     )
                 ),
                 new ParallelAction(
+                    new TurretModeAction(Turret.ControlMode.FIELD_FOLLOWING),
                     new RampUpShooterAction(),
-                    new CollectAction(true),
-                    new TurretAction(15.2),
+                    // new TurretAction(220),
                     new SeriesAction(
-//                        new WaitUntilInsideRegion(
-//                            new Translation2d(78, 68),
-//                            new Translation2d(180, 88)
-//                        ),
+                        new WaitUntilInsideRegion(
+                           new Translation2d(120, 0),
+                           new Translation2d(210, 90)
+                        ),
+                        new CollectAction(true)
+                    ),
+                    new SeriesAction(
                         trajectory2,
-                        new ShootAction(false)
+                        new ShootAction(2, false, 9000)
                     )
                 ),
                 new ParallelAction(
                     new RampUpShooterAction(),
                     new CollectAction(true),
-                    new TurretAction(15.2),
+                    // new TurretAction(220),
                     new SeriesAction(
 //                        new WaitUntilInsideRegion(
 //                            new Translation2d(78, 68),
 //                            new Translation2d(180, 88)
 //                        ),
                         trajectory3,
-                        new ShootAction(false)
+                        new ShootAction(2, false)
                     )
                 )
             )

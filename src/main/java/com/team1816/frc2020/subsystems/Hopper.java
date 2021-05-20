@@ -50,7 +50,7 @@ public class Hopper extends Subsystem {
     }
 
     public void setSpindexer(double spindexerOutput) {
-        this.spindexerPower = 0.25 * spindexerOutput;
+        this.spindexerPower = 0.5 * spindexerOutput;
         outputsChanged = true;
     }
 
