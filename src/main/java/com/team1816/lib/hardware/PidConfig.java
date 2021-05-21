@@ -20,6 +20,22 @@ public class PidConfig {
         this.kF = kF;
     }
 
+    public double getkP() {
+        return kP;
+    }
+
+    public double getkI() {
+        return kI;
+    }
+
+    public double getkD() {
+        return kD;
+    }
+
+    public double getkF() {
+        return kF;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -36,5 +52,13 @@ public class PidConfig {
     @Override
     public int hashCode() {
         return Objects.hash(kP, kI, kD, kF);
+    }
+
+    @Override
+    public String toString() {
+        return "kP = " + kP +
+            ", kI = " + kI +
+            ", kD = " + kD +
+            ", kF = " + kF;
     }
 }

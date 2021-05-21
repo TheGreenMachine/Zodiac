@@ -19,21 +19,24 @@ public class DistanceManager {
         public final double shooterVelocity;
         public final double spindexerOutput;
         public final double turretBias;
+        public final boolean hoodRetracted;
 
         Entry(
             double distance,
             double shooterVelocity,
             double spindexerOutput,
-            double turretBias
+            double turretBias,
+            boolean hoodRetracted
         ) {
             this.distance = distance;
             this.shooterVelocity = shooterVelocity;
             this.spindexerOutput = spindexerOutput;
             this.turretBias = turretBias;
+            this.hoodRetracted = hoodRetracted;
         }
 
         Entry() {
-            this(0, 0, 0, 0);
+            this(0, 0, 0, 0, false);
         }
     }
 
@@ -45,15 +48,15 @@ public class DistanceManager {
         //        new Entry(285, 9_800, 1, 1.35),
         //        new Entry(315, 10_200, 1, 1.25),
         //        new Entry(360, 10_400, 1, 1.25),
-        //        new Entry(400, 10_600, 1, 1.25)
-        new Entry(167, 11_100, 2, 1.7),/* 167, 198 were 1.5 */
-        new Entry(198, 10_400, 1, 1.7),
-        new Entry(223, 9_200, 1, 1.6),
-        new Entry(250, 9_200, 1, 1.5),
-        new Entry(285, 10_000, 1, 1.8),
-        new Entry(315, 10_100, 1, 1.875),
-        new Entry(360, 10_400, 1, 1.95),
-        new Entry(400, 10_600, 1, 2.1),
+        //        new Entry(400, 10_600, 1, 1.25)\
+        new Entry(120, 11_400, 2, 1.7, true),
+        new Entry(198, 6_500, 1, 1.7, true),
+        new Entry(225, 7_400, 1, 1.6, true),
+        new Entry(250, 9_600, 1, 1.5, false),
+        new Entry(285, 10_000, 1, 1.8, false),
+        new Entry(315, 10_100, 1, 1.875, false),
+        new Entry(360, 10_400, 1, 1.95, false),
+        new Entry(400, 10_600, 1, 2.1, false),
     };
 
     public double getShooterVelocity(double distance) {
@@ -81,5 +84,14 @@ public class DistanceManager {
             }
         }
         return 1;
+    }
+
+    public boolean getHoodRetracted(double distance) {
+        for (Entry bucket : buckets) {
+            if (distance <= bucket.distance) {
+                return bucket.hoodRetracted;
+            }
+        }
+        return false;
     }
 }

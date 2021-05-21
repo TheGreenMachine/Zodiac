@@ -127,6 +127,10 @@ public class Shooter extends Subsystem implements PidProvider {
         this.outputsChanged = true;
     }
 
+    public void autoHood() {
+        setHood(distanceManager.getHoodRetracted(camera.getDistance()));
+    }
+
 
     public void shootFromChooser(boolean shooting) {
         setVelocity(shooting ? velocityChooser.getSelected() : 0);

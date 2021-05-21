@@ -66,8 +66,10 @@ subsystems:
         talons:
             turret: 9
         constants:
-            minPos: -4502
-            maxPos: -1618
+            minPos: -3989
+            absPosTicksSouth: -3461
+            maxPos: -1204
+            invertSensorPhase: 1
     shooter:
         implemented: true
         invertMotor:

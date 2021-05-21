@@ -356,6 +356,7 @@ public class Robot extends TimedRobot {
                                 turret.setControlMode(
                                     Turret.ControlMode.CAMERA_FOLLOWING
                                 );
+                                shooter.autoHood();
                                 shooter.startShooter();
                             } else {
                                 turret.setControlMode(prevTurretControlMode);
@@ -365,15 +366,17 @@ public class Robot extends TimedRobot {
                     createHoldAction(
                         mControlBoard::getShoot,
                         shooting -> {
-                            shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
-                            // if (shooting) {
-                            //     mDrive.setOpenLoop(DriveSignal.BRAKE);
-                            //     shooter.startShooter(); // Uses ZED distance
-                            //     turret.lockTurret();
-                            // } else {
-                            //     turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
-                            //     shooter.stopShooter();
-                            // }
+                            // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
+                            if (shooting) {
+                                shooter.autoHood();
+                                mDrive.setOpenLoop(DriveSignal.BRAKE);
+                                shooter.startShooter(); // Uses ZED distance
+                                turret.lockTurret();
+                            } else {
+                                // turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+                                shooter.stopShooter();
+                                shooter.setHood(false);
+                            }
                             hopper.lockToShooter(shooting, false);
                             hopper.setIntake(shooting ? 1 : 0);
                             collector.setIntakePow(shooting ? 0.5 : 0);
@@ -382,11 +385,11 @@ public class Robot extends TimedRobot {
                     createHoldAction(
                         mControlBoard::getCollectorBackSpin,
                         pressed -> collector.setIntakePow(pressed ? 0.2 : 0)
-                    ),
-                    createAction(
-                        mControlBoard::getHood,
-                        () -> shooter.setHood(!shooter.isHoodOut())
                     )
+                    // createAction(
+                    //     mControlBoard::getHood,
+                    //     () -> shooter.setHood(!shooter.isHoodOut())
+                    // )
                 );
 
             blinkTimer =
@@ -675,7 +678,7 @@ public class Robot extends TimedRobot {
                 mControlBoard.getStrafe(),
                 mControlBoard.getTurn(),
                 mControlBoard.getSlowMode(),
-                mControlBoard.getFieldRelative(),
+                false /*mControlBoard.getFieldRelative()*/, // Field Relative override button conflicts with collector
                 false
             );
 //        }

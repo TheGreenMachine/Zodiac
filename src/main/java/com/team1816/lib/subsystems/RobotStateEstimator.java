@@ -85,6 +85,7 @@ public class RobotStateEstimator extends Subsystem {
                 dt
             );
             mRobotState.addFieldToVehicleObservation(timestamp, mDrive.getPose());
+            mRobotState.setHeadingRelativeToInitial(mDrive.getHeadingRelativeToInitial());
             //    mRobotState.addObservations(timestamp, odometry_twist, measured_velocity);
 
             prev_heading_ = gyro_angle;

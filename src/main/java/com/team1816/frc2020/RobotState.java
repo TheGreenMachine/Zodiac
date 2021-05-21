@@ -200,7 +200,8 @@ public class RobotState {
     }
 
     public double getLatestFieldToTurret() {
-        Rotation2d fieldToTurret = getHeadingRelativeToInitial()
+        Rotation2d fieldToTurret = getLatestFieldToVehicle().getValue()
+            .getRotation()
             .inverse()
             .rotateBy(getLatestVehicleToTurret().getValue());
         return fieldToTurret.getDegrees();
