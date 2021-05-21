@@ -103,6 +103,11 @@ constants:
     maxAccel: 260 # inches/s^2
     maxDecel: 300 # inches/s^2 # Start with this matching maxAccel and then adjust as needed
     maxCentripetalAccel: 190 #inches/s^2
+    ## Heading Controller ##
+    heading_kP: 0.0012
+    heading_kI: 0
+    heading_kD: 0
+    heading_kF: 0
     ## Logging ##
     logTeleOp: 1 # 0 or 1
     logAuto: 1 # 0 or 1

@@ -1,11 +1,12 @@
 package com.team254.lib.control;
 
+import com.team1816.frc2020.Robot;
+import com.team1816.lib.hardware.RobotFactory;
 import com.team254.lib.util.SynchronousPIDF;
 import edu.wpi.first.wpilibj.Timer;
 
 public class SwerveHeadingController {
     private static SwerveHeadingController INSTANCE;
-    private double mError;
 
     public static SwerveHeadingController getInstance() {
         if (INSTANCE == null) {
@@ -15,29 +16,33 @@ public class SwerveHeadingController {
         return INSTANCE;
     }
 
+    // State
+    private double mError;
     private double targetHeading;
     private double disabledTimestamp;
     private double lastUpdateTimestamp;
-    private final double disableTimeLength = 0.2;
-    private SynchronousPIDF stabilizationPID;
-    private SynchronousPIDF snapPID;
-    private SynchronousPIDF stationaryPID;
+    private final SynchronousPIDF stabilizationPID;
+    private final SynchronousPIDF snapPID;
+    private final SynchronousPIDF stationaryPID;
 
     public enum State{
         Off, Stabilize, Snap, TemporaryDisable, Stationary
     }
+
     private State currentState = State.Off;
-    public State getState(){
-        return currentState;
-    }
-    private void setState(State newState){
-        currentState = newState;
-    }
+
+    // Constants
+    public static final RobotFactory factory = Robot.getFactory();
+    public static final double SNAP_kP = factory.getConstant("heading_kP");
+    public static final double SNAP_kI = factory.getConstant("heading_kI");
+    public static final double SNAP_kD = factory.getConstant("heading_kD");
+    public static final double SNAP_kF = factory.getConstant("heading_kF");
+    private static final double DISABLE_TIME_LENGTH = 0.2;
 
     private SwerveHeadingController(){
         if (true){
             stabilizationPID = new SynchronousPIDF(0.005, 0.0, 0.0005, 0.0);
-            snapPID = new SynchronousPIDF(0.0012, 0.00, 0.00, 0.0);
+            snapPID = new SynchronousPIDF(SNAP_kP, SNAP_kI, SNAP_kD, SNAP_kF);
             stationaryPID = new SynchronousPIDF(0.01, 0.0, 0.002, 0.0);
         }else{
             stabilizationPID = new SynchronousPIDF(0.005, 0.0, 0.0005, 0.0);
@@ -62,6 +67,14 @@ public class SwerveHeadingController {
     public void setStationaryTarget(double angle){
         targetHeading = angle;
         setState(State.Stationary);
+    }
+
+    public State getState(){
+        return currentState;
+    }
+
+    private void setState(State newState){
+        currentState = newState;
     }
 
     public void disable(){
@@ -93,7 +106,7 @@ public class SwerveHeadingController {
                 break;
             case TemporaryDisable:
                 targetHeading = heading;
-                if(timestamp - disabledTimestamp >= disableTimeLength)
+                if(timestamp - disabledTimestamp >= DISABLE_TIME_LENGTH)
                     setState(State.Stabilize);
                 break;
             case Stabilize:
