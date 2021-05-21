@@ -75,8 +75,8 @@ public class Robot extends TimedRobot {
 
     // private PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
-    public static final boolean TELEOP_FIELD_RELATIVE =
-        getFactory().getConstant("teleopFieldRelative", 0) > 0;
+    public static final boolean TELEOP_FIELD_CENTRIC =
+        getFactory().getConstant("teleopFieldCentric", 0) > 0;
 
     Robot() {
         super();
@@ -680,7 +680,7 @@ public class Robot extends TimedRobot {
                 mControlBoard.getStrafe(),
                 mControlBoard.getTurn(),
                 mControlBoard.getSlowMode(),
-                TELEOP_FIELD_RELATIVE /*mControlBoard.getFieldRelative()*/, // Field Relative override button conflicts with collector
+                TELEOP_FIELD_CENTRIC /*mControlBoard.getFieldRelative()*/, // Field Relative override button conflicts with collector
                 false
             );
 //        }
