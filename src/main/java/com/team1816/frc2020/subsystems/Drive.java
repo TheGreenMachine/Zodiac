@@ -36,7 +36,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
@@ -210,7 +209,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         public double strafe;
         public double rotation;
         public boolean low_power;
-        public boolean field_relative;
+        public boolean field_relative = factory.getConstant("teleopFieldCentric") > 0;
         public boolean use_heading_controller;
 
         // OUTPUTS
@@ -543,7 +542,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         double strafe,
         double rotation,
         boolean low_power,
-        boolean field_relative,
         boolean use_heading_controller
     ) {
         if (mDriveControlState != DriveControlState.OPEN_LOOP) {
@@ -554,7 +552,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         mPeriodicIO.strafe = strafe;
         mPeriodicIO. rotation = rotation;
         mPeriodicIO.low_power = low_power;
-        mPeriodicIO.field_relative = field_relative;
         mPeriodicIO.use_heading_controller = use_heading_controller;
     }
 
@@ -902,6 +899,15 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             .getEntry("Drive/OpenLoopRampRate")
             .addListener(
                 notification -> setOpenLoopRampRate(notification.value.getDouble()),
+                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+            );
+
+        SmartDashboard.putBoolean("Drive/TeleopFieldCentric", this.mPeriodicIO.field_relative);
+        SmartDashboard.getEntry("Drive/TeleopFieldCentric")
+            .addListener(
+                notification -> {
+                    this.mPeriodicIO.field_relative = notification.value.getBoolean();
+                },
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
 

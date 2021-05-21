@@ -15,24 +15,28 @@ public class SlalomPath implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         return List.of(
-            // new Pose2d(0, 0, -90),
-            // new Pose2d(60, -44, 0),
-            // new Pose2d(180, 44, 0),
-            // new Pose2d(240, 0, -90),
-            // new Pose2d(180, -44, 180),
-            // new Pose2d(60, 44, 180),
-            // new Pose2d(0, 0, -90)
-            // ====== FIGURE EIGHT ^^ / SLALOM vv =====
-            new Pose2d(20, 30, 0),
-            new Pose2d(80, 36, 55),
-            new Pose2d(180, 116, 0),
-            new Pose2d(270, 60, -60),
-            new Pose2d(330, 66, 90),
-            new Pose2d(270, 60, 240),
-            new Pose2d(180, 24, 180),
-            new Pose2d(110, 40, 150),
-            new Pose2d(50, 96, 160)
+            new Pose2d(21, 21, 0),
+            new Pose2d(87, 60, 85),
+            new Pose2d(175, 127, 0),
+            new Pose2d(267, 63, -90),
+            new Pose2d(307, 9, 0),
+            new Pose2d(359, 59, 90),
+            new Pose2d(307, 114, 180),
+            new Pose2d(265, 62, -90),
+            new Pose2d(179, 11, 180),
+            new Pose2d(74, 61, 90),
+            new Pose2d(38, 97, 180)
         );
+        /*// ====== FIGURE EIGHT ^^ =====
+        List.of(
+            new Pose2d(0, 0, -90),
+            new Pose2d(60, -44, 0),
+            new Pose2d(180, 44, 0),
+            new Pose2d(240, 0, -90),
+            new Pose2d(180, -44, 180),
+            new Pose2d(60, 44, 180),
+            new Pose2d(0, 0, -90)
+        );*/
     }
 
     @Override

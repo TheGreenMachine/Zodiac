@@ -680,7 +680,7 @@ public class Robot extends TimedRobot {
                 mControlBoard.getStrafe(),
                 mControlBoard.getTurn(),
                 mControlBoard.getSlowMode(),
-                TELEOP_FIELD_CENTRIC /*mControlBoard.getFieldRelative()*/, // Field Relative override button conflicts with collector
+                /*mControlBoard.getFieldRelative()*/ // Field Relative override button conflicts with collector
                 false
             );
 //        }
