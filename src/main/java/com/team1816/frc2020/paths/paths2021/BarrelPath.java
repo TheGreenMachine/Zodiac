@@ -15,17 +15,18 @@ public class BarrelPath implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         return List.of(
-            new Pose2d(39, 93, 0),
-            new Pose2d(150, 101, 0),
-            new Pose2d(150, 22, 180),
-            new Pose2d(143, 99, 10),
+            new Pose2d(46, 98, 0),
+            new Pose2d(168, 115, 0),
+            new Pose2d(158, 8, 180),
+            new Pose2d(130, 110, 10),
             new Pose2d(278, 87, 30),
-            new Pose2d(252, 161, 176),
-            new Pose2d(212, 95, -60),
+            new Pose2d(253, 170, 176),
+            new Pose2d(190, 86, -60),
             new Pose2d(271, 27, -25),
-            new Pose2d(338, 93, 132),
-            new Pose2d(208, 86, 180),
-            new Pose2d(39, 93, 180)
+            new Pose2d(342, 101, 132),
+            new Pose2d(207, 88, 180),
+            new Pose2d(143, 108, 180),
+            new Pose2d(32, 113, -180)
         );
         /*return List.of(
             new Pose2d(0, 0, -90),
