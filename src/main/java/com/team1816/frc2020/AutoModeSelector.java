@@ -52,7 +52,6 @@ public class AutoModeSelector {
 
         // MSHSL
         SNOW_REMOVAL,
-        GOOD_SNOW_REMOVAL,
         SNOW_THROWER
     }
 
@@ -142,13 +141,8 @@ public class AutoModeSelector {
 
         SmartDashboard.putData("Auto mode", mModeChooser);
 
-
-
         mModeChooser.addOption("Snow Removal", DesiredMode.SNOW_REMOVAL);
-        mModeChooser.addOption("Good Snow Removal", DesiredMode.GOOD_SNOW_REMOVAL);
-
         mModeChooser.addOption("Snow Thrower", DesiredMode.SNOW_THROWER);
-
 
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
@@ -246,8 +240,6 @@ public class AutoModeSelector {
                 return (Optional.of(new BounceMode()));
             case SNOW_REMOVAL:
                 return (Optional.of(new SnowRemovalMode()));
-            case GOOD_SNOW_REMOVAL:
-                return (Optional.of(new GoodSnowRemovalMode()));
             case SNOW_THROWER:
                 return (Optional.of(new SnowThrowerMode()));
             case ATROCITY:
