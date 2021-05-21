@@ -11,11 +11,10 @@ import com.team1816.lib.auto.modes.AutoModeBase;
 public class RedPathAMode extends AutoModeBase {
 
     private DriveTrajectory trajectory;
-    private DriveTrajectory trajectory2;
 
     public RedPathAMode() {
         trajectory = new DriveTrajectory(TrajectorySet.getInstance().RED_PATHA, true);
-        trajectory2 = new DriveTrajectory(TrajectorySet.getInstance().DIME_TURN, false);
+//        trajectory2 = new DriveTrajectory(TrajectorySet.getInstance().DIME_TURN, false);
     }
 
     @Override
@@ -24,7 +23,7 @@ public class RedPathAMode extends AutoModeBase {
         runAction(
             new SeriesAction(
                 new ParallelAction(trajectory, new CollectAction(true)),
-                trajectory2,
+//                trajectory2,
                 new CollectAction(false)
             )
         );

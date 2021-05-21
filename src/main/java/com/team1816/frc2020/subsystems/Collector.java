@@ -72,7 +72,7 @@ public class Collector extends Subsystem {
         isRaising = !down;
         if (down) {
             setArm(true);
-            setIntakePow(0.75);
+            setIntakePow(0.60);
         } else {
             startTime = Timer.getFPGATimestamp();
             setArm(false);
