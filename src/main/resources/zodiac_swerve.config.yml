@@ -94,15 +94,20 @@ subsystems:
             arm: 0
 pcm: 8
 constants:
+    ## Drivetrain characterization ##
     trackWidth: 21 #inches
-    wheelbaseLength: 21.5 #inche
+    wheelbaseLength: 21.5 #inches
     wheelDiameter: 3.8989736842 #inches
-    maxVel: 325  # 22560 native units ---30
-    maxAccel: 260
-    maxDecel: 300 # Start with this matching maxAccel and then adjust as needed
-    maxCentripetalAccel: 190
-    logTeleOp: 1
-    logAuto: 1
-    badLogEnabled: 1
-    compressorEnabled: 0
+    ## Path following ##
+    maxVel: 325 # inches/s # 22560 native units ---30
+    maxAccel: 260 # inches/s^2
+    maxDecel: 300 # inches/s^2 # Start with this matching maxAccel and then adjust as needed
+    maxCentripetalAccel: 190 #inches/s^2
+    ## Logging ##
+    logTeleOp: 1 # 0 or 1
+    logAuto: 1 # 0 or 1
+    badLogEnabled: 1 # 0 or 1
+    ## General ##
+    teleopFieldCentric: 1 # 0 or 1
+    compressorEnabled: 0 # 0 or 1
     kLooperDt: .030 # seconds
