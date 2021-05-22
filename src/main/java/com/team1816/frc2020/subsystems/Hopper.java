@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class Hopper extends Subsystem {
 
@@ -82,7 +83,7 @@ public class Hopper extends Subsystem {
     }
 
     public boolean hasBall() {
-        return !ballSensor.get();
+        return ballSensor.get();
     }
 
     @Override
@@ -114,6 +115,11 @@ public class Hopper extends Subsystem {
             this.feederFlap.set(feederFlapOut);
             outputsChanged = false;
         }
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addBooleanProperty("Hopper/HasBall", this::hasBall, null);
     }
 
     @Override

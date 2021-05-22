@@ -1,7 +1,5 @@
 package com.team1816.frc2020;
 
-import static com.team1816.frc2020.controlboard.ControlUtils.*;
-
 import badlog.lib.BadLog;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
@@ -26,11 +24,14 @@ import com.team254.lib.util.LatchedBoolean;
 import com.team254.lib.util.TimeDelayedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
+
+import static com.team1816.frc2020.controlboard.ControlUtils.*;
 
 public class Robot extends TimedRobot {
 
@@ -472,6 +473,10 @@ public class Robot extends TimedRobot {
             ledManager.setDefaultStatus(LedManager.RobotStatus.ENABLED);
 
             turret.zeroSensors();
+
+            if (DistanceManager.USE_ZONES) {
+                DistanceManager.getInstance().setZone(4);
+            }
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();

@@ -101,9 +101,9 @@ constants:
     wheelbaseLength: 21.5 #inches
     wheelDiameter: 3.8989736842 #inches
     ## Path following ##
-    maxVel: 120 # 160 # 240 # inches/s # 22560 native units ---30
-    maxAccel: 60 # 100 # inches/s^2
-    maxDecel: 85 # 170 # inches/s^2 # Start with this matching maxAccel and then adjust as needed
+    maxVel: 160 # 240 # inches/s # 22560 native units ---30
+    maxAccel: 100 # inches/s^2
+    maxDecel: 170 # inches/s^2 # Start with this matching maxAccel and then adjust as needed
     maxCentripetalAccel: 120 # 160 #inches/s^2
     ## Heading Controller ##
     heading_kP: 0.0012

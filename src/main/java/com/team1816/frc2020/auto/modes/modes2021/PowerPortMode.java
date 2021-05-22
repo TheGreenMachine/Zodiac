@@ -32,20 +32,103 @@ public class PowerPortMode extends AutoModeBase {
             )
         );
         var resetPose = true;
-        for (int i = 0; i < 10; i++) {
-            runAction(
+//        for (int i = 0; i < 9; i++) {
+        int shootDuration = 2;
+        int waitDuration = 1;
+        runAction(
                 new SeriesAction(
-                    new ShootAction(1.2, true),
+                    new ShootAction(shootDuration, true),
                     new DriveTrajectory(driveReverseTrajectory, resetPose),
-                    new WaitAction(0.6),
+                    new WaitAction(waitDuration),
+                    new ParallelAction(
+                        new DriveTrajectory(driveForwardTrajectory, false),
+                        new PrepareToShootAction(Turret.CARDINAL_NORTH)
+                    ),
+                    // =====
+                    new ShootAction(shootDuration, true),
+                    new DriveTrajectory(driveReverseTrajectory, resetPose),
+                    new WaitAction(waitDuration),
+                    new ParallelAction(
+                        new DriveTrajectory(driveForwardTrajectory, false),
+                        new PrepareToShootAction(Turret.CARDINAL_NORTH)
+                    ),
+                    // =====
+                    new ShootAction(shootDuration, true),
+                    new DriveTrajectory(driveReverseTrajectory, resetPose),
+                    new WaitAction(waitDuration),
+                    new ParallelAction(
+                        new DriveTrajectory(driveForwardTrajectory, false),
+                        new PrepareToShootAction(Turret.CARDINAL_NORTH)
+                    ),
+                    // =====
+                    new ShootAction(shootDuration, true),
+                    new DriveTrajectory(driveReverseTrajectory, resetPose),
+                    new WaitAction(waitDuration),
+                    new ParallelAction(
+                        new DriveTrajectory(driveForwardTrajectory, false),
+                        new PrepareToShootAction(Turret.CARDINAL_NORTH)
+                    ),
+                    // =====
+                    new ShootAction(shootDuration, true),
+                    new DriveTrajectory(driveReverseTrajectory, resetPose),
+                    new WaitAction(waitDuration),
+                    new ParallelAction(
+                        new DriveTrajectory(driveForwardTrajectory, false),
+                        new PrepareToShootAction(Turret.CARDINAL_NORTH)
+                    ),
+                    // =====
+                    new ShootAction(shootDuration, true),
+                    new DriveTrajectory(driveReverseTrajectory, resetPose),
+                    new WaitAction(waitDuration),
+                    new ParallelAction(
+                        new DriveTrajectory(driveForwardTrajectory, false),
+                        new PrepareToShootAction(Turret.CARDINAL_NORTH)
+                    ),
+                    // =====
+                    new ShootAction(shootDuration, true),
+                    new DriveTrajectory(driveReverseTrajectory, resetPose),
+                    new WaitAction(waitDuration),
+                    new ParallelAction(
+                        new DriveTrajectory(driveForwardTrajectory, false),
+                        new PrepareToShootAction(Turret.CARDINAL_NORTH)
+                    ),
+                    // =====
+                    new ShootAction(shootDuration, true),
+                    new DriveTrajectory(driveReverseTrajectory, resetPose),
+                    new WaitAction(waitDuration),
+                    new ParallelAction(
+                        new DriveTrajectory(driveForwardTrajectory, false),
+                        new PrepareToShootAction(Turret.CARDINAL_NORTH)
+                    ),
+                    // =====
+                    new ShootAction(shootDuration, true),
+                    new DriveTrajectory(driveReverseTrajectory, resetPose),
+                    new WaitAction(waitDuration),
+                    new ParallelAction(
+                        new DriveTrajectory(driveForwardTrajectory, false),
+                        new PrepareToShootAction(Turret.CARDINAL_NORTH)
+                    ),
+                    // =====
+                    new ShootAction(shootDuration, true),
+                    new DriveTrajectory(driveReverseTrajectory, resetPose),
+                    new WaitAction(waitDuration),
+                    new ParallelAction(
+                        new DriveTrajectory(driveForwardTrajectory, false),
+                        new PrepareToShootAction(Turret.CARDINAL_NORTH)
+                    ),
+                    // =====
+                    new ShootAction(shootDuration, true),
+                    new DriveTrajectory(driveReverseTrajectory, resetPose),
+                    new WaitAction(waitDuration),
                     new ParallelAction(
                         new DriveTrajectory(driveForwardTrajectory, false),
                         new PrepareToShootAction(Turret.CARDINAL_NORTH)
                     )
+                    // =====
                 )
             );
             resetPose = false;
-        }
+//        }
 
     }
 }

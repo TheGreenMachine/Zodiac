@@ -50,6 +50,7 @@ public class AutoModeSelector {
         BOUNCE,
         ATROCITY,
         NICO_TEST,
+        POWER_PORT,
 
         // MSHSL
         SNOW_REMOVAL,
@@ -145,6 +146,8 @@ public class AutoModeSelector {
 
         mModeChooser.addOption("Snow Removal", DesiredMode.SNOW_REMOVAL);
         mModeChooser.addOption("Snow Thrower", DesiredMode.SNOW_THROWER);
+
+        mModeChooser.addOption("Power Port", DesiredMode.POWER_PORT);
 
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
@@ -250,6 +253,8 @@ public class AutoModeSelector {
                 return (Optional.of(new AtrocityMode()));
             case NICO_TEST:
                 return (Optional.of(new nicoTestMode()));
+            case POWER_PORT:
+                return (Optional.of(new PowerPortMode()));
             default:
                 break;
         }
