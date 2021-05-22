@@ -86,6 +86,8 @@ subsystems:
             elevator: 5
         solenoids:
             feederFlap: -4
+        constants:
+            ballSensor: 0
     collector:
         implemented: true
         talons:
@@ -116,3 +118,4 @@ constants:
     teleopFieldCentric: 1 # 0 or 1
     compressorEnabled: 0 # 0 or 1
     kLooperDt: .030 # seconds
+    useZones: 1

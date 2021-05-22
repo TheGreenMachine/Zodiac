@@ -29,7 +29,6 @@ public class Shooter extends Subsystem implements PidProvider {
     // Components
     private final IMotorControllerEnhanced shooterMain;
     private final IMotorControllerEnhanced shooterFollower;
-    private final Camera camera = Camera.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
     private final ISolenoid hood;
     // State
@@ -128,7 +127,7 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     public void autoHood() {
-        setHood(distanceManager.getHoodRetracted(camera.getDistance()));
+        setHood(distanceManager.getHoodRetracted());
     }
 
 
@@ -137,7 +136,7 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     public void startShooter() {
-        setVelocity(distanceManager.getShooterVelocity(camera.getDistance()));
+        setVelocity(distanceManager.getShooterVelocity());
     }
 
     public void stopShooter() {

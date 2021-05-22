@@ -58,6 +58,8 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> NICO_TEST1;
     public final Trajectory<TimedState<Pose2dWithCurvature>> NICO_TEST2;
     public final Trajectory<TimedState<Pose2dWithCurvature>> NICO_TEST3;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> DRIVE_STRAIGHT_100_REVERSE;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> DRIVE_STRAIGHT_100_FORWARD;
 
     // MSHSL 2021
     public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL_1;
@@ -122,6 +124,9 @@ public class TrajectorySet {
         this.NICO_TEST1 = new nicoTest1().generateTrajectory();
         this.NICO_TEST2 = new nicoTest2().generateTrajectory();
         this.NICO_TEST3 = new nicoTest3().generateTrajectory();
+
+        this.DRIVE_STRAIGHT_100_REVERSE = new DriveStraight(-100).generateTrajectory();
+        this.DRIVE_STRAIGHT_100_FORWARD = new DriveStraight(100).generateTrajectory();
 
         // MSHSL 2021
         this.SNOW_REMOVAL_1 = new SnowRemoval1().generateTrajectory();

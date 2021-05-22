@@ -75,8 +75,6 @@ public class Robot extends TimedRobot {
 
     // private PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
-    public static final boolean TELEOP_FIELD_CENTRIC =
-        getFactory().getConstant("teleopFieldCentric", 0) > 0;
 
     Robot() {
         super();

@@ -288,7 +288,7 @@ public class Turret extends Subsystem implements EnhancedPidProvider {
         setTurretAngleInternal(
             getTurretPositionDegrees() +
             camera.getDeltaXAngle() +
-            distanceManager.getTurretBias(camera.getDistance())
+            distanceManager.getTurretBias()
         );
     }
 
