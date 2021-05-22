@@ -18,7 +18,7 @@ public class BluePathA implements PathContainer {
         return List.of(
             new Pose2d(40, 30, 0),
             new Pose2d(187, 30, 0),
-            new Pose2d(194, 120, 0),
+            new Pose2d(193, 127, 0),
             new Pose2d(338, 71, 0)
         );
     }

@@ -17,15 +17,15 @@ public class SlalomPath implements PathContainer {
         return List.of(
             new Pose2d(21, 21, 0),
             new Pose2d(87, 60, 85),
-            new Pose2d(175, 127, 0),
-            new Pose2d(267, 63, -90),
+            new Pose2d(173, 116, 0),
+            new Pose2d(264, 63, -90),
             new Pose2d(307, 9, 0),
             new Pose2d(359, 59, 90),
-            new Pose2d(307, 114, 180),
-            new Pose2d(265, 62, -90),
-            new Pose2d(179, 11, 180),
-            new Pose2d(74, 61, 90),
-            new Pose2d(38, 97, 180)
+            new Pose2d(309, 119, 180),
+            new Pose2d(263, 63, -90),
+            new Pose2d(180, 19, 180),
+            new Pose2d(60, 88, 90),
+            new Pose2d(22, 102, 180)
         );
         /*// ====== FIGURE EIGHT ^^ =====
         List.of(
