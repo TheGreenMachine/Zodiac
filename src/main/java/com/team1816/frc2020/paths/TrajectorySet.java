@@ -125,8 +125,8 @@ public class TrajectorySet {
         this.NICO_TEST2 = new nicoTest2().generateTrajectory();
         this.NICO_TEST3 = new nicoTest3().generateTrajectory();
 
-        this.DRIVE_STRAIGHT_100_REVERSE = new DriveStraight(-100).generateTrajectory();
-        this.DRIVE_STRAIGHT_100_FORWARD = new DriveStraight(100).generateTrajectory();
+        this.DRIVE_STRAIGHT_100_REVERSE = new PowerPortReverse().generateTrajectory();
+        this.DRIVE_STRAIGHT_100_FORWARD = new PowerPortForward().generateTrajectory();
 
         // MSHSL 2021
         this.SNOW_REMOVAL_1 = new SnowRemoval1().generateTrajectory();
