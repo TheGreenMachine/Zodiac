@@ -97,7 +97,10 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     private boolean robotCentric = false;
     private SendableChooser<DriveHelper> driveHelperChooser;
 
+    // Simulator
     private final Field2d fieldSim = new Field2d();
+    private double gyroDrift;
+    private final double robotWidthTicks = inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
 
     // Constants
     public static final double DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
@@ -233,14 +236,15 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
             //    System.out.println("Pigeon error detected, maybe reinitialized");
         }
-        if (RobotBase.isSimulation()) {
-//            mPeriodicIO.gyro_heading_no_offset = ;
+        if(RobotBase.isReal()) {
+            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
         } else {
-            mPeriodicIO.gyro_heading_no_offset =
-                Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+            // calculate angular velocity
+            var twist = (mPeriodicIO.wheel_speeds[SwerveModule.kFrontLeft]-mPeriodicIO.wheel_speeds[SwerveModule.kFrontRight])/robotWidthTicks;
+            gyroDrift += twist;
+            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPeriodicIO.desired_heading.getDegrees() - gyroDrift);
         }
-        mPeriodicIO.gyro_heading =
-            mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
+        mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
         // System.out.println("control state: " + mDriveControlState + ", left: " + mPeriodicIO.left_demand + ", right: " + mPeriodicIO.right_demand);
         for (SwerveModule module : swerveModules) {
             module.readPeriodicInputs();
@@ -259,6 +263,10 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         );
         for (int i = 0; i < swerveModules.length; i++) {
             if (swerveModules[i] != null) {
+                // change speeds to add some imperfection in tuning to cause rotation
+                if(RobotBase.isSimulation() && (i == SwerveModule.kBackRight || i == SwerveModule.kFrontRight)) {
+                    mPeriodicIO.wheel_speeds[i] *= .95;
+                }
                 if (mDriveControlState == DriveControlState.OPEN_LOOP) {
                     // TODO: 5/5/21 fix
                     if (
