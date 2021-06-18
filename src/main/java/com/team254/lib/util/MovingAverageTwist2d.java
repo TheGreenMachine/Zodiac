@@ -26,9 +26,9 @@ public class MovingAverageTwist2d {
         double x = 0.0, y = 0.0, t = 0.0;
 
         for (Twist2d twist : twists) {
-            x += twist.dx;
-            y += twist.dy;
-            t += twist.dtheta;
+            x += twist.dx();
+            y += twist.dy();
+            t += twist.dtheta();
         }
 
         double size = getSize();

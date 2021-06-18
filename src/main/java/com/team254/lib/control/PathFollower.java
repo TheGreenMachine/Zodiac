@@ -122,13 +122,13 @@ public class PathFollower {
             mDebugOutput.lookahead_point_x = steering_command.lookahead_point.x();
             mDebugOutput.lookahead_point_y = steering_command.lookahead_point.y();
             mDebugOutput.lookahead_point_velocity = steering_command.end_velocity;
-            mDebugOutput.steering_command_dx = steering_command.delta.dx;
-            mDebugOutput.steering_command_dy = steering_command.delta.dy;
-            mDebugOutput.steering_command_dtheta = steering_command.delta.dtheta;
+            mDebugOutput.steering_command_dx = steering_command.delta.dx();
+            mDebugOutput.steering_command_dy = steering_command.delta.dy();
+            mDebugOutput.steering_command_dtheta = steering_command.delta.dtheta();
             mCrossTrackError = steering_command.cross_track_error;
             mLastSteeringDelta = steering_command.delta;
             mVelocityController.setGoalAndConstraints(
-                    new MotionProfileGoal(displacement + steering_command.delta.dx,
+                    new MotionProfileGoal(displacement + steering_command.delta.dx(),
                             Math.abs(steering_command.end_velocity), CompletionBehavior.VIOLATE_MAX_ACCEL,
                             mGoalPosTolerance, mGoalVelTolerance),
                     new MotionProfileConstraints(Math.min(mMaxProfileVel, steering_command.max_velocity),
@@ -141,15 +141,15 @@ public class PathFollower {
 
         final double velocity_command = mVelocityController.update(new MotionState(t, displacement, velocity, 0.0), t);
         mAlongTrackError = mVelocityController.getPosError();
-        final double curvature = mLastSteeringDelta.dtheta / mLastSteeringDelta.dx;
-        double dtheta = mLastSteeringDelta.dtheta;
+        final double curvature = mLastSteeringDelta.dtheta() / mLastSteeringDelta.dx();
+        double dtheta = mLastSteeringDelta.dtheta();
         if (!Double.isNaN(curvature) && Math.abs(curvature) < kReallyBigNumber) {
             // Regenerate angular velocity command from adjusted curvature.
             final double abs_velocity_setpoint = Math.abs(mVelocityController.getSetpoint().vel());
-            dtheta = mLastSteeringDelta.dx * curvature * (1.0 + mInertiaGain * abs_velocity_setpoint);
+            dtheta = mLastSteeringDelta.dx() * curvature * (1.0 + mInertiaGain * abs_velocity_setpoint);
         }
-        final double scale = velocity_command / mLastSteeringDelta.dx;
-        final Twist2d rv = new Twist2d(mLastSteeringDelta.dx * scale, 0.0, dtheta * scale);
+        final double scale = velocity_command / mLastSteeringDelta.dx();
+        final Twist2d rv = new Twist2d(mLastSteeringDelta.dx() * scale, 0.0, dtheta * scale);
 
         // Fill out debug.
         mDebugOutput.t = t;
@@ -160,9 +160,9 @@ public class PathFollower {
         mDebugOutput.linear_velocity = velocity;
         mDebugOutput.profile_displacement = mVelocityController.getSetpoint().pos();
         mDebugOutput.profile_velocity = mVelocityController.getSetpoint().vel();
-        mDebugOutput.velocity_command_dx = rv.dx;
-        mDebugOutput.velocity_command_dy = rv.dy;
-        mDebugOutput.velocity_command_dtheta = rv.dtheta;
+        mDebugOutput.velocity_command_dx = rv.dx();
+        mDebugOutput.velocity_command_dy = rv.dy();
+        mDebugOutput.velocity_command_dtheta = rv.dtheta();
         mDebugOutput.cross_track_error = mCrossTrackError;
         mDebugOutput.along_track_error = mAlongTrackError;
 

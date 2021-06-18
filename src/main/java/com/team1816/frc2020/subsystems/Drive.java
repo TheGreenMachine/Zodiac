@@ -589,7 +589,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                 Rotation2d.fromDegrees(
                     Kinematics
                         .forwardKinematics(speedsNorm, mPeriodicIO.wheel_azimuths)
-                        .dtheta
+                        .dtheta()
                 )
             );
         }
