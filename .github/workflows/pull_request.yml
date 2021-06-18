@@ -13,6 +13,9 @@ jobs:
             -   id: assemble
                 name: Gradle assemble
                 run: ./gradlew assemble
+                env:
+                    GITHUB_USER: ${{ env.GITHUB_ACTOR }}
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             -   id: tests
                 name: Run JUnit tests
                 continue-on-error: true
