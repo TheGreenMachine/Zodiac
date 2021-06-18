@@ -69,11 +69,11 @@ public class TrajectoryTest {
                         .inverse()
                         .transformBy(right_state.state().getPose())
                 );
-                assertTrue(Math.abs(left_change.dtheta) < kMaxReasonableChangeInAngle);
-                assertTrue(Math.abs(right_change.dtheta) < kMaxReasonableChangeInAngle);
+                assertTrue(Math.abs(left_change.dtheta()) < kMaxReasonableChangeInAngle);
+                assertTrue(Math.abs(right_change.dtheta()) < kMaxReasonableChangeInAngle);
                 if (
-                    !Util.epsilonEquals(left_change.dtheta, 0.0) ||
-                    !Util.epsilonEquals(right_change.dtheta, 0.0)
+                    !Util.epsilonEquals(left_change.dtheta(), 0.0) ||
+                    !Util.epsilonEquals(right_change.dtheta(), 0.0)
                 ) {
                     // Could be a curvature sign change between prev and now, so just check that either matches our
                     // expected sign.
@@ -90,9 +90,9 @@ public class TrajectoryTest {
                         right_state.state().getCurvature() < -kTestEpsilon ||
                         prev_right.state().getCurvature() < -kTestEpsilon;
                     final double actual_left_curvature =
-                        left_change.dtheta / left_change.dx;
+                        left_change.dtheta() / left_change.dx();
                     final double actual_right_curvature =
-                        right_change.dtheta / right_change.dx;
+                        right_change.dtheta() / right_change.dx();
                     if (actual_left_curvature < -kTestEpsilon) {
                         assertTrue(left_curvature_negative);
                     } else if (actual_left_curvature > kTestEpsilon) {
@@ -172,9 +172,9 @@ public class TrajectoryTest {
                         .transformBy(left_state.state().getPose())
                 );
 
-                assertTrue(Math.abs(left_change.dtheta) < kMaxReasonableChangeInAngle);
+                assertTrue(Math.abs(left_change.dtheta()) < kMaxReasonableChangeInAngle);
 
-                if (!Util.epsilonEquals(left_change.dtheta, 0.0)) {
+                if (!Util.epsilonEquals(left_change.dtheta(), 0.0)) {
                     // Could be a curvature sign change between prev and now, so just check that either matches our
                     // expected sign.
                     final boolean left_curvature_positive =
@@ -185,7 +185,7 @@ public class TrajectoryTest {
                         prev_left.state().getCurvature() < -kTestEpsilon;
 
                     final double actual_left_curvature =
-                        left_change.dtheta / left_change.dx;
+                        left_change.dtheta() / left_change.dx();
 
                     if (actual_left_curvature < -kTestEpsilon) {
                         assertTrue(left_curvature_negative);

@@ -1,5 +1,7 @@
 package com.team254.lib.util;
 
+import com.team254.lib.splinesutil.Interpolable;
+
 /**
  * A Double that can be interpolated using the InterpolatingTreeMap.
  *

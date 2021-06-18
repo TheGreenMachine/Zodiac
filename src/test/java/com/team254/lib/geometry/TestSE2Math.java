@@ -265,9 +265,9 @@ public class TestSE2Math {
         // Logarithm (find the twist to apply to obtain a given Pose2d)
         pose = new Pose2d(new Translation2d(2.0, 2.0), Rotation2d.fromRadians(Math.PI / 2));
         twist = Pose2d.log(pose);
-        Assert.assertEquals(Math.PI, twist.dx, kTestEpsilon);
-        Assert.assertEquals(0.0, twist.dy, kTestEpsilon);
-        Assert.assertEquals(Math.PI / 2, twist.dtheta, kTestEpsilon);
+        Assert.assertEquals(Math.PI, twist.dx(), kTestEpsilon);
+        Assert.assertEquals(0.0, twist.dy(), kTestEpsilon);
+        Assert.assertEquals(Math.PI / 2, twist.dtheta(), kTestEpsilon);
 
         // Logarithm is the inverse of exponentiation.
         Pose2d new_pose = Pose2d.exp(twist);

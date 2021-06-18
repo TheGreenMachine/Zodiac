@@ -95,8 +95,8 @@ public class Kinematics {
     ) {
         Twist2d ret_val = forwardKinematics(drive_signal);
         return new Twist2d(
-            ret_val.dx,
-            ret_val.dy,
+            ret_val.dx(),
+            ret_val.dy(),
             prev_heading.inverse().rotateBy(current_heading).getRadians() / dt
         );
     }
@@ -110,8 +110,8 @@ public class Kinematics {
     ) {
         Twist2d ret_val = forwardKinematics(wheel_speeds, wheel_azimuths);
         return new Twist2d(
-            ret_val.dx,
-            ret_val.dy,
+            ret_val.dx(),
+            ret_val.dy(),
             prev_heading.inverse().rotateBy(current_heading).getRadians() / dt
         );
     }
@@ -126,9 +126,9 @@ public class Kinematics {
     ) {
         return current_pose.transformBy(
             new Pose2d(
-                forward_kinematics.dx,
-                forward_kinematics.dy,
-                Rotation2d.fromRadians(forward_kinematics.dtheta)
+                forward_kinematics.dx(),
+                forward_kinematics.dy(),
+                Rotation2d.fromRadians(forward_kinematics.dtheta())
             )
         );
     }

@@ -81,11 +81,11 @@ public class TrajectoryUtil {
             final boolean curvature_valid = !Double.isNaN(dcurvature) && !Double.isInfinite(dcurvature)
                     && !Double.isNaN(current_state.getCurvature()) && !Double.isInfinite(current_state.getCurvature());
             if (dcurvature > dcurvature_limit && curvature_valid) {
-                steering_command = new Twist2d(steering_command.dx, steering_command.dy,
+                steering_command = new Twist2d(steering_command.dx(), steering_command.dy(),
                         (dcurvature_limit * steering_command.norm() + current_state.getCurvature())
                                 * steering_command.norm());
             } else if (dcurvature < -dcurvature_limit && curvature_valid) {
-                steering_command = new Twist2d(steering_command.dx, steering_command.dy,
+                steering_command = new Twist2d(steering_command.dx(), steering_command.dy(),
                         (-dcurvature_limit * steering_command.norm() + current_state.getCurvature())
                                 * steering_command.norm());
             }
@@ -94,7 +94,7 @@ public class TrajectoryUtil {
             // Use the average curvature over the interval to compute the next state.
             final Twist2d average_steering_command = !curvature_valid
                     ? steering_command
-                    : new Twist2d(steering_command.dx, steering_command.dy,
+                    : new Twist2d(steering_command.dx(), steering_command.dy(),
                     (current_state.getCurvature() + 0.5 * dcurvature * steering_command.norm())
                             * steering_command.norm());
             current_state = new Pose2dWithCurvature(
@@ -124,6 +124,4 @@ public class TrajectoryUtil {
         return new Trajectory<>(SplineGenerator.parameterizeSplines(splines, maxDx, maxDy,
                 maxDTheta));
     }
-
-    ;
 }
