@@ -71,7 +71,7 @@ dependencies {
     implementation "com.github.dominikwin:badlog:v0.1.1"
     implementation 'org.yaml:snakeyaml:1.23'
     implementation 'gov.nist.math:jama:1.0.3'
-    implementation 'com.team1816:splines-kt-jvm:0.1.4'
+    implementation 'com.team1816:splines-kt-jvm:0.1.5'
 
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
     simulation wpi.deps.sim.driverstation(wpi.platforms.desktop, false)
