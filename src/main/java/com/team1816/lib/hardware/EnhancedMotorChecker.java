@@ -30,7 +30,7 @@ public class EnhancedMotorChecker {
             Subsystem subsystem,
             IMotorControllerEnhanced motor
         ) {
-            var name = subsystem.getName();
+            var name = subsystem.getSubsystemName();
             var factory = Robot.getFactory();
             return new EnhancedMotorChecker.CheckerConfig() {
                 {

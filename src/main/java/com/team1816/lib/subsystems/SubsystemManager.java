@@ -35,8 +35,11 @@ public class SubsystemManager implements ILooper {
         boolean ret_val = true;
 
         for (Subsystem s : mAllSubsystems) {
-            System.out.println("SUBSYSTEM: " + s.getName());
-            ret_val &= s.checkSystem();
+            if(s.isImplemented()){
+                System.out.println("SUBSYSTEM: " + s.getSubsystemName());
+                ret_val &= s.checkSystem();
+            }
+
         }
 
         return ret_val;
