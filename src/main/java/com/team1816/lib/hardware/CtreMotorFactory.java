@@ -8,6 +8,8 @@ import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.motor.IConfigurableMotorController;
 import com.team1816.lib.hardware.components.motor.LazyTalonFX;
 import com.team1816.lib.hardware.components.motor.LazyTalonSRX;
+import edu.wpi.first.wpilibj.RobotBase;
+
 import java.util.*;
 
 /**
@@ -16,7 +18,7 @@ import java.util.*;
  */
 public class CtreMotorFactory {
 
-    private static final int kTimeoutMs = 100;
+    private static final int kTimeoutMs = RobotBase.isSimulation() ? 0 : 100;
 
     public static class Configuration {
 
@@ -191,6 +193,7 @@ public class CtreMotorFactory {
         } else {
             return;
         }
+
         talonConfiguration.forwardSoftLimitThreshold = config.FORWARD_SOFT_LIMIT;
         talonConfiguration.forwardSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
 

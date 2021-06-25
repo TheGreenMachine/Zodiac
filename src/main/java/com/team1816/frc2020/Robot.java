@@ -48,7 +48,6 @@ public class Robot extends TimedRobot {
     private final Superstructure mSuperstructure = Superstructure.getInstance();
     private final Infrastructure mInfrastructure = Infrastructure.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
-    private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
     private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
     private final Collector collector = Collector.getInstance();
@@ -58,6 +57,7 @@ public class Robot extends TimedRobot {
     private final Hopper hopper = Hopper.getInstance();
     private final Climber climber = Climber.getInstance();
     private final Camera camera = Camera.getInstance();
+    private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
 
     private boolean mHasBeenEnabled = false;
 
