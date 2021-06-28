@@ -6,12 +6,16 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
+import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.concurrent.ExecutionException;
 
 public class Shooter extends Subsystem implements PidProvider {
 
@@ -58,13 +62,20 @@ public class Shooter extends Subsystem implements PidProvider {
     private Shooter() {
         super(NAME);
         this.shooterMain = factory.getMotor(NAME, "shooterMain");
-        this.shooterFollower =
-            (IMotorControllerEnhanced) factory.getMotor(
-                NAME,
-                "shooterFollower",
-                shooterMain
-            );
+        IMotorControllerEnhanced shooterFollowerDeferred;
+        try {
+            shooterFollowerDeferred =
+                (IMotorControllerEnhanced) (factory.getMotor(
+                    NAME,
+                    "shooterFollower",
+                    shooterMain
+                ).get());
+        } catch (Exception e) {
+            DriverStation.reportError("failed to instantiate shooter follower motor", e.getStackTrace());
+            shooterFollowerDeferred = new GhostMotorControllerEnhanced();
+        }
 
+        this.shooterFollower = shooterFollowerDeferred;
         this.hood = factory.getSolenoid(NAME, "hood");
 
         this.kP = factory.getConstant(NAME, "kP");

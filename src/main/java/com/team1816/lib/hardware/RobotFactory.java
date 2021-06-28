@@ -10,6 +10,8 @@ import com.team1816.lib.hardware.components.pcm.*;
 import com.team254.lib.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 
 public class RobotFactory {
@@ -48,12 +50,12 @@ public class RobotFactory {
         verbose = getConstant("verbose") >= 1;
     }
 
-    public IMotorControllerEnhanced getMotor(
+    public CompletableFuture<IMotorControllerEnhanced> getMotor(
         String subsystemName,
         String name,
         List<PidConfig> pidConfigs
     ) {
-        IMotorControllerEnhanced motor = null;
+        CompletableFuture<IMotorControllerEnhanced> motor = null;
         var subsystem = getSubsystem(subsystemName);
 
         // Motor creation
@@ -83,24 +85,31 @@ public class RobotFactory {
             motor = CtreMotorFactory.createGhostTalon();
         }
 
-        // Motor configuration
-        if (subsystem.isImplemented() && subsystem.invertMotor.contains(name)) {
-            System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
-        }
+        // // Motor configuration
+        // ALREADY COMPLETED IN MOTOR FACTORY
+        // if (subsystem.isImplemented() && subsystem.invertMotor.contains(name)) {
+        //     System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
+        // }
 
         return motor;
     }
 
     public IMotorControllerEnhanced getMotor(String subsystemName, String name) {
-        return getMotor(subsystemName, name, getSubsystem(subsystemName).pid);
+        try {
+            return getMotor(subsystemName, name, getSubsystem(subsystemName).pid).get(); // TODO this is synchronous
+        } catch (Exception e) {
+            DriverStation.reportError("Error getting motor " + subsystemName + " " + name,
+                e.getStackTrace());
+        }
+        return null;
     }
 
-    public IMotorController getMotor(
+    public CompletableFuture<? extends IMotorController> getMotor(
         String subsystemName,
         String name,
         IMotorController master
     ) { // TODO: optimize this method
-        IMotorController motor = null;
+        CompletableFuture<? extends IMotorController> motor = null;
         var subsystem = getSubsystem(subsystemName);
         if (subsystem.isImplemented() && master != null) {
             if (isHardwareValid(subsystem.talons.get(name))) {

@@ -128,6 +128,20 @@ task run(type: JavaExec) {
     jvmArgs "-Djava.library.path=${jniDir}"
 }
 
+task runNoGui(type: JavaExec) {
+    String jniDir = "${project.buildDir}/tmp/jniExtractDir"
+    environment "PATH", jniDir
+    if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
+        environment "LD_LIBRARY_PATH", jniDir
+        environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
+        environment "DYLD_LIBRARY_PATH", jniDir
+    }
+    environment "ROBOT_NAME", "zodiac_swerve"
+    dependsOn(jar, simulateExternalJava)
+    classpath = files(jar)
+    jvmArgs "-Djava.library.path=${jniDir}"
+}
+
 wrapper {
     gradleVersion = '6.7.1'
 }

@@ -36,6 +36,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
@@ -144,6 +146,17 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                 "backRight",
                 Constants.kBackRightModulePosition
             );
+
+        try {
+            CompletableFuture.allOf(
+                swerveModules[SwerveModule.kFrontLeft].initMotors(),
+                swerveModules[SwerveModule.kFrontRight].initMotors(),
+                swerveModules[SwerveModule.kBackLeft].initMotors(),
+                swerveModules[SwerveModule.kBackRight].initMotors()
+            ).get();
+        } catch (Exception e) {
+            DriverStation.reportError("Failed to initialize swerve module motors", e.getStackTrace());
+        }
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 

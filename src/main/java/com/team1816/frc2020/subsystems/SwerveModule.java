@@ -15,9 +15,11 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.util.Util;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class SwerveModule extends Subsystem implements ISwerveModule {
 
@@ -43,6 +45,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     public static class SwerveModuleConstants {
 
+        public String kSubsystemName = "";
         public String kName = "Name";
         public String kDriveMotorName = "";
         public String kAzimuthMotorName = "";
@@ -81,8 +84,8 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     }
 
     // Components
-    private final IMotorControllerEnhanced mDriveMotor;
-    private final IMotorControllerEnhanced mAzimuthMotor;
+    private IMotorControllerEnhanced mDriveMotor;
+    private IMotorControllerEnhanced mAzimuthMotor;
 
     // State
     private PeriodicIO mPeriodicIO = new PeriodicIO();
@@ -93,7 +96,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     private Translation2d position = Translation2d.identity();
     private final Translation2d startingPosition;
     private Pose2d estimatedRobotPose = new Pose2d();
-    private final boolean driveMotorIsInverted;
+    private boolean driveMotorIsInverted;
 
     // Constants
     private final SwerveModuleConstants mConstants;
@@ -117,6 +120,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
     ) {
         super(constants.kName);
         mConstants = constants;
+        mConstants.kSubsystemName = subsystemName;
         System.out.println(
             "Configuring Swerve Module " +
             constants.kName +
@@ -124,35 +128,43 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             subsystemName
         );
 
-        mDriveMotor =
-            factory.getMotor(
-                subsystemName,
-                constants.kDriveMotorName,
-                List.of(constants.kDrivePid)
-            );
-        driveMotorIsInverted = mDriveMotor.getInverted();
-        mAzimuthMotor =
-            factory.getMotor(
-                subsystemName,
-                constants.kAzimuthMotorName,
-                List.of(constants.kAzimuthPid)
-            );
 
-        mAzimuthMotor.setSensorPhase(constants.kInvertAzimuthSensorPhase);
-        mAzimuthMotor.configPeakOutputForward(.4, Constants.kLongCANTimeoutMs);
-        mAzimuthMotor.configPeakOutputReverse(-.4, Constants.kLongCANTimeoutMs);
-        mAzimuthMotor.setNeutralMode(NeutralMode.Brake);
-        mAzimuthMotor.configAllowableClosedloopError(
-            0,
-            constants.kAzimuthClosedLoopAllowableError,
-            Constants.kLongCANTimeoutMs
-        );
         System.out.println("  " + this);
 
         mPeriodicIO.previous_azimuth_demand = mConstants.kAzimuthEncoderHomeOffset;
 
         this.startingPosition = startingPosition;
-        zeroSensors();
+    }
+
+    public CompletableFuture<Void> initMotors() {
+        return CompletableFuture.allOf(
+            factory.getMotor(
+                mConstants.kSubsystemName,
+                mConstants.kDriveMotorName,
+                List.of(mConstants.kDrivePid)
+            ).whenComplete((motor, throwable) -> {
+                mDriveMotor = motor;
+                driveMotorIsInverted = mDriveMotor.getInverted();
+            }),
+
+            factory.getMotor(
+                mConstants.kSubsystemName,
+                mConstants.kAzimuthMotorName,
+                List.of(mConstants.kAzimuthPid)
+            ).whenComplete((motor, throwable) -> {
+                motor.setSensorPhase(mConstants.kInvertAzimuthSensorPhase);
+                motor.configPeakOutputForward(.4, Constants.kLongCANTimeoutMs);
+                motor.configPeakOutputReverse(-.4, Constants.kLongCANTimeoutMs);
+                motor.setNeutralMode(NeutralMode.Brake);
+                motor.configAllowableClosedloopError(
+                    0,
+                    mConstants.kAzimuthClosedLoopAllowableError,
+                    Constants.kLongCANTimeoutMs
+                );
+                mAzimuthMotor = motor;
+            })
+        ).thenRun(this::zeroSensors);
+
     }
 
     public synchronized void updatePose(Rotation2d robotHeading) {
@@ -251,6 +263,13 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public void readPeriodicInputs() {
+        if (mAzimuthMotor == null || mDriveMotor == null) {
+            DriverStation.reportError(
+                "SwerveModule " + mConstants.kName + " motors not initialized",
+                false
+            );
+            return;
+        }
         if (RobotBase.isSimulation()) {
             driveEncoderSimPosition += mPeriodicIO.drive_demand * TICK_RATIO_PER_LOOP;
             mPeriodicIO.drive_encoder_ticks = driveEncoderSimPosition;
@@ -277,6 +296,13 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public void writePeriodicOutputs() {
+        if (mAzimuthMotor == null || mDriveMotor == null) {
+            DriverStation.reportError(
+                "SwerveModule " + mConstants.kName + " motors not initialized",
+                false
+            );
+            return;
+        }
         if (mControlState == ControlState.OPEN_LOOP) {
             if (
                 Util.epsilonEquals(
@@ -544,11 +570,11 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             "SwerveModule{ " +
             mConstants.kDriveMotorName +
             " id: " +
-            mDriveMotor.getDeviceID() +
+            // mDriveMotor.getDeviceID() +
             "  " +
             mConstants.kAzimuthMotorName +
             " id: " +
-            mAzimuthMotor.getDeviceID() +
+            // mAzimuthMotor.getDeviceID() +
             " offset: " +
             mConstants.kAzimuthEncoderHomeOffset +
             " invertSensor: " +
