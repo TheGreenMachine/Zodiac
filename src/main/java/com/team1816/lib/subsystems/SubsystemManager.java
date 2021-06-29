@@ -3,9 +3,13 @@ package com.team1816.lib.subsystems;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.loops.Looper;
+import edu.wpi.first.wpilibj.DriverStation;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Used to reset, start, stop, and update all subsystems at once
@@ -16,6 +20,8 @@ public class SubsystemManager implements ILooper {
 
     private List<Subsystem> mAllSubsystems;
     private List<Loop> mLoops = new ArrayList<>();
+
+    private boolean asyncInitialized = false;
 
     private SubsystemManager() {}
 
@@ -40,6 +46,23 @@ public class SubsystemManager implements ILooper {
         }
 
         return ret_val;
+    }
+
+    public void initAsync() {
+        var asyncSubsystems = mAllSubsystems.stream()
+            .filter(AsyncInitializable.class::isInstance)
+            .map(AsyncInitializable.class::cast);
+        try {
+            CompletableFuture.allOf(
+                asyncSubsystems
+                    .map(AsyncInitializable::initAsync)
+                    .toArray(CompletableFuture[]::new)
+            ).get();
+            asyncInitialized = true;
+        } catch (InterruptedException | ExecutionException e) {
+            DriverStation.reportError("Error initializing async subsystems", e.getStackTrace());
+            asyncInitialized = false;
+        }
     }
 
     public void stop() {
@@ -70,6 +93,10 @@ public class SubsystemManager implements ILooper {
 
         @Override
         public void onLoop(double timestamp) {
+            if (!asyncInitialized) {
+                DriverStation.reportError("Subsystem Async Initializers not called! Skipping loop", false);
+                return;
+            }
             mAllSubsystems.forEach(Subsystem::readPeriodicInputs);
             mLoops.forEach(l -> l.onLoop(timestamp));
             mAllSubsystems.forEach(Subsystem::writePeriodicOutputs);

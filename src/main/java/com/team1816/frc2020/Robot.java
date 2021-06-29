@@ -235,6 +235,8 @@ public class Robot extends TimedRobot {
                 climber
             );
 
+            mSubsystemManager.initAsync(); // Initializes subsystems with async dependencies
+
             mDrive.zeroSensors();
             turret.zeroSensors();
 

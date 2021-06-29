@@ -9,6 +9,7 @@ import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.planners.DriveMotionPlanner;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
+import com.team1816.lib.subsystems.AsyncInitializable;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team1816.lib.subsystems.SwerveDrivetrain;
@@ -39,7 +40,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
+public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider, AsyncInitializable {
 
     private static final String NAME = "drivetrain";
 
@@ -147,31 +148,33 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
                 Constants.kBackRightModulePosition
             );
 
-        try {
-            CompletableFuture.allOf(
-                swerveModules[SwerveModule.kFrontLeft].initMotors(),
-                swerveModules[SwerveModule.kFrontRight].initMotors(),
-                swerveModules[SwerveModule.kBackLeft].initMotors(),
-                swerveModules[SwerveModule.kBackRight].initMotors()
-            ).get();
-        } catch (Exception e) {
-            DriverStation.reportError("Failed to initialize swerve module motors", e.getStackTrace());
-        }
-
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
         mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId", -1));
 
         mPigeon.configFactoryDefault();
 
-        setOpenLoop(DriveSignal.NEUTRAL);
+        // setOpenLoop(DriveSignal.NEUTRAL);
 
         // force a CAN message across
         mIsBrakeMode = false;
-        setBrakeMode(mIsBrakeMode);
+        // setBrakeMode(mIsBrakeMode);
 
         motionPlanner = new DriveMotionPlanner();
         trajectoryMotionPlanner = new DriveMotionPlanner();
+    }
+
+    @Override
+    public CompletableFuture<Void> initAsync() {
+        return CompletableFuture.allOf(
+            swerveModules[SwerveModule.kFrontLeft].initMotors(),
+            swerveModules[SwerveModule.kFrontRight].initMotors(),
+            swerveModules[SwerveModule.kBackLeft].initMotors(),
+            swerveModules[SwerveModule.kBackRight].initMotors()
+        ).thenRun(() -> {
+            setOpenLoop(DriveSignal.NEUTRAL);
+            setBrakeMode(mIsBrakeMode);
+        });
     }
 
     public double getHeadingDegrees() {

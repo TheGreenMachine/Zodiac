@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * The Subsystem abstract class, which serves as a basic framework for all robot subsystems. Each subsystem outputs
  * commands to SmartDashboard, has a stop routine (for after each match), and a routine to zero all sensors, which helps
