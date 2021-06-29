@@ -148,7 +148,6 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider, A
                 Constants.kBackRightModulePosition
             );
 
-        setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
         mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId", -1));
 
@@ -172,6 +171,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider, A
             swerveModules[SwerveModule.kBackLeft].initMotors(),
             swerveModules[SwerveModule.kBackRight].initMotors()
         ).thenRun(() -> {
+            setOpenLoopRampRate(Constants.kOpenLoopRampRate);
             setOpenLoop(DriveSignal.NEUTRAL);
             setBrakeMode(mIsBrakeMode);
         });
