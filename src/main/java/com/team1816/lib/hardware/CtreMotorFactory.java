@@ -9,9 +9,7 @@ import com.team1816.lib.hardware.components.motor.LazyTalonSRX;
 import edu.wpi.first.wpilibj.RobotBase;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * A class to create Falcon (TalonFX), TalonSRX, VictorSPX, and GhostTalonSRX objects.
@@ -20,7 +18,9 @@ import java.util.concurrent.Executors;
 public class CtreMotorFactory {
 
     private static final int kTimeoutMs = RobotBase.isSimulation() ? 0 : 100;
-    private static final ExecutorService executor = Executors.newCachedThreadPool();
+    private static final ExecutorService executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                              255, TimeUnit.MILLISECONDS,
+                              new SynchronousQueue<Runnable>());
 
     public static class Configuration {
 
