@@ -8,6 +8,8 @@ import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 
+import java.util.concurrent.CompletableFuture;
+
 public class Collector extends Subsystem {
 
     private static final String NAME = "collector";
@@ -15,7 +17,7 @@ public class Collector extends Subsystem {
 
     // Components
     private final ISolenoid armPiston;
-    private final IMotorControllerEnhanced intake;
+    private IMotorControllerEnhanced intake;
 
     // State
     private double intakePow;
@@ -38,12 +40,18 @@ public class Collector extends Subsystem {
     private Collector() {
         super(NAME);
         this.armPiston = factory.getSolenoid(NAME, "arm");
-        this.intake = factory.getMotor(NAME, "intake");
+    }
 
-        intake.configSupplyCurrentLimit(
-            new SupplyCurrentLimitConfiguration(true, 25, 0, 0),
-            Constants.kCANTimeoutMs
-        );
+    @Override
+    public CompletableFuture<Void> initAsync() {
+        return factory.getMotor(NAME, "intake")
+            .thenAccept(motor -> this.intake = motor)
+            .thenRun(() -> {
+                intake.configSupplyCurrentLimit(
+                    new SupplyCurrentLimitConfiguration(true, 25, 0, 0),
+                    Constants.kCANTimeoutMs
+                );
+            });
     }
 
     public boolean isArmDown() {

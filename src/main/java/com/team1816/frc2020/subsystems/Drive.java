@@ -165,16 +165,12 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider, A
 
     @Override
     public CompletableFuture<Void> initAsync() {
-        return CompletableFuture.allOf(
-            swerveModules[SwerveModule.kFrontLeft].initMotors(),
-            swerveModules[SwerveModule.kFrontRight].initMotors(),
-            swerveModules[SwerveModule.kBackLeft].initMotors(),
-            swerveModules[SwerveModule.kBackRight].initMotors()
-        ).thenRun(() -> {
-            setOpenLoopRampRate(Constants.kOpenLoopRampRate);
-            setOpenLoop(DriveSignal.NEUTRAL);
-            setBrakeMode(mIsBrakeMode);
-        });
+        return AsyncInitializable.join(Arrays.stream(swerveModules))
+            .thenRun(() -> {
+                setOpenLoopRampRate(Constants.kOpenLoopRampRate);
+                setOpenLoop(DriveSignal.NEUTRAL);
+                setBrakeMode(mIsBrakeMode);
+            });
     }
 
     public double getHeadingDegrees() {

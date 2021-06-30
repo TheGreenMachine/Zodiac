@@ -3,9 +3,12 @@ package com.team1816.frc2020.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.revrobotics.ColorSensorV3;
+import com.team1816.lib.subsystems.AsyncInitializable;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
+
+import java.util.concurrent.CompletableFuture;
 
 public class Spinner extends Subsystem {
 
@@ -20,7 +23,7 @@ public class Spinner extends Subsystem {
     }
 
     // Components
-    private final IMotorControllerEnhanced spinnerMotor;
+    private IMotorControllerEnhanced spinnerMotor;
     private final I2C.Port i2cPort = I2C.Port.kOnboard;
     private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
 
@@ -55,7 +58,12 @@ public class Spinner extends Subsystem {
 
     private Spinner() {
         super(NAME);
-        spinnerMotor = factory.getMotor(NAME, "spinner");
+    }
+
+    @Override
+    public CompletableFuture<Void> initAsync() {
+        return factory.getMotor(NAME, "spinner")
+            .thenAccept(motor -> this.spinnerMotor = motor);
     }
 
     public void initialize() {

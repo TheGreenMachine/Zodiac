@@ -52,6 +52,8 @@ subsystems:
             encPPR: 4124.6
     ledmanager:
         implemented: false
+        constants:
+            maxLevel: 255
     camera:
         implemented: false
 pcm: -1

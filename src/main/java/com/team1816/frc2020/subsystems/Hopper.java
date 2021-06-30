@@ -43,8 +43,8 @@ public class Hopper extends Subsystem {
     private Hopper() {
         super(NAME);
         this.feederFlap = factory.getSolenoid(NAME, "feederFlap");
-        this.spindexer = factory.getMotor(NAME, "spindexer");
-        this.elevator = factory.getMotor(NAME, "elevator");
+        this.spindexer = factory.getMotorSync(NAME, "spindexer");
+        this.elevator = factory.getMotorSync(NAME, "elevator");
         this.ballSensor = new DigitalInput((int) factory.getConstant(NAME, "ballSensor"));
     }
 

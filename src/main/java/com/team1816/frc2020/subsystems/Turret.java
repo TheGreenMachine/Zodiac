@@ -7,10 +7,11 @@ import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
 import com.team1816.lib.hardware.PidConfig;
 import com.team1816.lib.subsystems.EnhancedPidProvider;
-import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.concurrent.CompletableFuture;
 
 public class Turret extends Subsystem implements EnhancedPidProvider {
 
@@ -36,7 +37,7 @@ public class Turret extends Subsystem implements EnhancedPidProvider {
     }
 
     // Components
-    private final IMotorControllerEnhanced turret;
+    private IMotorControllerEnhanced turret;
     private final Camera camera = Camera.getInstance();
     private final RobotState robotState = RobotState.getInstance();
     private final LedManager led = LedManager.getInstance();
@@ -83,48 +84,52 @@ public class Turret extends Subsystem implements EnhancedPidProvider {
 
     public Turret() {
         super(NAME);
-        this.turret = factory.getMotor(NAME, "turret");
-
-        turret.setNeutralMode(NeutralMode.Brake);
-        turret.setSensorPhase(TURRET_SENSOR_PHASE);
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
 
         this.pidConfig = factory.getPidConfig(NAME, 0);
+    }
 
-        synchronized (this) {
-            this.zeroSensors();
+    @Override
+    public CompletableFuture<Void> initAsync() {
+        return factory.getMotor(NAME, "turret")
+            .thenAccept(motor -> this.turret = motor)
+            .thenRun(() -> {
+                turret.setNeutralMode(NeutralMode.Brake);
+                turret.setSensorPhase(TURRET_SENSOR_PHASE);
 
-            // Position Control
-            double peakOutput = 0.75;
+                this.zeroSensors();
 
-            turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
-            turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
-            turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
-            turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
-            turret.configAllowableClosedloopError(
-                kPIDLoopIDx,
-                ALLOWABLE_ERROR_TICKS,
-                Constants.kCANTimeoutMs
-            );
+                // Position Control
+                double peakOutput = 0.75;
 
-            // Soft Limits
-            turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
-            turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
-            turret.configForwardSoftLimitThreshold(
-                TURRET_POSITION_MAX,
-                Constants.kCANTimeoutMs
-            ); // Forward = MAX
-            turret.configReverseSoftLimitThreshold(
-                TURRET_POSITION_MIN,
-                Constants.kCANTimeoutMs
-            ); // Reverse = MIN
-            turret.overrideLimitSwitchesEnable(true);
-            turret.overrideSoftLimitsEnable(true);
+                turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
+                turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
+                turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
+                turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
+                turret.configAllowableClosedloopError(
+                    kPIDLoopIDx,
+                    ALLOWABLE_ERROR_TICKS,
+                    Constants.kCANTimeoutMs
+                );
 
-            turretAngleRelativeToField = robotState.getLatestFieldToTurret();
-        }
+                // Soft Limits
+                turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
+                turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
+                turret.configForwardSoftLimitThreshold(
+                    TURRET_POSITION_MAX,
+                    Constants.kCANTimeoutMs
+                ); // Forward = MAX
+                turret.configReverseSoftLimitThreshold(
+                    TURRET_POSITION_MIN,
+                    Constants.kCANTimeoutMs
+                ); // Reverse = MIN
+                turret.overrideLimitSwitchesEnable(true);
+                turret.overrideSoftLimitsEnable(true);
+
+                turretAngleRelativeToField = robotState.getLatestFieldToTurret();
+            });
     }
 
     @Override

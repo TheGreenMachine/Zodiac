@@ -49,15 +49,8 @@ public class SubsystemManager implements ILooper {
     }
 
     public void initAsync() {
-        var asyncSubsystems = mAllSubsystems.stream()
-            .filter(AsyncInitializable.class::isInstance)
-            .map(AsyncInitializable.class::cast);
         try {
-            CompletableFuture.allOf(
-                asyncSubsystems
-                    .map(AsyncInitializable::initAsync)
-                    .toArray(CompletableFuture[]::new)
-            ).get();
+            AsyncInitializable.join(mAllSubsystems.stream()).get();
             asyncInitialized = true;
         } catch (InterruptedException | ExecutionException e) {
             DriverStation.reportError("Error initializing async subsystems", e.getStackTrace());

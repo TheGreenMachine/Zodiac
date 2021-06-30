@@ -11,7 +11,6 @@ import com.team254.lib.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 
 public class RobotFactory {
@@ -94,7 +93,7 @@ public class RobotFactory {
         return motor;
     }
 
-    public IMotorControllerEnhanced getMotor(String subsystemName, String name) {
+    public IMotorControllerEnhanced getMotorSync(String subsystemName, String name) {
         try {
             return getMotor(subsystemName, name, getSubsystem(subsystemName).pid).get(); // TODO this is synchronous
         } catch (Exception e) {
@@ -102,6 +101,10 @@ public class RobotFactory {
                 e.getStackTrace());
         }
         return null;
+    }
+
+    public CompletableFuture<IMotorControllerEnhanced> getMotor(String subsystemName, String name) {
+        return getMotor(subsystemName, name, getSubsystem(subsystemName).pid);
     }
 
     public CompletableFuture<? extends IMotorController> getMotor(

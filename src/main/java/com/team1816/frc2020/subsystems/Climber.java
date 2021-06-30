@@ -5,6 +5,8 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
 
+import java.util.concurrent.CompletableFuture;
+
 public class Climber extends Subsystem {
 
     private static final String NAME = "climber";
@@ -19,7 +21,7 @@ public class Climber extends Subsystem {
     }
 
     // Components
-    private final IMotorControllerEnhanced elevator;
+    private IMotorControllerEnhanced elevator;
     private final ISolenoid deployer;
 
     // State
@@ -29,8 +31,13 @@ public class Climber extends Subsystem {
 
     public Climber() {
         super(NAME);
-        elevator = factory.getMotor(NAME, "elevator");
         deployer = factory.getSolenoid(NAME, "deployer");
+    }
+
+    @Override
+    public CompletableFuture<Void> initAsync() {
+        return factory.getMotor(NAME, "elevator")
+            .thenAccept(motor -> this.elevator = motor);
     }
 
     public void setClimberPower(double power) {

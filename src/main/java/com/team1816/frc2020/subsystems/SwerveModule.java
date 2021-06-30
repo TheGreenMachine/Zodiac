@@ -136,13 +136,13 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         this.startingPosition = startingPosition;
     }
 
-    public CompletableFuture<Void> initMotors() {
+    public CompletableFuture<Void> initAsync() {
         return CompletableFuture.allOf(
             factory.getMotor(
                 mConstants.kSubsystemName,
                 mConstants.kDriveMotorName,
                 List.of(mConstants.kDrivePid)
-            ).whenComplete((motor, throwable) -> {
+            ).thenAccept(motor -> {
                 mDriveMotor = motor;
                 driveMotorIsInverted = mDriveMotor.getInverted();
             }),
@@ -151,7 +151,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                 mConstants.kSubsystemName,
                 mConstants.kAzimuthMotorName,
                 List.of(mConstants.kAzimuthPid)
-            ).whenComplete((motor, throwable) -> {
+            ).thenAccept(motor -> {
                 motor.setSensorPhase(mConstants.kInvertAzimuthSensorPhase);
                 motor.configPeakOutputForward(.4, Constants.kLongCANTimeoutMs);
                 motor.configPeakOutputReverse(-.4, Constants.kLongCANTimeoutMs);

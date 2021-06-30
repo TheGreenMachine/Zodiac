@@ -8,6 +8,7 @@ import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.pcm.ISolenoid;
+import com.team1816.lib.subsystems.AsyncInitializable;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,9 +16,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 
-public class Shooter extends Subsystem implements PidProvider {
+public class Shooter extends Subsystem implements PidProvider, AsyncInitializable {
 
     private static final String NAME = "shooter";
     private static Shooter INSTANCE;
@@ -31,8 +32,8 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     // Components
-    private final IMotorControllerEnhanced shooterMain;
-    private final IMotorControllerEnhanced shooterFollower;
+    private IMotorControllerEnhanced shooterMain;
+    private IMotorControllerEnhanced shooterFollower;
     private final LedManager ledManager = LedManager.getInstance();
     private final ISolenoid hood;
     // State
@@ -61,35 +62,12 @@ public class Shooter extends Subsystem implements PidProvider {
 
     private Shooter() {
         super(NAME);
-        this.shooterMain = factory.getMotor(NAME, "shooterMain");
-        IMotorControllerEnhanced shooterFollowerDeferred;
-        try {
-            shooterFollowerDeferred =
-                (IMotorControllerEnhanced) (factory.getMotor(
-                    NAME,
-                    "shooterFollower",
-                    shooterMain
-                ).get());
-        } catch (Exception e) {
-            DriverStation.reportError("failed to instantiate shooter follower motor", e.getStackTrace());
-            shooterFollowerDeferred = new GhostMotorControllerEnhanced();
-        }
-
-        this.shooterFollower = shooterFollowerDeferred;
         this.hood = factory.getSolenoid(NAME, "hood");
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
         this.kD = factory.getConstant(NAME, "kD");
         this.kF = factory.getConstant(NAME, "kF");
-
-        shooterMain.setNeutralMode(NeutralMode.Coast);
-        shooterFollower.setNeutralMode(NeutralMode.Coast);
-
-        configCurrentLimits(40/* amps */);
-
-        shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
-        shooterMain.setSensorPhase(false);
     }
 
     private void configCurrentLimits(int currentLimitAmps) {
@@ -224,6 +202,24 @@ public class Shooter extends Subsystem implements PidProvider {
         );
 
         return checkShooter;
+    }
+
+    @Override
+    public CompletableFuture<Void> initAsync() {
+        return CompletableFuture.allOf(
+            factory.getMotor(NAME, "shooterMain")
+                .thenAccept(motor -> this.shooterMain = motor),
+            factory.getMotor(NAME, "shooterFollower", shooterMain)
+                .thenAccept(motor -> this.shooterFollower = (IMotorControllerEnhanced) motor)
+        ).thenRun(() -> {
+            shooterMain.setNeutralMode(NeutralMode.Coast);
+            shooterFollower.setNeutralMode(NeutralMode.Coast);
+
+            configCurrentLimits(40/* amps */);
+
+            shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
+            shooterMain.setSensorPhase(false);
+        });
     }
 
     public static class PeriodicIO {

@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
  * state; the robot code will try to match the two states with actions. Each Subsystem also is responsible for
  * initializing all member components at the start of the match.
  */
-public abstract class Subsystem implements Sendable {
+public abstract class Subsystem implements Sendable, AsyncInitializable {
 
     private final String name;
     protected static final RobotFactory factory = Robot.getFactory();
@@ -50,6 +50,11 @@ public abstract class Subsystem implements Sendable {
 
     @Override
     public void initSendable(SendableBuilder builder) {}
+
+    @Override
+    public CompletableFuture<Void> initAsync() {
+        return CompletableFuture.completedFuture(null);
+    }
 
     public String getName() {
         return name;
