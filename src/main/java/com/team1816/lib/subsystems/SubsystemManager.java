@@ -50,7 +50,9 @@ public class SubsystemManager implements ILooper {
 
     public void initAsync() {
         try {
-            AsyncInitializable.join(mAllSubsystems.stream()).get();
+            for (Subsystem subsystem : mAllSubsystems) {
+                subsystem.initAsync().get();
+            }
             asyncInitialized = true;
         } catch (InterruptedException | ExecutionException e) {
             DriverStation.reportError("Error initializing async subsystems", e.getStackTrace());
