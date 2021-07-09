@@ -200,7 +200,8 @@ public class RobotState {
     }
 
     public double getLatestFieldToTurret() {
-        Rotation2d fieldToTurret = getHeadingRelativeToInitial()
+        Rotation2d fieldToTurret = getLatestFieldToVehicle().getValue()
+            .getRotation()
             .inverse()
             .rotateBy(getLatestVehicleToTurret().getValue());
         return fieldToTurret.getDegrees();
@@ -209,10 +210,10 @@ public class RobotState {
     public synchronized void addObservations(
         double timestamp,
         Twist2d displacement,
-        Twist2d measured_velocity,
-        Twist2d predicted_velocity
+        Twist2d measured_velocity
     ) {
-        distance_driven_ += displacement.dx;
+        distance_driven_ += displacement.norm();
+
         addFieldToVehicleObservation(
             timestamp,
             Kinematics.integrateForwardKinematics(
@@ -233,7 +234,6 @@ public class RobotState {
                 )
             );
         }
-        vehicle_velocity_predicted_ = predicted_velocity;
     }
 
     public synchronized double getDistanceDriven() {
@@ -377,8 +377,8 @@ public class RobotState {
 
     public synchronized void outputToSmartDashboard() {
         SmartDashboard.putString("Robot Velocity", getMeasuredVelocity().toString());
-        SmartDashboard.putNumber("Estimated Pose X", getEstimatedX());
-        SmartDashboard.putNumber("Estimated Pose Y", getEstimatedY());
+        //    SmartDashboard.putNumber("Estimated Pose X", getEstimatedX());
+        //    SmartDashboard.putNumber("Estimated Pose Y", getEstimatedY());
 
         SmartDashboard.putNumber("Field to Turret", getLatestFieldToTurret());
         SmartDashboard.putNumber(

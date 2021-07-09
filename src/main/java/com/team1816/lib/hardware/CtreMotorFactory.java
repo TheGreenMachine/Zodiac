@@ -1,12 +1,15 @@
 package com.team1816.lib.hardware;
 
-import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
+import com.team1816.lib.hardware.components.motor.IConfigurableMotorController;
 import com.team1816.lib.hardware.components.motor.LazyTalonFX;
-import com.team254.lib.drivers.LazyTalonSRX;
+import com.team1816.lib.hardware.components.motor.LazyTalonSRX;
+import edu.wpi.first.wpilibj.RobotBase;
+
+import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * A class to create Falcon (TalonFX), TalonSRX, VictorSPX, and GhostTalonSRX objects.
@@ -14,7 +17,10 @@ import com.team254.lib.drivers.LazyTalonSRX;
  */
 public class CtreMotorFactory {
 
-    private static final int kTimeoutMs = 100;
+    private static final int kTimeoutMs = RobotBase.isSimulation() ? 0 : 100;
+    private static final ExecutorService executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                              255, TimeUnit.MILLISECONDS,
+                              new SynchronousQueue<Runnable>());
 
     public static class Configuration {
 
@@ -65,100 +71,71 @@ public class CtreMotorFactory {
     }
 
     // Create a CANTalon with the default (out of the box) configuration.
-    public static IMotorControllerEnhanced createDefaultTalon(int id, boolean isFalcon) {
-        return createTalon(id, kDefaultConfiguration, isFalcon);
-    }
-
-    public static IMotorControllerEnhanced createPermanentSlaveTalon(
+    public static CompletableFuture<IMotorControllerEnhanced> createDefaultTalon(
         int id,
+        String name,
         boolean isFalcon,
-        IMotorController master
+        SubsystemConfig subsystems,
+        List<PidConfig> pidConfigList
     ) {
-        final IMotorControllerEnhanced talon = createTalon(
+        return createTalon(
             id,
-            kSlaveConfiguration,
-            isFalcon
+            name,
+            kDefaultConfiguration,
+            isFalcon,
+            subsystems,
+            pidConfigList
         );
-        System.out.println(
-            "Slaving talon on " + id + " to talon on " + master.getDeviceID()
-        );
-        talon.follow(master);
-        return talon;
     }
 
-    private static IMotorControllerEnhanced createTalon(
+    public static CompletableFuture<IMotorControllerEnhanced> createPermanentSlaveTalon(
         int id,
-        Configuration config,
-        boolean isFalcon
+        String name,
+        boolean isFalcon,
+        IMotorController master,
+        SubsystemConfig subsystem,
+        List<PidConfig> pidConfigList
     ) {
-        BaseTalon talon = isFalcon ? new LazyTalonFX(id) : new LazyTalonSRX(id);
-        configureMotorController(talon, config);
 
-        talon.configReverseLimitSwitchSource(
-            LimitSwitchSource.FeedbackConnector,
-            LimitSwitchNormal.NormallyOpen,
-            kTimeoutMs
-        );
-
-        if (talon instanceof TalonSRX) {
-            ((TalonSRX) talon).enableCurrentLimit(config.ENABLE_CURRENT_LIMIT);
-        } else {
-            ((TalonFX) talon).configSupplyCurrentLimit(
-                    new SupplyCurrentLimitConfiguration(
-                        config.ENABLE_CURRENT_LIMIT,
-                        0,
-                        0,
-                        0
-                    )
-                );
-        }
-
-        talon.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_1_General,
-            config.GENERAL_STATUS_FRAME_RATE_MS,
-            kTimeoutMs
-        );
-        talon.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_2_Feedback0,
-            config.FEEDBACK_STATUS_FRAME_RATE_MS,
-            kTimeoutMs
-        );
-
-        talon.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_3_Quadrature,
-            config.QUAD_ENCODER_STATUS_FRAME_RATE_MS,
-            kTimeoutMs
-        );
-        talon.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_4_AinTempVbat,
-            config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS,
-            kTimeoutMs
-        );
-        talon.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_8_PulseWidth,
-            config.PULSE_WIDTH_STATUS_FRAME_RATE_MS,
-            kTimeoutMs
-        );
-        talon.configSelectedFeedbackSensor(
-            isFalcon
-                ? FeedbackDevice.IntegratedSensor
-                : FeedbackDevice.CTRE_MagEncoder_Relative,
-            0,
-            20
-        );
-
-        return talon;
+        return createTalon(
+            id,
+            name,
+            kSlaveConfiguration,
+            isFalcon,
+            subsystem,
+            pidConfigList
+        ).thenApply((talon) -> {
+            System.out.println(
+                "Slaving talon on " + id + " to talon on " + master.getDeviceID()
+            );
+            talon.follow(master);
+            return talon;
+        });
     }
 
-    public static IMotorControllerEnhanced createGhostTalon() {
-        return new GhostMotorControllerEnhanced();
+    private static CompletableFuture<IMotorControllerEnhanced> createTalon(
+        int id,
+        String name,
+        Configuration config,
+        boolean isFalcon,
+        SubsystemConfig subsystem,
+        List<PidConfig> pidConfigList
+    ) {
+        IConfigurableMotorController talon = isFalcon
+            ? new LazyTalonFX(id)
+            : new LazyTalonSRX(id);
+        return configureMotorController(talon, name, config, isFalcon, subsystem, pidConfigList);
+    }
+
+    public static CompletableFuture<IMotorControllerEnhanced> createGhostTalon() {
+        return CompletableFuture.completedFuture(new GhostMotorControllerEnhanced());
     }
 
     public static IMotorController createDefaultVictor(int id) {
         return createVictor(id, kDefaultConfiguration);
     }
 
-    public static IMotorController createPermanentSlaveVictor(
+    public static CompletableFuture<IMotorController> createPermanentSlaveVictor(
         int id,
         IMotorController master
     ) {
@@ -167,12 +144,12 @@ public class CtreMotorFactory {
             "Slaving victor on " + id + " to talon on " + master.getDeviceID()
         );
         victor.follow(master);
-        return victor;
+        return CompletableFuture.completedFuture(victor); // TODO this is a hack and is synchronous
     }
 
     public static IMotorController createVictor(int id, Configuration config) {
         VictorSPX victor = new VictorSPX(id);
-        configureMotorController(victor, config);
+        //configureMotorController(victor, config);
 
         victor.configReverseLimitSwitchSource(
             RemoteLimitSwitchSource.Deactivated,
@@ -199,79 +176,134 @@ public class CtreMotorFactory {
         return victor;
     }
 
-    private static void configureMotorController(
-        BaseMotorController motor,
-        Configuration config
+    private static CompletableFuture<IMotorControllerEnhanced> configureMotorController(
+        IConfigurableMotorController motor,
+        String name,
+        Configuration config,
+        boolean isFalcon,
+        SubsystemConfig subsystem,
+        List<PidConfig> pidConfigList
     ) {
-        motor.configFactoryDefault();
-        motor.set(ControlMode.PercentOutput, 0.0);
 
-        motor.changeMotionControlFramePeriod(config.MOTION_CONTROL_FRAME_PERIOD_MS);
-        motor.clearMotionProfileHasUnderrun(kTimeoutMs);
-        motor.clearMotionProfileTrajectories();
+        var future = new CompletableFuture<IMotorControllerEnhanced>();
 
-        motor.clearStickyFaults(kTimeoutMs);
+        executor.submit(() -> {
+            System.out.println("Configuring talon " + name);
+            BaseTalonConfiguration talonConfiguration;
 
-        motor.configForwardLimitSwitchSource(
-            LimitSwitchSource.FeedbackConnector,
-            LimitSwitchNormal.NormallyOpen,
-            kTimeoutMs
-        );
-        motor.overrideLimitSwitchesEnable(config.ENABLE_LIMIT_SWITCH);
+            if (motor instanceof TalonFX) {
+                talonConfiguration = new TalonFXConfiguration();
+            } else if (motor instanceof TalonSRX) {
+                talonConfiguration = new TalonSRXConfiguration();
+            } else {
+                return;
+            }
 
-        // Turn off re-zeroing by default.
-        motor.configSetParameter(ParamEnum.eClearPositionOnLimitF, 0, 0, 0, kTimeoutMs);
-        motor.configSetParameter(ParamEnum.eClearPositionOnLimitR, 0, 0, 0, kTimeoutMs);
+            talonConfiguration.forwardSoftLimitThreshold = config.FORWARD_SOFT_LIMIT;
+            talonConfiguration.forwardSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
 
-        motor.configNominalOutputForward(0, kTimeoutMs);
-        motor.configNominalOutputReverse(0, kTimeoutMs);
-        motor.configNeutralDeadband(config.NEUTRAL_DEADBAND, kTimeoutMs);
+            talonConfiguration.reverseSoftLimitThreshold = config.REVERSE_SOFT_LIMIT;
+            talonConfiguration.reverseSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
 
-        motor.configPeakOutputForward(1.0, kTimeoutMs);
-        motor.configPeakOutputReverse(-1.0, kTimeoutMs);
+            if (pidConfigList.size() > 0) {
+                talonConfiguration.slot0.kP = pidConfigList.get(0).kP;
+                talonConfiguration.slot0.kI = pidConfigList.get(0).kI;
+                talonConfiguration.slot0.kD = pidConfigList.get(0).kD;
+                talonConfiguration.slot0.kF = pidConfigList.get(0).kF;
+            }
+            if (pidConfigList.size() > 1) {
+                talonConfiguration.slot1.kP = pidConfigList.get(1).kP;
+                talonConfiguration.slot1.kI = pidConfigList.get(1).kI;
+                talonConfiguration.slot1.kD = pidConfigList.get(1).kD;
+                talonConfiguration.slot1.kF = pidConfigList.get(1).kF;
+            }
+            if (pidConfigList.size() > 2) {
+                talonConfiguration.slot2.kP = pidConfigList.get(2).kP;
+                talonConfiguration.slot2.kI = pidConfigList.get(2).kI;
+                talonConfiguration.slot2.kD = pidConfigList.get(2).kD;
+                talonConfiguration.slot2.kF = pidConfigList.get(2).kF;
+            }
+            if (pidConfigList.size() > 3) {
+                talonConfiguration.slot3.kP = pidConfigList.get(3).kP;
+                talonConfiguration.slot3.kI = pidConfigList.get(3).kI;
+                talonConfiguration.slot3.kD = pidConfigList.get(3).kD;
+                talonConfiguration.slot3.kF = pidConfigList.get(3).kF;
+            }
 
-        motor.setNeutralMode(config.NEUTRAL_MODE);
+            talonConfiguration.nominalOutputForward = 0;
+            talonConfiguration.nominalOutputReverse = 0;
+            talonConfiguration.neutralDeadband = config.NEUTRAL_DEADBAND;
 
-        motor.configForwardSoftLimitThreshold(config.FORWARD_SOFT_LIMIT, kTimeoutMs);
-        motor.configForwardSoftLimitEnable(config.ENABLE_SOFT_LIMIT, kTimeoutMs);
+            talonConfiguration.peakOutputForward = 1.0;
+            talonConfiguration.peakOutputReverse = -1.0;
 
-        motor.configReverseSoftLimitThreshold(config.REVERSE_SOFT_LIMIT, kTimeoutMs);
-        motor.configReverseSoftLimitEnable(config.ENABLE_SOFT_LIMIT, kTimeoutMs);
-        motor.overrideSoftLimitsEnable(config.ENABLE_SOFT_LIMIT);
+            talonConfiguration.velocityMeasurementPeriod = config.VELOCITY_MEASUREMENT_PERIOD;
+            talonConfiguration.velocityMeasurementWindow = config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW;
 
-        motor.setInverted(config.INVERTED);
-        motor.selectProfileSlot(0, 0);
+            talonConfiguration.openloopRamp = config.OPEN_LOOP_RAMP_RATE;
+            talonConfiguration.closedloopRamp = config.CLOSED_LOOP_RAMP_RATE;
 
-        ErrorCode code = motor.configVelocityMeasurementPeriod(
-            config.VELOCITY_MEASUREMENT_PERIOD,
-            kTimeoutMs
-        );
-        if (code != ErrorCode.OK) {
-            System.out.println(
-                "Error setting velocity measurement period: " + code.toString()
+            talonConfiguration.primaryPID.selectedFeedbackSensor =  isFalcon
+                ? FeedbackDevice.IntegratedSensor
+                : FeedbackDevice.CTRE_MagEncoder_Relative;
+
+            if(talonConfiguration instanceof TalonFXConfiguration) {
+                ((TalonFXConfiguration) talonConfiguration).supplyCurrLimit = new SupplyCurrentLimitConfiguration(config.ENABLE_CURRENT_LIMIT, 0, 0, 0);
+            }
+
+            talonConfiguration.clearPositionOnLimitF = false;
+            talonConfiguration.clearPositionOnLimitR = false;
+
+            talonConfiguration.enableOptimizations = true;
+
+            motor.configFactoryDefault(kTimeoutMs);
+
+            motor.overrideLimitSwitchesEnable(config.ENABLE_LIMIT_SWITCH);
+
+            motor.setNeutralMode(config.NEUTRAL_MODE);
+            motor.selectProfileSlot(0, 0);
+
+            motor.setControlFramePeriod(
+                ControlFrame.Control_3_General,
+                config.CONTROL_FRAME_PERIOD_MS
             );
-        }
-        code =
-            motor.configVelocityMeasurementWindow(
-                config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW,
+
+            motor.setStatusFramePeriod(
+                StatusFrameEnhanced.Status_1_General,
+                config.GENERAL_STATUS_FRAME_RATE_MS,
                 kTimeoutMs
             );
-        if (code != ErrorCode.OK) {
-            System.out.println(
-                "Error setting velocity measurement window: " + code.toString()
+            motor.setStatusFramePeriod(
+                StatusFrameEnhanced.Status_2_Feedback0,
+                config.FEEDBACK_STATUS_FRAME_RATE_MS,
+                kTimeoutMs
             );
-        }
 
-        motor.configOpenloopRamp(config.OPEN_LOOP_RAMP_RATE, kTimeoutMs);
-        motor.configClosedloopRamp(config.CLOSED_LOOP_RAMP_RATE, kTimeoutMs);
+            motor.setStatusFramePeriod(
+                StatusFrameEnhanced.Status_3_Quadrature,
+                config.QUAD_ENCODER_STATUS_FRAME_RATE_MS,
+                kTimeoutMs
+            );
+            motor.setStatusFramePeriod(
+                StatusFrameEnhanced.Status_4_AinTempVbat,
+                config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS,
+                kTimeoutMs
+            );
+            motor.setStatusFramePeriod(
+                StatusFrameEnhanced.Status_8_PulseWidth,
+                config.PULSE_WIDTH_STATUS_FRAME_RATE_MS,
+                kTimeoutMs
+            );
 
-        motor.configVoltageCompSaturation(12.0, kTimeoutMs);
-        motor.configVoltageMeasurementFilter(32, kTimeoutMs);
-        motor.enableVoltageCompensation(true);
+            motor.configAllSettings(talonConfiguration, kTimeoutMs);
+            motor.setInverted(subsystem.invertMotor.contains(name));
 
-        motor.setControlFramePeriod(
-            ControlFrame.Control_3_General,
-            config.CONTROL_FRAME_PERIOD_MS
-        );
+            System.out.println("finished configuring talon " + name);
+
+            future.complete(motor);
+        });
+
+        return future;
+
     }
 }

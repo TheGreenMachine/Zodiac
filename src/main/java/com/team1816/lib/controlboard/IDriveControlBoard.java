@@ -5,6 +5,8 @@ public interface IDriveControlBoard {
 
     double getTurn();
 
+    double getStrafe();
+
     boolean getQuickTurn();
 
     boolean getSlowMode();
@@ -22,4 +24,10 @@ public interface IDriveControlBoard {
     boolean getBrakeMode();
 
     int getDriverClimber();
+
+    double getDPad();
+
+    boolean getFieldRelative();
+
+    boolean getHood();
 }

@@ -1,7 +1,6 @@
 package com.team1816.lib.auto;
 
 import com.team1816.lib.auto.modes.AutoModeBase;
-import com.team254.lib.util.CrashTrackingRunnable;
 
 /**
  * This class selects, runs, and (if necessary) stops a specified autonomous mode.
@@ -25,17 +24,7 @@ public class AutoModeExecutor {
 
     public void setAutoMode(AutoModeBase new_auto_mode) {
         mAutoMode = new_auto_mode;
-        mThread =
-            new Thread(
-                new CrashTrackingRunnable() {
-                    @Override
-                    public void runCrashTracked() {
-                        if (mAutoMode != null) {
-                            mAutoMode.run();
-                        }
-                    }
-                }
-            );
+        mThread = new Thread(() -> mAutoMode.run());
     }
 
     public void start() {

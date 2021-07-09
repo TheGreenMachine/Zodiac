@@ -2,9 +2,11 @@ plugins {
     id "java"
     id "idea"
     id "eclipse"
-    id "edu.wpi.first.GradleRIO" version "2021.2.2"
+    id "edu.wpi.first.GradleRIO" version "2021.3.1"
     id "com.diffplug.spotless" version "5.8.2"
 }
+
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 def ROBOT_MAIN_CLASS = "com.team1816.frc2020.Main"
 
@@ -34,11 +36,6 @@ deploy {
             targets << "roborio"
             directory = '/home/lvuser/deploy'
         }
-        fileTreeArtifact('visionDeploy') {
-            files = fileTree(dir: 'ZodiacVision')
-            targets << 'roborio'
-            directory = '/home/lvuser/ZodiacVision'
-        }
     }
 }
 
@@ -66,6 +63,9 @@ dependencies {
     implementation "com.github.dominikwin:badlog:v0.1.1"
     implementation 'org.yaml:snakeyaml:1.23'
     implementation 'gov.nist.math:jama:1.0.3'
+
+    simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
+    simulation wpi.deps.sim.driverstation(wpi.platforms.desktop, false)
 
     testImplementation 'org.mockito:mockito-core:3.6.0'
     testImplementation 'junit:junit:4.12'
@@ -110,6 +110,36 @@ processResources {
     eachFile { fileCopyDetails ->
 
     }
+}
+
+task run(type: JavaExec) {
+    String jniDir = "${project.buildDir}/tmp/jniExtractDir"
+    environment "PATH", jniDir
+    String hal = fileTree(dir: "${project.buildDir}/tmp/expandedArchives", include: 'halsim*/**/*.*').asPath
+    if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
+        environment "LD_LIBRARY_PATH", jniDir
+        environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
+        environment "DYLD_LIBRARY_PATH", jniDir
+    }
+    environment "HALSIM_EXTENSIONS", hal
+    environment "ROBOT_NAME", "zodiac_swerve"
+    dependsOn(jar, simulateExternalJava)
+    classpath = files(jar)
+    jvmArgs "-Djava.library.path=${jniDir}"
+}
+
+task runNoGui(type: JavaExec) {
+    String jniDir = "${project.buildDir}/tmp/jniExtractDir"
+    environment "PATH", jniDir
+    if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
+        environment "LD_LIBRARY_PATH", jniDir
+        environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
+        environment "DYLD_LIBRARY_PATH", jniDir
+    }
+    environment "ROBOT_NAME", "zodiac_swerve"
+    dependsOn(jar, simulateExternalJava)
+    classpath = files(jar)
+    jvmArgs "-Djava.library.path=${jniDir}"
 }
 
 wrapper {

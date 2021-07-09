@@ -8,6 +8,7 @@ public class RampUpShooterAction implements Action {
     @Override
     public void start() {
         Shooter.getInstance().startShooter();
+        Shooter.getInstance().autoHood();
     }
 
     @Override

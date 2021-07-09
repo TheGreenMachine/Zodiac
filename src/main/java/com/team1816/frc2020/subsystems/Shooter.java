@@ -6,13 +6,19 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
+import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
+import com.team1816.lib.hardware.components.pcm.ISolenoid;
+import com.team1816.lib.subsystems.AsyncInitializable;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Shooter extends Subsystem implements PidProvider {
+import java.util.concurrent.CompletableFuture;
+
+public class Shooter extends Subsystem implements PidProvider, AsyncInitializable {
 
     private static final String NAME = "shooter";
     private static Shooter INSTANCE;
@@ -26,13 +32,13 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     // Components
-    private final IMotorControllerEnhanced shooterMain;
-    private final IMotorControllerEnhanced shooterFollower;
-    private final Camera camera = Camera.getInstance();
+    private IMotorControllerEnhanced shooterMain;
+    private IMotorControllerEnhanced shooterFollower;
     private final LedManager ledManager = LedManager.getInstance();
-
+    private final ISolenoid hood;
     // State
     private boolean outputsChanged;
+    private boolean hoodOut = false;
 
     private PeriodicIO mPeriodicIO = new PeriodicIO();
 
@@ -56,29 +62,12 @@ public class Shooter extends Subsystem implements PidProvider {
 
     private Shooter() {
         super(NAME);
-        this.shooterMain = factory.getMotor(NAME, "shooterMain");
-        this.shooterFollower =
-            (IMotorControllerEnhanced) factory.getMotor(
-                NAME,
-                "shooterFollower",
-                shooterMain
-            );
+        this.hood = factory.getSolenoid(NAME, "hood");
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
         this.kD = factory.getConstant(NAME, "kD");
         this.kF = factory.getConstant(NAME, "kF");
-
-        shooterMain.setNeutralMode(NeutralMode.Coast);
-        shooterFollower.setNeutralMode(NeutralMode.Coast);
-
-        configCurrentLimits(40/* amps */);
-
-        shooterMain.setInverted(false);
-        shooterFollower.setInverted(true);
-
-        shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
-        shooterMain.setSensorPhase(false);
     }
 
     private void configCurrentLimits(int currentLimitAmps) {
@@ -117,12 +106,26 @@ public class Shooter extends Subsystem implements PidProvider {
         outputsChanged = true;
     }
 
+    public boolean isHoodOut() {
+        return hoodOut;
+    }
+
+    public void setHood(boolean in){
+        hoodOut = in;
+        this.outputsChanged = true;
+    }
+
+    public void autoHood() {
+        setHood(distanceManager.getHoodRetracted());
+    }
+
+
     public void shootFromChooser(boolean shooting) {
         setVelocity(shooting ? velocityChooser.getSelected() : 0);
     }
 
     public void startShooter() {
-        setVelocity(distanceManager.getShooterVelocity(camera.getDistance()));
+        setVelocity(distanceManager.getShooterVelocity());
     }
 
     public void stopShooter() {
@@ -154,6 +157,7 @@ public class Shooter extends Subsystem implements PidProvider {
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
+            this.hood.set(hoodOut);
             if (mPeriodicIO.velocityDemand == 0) {
                 this.shooterMain.set(ControlMode.PercentOutput, 0); // Inertia coast to 0
             } else {
@@ -197,13 +201,25 @@ public class Shooter extends Subsystem implements PidProvider {
             new EnhancedMotorChecker.NamedMotor("shooterMain", shooterMain)
         );
 
-        System.out.println(checkShooter);
-        if (checkShooter) {
-            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
-        } else {
-            ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
-        }
         return checkShooter;
+    }
+
+    @Override
+    public CompletableFuture<Void> initAsync() {
+        return CompletableFuture.allOf(
+            factory.getMotor(NAME, "shooterMain")
+                .thenAccept(motor -> this.shooterMain = motor),
+            factory.getMotor(NAME, "shooterFollower", shooterMain)
+                .thenAccept(motor -> this.shooterFollower = (IMotorControllerEnhanced) motor)
+        ).thenRun(() -> {
+            shooterMain.setNeutralMode(NeutralMode.Coast);
+            shooterFollower.setNeutralMode(NeutralMode.Coast);
+
+            configCurrentLimits(40/* amps */);
+
+            shooterMain.configClosedloopRamp(0.5, Constants.kCANTimeoutMs);
+            shooterMain.setSensorPhase(false);
+        });
     }
 
     public static class PeriodicIO {

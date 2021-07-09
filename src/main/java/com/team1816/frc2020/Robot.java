@@ -1,9 +1,6 @@
 package com.team1816.frc2020;
 
-import static com.team1816.frc2020.controlboard.ControlUtils.*;
-
 import badlog.lib.BadLog;
-import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
 import com.team1816.frc2020.paths.TrajectorySet;
@@ -19,17 +16,22 @@ import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
 import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
+import com.team254.lib.control.SwerveHeadingController;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.CheesyDriveHelper;
-import com.team254.lib.util.CrashTracker;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
+import com.team254.lib.util.TimeDelayedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
+
+import static com.team1816.frc2020.controlboard.ControlUtils.*;
 
 public class Robot extends TimedRobot {
 
@@ -46,7 +48,6 @@ public class Robot extends TimedRobot {
     private final Superstructure mSuperstructure = Superstructure.getInstance();
     private final Infrastructure mInfrastructure = Infrastructure.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
-    private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
     private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
     private final Collector collector = Collector.getInstance();
@@ -56,10 +57,7 @@ public class Robot extends TimedRobot {
     private final Hopper hopper = Hopper.getInstance();
     private final Climber climber = Climber.getInstance();
     private final Camera camera = Camera.getInstance();
-
-    // button placed on the robot to allow the drive team to zero the robot right
-    // before the start of a match
-    DigitalInput resetRobotButton = new DigitalInput(Constants.kResetButtonChannel);
+    private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
 
     private boolean mHasBeenEnabled = false;
 
@@ -73,15 +71,14 @@ public class Robot extends TimedRobot {
     private double loopStart;
 
     private ActionManager actionManager;
-    private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
+    private final SwerveHeadingController swerveHeadingController = SwerveHeadingController.getInstance();
     private AsyncTimer blinkTimer;
 
-    private PowerDistributionPanel pdp = new PowerDistributionPanel();
+    // private PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     Robot() {
         super();
-        CrashTracker.logRobotConstruction();
     }
 
     private static RobotFactory factory;
@@ -97,11 +94,24 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         try {
+            DriverStation.getInstance().silenceJoystickConnectionWarning(true);
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
-            logger =
-                BadLog.init(
-                    "/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag"
-                );
+            var robotName = System.getenv("ROBOT_NAME");
+            if (robotName == null) robotName = "default";
+            var logFileDir = "/home/lvuser/";
+            // if there is a usb drive use it
+            if (Files.exists(Path.of("/media/sda1"))) {
+                logFileDir = "/media/sda1/";
+            }
+            if (RobotBase.isSimulation()) {
+                if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                    logFileDir = System.getenv("temp") + "\\";
+                } else {
+                    logFileDir = System.getProperty("user.dir") + "/";
+                }
+            }
+            var filePath = logFileDir + robotName + "_" + logFile + ".bag";
+            logger = BadLog.init(filePath);
 
             BadLog.createValue(
                 "Max Velocity",
@@ -173,15 +183,9 @@ public class Robot extends TimedRobot {
                     "hide"
                 );
 
-                BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
+                // BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
 
-                BadLog.createTopicSubscriber(
-                    "Pigeon Error",
-                    BadLog.UNITLESS,
-                    DataInferMode.DEFAULT
-                );
-
-                DrivetrainLogger.init(mDrive);
+                DrivetrainLogger.initSwerve(mDrive);
 
                 BadLog.createValue("Drivetrain PID", mDrive.pidToString());
                 BadLog.createValue("Shooter PID", shooter.pidToString());
@@ -214,35 +218,9 @@ public class Robot extends TimedRobot {
                     "NativeUnits",
                     turret::getPositionError
                 );
-
-                BadLog.createTopic(
-                    "Turret/FieldToTurret",
-                    "Degrees",
-                    mRobotState::getLatestFieldToTurret,
-                    "hide",
-                    "join:Tracking/Angles"
-                );
-                BadLog.createTopic(
-                    "Drive/HeadingRelativeToInitial",
-                    "Degrees",
-                    () -> mDrive.getHeadingRelativeToInitial().getDegrees(),
-                    "hide",
-                    "join:Tracking/Angles"
-                );
-                BadLog.createTopic(
-                    "Turret/TurretAngle",
-                    "Degrees",
-                    turret::getTurretPositionDegrees,
-                    "hide",
-                    "join:Tracking/Angles"
-                );
-
-                mDrive.setLogger(logger);
             }
 
             logger.finishInitialization();
-
-            CrashTracker.logRobotInit();
 
             mSubsystemManager.setSubsystems(
                 mRobotStateEstimator,
@@ -256,6 +234,8 @@ public class Robot extends TimedRobot {
                 turret,
                 climber
             );
+
+            mSubsystemManager.initAsync(); // Initializes subsystems with async dependencies
 
             mDrive.zeroSensors();
             turret.zeroSensors();
@@ -379,6 +359,7 @@ public class Robot extends TimedRobot {
                                 turret.setControlMode(
                                     Turret.ControlMode.CAMERA_FOLLOWING
                                 );
+                                shooter.autoHood();
                                 shooter.startShooter();
                             } else {
                                 turret.setControlMode(prevTurretControlMode);
@@ -390,14 +371,16 @@ public class Robot extends TimedRobot {
                         shooting -> {
                             // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                             if (shooting) {
+                                shooter.autoHood();
                                 mDrive.setOpenLoop(DriveSignal.BRAKE);
                                 shooter.startShooter(); // Uses ZED distance
                                 turret.lockTurret();
                             } else {
-                                turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+                                // turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
                                 shooter.stopShooter();
+                                shooter.setHood(false);
                             }
-                            hopper.lockToShooter(shooting, true);
+                            hopper.lockToShooter(shooting, false);
                             hopper.setIntake(shooting ? 1 : 0);
                             collector.setIntakePow(shooting ? 0.5 : 0);
                         }
@@ -406,6 +389,10 @@ public class Robot extends TimedRobot {
                         mControlBoard::getCollectorBackSpin,
                         pressed -> collector.setIntakePow(pressed ? 0.2 : 0)
                     )
+                    // createAction(
+                    //     mControlBoard::getHood,
+                    //     () -> shooter.setHood(!shooter.isHoodOut())
+                    // )
                 );
 
             blinkTimer =
@@ -415,7 +402,6 @@ public class Robot extends TimedRobot {
                     () -> ledManager.indicateStatus(LedManager.RobotStatus.OFF)
                 );
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -423,7 +409,6 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         try {
-            CrashTracker.logDisabledInit();
             mEnabledLooper.stop();
 
             ledManager.setDefaultStatus(LedManager.RobotStatus.DISABLED);
@@ -445,7 +430,6 @@ public class Robot extends TimedRobot {
 
             mDrive.setBrakeMode(false);
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -453,7 +437,6 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         try {
-            CrashTracker.logAutoInit();
             mDisabledLooper.stop();
             ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
 
@@ -469,6 +452,8 @@ public class Robot extends TimedRobot {
 
             mInfrastructure.setIsManualControl(true); // turn on compressor when superstructure is not moving
 
+            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
+
             mDrive.zeroSensors();
             turret.zeroSensors();
 
@@ -479,7 +464,6 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -487,11 +471,14 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         try {
-            CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
             ledManager.setDefaultStatus(LedManager.RobotStatus.ENABLED);
 
             turret.zeroSensors();
+
+            if (DistanceManager.USE_ZONES) {
+                DistanceManager.getInstance().setZone(4);
+            }
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
@@ -504,10 +491,11 @@ public class Robot extends TimedRobot {
             turret.setTurretAngle(Turret.CARDINAL_SOUTH);
             turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
 
+            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
+
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -515,11 +503,9 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         try {
-            CrashTracker.logTestInit();
-
             double initTime = System.currentTimeMillis();
 
-            ledManager.setLedColorBlink(255, 255, 0, 1000);
+            ledManager.blinkStatus(LedManager.RobotStatus.DRIVETRAIN_FLIPPED);
             // Warning - blocks thread - intended behavior?
             while (System.currentTimeMillis() - initTime <= 3000) {
                 ledManager.writePeriodicOutputs();
@@ -534,11 +520,12 @@ public class Robot extends TimedRobot {
 
             if (mSubsystemManager.checkSubsystems()) {
                 System.out.println("ALL SYSTEMS PASSED");
+                ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
             } else {
                 System.err.println("CHECK ABOVE OUTPUT SOME SYSTEMS FAILED!!!");
+                ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
             }
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -551,7 +538,6 @@ public class Robot extends TimedRobot {
             mAutoModeSelector.outputToSmartDashboard();
             mRobotStateEstimator.outputToSmartDashboard();
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -572,7 +558,7 @@ public class Robot extends TimedRobot {
                 mDrive.setHeading(Rotation2d.identity());
                 ledManager.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
             } else {
-                ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
+                ledManager.indicateDefaultStatus();
             }
 
             // Update auto modes
@@ -589,7 +575,6 @@ public class Robot extends TimedRobot {
                 mAutoModeExecutor.setAutoMode(autoMode.get());
             }
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
     }
@@ -627,7 +612,6 @@ public class Robot extends TimedRobot {
         try {
             manualControl();
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
             throw t;
         }
 
@@ -637,6 +621,9 @@ public class Robot extends TimedRobot {
         }
     }
 
+    TimeDelayedBoolean mShouldMaintainAzimuth = new TimeDelayedBoolean();
+    LatchedBoolean shouldChangeAzimuthSetpoint = new LatchedBoolean();
+
     public void manualControl() {
         // boolean arcadeDrive = false;
         actionManager.update();
@@ -645,30 +632,63 @@ public class Robot extends TimedRobot {
         double turn = mControlBoard.getTurn();
 
         DriveSignal driveSignal;
+        boolean maintainAzimuth = mShouldMaintainAzimuth.update(
+            mControlBoard.getTurn() == 0,
+            0.2
+        );
+        boolean changeAzimuthSetpoint = shouldChangeAzimuthSetpoint.update(
+            maintainAzimuth
+        );
 
-        // if (arcadeDrive) {
-        //            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
-        //            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
-        //            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-        //            driveSignal = new DriveSignal(left, right);
-        // } else {
-        driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
-        // }
-        if (
-            mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING
-        ) {
-            if (
-                driveSignal.getLeft() != 0 ||
-                driveSignal.getRight() != 0 ||
-                mDrive.isDoneWithTrajectory()
-            ) {
-                mDrive.setOpenLoop(driveSignal);
-            }
-        } else if (!(shooter.getTargetVelocity() > 0)) {
-            mDrive.setOpenLoop(driveSignal);
-        } else {
-            mDrive.setOpenLoop(DriveSignal.BRAKE);
-        }
+//        if (mControlBoard.getDPad() != -1) {
+//            swerveHeadingController.setState(
+//                SwerveHeadingController.State.Snap
+//            );
+//            double heading_goal = mControlBoard.getDPad();
+//            SmartDashboard.putNumber("Heading Goal", heading_goal);
+//            swerveHeadingController.setGoal(heading_goal);
+//        } else {
+//            if (!maintainAzimuth) {
+//                swerveHeadingController.setState(
+//                    SwerveHeadingController.State.Off
+//                );
+//            } else if (
+//                (
+//                    swerveHeadingController.getState() ==
+//                    SwerveHeadingController.State.Snap &&
+//                    swerveHeadingController.is()
+//                ) ||
+//                changeAzimuthSetpoint
+//            ) {
+//                swerveHeadingController.setState(
+//                    SwerveHeadingController.HeadingControllerState.MAINTAIN
+//                );
+//                swerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
+//            }
+//        }
+//
+//        if (
+//            swerveHeadingController.getHeadingControllerState() !=
+//            SwerveHeadingController.HeadingControllerState.OFF
+//        ) {
+//            mDrive.setTeleopInputs(
+//                mControlBoard.getThrottle(),
+//                mControlBoard.getStrafe(),
+//                swerveHeadingController.update(),
+//                mControlBoard.getSlowMode(),
+//                mControlBoard.getFieldRelative(),
+//                true
+//            );
+//        } else {
+            mDrive.setTeleopInputs(
+                mControlBoard.getThrottle(),
+                mControlBoard.getStrafe(),
+                mControlBoard.getTurn(),
+                mControlBoard.getSlowMode(),
+                /*mControlBoard.getFieldRelative()*/ // Field Relative override button conflicts with collector
+                false
+            );
+//        }
     }
 
     @Override

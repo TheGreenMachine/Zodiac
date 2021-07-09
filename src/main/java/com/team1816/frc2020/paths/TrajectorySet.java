@@ -1,10 +1,7 @@
 package com.team1816.frc2020.paths;
 
 import com.team1816.frc2020.paths.paths2020.*;
-import com.team1816.frc2020.paths.paths2021.BluePathA;
-import com.team1816.frc2020.paths.paths2021.BlueRedPathB;
-import com.team1816.frc2020.paths.paths2021.DimeTurn;
-import com.team1816.frc2020.paths.paths2021.RedPathA;
+import com.team1816.frc2020.paths.paths2021.*;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
@@ -23,6 +20,7 @@ public class TrajectorySet {
     // 2020
     public final Trajectory<TimedState<Pose2dWithCurvature>> DRIVE_STRAIGHT;
     public final Trajectory<TimedState<Pose2dWithCurvature>> TUNE_DRIVETRAIN;
+    public final Trajectory<TimedState<Pose2dWithCurvature>> TUNE_DRIVETRAIN_REVERSE;
     public final Trajectory<TimedState<Pose2dWithCurvature>> LIVING_ROOM;
     public final Trajectory<TimedState<Pose2dWithCurvature>> SIX_BALL_ALLIANCE;
     public final Trajectory<TimedState<Pose2dWithCurvature>> AUTO_TRENCH_TURN_RIGHT;
@@ -43,13 +41,6 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_OPPOSEB;
     public final Trajectory<TimedState<Pose2dWithCurvature>> TEN_BALL_AUTO;
 
-    // 2021
-
-    public final Trajectory<TimedState<Pose2dWithCurvature>> BLUE_RED_PATHB;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> RED_PATHA;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> BLUE_PATHA;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> DIME_TURN;
-
     private TrajectorySet() {
         // 2020
         this.DRIVE_STRAIGHT = new DriveStraight(12).generateTrajectory();
@@ -57,7 +48,8 @@ public class TrajectorySet {
         this.DRIVE_STRAIGHT_TRENCH_REVERSE =
             new DriveStraight(100).generateReversedTrajectory();
 
-        this.TUNE_DRIVETRAIN = new DriveStraight(190).generateTrajectory();
+        this.TUNE_DRIVETRAIN = new DriveStraight(180, 40).generateTrajectory();
+        this.TUNE_DRIVETRAIN_REVERSE = new DriveStraight(-480).generateTrajectory();
         this.LIVING_ROOM = new LivingRoomPath().generateTrajectory();
         this.AUTO_TRENCH_TURN_RIGHT = new AutoTrenchTurnRightPath().generateTrajectory();
 
@@ -85,11 +77,5 @@ public class TrajectorySet {
 
         this.TEN_BALL_AUTO = new TenBallOpposingPath().generateTrajectory();
 
-        // 2021
-
-        this.BLUE_RED_PATHB = new BlueRedPathB().generateTrajectory();
-        this.RED_PATHA = new RedPathA().generateTrajectory();
-        this.BLUE_PATHA = new BluePathA().generateTrajectory();
-        this.DIME_TURN = new DimeTurn().generateTrajectory();
     }
 }

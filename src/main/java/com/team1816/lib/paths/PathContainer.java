@@ -5,6 +5,7 @@ import com.team1816.frc2020.planners.DriveMotionPlanner;
 import com.team254.lib.control.Path;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
@@ -21,7 +22,12 @@ public interface PathContainer {
     // velocities are in/sec
     double kMaxVelocity = Robot.getFactory().getConstant("maxVel");
     double kMaxAccel = Robot.getFactory().getConstant("maxAccel");
-    double kMaxCentripetalAccel = 100.0;
+    double kMaxCentripetalAccel = Robot.getFactory().getConstant("maxCentripetalAccel", 100.0);
+    double kMaxDecel = (
+        Robot.getFactory().getConstant("maxDecel", -1) == -1
+            ? kMaxAccel
+            : Robot.getFactory().getConstant("maxDecel")
+        );
     double kMaxVoltage = 9.0;
 
     Path buildPath();
@@ -42,8 +48,7 @@ public interface PathContainer {
         boolean isReversed,
         List<Pose2d> waypoints
     ) {
-        return DriveMotionPlanner
-            .getInstance()
+        return (new DriveMotionPlanner())
             .generateTrajectory(
                 isReversed,
                 waypoints,
@@ -52,6 +57,7 @@ public interface PathContainer {
                 ),
                 getMaxVelocity(),
                 kMaxAccel,
+                kMaxDecel,
                 kMaxVoltage
             );
     }
@@ -74,5 +80,9 @@ public interface PathContainer {
 
     default double getMaxVelocity() {
         return kMaxVelocity;
+    }
+
+    default Rotation2d getTargetHeading() {
+        return Rotation2d.identity();
     }
 }

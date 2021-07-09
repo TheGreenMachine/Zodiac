@@ -39,6 +39,7 @@ public class DriveStraight implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         List<Pose2d> waypoints = new ArrayList<>();
+        var heading = (driveDistance < 0 ? 180 : 0);
         waypoints.add(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0)));
         waypoints.add(new Pose2d(driveDistance, 0.0, Rotation2d.fromDegrees(0)));
         return waypoints;
@@ -46,6 +47,7 @@ public class DriveStraight implements PathContainer {
 
     @Override
     public boolean isReversed() {
+//        return false;
         return driveDistance < 0;
     }
 

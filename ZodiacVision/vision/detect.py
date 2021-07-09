@@ -16,11 +16,11 @@ class Detector:
         lower_color = (lower['H'], lower['S'], lower['V'])
         upper_color = (upper['H'], upper['S'], upper['V'])
         h, w, _ = frame.shape
-        image = frame[0:int(h / 2), 0:w]
+        image = frame[0:int(0.7 * h), 0:w]
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, lower_color, upper_color)
         return mask
-    def findTarget(self, mask, zed, point_cloud):
+    def findTarget(self, mask, zed, point_cloud, frame):
         # Returns contour
         contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         if len(contours) != 0:
@@ -33,9 +33,14 @@ class Detector:
             else:
                 ratio = 0
         else:
-            self.nt.clearTable()
+            h, w, _ = frame.shape
+            err, point3D = point_cloud.get_value(h / 2, w / 2)
+            distance = math.sqrt(point3D[0] * point3D[0] + point3D[1] * point3D[1] + point3D[2] * point3D[2])
+            if math.isnan(distance) or math.isinf(distance):
+                self.nt.putValue('distance', -1)
+                return -1
+            self.nt.putValue('distance', round(distance))
             return -1
-        print(ratio)
         if ratio > .2:
             cx = rect[0] + (rect[2] * .5)
             cy = rect[1]
@@ -45,8 +50,7 @@ class Detector:
             err, point3D = point_cloud.get_value(cx, cy)
             distance = math.sqrt(point3D[0] * point3D[0] + point3D[1] * point3D[1] + point3D[2] * point3D[2])
             if math.isnan(distance) or math.isinf(distance):
-                self.nt.putValue('distance', -1)
-                return c
+                distance = -1
             self.nt.putValue('distance', round(distance))
             return c
         self.nt.clearTable()

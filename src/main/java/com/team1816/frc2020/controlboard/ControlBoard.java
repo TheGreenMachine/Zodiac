@@ -39,6 +39,11 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
+    public double getStrafe() {
+        return mDriveControlBoard.getStrafe();
+    }
+
+    @Override
     public boolean getQuickTurn() {
         return mDriveControlBoard.getQuickTurn();
     }
@@ -152,5 +157,20 @@ public class ControlBoard implements IControlBoard {
     @Override
     public boolean getClimberDeploy() {
         return mButtonControlBoard.getClimberDeploy();
+    }
+
+    @Override
+    public double getDPad() {
+        return mDriveControlBoard.getDPad();
+    }
+
+    @Override
+    public boolean getFieldRelative() {
+        return mDriveControlBoard.getFieldRelative();
+    }
+
+    @Override
+    public boolean getHood() {
+        return mDriveControlBoard.getHood();
     }
 }

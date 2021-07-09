@@ -1,7 +1,6 @@
 package com.team1816.lib.loops;
 
 import com.team1816.frc2020.Constants;
-import com.team254.lib.util.CrashTrackingRunnable;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,9 +23,9 @@ public class Looper implements ILooper {
     private double mTimestamp = 0;
     private double mDT = 0;
 
-    private final CrashTrackingRunnable runnable_ = new CrashTrackingRunnable() {
+    private final Runnable runnable_ = new Runnable() {
         @Override
-        public void runCrashTracked() {
+        public void run() {
             synchronized (mTaskRunningLock) {
                 if (mRunning) {
                     double now = Timer.getFPGATimestamp();
@@ -74,7 +73,6 @@ public class Looper implements ILooper {
     public synchronized void stop() {
         if (mRunning) {
             System.out.println("Stopping loops");
-            mNotifier.stop();
 
             synchronized (mTaskRunningLock) {
                 mRunning = false;

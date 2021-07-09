@@ -5,12 +5,15 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
-import com.team1816.lib.subsystems.PidProvider;
+import com.team1816.lib.hardware.PidConfig;
+import com.team1816.lib.subsystems.EnhancedPidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Turret extends Subsystem implements PidProvider {
+import java.util.concurrent.CompletableFuture;
+
+public class Turret extends Subsystem implements EnhancedPidProvider {
 
     private static final String NAME = "turret";
     private static Turret INSTANCE;
@@ -22,6 +25,10 @@ public class Turret extends Subsystem implements PidProvider {
         return INSTANCE;
     }
 
+    public double getActualTurretPositionDegrees() {
+        return getTurretPositionDegrees();
+    }
+
     public enum ControlMode {
         FIELD_FOLLOWING,
         CAMERA_FOLLOWING,
@@ -30,7 +37,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     // Components
-    private final IMotorControllerEnhanced turret;
+    private IMotorControllerEnhanced turret;
     private final Camera camera = Camera.getInstance();
     private final RobotState robotState = RobotState.getInstance();
     private final LedManager led = LedManager.getInstance();
@@ -46,10 +53,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     // Constants
     private static final int kPIDLoopIDx = 0;
-    private final double kP;
-    private final double kI;
-    private final double kD;
-    private final double kF;
+    private final PidConfig pidConfig;
 
     private static final double TURRET_ENCODER_PPR = factory.getConstant(
         "turret",
@@ -65,62 +69,67 @@ public class Turret extends Subsystem implements PidProvider {
         ((int) factory.getConstant("turret", "minPos"));
     public static final int TURRET_POSITION_MAX =
         ((int) factory.getConstant("turret", "maxPos"));
-    private static final boolean TURRET_SENSOR_PHASE = true;
+    public static final int TURRET_POSITION_SOUTH =
+        ((int) factory.getConstant("turret", "absPosTicksSouth"));
+    private static final boolean TURRET_SENSOR_PHASE =
+        factory.getConstant("turret", "invertSensorPhase") > 0;
 
-    public static final double CARDINAL_SOUTH = 32.556; // deg
+    public static final double CARDINAL_SOUTH = convertTurretTicksToDegrees(TURRET_POSITION_SOUTH - TURRET_POSITION_MIN); // deg
     public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90; // deg
     public static final double CARDINAL_NORTH = CARDINAL_SOUTH + 180; // deg
     public static final double MAX_ANGLE = convertTurretTicksToDegrees(
         TURRET_POSITION_MAX - TURRET_POSITION_MIN
     );
+    private static final double FIELD_TRACKING_ANGLE = 0;
 
     public Turret() {
         super(NAME);
-        this.turret = factory.getMotor(NAME, "turret");
-
-        turret.setNeutralMode(NeutralMode.Brake);
-        turret.setSensorPhase(TURRET_SENSOR_PHASE);
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
 
-        this.kP = factory.getConstant(NAME, "kP");
-        this.kI = factory.getConstant(NAME, "kI");
-        this.kD = factory.getConstant(NAME, "kD");
-        this.kF = factory.getConstant(NAME, "kF");
+        this.pidConfig = factory.getPidConfig(NAME, 0);
+    }
 
-        synchronized (this) {
-            this.zeroSensors();
+    @Override
+    public CompletableFuture<Void> initAsync() {
+        return factory.getMotor(NAME, "turret")
+            .thenAccept(motor -> this.turret = motor)
+            .thenRun(() -> {
+                turret.setNeutralMode(NeutralMode.Brake);
+                turret.setSensorPhase(TURRET_SENSOR_PHASE);
 
-            // Position Control
-            double peakOutput = 0.75;
+                this.zeroSensors();
 
-            turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
-            turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
-            turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
-            turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
-            turret.configAllowableClosedloopError(
-                kPIDLoopIDx,
-                ALLOWABLE_ERROR_TICKS,
-                Constants.kCANTimeoutMs
-            );
+                // Position Control
+                double peakOutput = 0.75;
 
-            // Soft Limits
-            turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
-            turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
-            turret.configForwardSoftLimitThreshold(
-                TURRET_POSITION_MAX,
-                Constants.kCANTimeoutMs
-            ); // Forward = MAX
-            turret.configReverseSoftLimitThreshold(
-                TURRET_POSITION_MIN,
-                Constants.kCANTimeoutMs
-            ); // Reverse = MIN
-            turret.overrideLimitSwitchesEnable(true);
-            turret.overrideSoftLimitsEnable(true);
+                turret.configPeakOutputForward(peakOutput, Constants.kCANTimeoutMs);
+                turret.configNominalOutputForward(0, Constants.kCANTimeoutMs);
+                turret.configNominalOutputReverse(0, Constants.kCANTimeoutMs);
+                turret.configPeakOutputReverse(-peakOutput, Constants.kCANTimeoutMs);
+                turret.configAllowableClosedloopError(
+                    kPIDLoopIDx,
+                    ALLOWABLE_ERROR_TICKS,
+                    Constants.kCANTimeoutMs
+                );
 
-            turretAngleRelativeToField = robotState.getLatestFieldToTurret();
-        }
+                // Soft Limits
+                turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
+                turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
+                turret.configForwardSoftLimitThreshold(
+                    TURRET_POSITION_MAX,
+                    Constants.kCANTimeoutMs
+                ); // Forward = MAX
+                turret.configReverseSoftLimitThreshold(
+                    TURRET_POSITION_MIN,
+                    Constants.kCANTimeoutMs
+                ); // Reverse = MIN
+                turret.overrideLimitSwitchesEnable(true);
+                turret.overrideSoftLimitsEnable(true);
+
+                turretAngleRelativeToField = robotState.getLatestFieldToTurret();
+            });
     }
 
     @Override
@@ -158,23 +167,8 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     @Override
-    public double getKP() {
-        return kP;
-    }
-
-    @Override
-    public double getKI() {
-        return kI;
-    }
-
-    @Override
-    public double getKD() {
-        return kD;
-    }
-
-    @Override
-    public double getKF() {
-        return kF;
+    public PidConfig getPidConfig() {
+        return pidConfig;
     }
 
     public void setTurretSpeed(double speed) {
@@ -299,13 +293,13 @@ public class Turret extends Subsystem implements PidProvider {
         setTurretAngleInternal(
             getTurretPositionDegrees() +
             camera.getDeltaXAngle() +
-            distanceManager.getTurretBias(camera.getDistance())
+            distanceManager.getTurretBias()
         );
     }
 
     private void trackGyro() {
         followTargetTurretSetAngle =
-            (getTurretPositionDegrees() - turretAngleRelativeToField);
+            (getTurretPositionDegrees() - turretAngleRelativeToField) + FIELD_TRACKING_ANGLE;
         setTurretAngleInternal(followTargetTurretSetAngle);
     }
 

@@ -1,28 +1,75 @@
 package com.team1816.frc2020;
 
 import com.team1816.lib.hardware.RobotFactory;
+import com.team254.lib.geometry.Translation2d;
 
 public class Constants {
 
     private static final RobotFactory factory = Robot.getFactory();
 
     public static final double kLooperDt = factory.getConstant("kLooperDt");
+
+    // Drivetrain characterization
     public static final double kDriveWheelTrackWidthInches = factory.getConstant(
         "trackWidth"
+    );
+    public static final double kDriveWheelbaseLengthInches = factory.getConstant(
+        "wheelbaseLength"
     );
     public static final double kDriveWheelDiameterInches = factory.getConstant(
         "wheelDiameter"
     );
-
+    public static final double kDriveWheelRadiusInches = kDriveWheelDiameterInches / 2.0;
     public static double kTrackScrubFactor = factory.getConstant("kTrackScrubFactor");
+
+    private static final double moduleDeltaX = kDriveWheelbaseLengthInches / 2.0;
+    private static final double moduleDeltaY = kDriveWheelTrackWidthInches / 2.0;
+
+    public static final Translation2d kFrontLeftModulePosition = new Translation2d(
+        moduleDeltaX,
+        moduleDeltaY
+    );
+    public static final Translation2d kFrontRightModulePosition = new Translation2d(
+        moduleDeltaX,
+        -moduleDeltaY
+    );
+    public static final Translation2d kBackLeftModulePosition = new Translation2d(
+        -moduleDeltaX,
+        moduleDeltaY
+    );
+    public static final Translation2d kBackRightModulePosition = new Translation2d(
+        -moduleDeltaX,
+        -moduleDeltaY
+    );
+
+    public static final Translation2d[] kModulePositions = {
+        kFrontLeftModulePosition,
+        kFrontRightModulePosition,
+        kBackRightModulePosition,
+        kBackLeftModulePosition,
+    };
+
+    // CAN Timeouts
     public static final int kCANTimeoutMs = 10; // use for important on the fly updates
     public static final int kLongCANTimeoutMs = 100; // use for constructors
 
-    public static final double kDriveWheelRadiusInches = kDriveWheelDiameterInches / 2.0;
     public static final double kOpenLoopRampRate = factory.getConstant(
         "drivetrain",
         "openLoopRampRate"
     );
+
+    // Swerve Heading Controller -- CHEESY Constants
+    public static final double kSwerveHeadingControllerErrorTolerance = 1.0; // degrees
+
+    // good for snapping (dpad)
+    public static final double kSnapSwerveHeadingKp = 0.015;
+    public static final double kSnapSwerveHeadingKi = 0.0;
+    public static final double kSnapSwerveHeadingKd = 0.000;
+
+    // good for maintaining heading
+    public static final double kMaintainSwerveHeadingKp = 0.020;
+    public static final double kMaintainSwerveHeadingKi = 0.0;
+    public static final double kMaintainSwerveHeadingKd = 0.002;
 
     // reset button
     public static final int kResetButtonChannel = 4;

@@ -1,5 +1,7 @@
 package com.team1816.frc2020.controlboard;
 
+import static com.team1816.frc2020.controlboard.ControlUtils.getControllerInstance;
+
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IButtonControlBoard;
@@ -27,7 +29,7 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     private final Controller mController;
 
     private GamepadButtonControlBoard() {
-        mController = new LogitechController(Constants.kButtonGamepadPort);
+        mController = getControllerInstance(Constants.kButtonGamepadPort);
         reset();
     }
 

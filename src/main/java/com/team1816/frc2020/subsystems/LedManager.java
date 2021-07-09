@@ -8,6 +8,7 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import java.awt.*;
 
 public class LedManager extends Subsystem {
 
@@ -15,13 +16,19 @@ public class LedManager extends Subsystem {
 
     private static LedManager INSTANCE;
 
+    public enum LedControlState {
+        RAVE,
+        BLINK,
+        STANDARD,
+    }
+
     // Components
     private final ICanifier canifier;
     private final ICanifier cameraCanifier;
 
     // State
-    private boolean blinkMode;
-    private boolean blinkLedOn = false;
+    private LedControlState controlState = LedControlState.STANDARD;
+    private RobotStatus defaultStatus = RobotStatus.DISABLED;
     private boolean outputsChanged = true;
 
     private int ledR;
@@ -29,9 +36,17 @@ public class LedManager extends Subsystem {
     private int ledB;
     private boolean cameraLedOn;
 
+    private boolean blinkLedOn = false;
     private int period; // ms
     private long lastWriteTime = System.currentTimeMillis();
-    private RobotStatus defaultStatus = RobotStatus.DISABLED;
+
+    private float raveHue = 0f;
+
+    // Constants
+    private static final boolean RAVE_ENABLED =
+        factory.getConstant(NAME, "raveEnabled") > 0;
+    private static final double RAVE_SPEED = factory.getConstant(NAME, "raveSpeed", 0.01);
+    private static final int MAX = (int) factory.getConstant(NAME, "maxLevel", 255);
 
     private LedManager() {
         super(NAME);
@@ -63,15 +78,6 @@ public class LedManager extends Subsystem {
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_6_PwmInputs3, 255, 10);
     }
 
-    @Deprecated
-    public void forceSetLedColor(int r, int g, int b) {
-        if (this.ledR != r || this.ledG != g || this.ledB != b) {
-            canifier.setLEDOutput((ledG / 255.0), CANifier.LEDChannel.LEDChannelA);
-            canifier.setLEDOutput((ledR / 255.0), CANifier.LEDChannel.LEDChannelB);
-            canifier.setLEDOutput((ledB / 255.0), CANifier.LEDChannel.LEDChannelC);
-        }
-    }
-
     public void setCameraLed(boolean cameraLedOn) {
         if (this.cameraLedOn != cameraLedOn) {
             this.cameraLedOn = cameraLedOn;
@@ -88,32 +94,40 @@ public class LedManager extends Subsystem {
         }
     }
 
+    public void setControlState(LedControlState controlState) {
+        this.controlState = controlState;
+    }
+
     /**
      * @param r      LED color red value (0-255)
      * @param g      LED color green value (0-255)
      * @param b      LED color blue value (0-255)
      * @param period milliseconds
      */
-    public void setLedColorBlink(int r, int g, int b, int period) {
+    private void setLedColorBlink(int r, int g, int b, int period) {
         // Period is in milliseconds
         setLedColor(r, g, b);
-        blinkMode = true;
+        setControlState(LedControlState.BLINK);
         this.period = period;
         outputsChanged = true;
     }
 
-    public void setLedColorBlink(int r, int g, int b) {
+    private void setLedColorBlink(int r, int g, int b) {
         // Default period of 1 second
         setLedColorBlink(r, g, b, 1000);
     }
 
     public void indicateStatus(RobotStatus status) {
-        blinkMode = false;
+        setControlState(LedControlState.STANDARD);
         setLedColor(status.getRed(), status.getGreen(), status.getBlue());
     }
 
     public void indicateDefaultStatus() {
-        indicateStatus(defaultStatus);
+        if (RAVE_ENABLED && defaultStatus != RobotStatus.DISABLED) {
+            setControlState(LedControlState.RAVE);
+        } else {
+            indicateStatus(defaultStatus);
+        }
     }
 
     public void blinkStatus(RobotStatus status) {
@@ -133,8 +147,8 @@ public class LedManager extends Subsystem {
         return new int[] { ledR, ledG, ledB };
     }
 
-    public boolean isBlinkMode() {
-        return blinkMode;
+    public LedControlState getControlState() {
+        return controlState;
     }
 
     public double getPeriod() {
@@ -158,20 +172,30 @@ public class LedManager extends Subsystem {
             }
         }
         if (canifier != null) {
-            if (blinkMode) {
-                if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
-                    if (blinkLedOn) {
-                        writeLedHardware(0, 0, 0);
-                        blinkLedOn = false;
-                    } else {
-                        writeLedHardware(ledR, ledG, ledB);
-                        blinkLedOn = true;
+            switch (controlState) {
+                case RAVE:
+                    var color = Color.getHSBColor(raveHue, 1.0f, 1.0f);
+                    writeLedHardware(color.getRed(), color.getGreen(), color.getBlue());
+                    raveHue += RAVE_SPEED;
+                    break;
+                case BLINK:
+                    if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
+                        if (blinkLedOn) {
+                            writeLedHardware(0, 0, 0);
+                            blinkLedOn = false;
+                        } else {
+                            writeLedHardware(ledR, ledG, ledB);
+                            blinkLedOn = true;
+                        }
+                        lastWriteTime = System.currentTimeMillis();
                     }
-                    lastWriteTime = System.currentTimeMillis();
-                }
-            } else if (outputsChanged) {
-                writeLedHardware(ledR, ledG, ledB);
-                outputsChanged = false;
+                    break;
+                case STANDARD:
+                    if (outputsChanged) {
+                        writeLedHardware(ledR, ledG, ledB);
+                        outputsChanged = false;
+                    }
+                    break;
             }
         }
     }
@@ -218,15 +242,15 @@ public class LedManager extends Subsystem {
     public void initSendable(SendableBuilder builder) {}
 
     public enum RobotStatus {
-        ENABLED(0, 255, 0), // green
-        DISABLED(255, 64, 0), // orange
-        ERROR(255, 0, 0), // red
-        AUTONOMOUS(0, 255, 255), // cyan (we can also try 42, 161, 152)
-        ENDGAME(0, 0, 255), // blue
-        SEEN_TARGET(255, 0, 255), // magenta
-        ON_TARGET(255, 0, 20), // deep magenta
-        DRIVETRAIN_FLIPPED(255, 255, 0), // yellow,
-        MANUAL_TURRET(255, 255, 255), // white
+        ENABLED(0, MAX, 0), // green
+        DISABLED(MAX, MAX / 5, 0), // orange
+        ERROR(MAX, 0, 0), // red
+        AUTONOMOUS(0, MAX, MAX), // cyan
+        ENDGAME(0, 0, MAX), // blue
+        SEEN_TARGET(MAX, 0, MAX), // magenta
+        ON_TARGET(MAX, 0, 20), // deep magenta
+        DRIVETRAIN_FLIPPED(MAX, MAX, 0), // yellow,
+        MANUAL_TURRET(MAX, MAX, MAX), // white
         OFF(0, 0, 0); // off
 
         int red;

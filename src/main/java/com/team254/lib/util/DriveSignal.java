@@ -1,36 +1,66 @@
 package com.team254.lib.util;
 
+import com.team1816.frc2020.Constants;
+import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.SwerveModule;
+import com.team254.lib.geometry.Rotation2d;
+
+import java.text.DecimalFormat;
+import java.util.Arrays;
+
 /**
- * A drivetrain command consisting of the left, right motor settings and whether the brake mode is enabled.
+ * A drivetrain signal containing the speed and azimuth for each wheel
  */
 public class DriveSignal {
-    private final double mLeftMotor;
-    private final double mRightMotor;
-    private final boolean mBrakeMode;
+    public static final double[] ZERO_SPEED = new double[]{0, 0, 0, 0};
+    public static final Rotation2d[] ZERO_AZIMUTH = new Rotation2d[]{Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity()};
 
-    public DriveSignal(double left, double right) {
-        this(left, right, false);
+    public static final DriveSignal NEUTRAL = new DriveSignal(ZERO_SPEED, ZERO_AZIMUTH, false);
+    public static final DriveSignal BRAKE = new DriveSignal(ZERO_SPEED, ZERO_AZIMUTH, true);
+
+    private double[] mWheelSpeeds;
+    private Rotation2d[] mWheelAzimuths; // Radians!
+    private boolean mBrakeMode;
+
+    public DriveSignal() {
+        this(ZERO_SPEED, ZERO_AZIMUTH, false);
     }
 
-    public DriveSignal(double left, double right, boolean brakeMode) {
-        mLeftMotor = left;
-        mRightMotor = right;
+    public DriveSignal(double left, double right) {
+        mWheelSpeeds = new double[4];
+        mWheelSpeeds[SwerveModule.kFrontLeft] = left;
+        mWheelSpeeds[SwerveModule.kBackLeft] = left;
+        mWheelSpeeds[SwerveModule.kFrontRight] = right;
+        mWheelSpeeds[SwerveModule.kBackRight] = right;
+
+        mWheelAzimuths = ZERO_AZIMUTH;
+        mBrakeMode = false;
+    }
+
+    public DriveSignal(double[] wheelSpeeds, Rotation2d[] wheelAzimuths, boolean brakeMode) {
+        mWheelSpeeds = wheelSpeeds;
+        mWheelAzimuths = wheelAzimuths;
         mBrakeMode = brakeMode;
     }
 
-    public static DriveSignal fromControls(double throttle, double turn) {
-        return new DriveSignal(throttle - turn, throttle + turn);
+    public double[] getWheelSpeeds() {
+        return mWheelSpeeds;
     }
 
-    public static final DriveSignal NEUTRAL = new DriveSignal(0, 0);
-    public static final DriveSignal BRAKE = new DriveSignal(0, 0, true);
-
-    public double getLeft() {
-        return mLeftMotor;
+    public DriveSignal toVelocity() {
+        return new DriveSignal(
+            Arrays.stream(this.mWheelSpeeds)
+                .map(x ->
+                    x * Drive.inchesPerSecondToTicksPer100ms(Constants.kPathFollowingMaxVel)
+                )
+                .toArray(),
+            this.mWheelAzimuths,
+            this.mBrakeMode
+        );
     }
 
-    public double getRight() {
-        return mRightMotor;
+    public Rotation2d[] getWheelAzimuths() {
+        return mWheelAzimuths;
     }
 
     public boolean getBrakeMode() {
@@ -39,6 +69,12 @@ public class DriveSignal {
 
     @Override
     public String toString() {
-        return "L: " + mLeftMotor + ", R: " + mRightMotor + (mBrakeMode ? ", BRAKE" : "");
+        String ret_val = "DriveSignal - \n";
+        final DecimalFormat fmt = new DecimalFormat("#0.000");
+        for (int i = 0; i < mWheelSpeeds.length; i++) {
+            ret_val += "\tWheel " + i + ": Speed - " + mWheelSpeeds[i] + ", Azimuth - " + fmt.format(mWheelAzimuths[i].getDegrees()) + " deg\n";
+        }
+
+        return ret_val;
     }
 }

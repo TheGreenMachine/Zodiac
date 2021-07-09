@@ -1,12 +1,18 @@
 let waypoints = [];
 let splinePoints = [];
+let fieldCanvas;
 let ctx;
 let ctxBackground;
 let image;
-let imageFlipped;
 let wto;
-let change = "propertychange change click keyup input paste";
+let change = "propertychange change input";
 let animating = false;
+let waypointsOutput;
+let waypointsDialog;
+let titleInput;
+let interactive;
+let clipboardToast;
+let isReversedCheckbox;
 
 const fieldWidth = 360; // inches
 const fieldHeight = 180; // inches
@@ -14,17 +20,28 @@ const fieldHeight = 180; // inches
 const xOffset = 0; // inches
 const yOffset = 0; // inches
 
-const width = 1312; //pixels
-const height = 650; //pixels
+const width = 980; //pixels
+const height = 490; //pixels
 
 const robotWidth = 34; // inches
 const robotHeight = 34; // inches
 
 const waypointRadius = 7;
-const splineWidth = 2;
+const splineWidth = 3;
 
 const kEps = 1E-9;
 const pi = Math.PI;
+
+function svg(tagName, attrs) {
+    const svgNs = "http://www.w3.org/2000/svg";
+    let element = document.createElementNS(svgNs, tagName);
+    if (attrs && typeof attrs === 'object') {
+        for (const [key, value] of Object.entries(attrs)) {
+            element.setAttribute(key, value);
+        }
+    }
+    return element;
+}
 
 class Translation2d {
 	constructor(x, y) {
@@ -55,7 +72,7 @@ class Translation2d {
     inverse() {
 		return new Translation2d(-this.x, -this.y);
     }
-    
+
     interpolate(other, x) {
         if (x <= 0) {
             return new Translation2d(this.x, this.y);
@@ -76,7 +93,7 @@ class Translation2d {
     static dot(a, b) {
 		return a.x * b.x + a.y * b.y;
     }
-    
+
     static getAngle(a, b) {
         let cos_angle = this.dot(a, b) / (a.norm() * b.norm());
         if (Double.isNaN(cos_angle)) {
@@ -213,7 +230,7 @@ class Pose2d {
         return new Pose2d(new Translation2d(delta.dx * s - delta.dy * c, delta.dx * c + delta.dy * s),
                 new Rotation2d(cos_theta, sin_theta, false));
     }
-    
+
     static log(transform) {
         let dtheta = transform.getRotation().getRadians();
         let half_dtheta = 0.5 * dtheta;
@@ -286,7 +303,22 @@ class Pose2d {
 		ctx.stroke();
         ctx.closePath();
 	}
-	
+
+	drawInteractive(radius, index) {
+	    let point = svg('circle', {
+            fill: "#2CFF2C",
+            cx: this.translation.drawX,
+            cy: this.translation.drawY,
+            r: radius,
+            'data-index': index,
+        });
+
+	    point.addEventListener('mousedown', handleWaypointDragStart);
+        point.addEventListener('click', handleWaypointClick);
+
+        interactive.appendChild(point);
+    }
+
 	toString() {
 		return "new Pose2d(new Translation2d(" + this.translation.x + ", " + this.translation.y + "), new Rotation2d(" + this.rotation.cos + ", " + this.rotation.sin + ", " + this.rotation.normalize + "))";
 	}
@@ -347,6 +379,7 @@ function init() {
     let field = $('#field');
     let background = $('#background');
     let canvases = $('#canvases');
+    let interactiveEl = $('#interactive');
     let widthString = (width / 1.5) + "px";
     let heightString = (height / 1.5) + "px";
 
@@ -354,10 +387,13 @@ function init() {
     field.css("height", heightString);
     background.css("width", widthString);
     background.css("height", heightString);
+    interactiveEl.css("width", widthString);
+    interactiveEl.css("height", heightString);
     canvases.css("width", widthString);
     canvases.css("height", heightString);
+    fieldCanvas = document.getElementById('field');
 
-	ctx = document.getElementById('field').getContext('2d');
+	ctx = fieldCanvas.getContext('2d');
 	ctx.canvas.width = width;
 	ctx.canvas.height = height;
     ctx.clearRect(0, 0, width, height);
@@ -368,34 +404,61 @@ function init() {
     ctxBackground.canvas.height = height;
     ctx.clearRect(0, 0, width, height);
 
+    interactive = document.getElementById('interactive');
+    interactive.setAttribute("width", width);
+    interactive.setAttribute("height", height);
+    interactive.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    interactive.addEventListener('click', onCanvasClick);
+
 	image = new Image();
-	image.src = 'resources/img/field1.png';
+	image.src = 'resources/img/6_field1.jpg';
 	image.onload = function() {
 		ctxBackground.drawImage(image, 0, 0, width, height);
-		update();
+		update(false);
 	};
-	imageFlipped = new Image();
-	imageFlipped.src = 'resources/img/field2.png';
+
+	titleInput = document.getElementById("title");
+
+    isReversedCheckbox = document.getElementById('isReversed');
+    waypointsDialog = document.getElementById('waypointsDialog');
+    waypointsOutput = document.getElementById('waypointsOutput');
+    clipboardToast = document.getElementById('clipboardToast');
+
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'KeyS' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            saveFile();
+        }
+    })
+
     rebind();
 }
 
-function clear() {
+function clearSplines() {
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = "#FF0000";
+}
+
+function clear() {
+    clearSplines();
 
 	ctxBackground.clearRect(0, 0, width, height);
     ctxBackground.fillStyle = "#FF0000";
-    ctxBackground.drawImage(flipped ? imageFlipped : image, 0, 0, width, height);
+    ctxBackground.drawImage(image, 0, 0, width, height);
+
+    while (interactive.lastChild) {
+        interactive.removeChild(interactive.lastChild);
+    }
 }
 
 function rebind() {
-    let input = $('input');
+    let input = $('.data-input');
     input.unbind(change);
     input.bind(change, function() {
-        clearTimeout(wto);
-        wto = setTimeout(function() {
+        cancelAnimationFrame(wto);
+        wto = requestAnimationFrame(function() {
             update();
-        }, 500);
+        });
     });
 }
 
@@ -403,18 +466,112 @@ function addPoint() {
 	let prev;
 	if (waypoints.length > 0) prev = waypoints[waypoints.length - 1].translation;
 	else prev = new Translation2d(50, 50);
-	$("tbody").append("<tr>" + "<td class='drag-handler'></td>"
-        + "<td class='x'><input type='number' value='" + (prev.x + 50) + "'></td>"
-        + "<td class='y'><input type='number' value='" + (prev.y + 50) + "'></td>"
-        + "<td class='heading'><input type='number' value='0'></td>"
+	_addPoint(prev.x + 50, prev.y + 50);
+}
+
+function _addPoint(x, y, heading = 0, doUpdate = true) {
+    $("tbody").append("<tr>" + "<td class='drag-handler'><i class='material-icons'>drag_indicator</i></td>"
+        + `<td class='x'><input type='number' class='data-input' value='${x}'></td>`
+        + `<td class='y'><input type='number' class='data-input' value='${y}'></td>`
+        + `<td class='heading'><input type='number' class='data-input' value='${heading}'></td>`
         + "<td class='comments'><input type='search' placeholder='Comments'></td>"
-        + "<td class='enabled'><input type='checkbox' checked></td>"
-        + "<td class='delete'><button onclick='$(this).parent().parent().remove();update()'>&times;</button></td></tr>");
-	update();
-	rebind();
+        + "<td class='enabled'><input type='checkbox' class='data-input' checked></td>"
+        + "<td class='delete'><button onclick='$(this).parent().parent().remove();update()' class='icon-button'><i class='material-icons'>clear</i></button></td></tr>");
+    if (doUpdate) {
+        update();
+        rebind();
+    }
+}
+
+function getCursorPosition(event) {
+    const rect = interactive.getBoundingClientRect();
+    return {
+        x: (event.clientX - rect.left) * (width / rect.width),
+        y: (event.clientY - rect.top) * (height / rect.height),
+    };
+}
+
+function onCanvasClick(event) {
+    let { x: canvasX, y: canvasY } = getCursorPosition(event);
+    let { x, y } = canvasToFieldCoords(canvasX, canvasY);
+    _addPoint(x, y);
+}
+
+function canvasToFieldCoords(canvasX, canvasY) {
+    let x = Math.round(canvasX * (fieldWidth / width) - xOffset);
+    let y = Math.round((height - canvasY) * (fieldHeight / height) - yOffset);
+    return { x, y };
+}
+
+let selectedWaypoint;
+function selectWaypoint(el) {
+    if (el === selectedWaypoint) return;
+    if (selectedWaypoint) {
+        selectedWaypoint.removeAttribute('data-selected');
+    }
+    selectedWaypoint = el;
+    if (selectedWaypoint) {
+        selectedWaypoint.setAttribute('data-selected', true);
+    }
+}
+
+function handleWaypointDragStart(event) {
+    selectWaypoint(event.target);
+    fieldCanvas.classList.add('faded');
+    interactive.addEventListener('mousemove', handleWaypointDrag);
+    interactive.addEventListener('mouseup', handleWaypointDragEnd);
+}
+
+function handleWaypointDrag(event) {
+    if (selectedWaypoint) {
+        event.preventDefault();
+        let { x: canvasX, y: canvasY } = getCursorPosition(event);
+        selectedWaypoint.setAttribute("cx", canvasX);
+        selectedWaypoint.setAttribute("cy", canvasY);
+        let index = selectedWaypoint.getAttribute('data-index');
+        let { x, y } = canvasToFieldCoords(canvasX, canvasY);
+        waypoints[index].translation.x = x;
+        waypoints[index].translation.y = y;
+
+        recalculateSplines(waypoints, 4);
+    }
+}
+
+function handleWaypointClick(event) {
+    event.stopPropagation();
+}
+
+function handleWaypointDragEnd(event) {
+    if (selectedWaypoint) {
+        let { x: canvasX, y: canvasY } = getCursorPosition(event);
+        let { x, y } = canvasToFieldCoords(canvasX, canvasY);
+        modifyWaypoint(selectedWaypoint.getAttribute('data-index'), x, y);
+        selectWaypoint(null);
+    }
+    fieldCanvas.classList.remove('faded');
+    interactive.removeEventListener('mousemove', handleWaypointDrag);
+    interactive.removeEventListener('mouseup', handleWaypointDragEnd);
+}
+
+function modifyWaypoint(index, x, y) {
+    let tr = $('tbody').children('tr')[index];
+    let xInput = tr.querySelector('.x input');
+    let yInput = tr.querySelector('.y input');
+
+    xInput.value = x;
+    yInput.value = y;
+
+    update();
+    rebind();
 }
 
 function draw(style) {
+    if (style === 4) {
+        clearSplines();
+        drawSplines(true);
+        drawSplines(false);
+        return;
+    }
     clear();
     drawWaypoints();
 
@@ -433,7 +590,7 @@ function draw(style) {
     }
 }
 
-function update() {
+function update(modified = true) {
     if (animating) {
         return;
     }
@@ -441,55 +598,70 @@ function update() {
 	waypoints = [];
 	let data = "";
 	$('tbody').children('tr').each(function() {
-		let x = parseInt($($($(this).children()).children()[0]).val());
-		let y = parseInt($($($(this).children()).children()[1]).val());
-		let heading = parseInt($($($(this).children()).children()[2]).val());
+		let x = parseInt($($($(this).children()).children()[1]).val());
+		let y = parseInt($($($(this).children()).children()[2]).val());
+		let heading = Math.round(parseInt($($($(this).children()).children()[3]).val()));
 		if (isNaN(heading)) {
 			heading = 0;
         }
-		let comment = ($($($(this).children()).children()[3]).val());
-        let enabled = ($($($(this).children()).children()[4]).prop('checked'));
+		let comment = ($($($(this).children()).children()[4]).val());
+        let enabled = ($($($(this).children()).children()[5]).prop('checked'));
 		if (enabled) {
             waypoints.push(new Pose2d(new Translation2d(x, y), Rotation2d.fromDegrees(heading), comment));
-            data += x + "," + y + "," + heading + ";";
         }
     });
 
     draw(1);
 
-	$.post({
-		url: "api/calculate_splines",
-		data: data,
-		success: function(data) {
-			if (data === "no") {
-				return;
-			}
+    if (modified) {
+        setModified(true);
+    }
 
-			console.log(data);
+    recalculateSplines(waypoints, 2);
+}
 
-			let points = JSON.parse(data).points;
-		
-			splinePoints = [];
-			for (let i in points) {
-			    let point = points[i];
-				splinePoints.push(new Pose2d(new Translation2d(point.x, point.y), Rotation2d.fromRadians(point.rotation)));
+function recalculateSplines(waypointsList, drawStyle) {
+    const orderedWaypoints = isReversedCheckbox.checked ? waypointsList.slice(0).reverse() : waypointsList;
+    const data = orderedWaypoints.map(point => (
+        `${point.translation.x},${point.translation.y},${Math.round(point.rotation.getDegrees())}`
+    )).join(';');
+
+    if (data.length !== 0) {
+        $.post({
+            url: "api/calculate_splines",
+            data: data,
+            success: function (splineData) {
+                if (splineData === "no") {
+                    return;
+                }
+
+                // console.log(splineData);
+
+                let points = JSON.parse(splineData).points;
+
+                splinePoints = [];
+                for (const point of points) {
+                    splinePoints.push(new Pose2d(new Translation2d(point.x, point.y), Rotation2d.fromRadians(point.rotation)));
+                }
+
+                draw(drawStyle);
             }
+        });
+    }
+}
 
-            draw(2);
-		}
+function changeField(val) {
+    console.log(val);
+	image.src = `resources/img/${val}.jpg`
+    image.onload(() => {
+        ctx.drawImage(image, 0, 0, width, height);
+        update(false);
     });
 }
 
-let flipped = false;
-function flipField() {
-	flipped = !flipped;
-	ctx.drawImage(flipped ? imageFlipped : image, 0, 0, width, height);
-	update();
-}
-
 function drawWaypoints() {
-	waypoints.forEach(function(waypoint) {
-        waypoint.draw(true, waypointRadius);
+	waypoints.forEach((waypoint, i) => {
+        waypoint.drawInteractive(waypointRadius, i);
         drawRobot(waypoint, waypoint.rotation.getRadians());
     });
 }
@@ -531,11 +703,176 @@ function drawSplines(fill, animate) {
             splinePoint.draw(false, splineWidth);
 
             if (fill) {
-                let hue = Math.round(180 * (i++ / splinePoints.length));
+                let index = isReversedCheckbox.checked ? (splinePoints.length - i++) : i++;
+                let hue = Math.round(180 * (index / splinePoints.length));
                 fillRobot(splinePoint, splinePoint.rotation.getRadians(), 'hsla(' + hue + ', 100%, 50%, 0.025)');
             } else {
                 drawRobot(splinePoint, splinePoint.rotation.getRadians());
             }
         });
     }
+}
+
+function showWaypointsList() {
+    waypointsOutput.textContent = generateWaypointsList();
+    waypointsDialog.showModal();
+}
+
+async function copyToClipboard() {
+    let range = new Range();
+    range.selectNode(waypointsOutput);
+    window.getSelection().empty();
+    window.getSelection().addRange(range);
+    await navigator.clipboard.writeText(waypointsOutput.textContent);
+    showToast(clipboardToast);
+}
+
+const TOAST_DURATION = 1000; // ms
+
+function showToast(toastEl) {
+    toastEl.classList.add('shown');
+    setTimeout(() => {
+        toastEl.classList.remove('shown');
+    }, TOAST_DURATION);
+}
+
+function generateWaypointsList() {
+    return 'List.of(\n' +
+        waypoints.map((waypoint, i, arr) =>
+            `\tnew Pose2d(${waypoint.translation.x}, ${waypoint.translation.y}, ${Math.round(waypoint.rotation.getDegrees())})`
+            + (i === arr.length - 1 ? '' : ',')
+            + (waypoint.comment && ` // ${waypoint.comment}`)
+        ).join('\n') +
+        '\n)';
+}
+
+function loadWaypoints(data) {
+    waypoints = [];
+    $('tbody').empty();
+    for (const {x, y, heading} of data) {
+        _addPoint(x, y, heading, false);
+    }
+    update(false);
+    rebind();
+}
+
+class CSV {
+    constructor(data = [], isReversed) {
+        this.data = data;
+        this.isReversed = isReversed;
+    }
+
+    static load(text) {
+        const rows = text.split("\n");
+        const headers = rows.shift(); // gets and removes headers
+        const reversedText = headers.split(',')[3]?.trim();
+        const reversed = !!(reversedText && reversedText === 'true'); // ignore truthy values, explicit true
+        const data = rows.map(row => {
+            const [ x, y, heading ] = row.split(",");
+            return { x, y, heading };
+        });
+        return new CSV(data, reversed);
+    }
+
+    addRow({ x, y, heading }) {
+        this.data.push({ x, y, heading });
+    }
+
+    toString() {
+        let returnVal = `x,y,heading,${this.isReversed}\n`;
+        returnVal += this.data.map(({x, y, heading}) => `${x},${y},${heading}`).join('\n');
+        return returnVal;
+    }
+
+    toBlob() {
+        return new Blob([this.toString()], { type: 'text/csv' });
+    }
+}
+
+function setModified(modified) {
+    if (modified) {
+        document.documentElement.setAttribute('data-modified', 'true');
+    } else {
+        document.documentElement.removeAttribute('data-modified');
+    }
+}
+
+const filePickerOptions = {
+    types: [
+        {
+            description: 'CSV Files',
+            accept: {
+                'text/csv': ['.csv'],
+            },
+        },
+    ],
+};
+let fileHandle;
+
+async function openFile() {
+    [fileHandle] = await window.showOpenFilePicker(filePickerOptions);
+    const file = await fileHandle.getFile();
+    await loadFromFile(file);
+}
+
+async function restoreFromFile() {
+    if (fileHandle) {
+        const file = await fileHandle.getFile();
+        await loadFromFile(file);
+    }
+}
+
+async function loadFromFile(file) {
+    titleInput.value = file.name.slice(0, -4);
+    const text = await file.text();
+    const output = CSV.load(text);
+    isReversedCheckbox.checked = output.isReversed;
+    loadWaypoints(output.data);
+}
+
+async function writeFile(fileHandle, contents) {
+    const writable = await fileHandle.createWritable();
+    await writable.write(contents);
+    await writable.close();
+}
+
+function generateCSV() {
+    const csv = new CSV(
+        waypoints.map(point => ({
+            x: point.translation.x,
+            y: point.translation.y,
+            heading: Math.round(point.rotation.getDegrees()),
+        })),
+        isReversedCheckbox.checked
+    );
+    return csv.toString();
+}
+
+async function saveFile() {
+    try {
+        if (!fileHandle) {
+            return await saveFileAs();
+        }
+        await writeFile(fileHandle, generateCSV());
+    } catch (e) {
+        console.error('Unable to save file', e);
+    }
+    setModified(false);
+}
+
+async function saveFileAs() {
+    try {
+        fileHandle = await window.showSaveFilePicker(filePickerOptions);
+        titleInput.value = fileHandle.name.slice(0, -4);
+    } catch (e) {
+        if (e.name === 'AbortError') return;
+        console.error('An error occurred trying to open the file', e);
+        return;
+    }
+    try {
+        await writeFile(fileHandle, generateCSV());
+    } catch (e) {
+        console.error('Unable to save file', e);
+    }
+    setModified(false);
 }

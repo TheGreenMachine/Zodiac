@@ -33,6 +33,6 @@ public class DriveOpenLoopAction implements Action {
 
     @Override
     public void done() {
-        mDrive.setOpenLoop(new DriveSignal(0.0, 0.0));
+        mDrive.setOpenLoop(DriveSignal.BRAKE);
     }
 }

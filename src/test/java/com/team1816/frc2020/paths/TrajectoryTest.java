@@ -1,6 +1,7 @@
 package com.team1816.frc2020.paths;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -135,8 +136,8 @@ public class TrajectoryTest {
 
     @Test
     public void test() {
-        System.out.println(set.BLUE_RED_PATHB);
-        verifyTrajectory(set.BLUE_RED_PATHB, false);
+        System.out.println(set.DRIVE_STRAIGHT);
+        verifyTrajectory(set.DRIVE_STRAIGHT, false);
     }
 
     @Test
