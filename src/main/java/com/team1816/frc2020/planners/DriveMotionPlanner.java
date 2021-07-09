@@ -14,22 +14,10 @@ import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
 
 public class DriveMotionPlanner implements CSVWritable {
 
     // Should not be a singleton
-
-    private static ExecutorService executor;
-
-    private static ExecutorService getExecutor() {
-        if (executor == null) {
-            executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                1000L, TimeUnit.MILLISECONDS,
-                new SynchronousQueue<Runnable>());;
-        }
-        return executor;
-    }
 
     private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
@@ -126,7 +114,7 @@ public class DriveMotionPlanner implements CSVWritable {
         useDefaultCook = true;
     }
 
-    public CompletableFuture<Trajectory<TimedState<Pose2dWithCurvature>>> generateTrajectory(
+    public Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory(
         boolean reversed,
         final List<Pose2d> waypoints,
         final List<TimingConstraint<Pose2dWithCurvature>> constraints,
@@ -150,7 +138,7 @@ public class DriveMotionPlanner implements CSVWritable {
         );
     }
 
-    public CompletableFuture<Trajectory<TimedState<Pose2dWithCurvature>>> generateTrajectory(
+    public Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory(
         boolean reversed,
         final List<Pose2d> waypoints,
         final List<TimingConstraint<Pose2dWithCurvature>> constraints,
@@ -175,7 +163,7 @@ public class DriveMotionPlanner implements CSVWritable {
         );
     }
 
-    public CompletableFuture<Trajectory<TimedState<Pose2dWithCurvature>>> generateTrajectory(
+    public Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory(
         boolean reversed,
         final List<Pose2d> waypoints,
         final List<TimingConstraint<Pose2dWithCurvature>> constraints,
@@ -188,65 +176,60 @@ public class DriveMotionPlanner implements CSVWritable {
         double default_vel,
         int slowdown_chunks
     ) {
-        var future = new CompletableFuture<Trajectory<TimedState<Pose2dWithCurvature>>>();
-
-        getExecutor().submit(() -> {
-            List<Pose2d> waypoints_maybe_flipped = waypoints;
-            final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
-            // TODO re-architect the spline generator to support reverse.
-            if (reversed) {
-                waypoints_maybe_flipped = new ArrayList<>(waypoints.size());
-                for (int i = 0; i < waypoints.size(); ++i) {
-                    waypoints_maybe_flipped.add(waypoints.get(i).transformBy(flip));
-                }
+        List<Pose2d> waypoints_maybe_flipped = waypoints;
+        final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
+        // TODO re-architect the spline generator to support reverse.
+        if (reversed) {
+            waypoints_maybe_flipped = new ArrayList<>(waypoints.size());
+            for (int i = 0; i < waypoints.size(); ++i) {
+                waypoints_maybe_flipped.add(waypoints.get(i).transformBy(flip));
             }
+        }
 
-            // Create a trajectory from splines.
-            Trajectory<Pose2dWithCurvature> trajectory = TrajectoryUtil.trajectoryFromSplineWaypoints(
-                waypoints_maybe_flipped,
-                kMaxDx,
-                kMaxDy,
-                kMaxDTheta
-            );
+        // Create a trajectory from splines.
+        Trajectory<Pose2dWithCurvature> trajectory = TrajectoryUtil.trajectoryFromSplineWaypoints(
+            waypoints_maybe_flipped,
+            kMaxDx,
+            kMaxDy,
+            kMaxDTheta
+        );
 
-            if (reversed) {
-                List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
-                for (int i = 0; i < trajectory.length(); ++i) {
-                    flipped.add(
-                        new Pose2dWithCurvature(
-                            trajectory.getState(i).getPose().transformBy(flip),
-                            -trajectory.getState(i).getCurvature(),
-                            trajectory.getState(i).getDCurvatureDs()
-                        )
-                    );
-                }
-                trajectory = new Trajectory<>(flipped);
+        if (reversed) {
+            List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
+            for (int i = 0; i < trajectory.length(); ++i) {
+                flipped.add(
+                    new Pose2dWithCurvature(
+                        trajectory.getState(i).getPose().transformBy(flip),
+                        -trajectory.getState(i).getCurvature(),
+                        trajectory.getState(i).getDCurvatureDs()
+                    )
+                );
             }
-            // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
-            // than the specified voltage.
-            //final CurvatureVelocityConstraint velocity_constraints = new CurvatureVelocityConstraint();
-            List<TimingConstraint<Pose2dWithCurvature>> all_constraints = new ArrayList<>();
-            //all_constraints.add(velocity_constraints);
-            if (constraints != null) {
-                all_constraints.addAll(constraints);
-            }
-            // Generate the timed trajectory.
-            Trajectory<TimedState<Pose2dWithCurvature>> timed_trajectory = TimingUtil.timeParameterizeTrajectory(
-                reversed,
-                new DistanceView<>(trajectory),
-                kMaxDx,
-                all_constraints,
-                start_vel,
-                end_vel,
-                max_vel,
-                max_accel,
-                max_decel,
-                slowdown_chunks
-            );
-            timed_trajectory.setDefaultVelocity(default_vel / Constants.kPathFollowingMaxVel);
-            future.complete(timed_trajectory);
-        });
-        return future;
+            trajectory = new Trajectory<>(flipped);
+        }
+        // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
+        // than the specified voltage.
+        //final CurvatureVelocityConstraint velocity_constraints = new CurvatureVelocityConstraint();
+        List<TimingConstraint<Pose2dWithCurvature>> all_constraints = new ArrayList<>();
+        //all_constraints.add(velocity_constraints);
+        if (constraints != null) {
+            all_constraints.addAll(constraints);
+        }
+        // Generate the timed trajectory.
+        Trajectory<TimedState<Pose2dWithCurvature>> timed_trajectory = TimingUtil.timeParameterizeTrajectory(
+            reversed,
+            new DistanceView<>(trajectory),
+            kMaxDx,
+            all_constraints,
+            start_vel,
+            end_vel,
+            max_vel,
+            max_accel,
+            max_decel,
+            slowdown_chunks
+        );
+        timed_trajectory.setDefaultVelocity(default_vel / Constants.kPathFollowingMaxVel);
+        return timed_trajectory;
     }
 
     /**

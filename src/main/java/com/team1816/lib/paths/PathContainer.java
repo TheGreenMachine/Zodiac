@@ -12,7 +12,6 @@ import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -35,16 +34,17 @@ public interface PathContainer {
 
     List<Pose2d> buildWaypoints();
 
-    default CompletableFuture<Trajectory<TimedState<Pose2dWithCurvature>>> generateTrajectory() {
+    default Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory() {
         return generateBaseTrajectory(isReversed(), buildWaypoints());
     }
 
-    default CompletableFuture<Trajectory<TimedState<Pose2dWithCurvature>>> generateReversedTrajectory() {
-        return generateBaseTrajectory(!isReversed(), reverseWaypoints(buildWaypoints()))
-            .thenApply(TrajectoryUtil::mirrorTimed);
+    default Trajectory<TimedState<Pose2dWithCurvature>> generateReversedTrajectory() {
+        return TrajectoryUtil.mirrorTimed(
+            generateBaseTrajectory(!isReversed(), reverseWaypoints(buildWaypoints()))
+        );
     }
 
-    private CompletableFuture<Trajectory<TimedState<Pose2dWithCurvature>>> generateBaseTrajectory(
+    private Trajectory<TimedState<Pose2dWithCurvature>> generateBaseTrajectory(
         boolean isReversed,
         List<Pose2d> waypoints
     ) {
