@@ -26,7 +26,6 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         // INPUTS
         public double drive_encoder_ticks;
         public double azimuth_encoder_ticks; // actual position of module in encoder units, adjusted for home offset
-        public double previous_azimuth_demand;
         public double azimuth_encoder_ticks_unmasked;
         public int position_ticks;
         public double velocity_ticks_per_100ms;
@@ -148,8 +147,6 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             Constants.kLongCANTimeoutMs
         );
         System.out.println("  " + this);
-
-        mPeriodicIO.previous_azimuth_demand = mConstants.kAzimuthEncoderHomeOffset;
 
         this.startingPosition = startingPosition;
         zeroSensors();
@@ -316,8 +313,6 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             ((int) (demandedPosition + mConstants.kAzimuthEncoderHomeOffset));
 
         mAzimuthMotor.set(ControlMode.Position, offsetDemand);
-
-        mPeriodicIO.previous_azimuth_demand = mPeriodicIO.azimuth_demand;
     }
 
     @Override
