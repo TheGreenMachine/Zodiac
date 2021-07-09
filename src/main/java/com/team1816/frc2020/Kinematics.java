@@ -36,6 +36,8 @@ public class Kinematics {
     private static final double W = Constants.kDriveWheelbaseLengthInches; // Intentional
     private static final double R = Math.hypot(L, W);
 
+    private static Rotation2d[] prev_wheel_azimuths = DriveSignal.ZERO_AZIMUTH;
+
     /**
      * Forward kinematics using only encoders
      */
@@ -190,8 +192,10 @@ public class Kinematics {
             wheel_azimuths[SwerveModule.kBackLeft] = Rotation2d.fromRadians(Math.atan2(B, D));
             wheel_azimuths[SwerveModule.kBackRight] =
                 Rotation2d.fromRadians(Math.atan2(B, C));
+
+            prev_wheel_azimuths = wheel_azimuths;
         } else {
-            wheel_azimuths = Drive.getInstance().getModuleAzimuths();
+            wheel_azimuths = prev_wheel_azimuths;
         }
 
         return new DriveSignal(wheel_speeds, wheel_azimuths, false);
