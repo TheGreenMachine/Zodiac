@@ -41,6 +41,8 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_OPPOSEB;
     public final Trajectory<TimedState<Pose2dWithCurvature>> TEN_BALL_AUTO;
 
+    public final Trajectory<TimedState<Pose2dWithCurvature>> BARREL;
+
     private TrajectorySet() {
         // 2020
         this.DRIVE_STRAIGHT = new DriveStraight(12).generateTrajectory();
@@ -76,6 +78,8 @@ public class TrajectorySet {
         this.EIGHT_BALL_AUTO_OPPOSEB = new EightBallOpposingBPath().generateTrajectory();
 
         this.TEN_BALL_AUTO = new TenBallOpposingPath().generateTrajectory();
+
+        this.BARREL = new BarrelPath().generateTrajectory();
 
     }
 }

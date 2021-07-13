@@ -59,7 +59,7 @@ subsystems:
         implemented: true
         canifier: 18
         constants:
-            raveEnabled: 0
+            raveEnabled: 1
             raveSpeed: 0.05
     turret:
         implemented: true
@@ -92,6 +92,8 @@ subsystems:
         implemented: true
         talons:
             intake: 7
+        invertMotor:
+            - intake
         solenoids:
             arm: 0
 pcm: 8
@@ -101,7 +103,7 @@ constants:
     wheelbaseLength: 21.5 #inches
     wheelDiameter: 3.8989736842 #inches
     ## Path following ##
-    maxVel: 160 # 240 # inches/s # 22560 native units ---30
+    maxVel: 120 # 160 # 240 # inches/s # 22560 native units ---30
     maxAccel: 100 # inches/s^2
     maxDecel: 170 # inches/s^2 # Start with this matching maxAccel and then adjust as needed
     maxCentripetalAccel: 120 # 160 #inches/s^2

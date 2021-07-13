@@ -128,6 +128,8 @@ public class AutoModeSelector {
             DesiredMode.TEN_BALL_AUTO
         );
 
+        mModeChooser.addOption("Barrel", DesiredMode.BARREL);
+
 
         SmartDashboard.putData("Auto mode", mModeChooser);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
@@ -211,6 +213,8 @@ public class AutoModeSelector {
                 return (Optional.of(new DriveStraightShootMode()));
             case SIX_BALL_ALLIANCE_STRAIGHT:
                 return (Optional.of(new SixBallAllianceStraightMode()));
+            case BARREL:
+                return (Optional.of(new BarrelMode()));
             default:
                 break;
         }

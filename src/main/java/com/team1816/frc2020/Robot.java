@@ -371,7 +371,7 @@ public class Robot extends TimedRobot {
                             if (shooting) {
                                 shooter.autoHood();
                                 mDrive.setOpenLoop(DriveSignal.BRAKE);
-                                shooter.startShooter(); // Uses ZED distance
+                                shooter.setVelocity(Shooter.MAX_VELOCITY); // Uses ZED distance
                                 turret.lockTurret();
                             } else {
                                 // turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
@@ -386,11 +386,11 @@ public class Robot extends TimedRobot {
                     createHoldAction(
                         mControlBoard::getCollectorBackSpin,
                         pressed -> collector.setIntakePow(pressed ? 0.2 : 0)
+                    ),
+                    createAction(
+                        mControlBoard::getFeederFlapOut,
+                        () -> shooter.setHood(!shooter.isHoodOut())
                     )
-                    // createAction(
-                    //     mControlBoard::getHood,
-                    //     () -> shooter.setHood(!shooter.isHoodOut())
-                    // )
                 );
 
             blinkTimer =
@@ -680,7 +680,7 @@ public class Robot extends TimedRobot {
 //        } else {
             mDrive.setTeleopInputs(
                 mControlBoard.getThrottle(),
-                mControlBoard.getStrafe(),
+                -mControlBoard.getStrafe(),
                 mControlBoard.getTurn(),
                 mControlBoard.getSlowMode(),
                 /*mControlBoard.getFieldRelative()*/ // Field Relative override button conflicts with collector
