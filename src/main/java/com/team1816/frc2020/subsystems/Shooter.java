@@ -124,7 +124,7 @@ public class Shooter extends Subsystem implements PidProvider {
 
     public void startShooter() {
         if (Robot.isDemoMode) {
-            setVelocity(MID_VELOCITY);
+            setVelocity(5_000);
         } else {
             setVelocity(distanceManager.getShooterVelocity(camera.getDistance()));
         }
