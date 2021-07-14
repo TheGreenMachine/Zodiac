@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.team1816.frc2020.Constants;
+import com.team1816.frc2020.Robot;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
@@ -122,7 +123,11 @@ public class Shooter extends Subsystem implements PidProvider {
     }
 
     public void startShooter() {
-        setVelocity(distanceManager.getShooterVelocity(camera.getDistance()));
+        if (Robot.isDemoMode) {
+            setVelocity(MID_VELOCITY);
+        } else {
+            setVelocity(distanceManager.getShooterVelocity(camera.getDistance()));
+        }
     }
 
     public void stopShooter() {

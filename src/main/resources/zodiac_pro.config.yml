@@ -35,3 +35,4 @@ constants:
     logTeleop: 1
     logAuto: 1
     badLogEnabled: 1
+    demoMode: 1

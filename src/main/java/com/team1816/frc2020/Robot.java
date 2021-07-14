@@ -4,6 +4,7 @@ import badlog.lib.BadLog;
 import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
+import com.team1816.frc2020.controlboard.DemoModeControlBoard;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
@@ -39,7 +40,7 @@ public class Robot extends TimedRobot {
     private final Looper mEnabledLooper = new Looper();
     private final Looper mDisabledLooper = new Looper();
 
-    private final IControlBoard mControlBoard = ControlBoard.getInstance();
+    private final IControlBoard mControlBoard;
 
     private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
 
@@ -71,6 +72,7 @@ public class Robot extends TimedRobot {
     private AutoModeExecutor mAutoModeExecutor;
 
     private boolean mDriveByCameraInAuto = false;
+    public static final boolean isDemoMode = getFactory().getConstant("demoMode") >= 1;
     private double loopStart;
     private boolean faulted;
 
@@ -82,9 +84,8 @@ public class Robot extends TimedRobot {
 
     Robot() {
         super();
+        mControlBoard = isDemoMode ? DemoModeControlBoard.getInstance() : ControlBoard.getInstance();
     }
-
-    private static RobotFactory factory;
 
     public static RobotFactory getFactory() {
         return RobotFactory.getInstance();
