@@ -24,7 +24,7 @@ public class SwerveDriveHelper implements DriveHelper {
     public DriveSignal calculateDriveSignal(double forwardInput, double strafeInput, double rotationInput,
                                                    boolean low_power, boolean field_relative, boolean use_heading_controller) {
 
-        Translation2d translationalInput = new Translation2d(forwardInput, strafeInput);
+        Translation2d translationalInput = new Translation2d(forwardInput, -strafeInput);
         double inputMagnitude = translationalInput.norm();
 
         // Snap the translational input to its nearest pole, if it is within a certain

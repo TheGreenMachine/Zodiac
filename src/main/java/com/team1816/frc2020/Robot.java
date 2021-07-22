@@ -680,7 +680,7 @@ public class Robot extends TimedRobot {
 //        } else {
             mDrive.setTeleopInputs(
                 mControlBoard.getThrottle(),
-                -mControlBoard.getStrafe(),
+                mControlBoard.getStrafe(),
                 mControlBoard.getTurn(),
                 mControlBoard.getSlowMode(),
                 /*mControlBoard.getFieldRelative()*/ // Field Relative override button conflicts with collector
