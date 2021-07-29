@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
     private final Infrastructure mInfrastructure = Infrastructure.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
-    private final Drive mDrive = Drive.getInstance();
+    private final SwerveDrive mDrive = SwerveDrive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
     private final Collector collector = Collector.getInstance();
     private final Shooter shooter = Shooter.getInstance();

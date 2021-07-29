@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DriveMotionPlanner implements CSVWritable {
+public class SwerveMotionPlanner implements CSVWritable {
 
     // Should not be a singleton
 
@@ -83,7 +83,7 @@ public class DriveMotionPlanner implements CSVWritable {
         return kMaxSpeed * scalar;
     }
 
-    public DriveMotionPlanner() {
+    public SwerveMotionPlanner() {
         mCurrentTrajectory = null;
     }
 

@@ -1,6 +1,6 @@
 package com.team1816.lib.auto.actions;
 
-import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team1816.lib.paths.PathContainer;
 import com.team254.lib.control.Path;
 
@@ -16,7 +16,7 @@ public class DrivePathAction implements Action {
 
     private PathContainer mPathContainer;
     private Path mPath;
-    private Drive mDrive = Drive.getInstance();
+    private SwerveDrive mDrive = SwerveDrive.getInstance();
     private boolean mStopWhenDone;
 
     public DrivePathAction(PathContainer p, boolean stopWhenDone) {
@@ -45,7 +45,7 @@ public class DrivePathAction implements Action {
     @Override
     public void done() {
         if (mStopWhenDone) {
-            mDrive.setVelocity(Drive.ZERO_DRIVE_VECTOR);
+            mDrive.setVelocity(SwerveDrive.ZERO_DRIVE_VECTOR);
         }
     }
 }

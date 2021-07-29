@@ -2,7 +2,7 @@ package com.team1816.lib.subsystems;
 
 import com.team1816.frc2020.Kinematics;
 import com.team1816.frc2020.RobotState;
-import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
@@ -16,7 +16,7 @@ public class RobotStateEstimator extends Subsystem {
     private static RobotStateEstimator INSTANCE = new RobotStateEstimator();
 
     private final RobotState mRobotState = RobotState.getInstance();
-    private final Drive mDrive = Drive.getInstance();
+    private final SwerveDrive mDrive = SwerveDrive.getInstance();
     private final Turret turret = Turret.getInstance();
 
     private double prev_timestamp_ = -1.0;

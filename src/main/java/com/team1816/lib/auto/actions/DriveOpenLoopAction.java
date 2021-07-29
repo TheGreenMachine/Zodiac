@@ -1,12 +1,12 @@
 package com.team1816.lib.auto.actions;
 
-import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team254.lib.util.DriveSignal;
 import edu.wpi.first.wpilibj.Timer;
 
 public class DriveOpenLoopAction implements Action {
 
-    private static final Drive mDrive = Drive.getInstance();
+    private static final SwerveDrive mDrive = SwerveDrive.getInstance();
 
     private double mStartTime;
     private final double mDuration, mLeft, mRight;

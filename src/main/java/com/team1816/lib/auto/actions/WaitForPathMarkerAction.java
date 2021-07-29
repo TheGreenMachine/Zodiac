@@ -1,10 +1,10 @@
 package com.team1816.lib.auto.actions;
 
-import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.SwerveDrive;
 
 public class WaitForPathMarkerAction implements Action {
 
-    private Drive mDrive = Drive.getInstance();
+    private SwerveDrive mDrive = SwerveDrive.getInstance();
     private String mMarker;
 
     public WaitForPathMarkerAction(String marker) {

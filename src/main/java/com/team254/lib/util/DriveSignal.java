@@ -1,7 +1,7 @@
 package com.team254.lib.util;
 
 import com.team1816.frc2020.Constants;
-import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team1816.frc2020.subsystems.SwerveModule;
 import com.team254.lib.geometry.Rotation2d;
 
@@ -51,7 +51,7 @@ public class DriveSignal {
         return new DriveSignal(
             Arrays.stream(this.mWheelSpeeds)
                 .map(x ->
-                    x * Drive.inchesPerSecondToTicksPer100ms(Constants.kPathFollowingMaxVel)
+                    x * SwerveDrive.inchesPerSecondToTicksPer100ms(Constants.kPathFollowingMaxVel)
                 )
                 .toArray(),
             this.mWheelAzimuths,

@@ -1,6 +1,6 @@
 package com.team1816.frc2020;
 
-import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team1816.frc2020.subsystems.SwerveModule;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
@@ -150,7 +150,7 @@ public class Kinematics {
         boolean normalize_outputs
     ) {
         if (field_relative) {
-            Rotation2d gyroHeading = Drive.getInstance().getHeading();
+            Rotation2d gyroHeading = SwerveDrive.getInstance().getHeading();
             double temp = forward * gyroHeading.cos() + strafe * gyroHeading.sin();
             strafe = -forward * gyroHeading.sin() + strafe * gyroHeading.cos();
             forward = temp;
@@ -191,7 +191,7 @@ public class Kinematics {
             wheel_azimuths[SwerveModule.kBackRight] =
                 Rotation2d.fromRadians(Math.atan2(B, C));
         } else {
-            wheel_azimuths = Drive.getInstance().getModuleAzimuths();
+            wheel_azimuths = SwerveDrive.getInstance().getModuleAzimuths();
         }
 
         return new DriveSignal(wheel_speeds, wheel_azimuths, false);

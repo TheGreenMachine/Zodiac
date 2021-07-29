@@ -1,7 +1,7 @@
 package com.team1816.lib.auto.actions;
 
 import com.team1816.frc2020.RobotState;
-import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.TimedView;
@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class DriveTrajectory implements Action {
 
-    private static final Drive mDrive = Drive.getInstance();
+    private static final SwerveDrive mDrive = SwerveDrive.getInstance();
     private static final RobotState mRobotState = RobotState.getInstance();
 
     private final TrajectoryIterator<TimedState<Pose2dWithCurvature>> mTrajectory;

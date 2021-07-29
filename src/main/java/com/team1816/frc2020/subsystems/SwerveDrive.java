@@ -6,7 +6,7 @@ import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.Kinematics;
 import com.team1816.frc2020.RobotState;
-import com.team1816.frc2020.planners.DriveMotionPlanner;
+import com.team1816.frc2020.planners.SwerveMotionPlanner;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
@@ -37,11 +37,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
+public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
     private static final String NAME = "drivetrain";
 
-    private static Drive INSTANCE;
+    private static SwerveDrive INSTANCE;
 
     // Components
     private final SwerveModule[] swerveModules = new SwerveModule[4];
@@ -51,8 +51,8 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
     // Controllers
     private PathFollower mPathFollower;
     private Path mCurrentPath = null;
-    private final DriveMotionPlanner motionPlanner;
-    private final DriveMotionPlanner trajectoryMotionPlanner;
+    private final SwerveMotionPlanner motionPlanner;
+    private final SwerveMotionPlanner trajectoryMotionPlanner;
     private final SwerveHeadingController headingController = SwerveHeadingController.getInstance();
 
     // control states
@@ -111,15 +111,15 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         Translation2d.identity()
     );
 
-    public static synchronized Drive getInstance() {
+    public static synchronized SwerveDrive getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new Drive();
+            INSTANCE = new SwerveDrive();
         }
 
         return INSTANCE;
     }
 
-    private Drive() {
+    private SwerveDrive() {
         super(NAME);
         mPeriodicIO = new PeriodicIO();
 
@@ -157,8 +157,8 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
         mIsBrakeMode = false;
         setBrakeMode(mIsBrakeMode);
 
-        motionPlanner = new DriveMotionPlanner();
-        trajectoryMotionPlanner = new DriveMotionPlanner();
+        motionPlanner = new SwerveMotionPlanner();
+        trajectoryMotionPlanner = new SwerveMotionPlanner();
     }
 
     public double getHeadingDegrees() {
@@ -452,7 +452,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
             new Loop() {
                 @Override
                 public void onStart(double timestamp) {
-                    synchronized (Drive.this) {
+                    synchronized (SwerveDrive.this) {
                         stop();
                         setBrakeMode(false);
                     }
@@ -461,7 +461,7 @@ public class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
                 @Override
                 public void onLoop(double timestamp) {
-                    synchronized (Drive.this) {
+                    synchronized (SwerveDrive.this) {
                         mPeriodicIO.timestamp = timestamp;
                         switch (mDriveControlState) {
                             case OPEN_LOOP:

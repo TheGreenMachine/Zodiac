@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(JUnit4.class)
-public class DriveCharacterizationTest {
+public class SwerveDriveCharacterizationTest {
     public static final double kTestEpsilon = 1e-2;
 
     @Test
