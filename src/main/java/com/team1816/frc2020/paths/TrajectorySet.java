@@ -41,35 +41,7 @@ public class TrajectorySet {
     public final Trajectory<TimedState<Pose2dWithCurvature>> EIGHT_BALL_AUTO_OPPOSEB;
     public final Trajectory<TimedState<Pose2dWithCurvature>> TEN_BALL_AUTO;
 
-    // 2021
-
-    public final Trajectory<TimedState<Pose2dWithCurvature>> BLUE_RED_PATHB;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> RED_PATHA;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> BLUE_PATHA;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> DIME_TURN;
-
-    public final Trajectory<TimedState<Pose2dWithCurvature>> SLALOM_PATH;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> BARREL_PATH;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_1;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_2;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_3;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> BOUNCE_PATH_4;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> ATROCITY;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> NICO_TEST1;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> NICO_TEST2;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> NICO_TEST3;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> DRIVE_STRAIGHT_100_REVERSE;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> DRIVE_STRAIGHT_100_FORWARD;
-
-    // MSHSL 2021
-    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL_1;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL_2;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_REMOVAL_3;
-
-    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_1;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_2;
-    public final Trajectory<TimedState<Pose2dWithCurvature>> SNOW_THROWER_3;
-
+    public final Trajectory<TimedState<Pose2dWithCurvature>> BARREL;
 
     private TrajectorySet() {
         // 2020
@@ -107,34 +79,7 @@ public class TrajectorySet {
 
         this.TEN_BALL_AUTO = new TenBallOpposingPath().generateTrajectory();
 
-        // 2021
+        this.BARREL = new BarrelPath().generateTrajectory();
 
-        this.BLUE_RED_PATHB = new BlueRedPathB().generateTrajectory();
-        this.RED_PATHA = new RedPathA().generateTrajectory();
-        this.BLUE_PATHA = new BluePathA().generateTrajectory();
-        this.DIME_TURN = new DimeTurnRedPathA().generateTrajectory();
-
-        this.SLALOM_PATH = new SlalomPath().generateTrajectory();
-        this.BARREL_PATH = new BarrelPath().generateTrajectory();
-        this.BOUNCE_PATH_1 = new BouncePath1().generateTrajectory();
-        this.BOUNCE_PATH_2 = new BouncePath2().generateTrajectory();
-        this.BOUNCE_PATH_3 = new BouncePath3().generateTrajectory();
-        this.BOUNCE_PATH_4 = new BouncePath4().generateTrajectory();
-        this.ATROCITY = new Atrocity().generateTrajectory();
-        this.NICO_TEST1 = new nicoTest1().generateTrajectory();
-        this.NICO_TEST2 = new nicoTest2().generateTrajectory();
-        this.NICO_TEST3 = new nicoTest3().generateTrajectory();
-
-        this.DRIVE_STRAIGHT_100_REVERSE = new PowerPortReverse().generateTrajectory();
-        this.DRIVE_STRAIGHT_100_FORWARD = new PowerPortForward().generateTrajectory();
-
-        // MSHSL 2021
-        this.SNOW_REMOVAL_1 = new SnowRemoval1().generateTrajectory();
-        this.SNOW_REMOVAL_2 = new SnowRemoval2().generateTrajectory();
-        this.SNOW_REMOVAL_3 = new SnowRemoval3().generateTrajectory();
-
-        this.SNOW_THROWER_1 = new SnowThrower1().generateTrajectory();
-        this.SNOW_THROWER_2 = new SnowThrower2().generateTrajectory();
-        this.SNOW_THROWER_3 = new SnowThrower3().generateTrajectory();
     }
 }

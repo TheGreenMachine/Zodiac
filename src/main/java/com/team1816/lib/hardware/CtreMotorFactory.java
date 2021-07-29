@@ -8,6 +8,8 @@ import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.motor.IConfigurableMotorController;
 import com.team1816.lib.hardware.components.motor.LazyTalonFX;
 import com.team1816.lib.hardware.components.motor.LazyTalonSRX;
+import edu.wpi.first.wpilibj.RobotBase;
+
 import java.util.*;
 
 /**
@@ -16,7 +18,7 @@ import java.util.*;
  */
 public class CtreMotorFactory {
 
-    private static final int kTimeoutMs = 100;
+    private static final int kTimeoutMs = RobotBase.isSimulation() ? 0 : 100;
 
     public static class Configuration {
 
@@ -180,7 +182,6 @@ public class CtreMotorFactory {
         SubsystemConfig subsystem,
         List<PidConfig> pidConfigList
     ) {
-        motor.configFactoryDefault(kTimeoutMs);
 
         BaseTalonConfiguration talonConfiguration;
 
@@ -191,6 +192,7 @@ public class CtreMotorFactory {
         } else {
             return;
         }
+
         talonConfiguration.forwardSoftLimitThreshold = config.FORWARD_SOFT_LIMIT;
         talonConfiguration.forwardSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
 
@@ -222,12 +224,6 @@ public class CtreMotorFactory {
             talonConfiguration.slot3.kF = pidConfigList.get(3).kF;
         }
 
-        motor.overrideLimitSwitchesEnable(config.ENABLE_LIMIT_SWITCH);
-
-        // Turn off re-zeroing by default.
-        motor.configSetParameter(ParamEnum.eClearPositionOnLimitF, 0, 0, 0, kTimeoutMs);
-        motor.configSetParameter(ParamEnum.eClearPositionOnLimitR, 0, 0, 0, kTimeoutMs);
-
         talonConfiguration.nominalOutputForward = 0;
         talonConfiguration.nominalOutputReverse = 0;
         talonConfiguration.neutralDeadband = config.NEUTRAL_DEADBAND;
@@ -236,33 +232,30 @@ public class CtreMotorFactory {
         talonConfiguration.peakOutputReverse = -1.0;
 
         talonConfiguration.velocityMeasurementPeriod = config.VELOCITY_MEASUREMENT_PERIOD;
-
-        motor.setNeutralMode(config.NEUTRAL_MODE);
-        motor.selectProfileSlot(0, 0);
-
-        ErrorCode code = motor.configVelocityMeasurementPeriod(
-            config.VELOCITY_MEASUREMENT_PERIOD,
-            kTimeoutMs
-        );
-
-        if (code != ErrorCode.OK) {
-            System.out.println(
-                "Error setting velocity measurement period: " + code.toString()
-            );
-        }
-        code =
-            motor.configVelocityMeasurementWindow(
-                config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW,
-                kTimeoutMs
-            );
-        if (code != ErrorCode.OK) {
-            System.out.println(
-                "Error setting velocity measurement window: " + code.toString()
-            );
-        }
+        talonConfiguration.velocityMeasurementWindow = config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW;
 
         talonConfiguration.openloopRamp = config.OPEN_LOOP_RAMP_RATE;
         talonConfiguration.closedloopRamp = config.CLOSED_LOOP_RAMP_RATE;
+
+        talonConfiguration.primaryPID.selectedFeedbackSensor =  isFalcon
+            ? FeedbackDevice.IntegratedSensor
+            : FeedbackDevice.CTRE_MagEncoder_Relative;
+
+        if(talonConfiguration instanceof TalonFXConfiguration) {
+            ((TalonFXConfiguration) talonConfiguration).supplyCurrLimit = new SupplyCurrentLimitConfiguration(config.ENABLE_CURRENT_LIMIT, 0, 0, 0);
+        }
+
+        talonConfiguration.clearPositionOnLimitF = false;
+        talonConfiguration.clearPositionOnLimitR = false;
+
+        talonConfiguration.enableOptimizations = true;
+
+        motor.configFactoryDefault(kTimeoutMs);
+
+        motor.overrideLimitSwitchesEnable(config.ENABLE_LIMIT_SWITCH);
+
+        motor.setNeutralMode(config.NEUTRAL_MODE);
+        motor.selectProfileSlot(0, 0);
 
         motor.setControlFramePeriod(
             ControlFrame.Control_3_General,
@@ -295,21 +288,8 @@ public class CtreMotorFactory {
             config.PULSE_WIDTH_STATUS_FRAME_RATE_MS,
             kTimeoutMs
         );
-        motor.configSelectedFeedbackSensor(
-            isFalcon
-                ? FeedbackDevice.IntegratedSensor
-                : FeedbackDevice.CTRE_MagEncoder_Relative,
-            0,
-            20
-        );
-
-        motor.configSupplyCurrentLimit(
-            new SupplyCurrentLimitConfiguration(config.ENABLE_CURRENT_LIMIT, 0, 0, 0),
-            kTimeoutMs
-        );
 
         motor.configAllSettings(talonConfiguration, kTimeoutMs);
-
         motor.setInverted(subsystem.invertMotor.contains(name));
     }
 }

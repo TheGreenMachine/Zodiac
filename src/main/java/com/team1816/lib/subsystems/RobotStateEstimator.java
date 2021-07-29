@@ -2,7 +2,7 @@ package com.team1816.lib.subsystems;
 
 import com.team1816.frc2020.Kinematics;
 import com.team1816.frc2020.RobotState;
-import com.team1816.frc2020.subsystems.SwerveDrive;
+import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
@@ -13,10 +13,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotStateEstimator extends Subsystem {
 
-    private static RobotStateEstimator INSTANCE = new RobotStateEstimator();
+    private static RobotStateEstimator INSTANCE;
 
     private final RobotState mRobotState = RobotState.getInstance();
-    private final SwerveDrive mDrive = SwerveDrive.getInstance();
+    private Drive mDrive;
     private final Turret turret = Turret.getInstance();
 
     private double prev_timestamp_ = -1.0;
@@ -43,6 +43,9 @@ public class RobotStateEstimator extends Subsystem {
 
         @Override
         public synchronized void onStart(double timestamp) {
+            if(mDrive == null) {
+                mDrive = Drive.getInstance();
+            }
             prev_timestamp_ = timestamp;
         }
 

@@ -48,8 +48,7 @@ public class Robot extends TimedRobot {
     private final Superstructure mSuperstructure = Superstructure.getInstance();
     private final Infrastructure mInfrastructure = Infrastructure.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
-    private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
-    private final SwerveDrive mDrive = SwerveDrive.getInstance();
+    private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
     private final Collector collector = Collector.getInstance();
     private final Shooter shooter = Shooter.getInstance();
@@ -58,6 +57,7 @@ public class Robot extends TimedRobot {
     private final Hopper hopper = Hopper.getInstance();
     private final Climber climber = Climber.getInstance();
     private final Camera camera = Camera.getInstance();
+    private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
 
     private boolean mHasBeenEnabled = false;
 
@@ -371,7 +371,7 @@ public class Robot extends TimedRobot {
                             if (shooting) {
                                 shooter.autoHood();
                                 mDrive.setOpenLoop(DriveSignal.BRAKE);
-                                shooter.startShooter(); // Uses ZED distance
+                                shooter.setVelocity(Shooter.MAX_VELOCITY); // Uses ZED distance
                                 turret.lockTurret();
                             } else {
                                 // turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
@@ -386,11 +386,11 @@ public class Robot extends TimedRobot {
                     createHoldAction(
                         mControlBoard::getCollectorBackSpin,
                         pressed -> collector.setIntakePow(pressed ? 0.2 : 0)
+                    ),
+                    createAction(
+                        mControlBoard::getFeederFlapOut,
+                        () -> shooter.setHood(!shooter.isHoodOut())
                     )
-                    // createAction(
-                    //     mControlBoard::getHood,
-                    //     () -> shooter.setHood(!shooter.isHoodOut())
-                    // )
                 );
 
             blinkTimer =

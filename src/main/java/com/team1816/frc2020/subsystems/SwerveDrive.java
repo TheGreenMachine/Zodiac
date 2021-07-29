@@ -888,11 +888,6 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
             () -> this.getDriveControlState().toString(),
             null
         );
-        builder.addBooleanProperty(
-            "Drive/PigeonIMU State",
-            () -> this.mPigeon.getLastError() == ErrorCode.OK,
-            null
-        );
 
         driveHelperChooser = new SendableChooser<>();
         driveHelperChooser.addOption("Cheesy Drive", DriveHelper.CHEESY);

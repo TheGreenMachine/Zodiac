@@ -1,7 +1,6 @@
 package com.team1816.frc2020;
 
 import com.team1816.frc2020.auto.modes.modes2020.*;
-import com.team1816.frc2020.auto.modes.modes2021.*;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -129,26 +128,10 @@ public class AutoModeSelector {
             DesiredMode.TEN_BALL_AUTO
         );
 
-        // 2021
-
-        mModeChooser.addOption("Blue & Red Path B", DesiredMode.BLUE_RED_PATHB);
-        mModeChooser.addOption("Red Path A", DesiredMode.RED_PATHA);
-        mModeChooser.addOption("Blue Path A", DesiredMode.BLUE_PATHA);
-        mModeChooser.addOption("Automatic Path A", DesiredMode.PATHA);
-        mModeChooser.addOption("Slalom Mode", DesiredMode.SLALOM);
-        mModeChooser.addOption("Barrel Run", DesiredMode.BARREL);
-        mModeChooser.addOption("Bounce", DesiredMode.BOUNCE);
-        mModeChooser.addOption("Atrocity", DesiredMode.ATROCITY);
-        mModeChooser.addOption("test", DesiredMode.NICO_TEST);
+        mModeChooser.addOption("Barrel", DesiredMode.BARREL);
 
 
         SmartDashboard.putData("Auto mode", mModeChooser);
-
-        mModeChooser.addOption("Snow Removal", DesiredMode.SNOW_REMOVAL);
-        mModeChooser.addOption("Snow Thrower", DesiredMode.SNOW_THROWER);
-
-        mModeChooser.addOption("Power Port", DesiredMode.POWER_PORT);
-
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
 
@@ -230,31 +213,8 @@ public class AutoModeSelector {
                 return (Optional.of(new DriveStraightShootMode()));
             case SIX_BALL_ALLIANCE_STRAIGHT:
                 return (Optional.of(new SixBallAllianceStraightMode()));
-            // 2021
-            case BLUE_RED_PATHB:
-                return (Optional.of(new BlueRedPathBMode()));
-            case RED_PATHA:
-                return (Optional.of(new RedPathAMode()));
-            case BLUE_PATHA:
-                return (Optional.of(new BluePathAMode()));
-            case PATHA:
-                return (Optional.of(new PathAMode()));
-            case SLALOM:
-                return (Optional.of(new SlalomMode()));
             case BARREL:
                 return (Optional.of(new BarrelMode()));
-            case BOUNCE:
-                return (Optional.of(new BounceMode()));
-            case SNOW_REMOVAL:
-                return (Optional.of(new SnowRemovalMode()));
-            case SNOW_THROWER:
-                return (Optional.of(new SnowThrowerMode()));
-            case ATROCITY:
-                return (Optional.of(new AtrocityMode()));
-            case NICO_TEST:
-                return (Optional.of(new nicoTestMode()));
-            case POWER_PORT:
-                return (Optional.of(new PowerPortMode()));
             default:
                 break;
         }
