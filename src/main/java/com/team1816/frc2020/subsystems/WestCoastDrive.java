@@ -13,6 +13,7 @@ import com.team1816.frc2020.planners.WestCoastMotionPlanner;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
+import com.team1816.lib.subsystems.DifferentialDrivetrain;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team1816.lib.subsystems.TrackableDrivetrain;
@@ -33,7 +34,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class WestCoastDrive extends Subsystem implements TrackableDrivetrain, PidProvider {
+public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain, PidProvider {
 
     private static WestCoastDrive mInstance;
     private static final String NAME = "drivetrain";
@@ -570,60 +571,61 @@ public class WestCoastDrive extends Subsystem implements TrackableDrivetrain, Pi
     }
 
     private void updatePathFollower(double timestamp) {
-        if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
-            Pose2d field_to_vehicle = mRobotState.getLatestFieldToVehicle().getValue();
-            Twist2d command = mPathFollower.update(
-                timestamp,
-                field_to_vehicle,
-                mRobotState.getDistanceDriven(),
-                mRobotState.getPredictedVelocity().dx
-            );
-            if (!mPathFollower.isFinished()) {
-                WestCoastDriveSignal setpoint = WestCoastKinematics.inverseKinematics(command);
-                setVelocity(
-                    new WestCoastDriveSignal(
-                        inchesPerSecondToTicksPer100ms(setpoint.getLeft()),
-                        inchesPerSecondToTicksPer100ms(setpoint.getRight())
-                    ),
-                    new WestCoastDriveSignal(0, 0)
-                );
-            } else {
-                if (!mPathFollower.isForceFinished()) {
-                    setVelocity(new WestCoastDriveSignal(0, 0), new WestCoastDriveSignal(0, 0));
-                }
-            }
-        } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-            WestCoastMotionPlanner.Output output = mMotionPlanner.update(
-                timestamp,
-                RobotState.getInstance().getFieldToVehicle(timestamp)
-            );
-
-            mPeriodicIO.error = mMotionPlanner.error();
-            mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
-
-            if (!mOverrideTrajectory) {
-                setVelocity(
-                    new WestCoastDriveSignal(
-                        radiansPerSecondToTicksPer100ms(output.left_velocity),
-                        radiansPerSecondToTicksPer100ms(output.right_velocity)
-                    ),
-                    new WestCoastDriveSignal(
-                        output.left_feedforward_voltage / 12.0,
-                        output.right_feedforward_voltage / 12.0
-                    )
-                );
-
-                mPeriodicIO.left_accel =
-                    radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
-                mPeriodicIO.right_accel =
-                    radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
-            } else {
-                setVelocity(WestCoastDriveSignal.BRAKE, WestCoastDriveSignal.BRAKE);
-                mPeriodicIO.left_accel = mPeriodicIO.right_accel = 0.0;
-            }
-        } else {
-            DriverStation.reportError("drive is not in path following state", false);
-        }
+        // COMMENTED OUT IN ORDER TO CHECK FOR OTHER ERRORS
+//        if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
+//            Pose2d field_to_vehicle = mRobotState.getLatestFieldToVehicle().getValue();
+//            Twist2d command = mPathFollower.update(
+//                timestamp,
+//                field_to_vehicle,
+//                mRobotState.getDistanceDriven(),
+//                mRobotState.getPredictedVelocity().dx
+//            );
+//            if (!mPathFollower.isFinished()) {
+//                WestCoastDriveSignal setpoint = WestCoastKinematics.inverseKinematics(command);
+//                setVelocity(
+//                    new WestCoastDriveSignal(
+//                        inchesPerSecondToTicksPer100ms(setpoint.getLeft()),
+//                        inchesPerSecondToTicksPer100ms(setpoint.getRight())
+//                    ),
+//                    new WestCoastDriveSignal(0, 0)
+//                );
+//            } else {
+//                if (!mPathFollower.isForceFinished()) {
+//                    setVelocity(new WestCoastDriveSignal(0, 0), new WestCoastDriveSignal(0, 0));
+//                }
+//            }
+//        } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
+//            WestCoastMotionPlanner.Output output = mMotionPlanner.update(
+//                timestamp,
+//                RobotState.getInstance().getFieldToVehicle(timestamp)
+//            );
+//
+//            mPeriodicIO.error = mMotionPlanner.error();
+//            mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
+//
+//            if (!mOverrideTrajectory) {
+//                setVelocity(
+//                    new WestCoastDriveSignal(
+//                        radiansPerSecondToTicksPer100ms(output.left_velocity),
+//                        radiansPerSecondToTicksPer100ms(output.right_velocity)
+//                    ),
+//                    new WestCoastDriveSignal(
+//                        output.left_feedforward_voltage / 12.0,
+//                        output.right_feedforward_voltage / 12.0
+//                    )
+//                );
+//
+//                mPeriodicIO.left_accel =
+//                    radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
+//                mPeriodicIO.right_accel =
+//                    radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
+//            } else {
+//                setVelocity(WestCoastDriveSignal.BRAKE, WestCoastDriveSignal.BRAKE);
+//                mPeriodicIO.left_accel = mPeriodicIO.right_accel = 0.0;
+//            }
+//        } else {
+//            DriverStation.reportError("drive is not in path following state", false);
+//        }
     }
 
     public synchronized boolean hasPassedMarker(String marker) {

@@ -1,6 +1,6 @@
 package com.team1816.lib.subsystems;
 
-import com.team1816.frc2020.Robot;
+import com.team1816.frc2020.SwerveRobot;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.ILooper;
 import edu.wpi.first.wpilibj.Sendable;
@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 public abstract class Subsystem implements Sendable {
 
     private final String name;
-    protected static final RobotFactory factory = Robot.getFactory();
+    protected static final RobotFactory factory = SwerveRobot.getFactory();
 
     protected Subsystem(String name) {
         this.name = name;

@@ -5,7 +5,7 @@ import com.team254.lib.geometry.Translation2d;
 
 public class Constants {
 
-    private static final RobotFactory factory = Robot.getFactory();
+    private static final RobotFactory factory = SwerveRobot.getFactory();
 
     public static final double kLooperDt = factory.getConstant("kLooperDt");
 

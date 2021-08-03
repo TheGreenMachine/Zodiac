@@ -1,6 +1,6 @@
 package com.team254.lib.control;
 
-import com.team1816.frc2020.Robot;
+import com.team1816.frc2020.SwerveRobot;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team254.lib.util.SynchronousPIDF;
 import edu.wpi.first.wpilibj.Timer;
@@ -32,7 +32,7 @@ public class SwerveHeadingController {
     private State currentState = State.Off;
 
     // Constants
-    public static final RobotFactory factory = Robot.getFactory();
+    public static final RobotFactory factory = SwerveRobot.getFactory();
     public static final double SNAP_kP = factory.getConstant("heading_kP");
     public static final double SNAP_kI = factory.getConstant("heading_kI");
     public static final double SNAP_kD = factory.getConstant("heading_kD");

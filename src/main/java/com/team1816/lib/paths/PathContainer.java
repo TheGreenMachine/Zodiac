@@ -1,6 +1,6 @@
 package com.team1816.lib.paths;
 
-import com.team1816.frc2020.Robot;
+import com.team1816.frc2020.SwerveRobot;
 import com.team1816.frc2020.planners.SwerveMotionPlanner;
 import com.team254.lib.control.Path;
 import com.team254.lib.geometry.Pose2d;
@@ -20,13 +20,13 @@ import java.util.stream.Collectors;
  */
 public interface PathContainer {
     // velocities are in/sec
-    double kMaxVelocity = Robot.getFactory().getConstant("maxVel");
-    double kMaxAccel = Robot.getFactory().getConstant("maxAccel");
-    double kMaxCentripetalAccel = Robot.getFactory().getConstant("maxCentripetalAccel", 100.0);
+    double kMaxVelocity = SwerveRobot.getFactory().getConstant("maxVel");
+    double kMaxAccel = SwerveRobot.getFactory().getConstant("maxAccel");
+    double kMaxCentripetalAccel = SwerveRobot.getFactory().getConstant("maxCentripetalAccel", 100.0);
     double kMaxDecel = (
-        Robot.getFactory().getConstant("maxDecel", -1) == -1
+        SwerveRobot.getFactory().getConstant("maxDecel", -1) == -1
             ? kMaxAccel
-            : Robot.getFactory().getConstant("maxDecel")
+            : SwerveRobot.getFactory().getConstant("maxDecel")
         );
     double kMaxVoltage = 9.0;
 
