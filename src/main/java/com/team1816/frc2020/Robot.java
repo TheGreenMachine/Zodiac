@@ -19,7 +19,8 @@ import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.control.SwerveHeadingController;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.SwerveDriveSignal;
+import com.team254.lib.util.WestCoastDriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import com.team254.lib.util.TimeDelayedBoolean;
 import edu.wpi.first.wpilibj.*;
@@ -48,7 +49,7 @@ public class Robot extends TimedRobot {
     private final Superstructure mSuperstructure = Superstructure.getInstance();
     private final Infrastructure mInfrastructure = Infrastructure.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
-    private final Drive mDrive = Drive.getInstance();
+    private final SwerveDrive mDrive = SwerveDrive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
     private final Collector collector = Collector.getInstance();
     private final Shooter shooter = Shooter.getInstance();
@@ -370,7 +371,7 @@ public class Robot extends TimedRobot {
                             // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                             if (shooting) {
                                 shooter.autoHood();
-                                mDrive.setOpenLoop(DriveSignal.BRAKE);
+                                mDrive.setSwerveDriveOpenLoop(SwerveDriveSignal.BRAKE);
                                 shooter.setVelocity(Shooter.MAX_VELOCITY); // Uses ZED distance
                                 turret.lockTurret();
                             } else {
@@ -450,7 +451,7 @@ public class Robot extends TimedRobot {
 
             mInfrastructure.setIsManualControl(true); // turn on compressor when superstructure is not moving
 
-            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
+            mDrive.setSwerveDriveOpenLoop(SwerveDriveSignal.NEUTRAL);
 
             mDrive.zeroSensors();
             turret.zeroSensors();
@@ -489,7 +490,7 @@ public class Robot extends TimedRobot {
             turret.setTurretAngle(Turret.CARDINAL_SOUTH);
             turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
 
-            mDrive.setOpenLoop(DriveSignal.NEUTRAL);
+            mDrive.setSwerveDriveOpenLoop(SwerveDriveSignal.NEUTRAL);
 
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
@@ -629,7 +630,7 @@ public class Robot extends TimedRobot {
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
 
-        DriveSignal driveSignal;
+        SwerveDriveSignal driveSignal;
         boolean maintainAzimuth = mShouldMaintainAzimuth.update(
             mControlBoard.getTurn() == 0,
             0.2

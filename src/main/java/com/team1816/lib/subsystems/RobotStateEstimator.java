@@ -1,6 +1,6 @@
 package com.team1816.lib.subsystems;
 
-import com.team1816.frc2020.Kinematics;
+import com.team1816.frc2020.SwerveKinematics;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.Turret;
@@ -70,7 +70,7 @@ public class RobotStateEstimator extends Subsystem {
 
                 // this should be used for more accurate measurements for actual code
                 odometry_twist =
-                    Kinematics
+                    SwerveKinematics
                         .forwardKinematics(
                             wheel_speeds,
                             wheel_azimuths,
@@ -80,7 +80,7 @@ public class RobotStateEstimator extends Subsystem {
                         )
                         .scaled(dt);
             }
-            final Twist2d measured_velocity = Kinematics.forwardKinematics(
+            final Twist2d measured_velocity = SwerveKinematics.forwardKinematics(
                 wheel_speeds,
                 wheel_azimuths,
                 prev_heading_,

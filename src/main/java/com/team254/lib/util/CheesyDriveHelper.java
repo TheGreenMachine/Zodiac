@@ -39,12 +39,12 @@ public class CheesyDriveHelper implements DriveHelper {
     private double leftPrevPwm = 0;
     private double rightPrevPwm = 0;
 
-    public DriveSignal arcadeDrive(double throttle, double wheel) {
+    public SwerveDriveSignal arcadeDrive(double throttle, double wheel) {
         return null;
     }
 
-    public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn,
-                                   boolean isHighGear) {
+    public SwerveDriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn,
+                                         boolean isHighGear) {
 
         wheel = handleDeadband(wheel, kWheelDeadband);
         throttle = handleDeadband(throttle, kThrottleDeadband);
@@ -143,10 +143,10 @@ public class CheesyDriveHelper implements DriveHelper {
             rightPwm = -1.0;
         }
 
-        return new DriveSignal(leftPwm, rightPwm);
+        return new SwerveDriveSignal(leftPwm, rightPwm);
     }
 
-    public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn) {
+    public SwerveDriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn) {
         return cheesyDrive(throttle, wheel, isQuickTurn, false); // TODO: no gearshift, isHighGear = true?
     }
 
@@ -155,7 +155,7 @@ public class CheesyDriveHelper implements DriveHelper {
     }
 
     @Override
-    public DriveSignal calculateDriveSignal(double forwardInput, double strafeInput, double rotationInput, boolean low_power, boolean field_relative, boolean use_heading_controller) {
+    public SwerveDriveSignal calculateDriveSignal(double forwardInput, double strafeInput, double rotationInput, boolean low_power, boolean field_relative, boolean use_heading_controller) {
         return cheesyDrive(forwardInput, rotationInput, true);
     }
 }

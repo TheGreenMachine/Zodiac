@@ -4,7 +4,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
-import com.team1816.frc2020.Kinematics;
+import com.team1816.frc2020.SwerveKinematics;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.planners.SwerveMotionPlanner;
 import com.team1816.lib.loops.ILooper;
@@ -23,7 +23,7 @@ import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveHelper;
-import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.SwerveDriveSignal;
 import com.team254.lib.util.Units;
 import com.team254.lib.util.Util;
 import edu.wpi.first.networktables.EntryListenerFlags;
@@ -151,7 +151,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
 
         mPigeon.configFactoryDefault();
 
-        setOpenLoop(DriveSignal.NEUTRAL);
+        setSwerveDriveOpenLoop(SwerveDriveSignal.NEUTRAL);
 
         // force a CAN message across
         mIsBrakeMode = false;
@@ -466,7 +466,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
                         switch (mDriveControlState) {
                             case OPEN_LOOP:
                                 var driveHelper = driveHelperChooser.getSelected();
-                                setOpenLoop(
+                                setSwerveDriveOpenLoop(
                                     driveHelper.calculateDriveSignal(
                                         mPeriodicIO.forward,
                                         mPeriodicIO.strafe,
@@ -527,7 +527,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
     /**
      * Configure talons for open loop control
      */
-    public synchronized void setOpenLoop(DriveSignal signal) {
+    public synchronized void setSwerveDriveOpenLoop(SwerveDriveSignal signal) {
         if (mDriveControlState != DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
             System.out.println("switching to open loop");
@@ -587,7 +587,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         if (RobotBase.isSimulation()) {
             mPeriodicIO.gyro_heading_no_offset.rotateBy(
                 Rotation2d.fromDegrees(
-                    Kinematics
+                    SwerveKinematics
                         .forwardKinematics(speedsNorm, mPeriodicIO.wheel_azimuths)
                         .dtheta
                 )
@@ -788,7 +788,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
                 if (!mOverrideTrajectory) {
 //                    System.out.println("ROTATIONINPUT==" + rotationInput);
                     setVelocity(
-                        Kinematics.updateDriveVectors(
+                        SwerveKinematics.updateDriveVectors(
                             driveVector,
                             rotationInput,
                             pose,
@@ -863,7 +863,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
 
     @Override
     public synchronized void stop() {
-        setOpenLoop(DriveSignal.NEUTRAL);
+        setSwerveDriveOpenLoop(SwerveDriveSignal.NEUTRAL);
     }
 
     @Override

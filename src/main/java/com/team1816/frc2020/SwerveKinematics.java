@@ -1,12 +1,12 @@
 package com.team1816.frc2020;
 
-import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team1816.frc2020.subsystems.SwerveModule;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.geometry.Twist2d;
-import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.SwerveDriveSignal;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
  * https://www.chiefdelphi.com/t/paper-4-wheel-independent-drive-independent-steering-swerve/107383
  */
 
-public class Kinematics {
+public class SwerveKinematics {
 
     private static Translation2d[] moduleRelativePositions = Constants.kModulePositions;
     private static List<Translation2d> moduleRotationDirections = updateRotationDirections();
@@ -36,12 +36,12 @@ public class Kinematics {
     private static final double W = Constants.kDriveWheelbaseLengthInches; // Intentional
     private static final double R = Math.hypot(L, W);
 
-    private static Rotation2d[] prev_wheel_azimuths = DriveSignal.ZERO_AZIMUTH;
+    private static Rotation2d[] prev_wheel_azimuths = SwerveDriveSignal.ZERO_AZIMUTH;
 
     /**
      * Forward kinematics using only encoders
      */
-    public static Twist2d forwardKinematics(DriveSignal drive_signal) {
+    public static Twist2d forwardKinematics(SwerveDriveSignal drive_signal) {
         return forwardKinematics(
             drive_signal.getWheelSpeeds(),
             drive_signal.getWheelAzimuths()
@@ -90,7 +90,7 @@ public class Kinematics {
      * Use Gyro for dtheta
      */
     public static Twist2d forwardKinematics(
-        DriveSignal drive_signal,
+        SwerveDriveSignal drive_signal,
         Rotation2d prev_heading,
         Rotation2d current_heading,
         double dt
@@ -135,7 +135,7 @@ public class Kinematics {
         );
     }
 
-    public static DriveSignal inverseKinematics(
+    public static SwerveDriveSignal inverseKinematics(
         double forward,
         double strafe,
         double rotation,
@@ -144,7 +144,7 @@ public class Kinematics {
         return inverseKinematics(forward, strafe, rotation, field_relative, true);
     }
 
-    public static DriveSignal inverseKinematics(
+    public static SwerveDriveSignal inverseKinematics(
         double forward,
         double strafe,
         double rotation,
@@ -152,7 +152,7 @@ public class Kinematics {
         boolean normalize_outputs
     ) {
         if (field_relative) {
-            Rotation2d gyroHeading = Drive.getInstance().getHeading();
+            Rotation2d gyroHeading = SwerveDrive.getInstance().getHeading();
             double temp = forward * gyroHeading.cos() + strafe * gyroHeading.sin();
             strafe = -forward * gyroHeading.sin() + strafe * gyroHeading.cos();
             forward = temp;
@@ -198,7 +198,7 @@ public class Kinematics {
             wheel_azimuths = prev_wheel_azimuths;
         }
 
-        return new DriveSignal(wheel_speeds, wheel_azimuths, false);
+        return new SwerveDriveSignal(wheel_speeds, wheel_azimuths, false);
     }
 
     public static List<Translation2d> updateDriveVectors(

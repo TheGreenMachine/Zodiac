@@ -4,7 +4,7 @@ public interface DriveHelper {
     public static final DriveHelper SWERVE_CLASSIC = new SwerveDriveHelper();
     DriveHelper CHEESY = new CheesyDriveHelper();
 
-    DriveSignal calculateDriveSignal(
+    SwerveDriveSignal calculateDriveSignal(
         double forwardInput,
         double strafeInput,
         double rotationInput,

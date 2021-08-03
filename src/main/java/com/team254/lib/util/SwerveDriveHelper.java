@@ -1,6 +1,6 @@
 package com.team254.lib.util;
 
-import com.team1816.frc2020.Kinematics;
+import com.team1816.frc2020.SwerveKinematics;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
@@ -21,8 +21,8 @@ public class SwerveDriveHelper implements DriveHelper {
 
     SwerveDriveHelper() {}
 
-    public DriveSignal calculateDriveSignal(double forwardInput, double strafeInput, double rotationInput,
-                                                   boolean low_power, boolean field_relative, boolean use_heading_controller) {
+    public SwerveDriveSignal calculateDriveSignal(double forwardInput, double strafeInput, double rotationInput,
+                                                  boolean low_power, boolean field_relative, boolean use_heading_controller) {
 
         Translation2d translationalInput = new Translation2d(forwardInput, -strafeInput);
         double inputMagnitude = translationalInput.norm();
@@ -72,7 +72,7 @@ public class SwerveDriveHelper implements DriveHelper {
             rotationInput *= kHighPowerRotationScalar;
         }
 
-        return Kinematics.inverseKinematics(translationalInput.x(), translationalInput.y(), rotationInput,
+        return SwerveKinematics.inverseKinematics(translationalInput.x(), translationalInput.y(), rotationInput,
             field_relative);
     }
 }

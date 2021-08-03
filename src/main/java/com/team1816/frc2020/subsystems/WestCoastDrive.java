@@ -7,7 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
-import com.team1816.frc2020.Kinematics;
+import com.team1816.frc2020.WestCoastKinematics;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.planners.WestCoastMotionPlanner;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
@@ -25,7 +25,7 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.WestCoastDriveSignal;
 import com.team254.lib.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -135,7 +135,7 @@ public class WestCoastDrive extends Subsystem implements TrackableDrivetrain, Pi
         }
         mPigeon.configFactoryDefault();
 
-        setOpenLoop(DriveSignal.NEUTRAL);
+        setOpenLoop(WestCoastDriveSignal.NEUTRAL);
 
         // force a CAN message across
         mIsBrakeMode = false;
@@ -324,7 +324,7 @@ public class WestCoastDrive extends Subsystem implements TrackableDrivetrain, Pi
     /**
      * Configure talons for open loop control
      */
-    public synchronized void setOpenLoop(DriveSignal signal) {
+    public synchronized void setOpenLoop(WestCoastDriveSignal signal) {
         if (mDriveControlState != DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
             System.out.println("switching to open loop");
@@ -351,7 +351,7 @@ public class WestCoastDrive extends Subsystem implements TrackableDrivetrain, Pi
     /**
      * Configure talons for velocity control
      */
-    public synchronized void setVelocity(DriveSignal signal, DriveSignal feedforward) {
+    public synchronized void setVelocity(WestCoastDriveSignal signal, WestCoastDriveSignal feedforward) {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
             System.out.println("Switching to Velocity");
@@ -519,7 +519,7 @@ public class WestCoastDrive extends Subsystem implements TrackableDrivetrain, Pi
             mDriveControlState = DriveControlState.PATH_FOLLOWING;
             mCurrentPath = path;
         } else {
-            setVelocity(new DriveSignal(0, 0), new DriveSignal(0, 0));
+            setVelocity(new WestCoastDriveSignal(0, 0), new WestCoastDriveSignal(0, 0));
         }
     }
 
@@ -579,17 +579,17 @@ public class WestCoastDrive extends Subsystem implements TrackableDrivetrain, Pi
                 mRobotState.getPredictedVelocity().dx
             );
             if (!mPathFollower.isFinished()) {
-                DriveSignal setpoint = Kinematics.inverseKinematics(command);
+                WestCoastDriveSignal setpoint = WestCoastKinematics.inverseKinematics(command);
                 setVelocity(
-                    new DriveSignal(
+                    new WestCoastDriveSignal(
                         inchesPerSecondToTicksPer100ms(setpoint.getLeft()),
                         inchesPerSecondToTicksPer100ms(setpoint.getRight())
                     ),
-                    new DriveSignal(0, 0)
+                    new WestCoastDriveSignal(0, 0)
                 );
             } else {
                 if (!mPathFollower.isForceFinished()) {
-                    setVelocity(new DriveSignal(0, 0), new DriveSignal(0, 0));
+                    setVelocity(new WestCoastDriveSignal(0, 0), new WestCoastDriveSignal(0, 0));
                 }
             }
         } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
@@ -603,11 +603,11 @@ public class WestCoastDrive extends Subsystem implements TrackableDrivetrain, Pi
 
             if (!mOverrideTrajectory) {
                 setVelocity(
-                    new DriveSignal(
+                    new WestCoastDriveSignal(
                         radiansPerSecondToTicksPer100ms(output.left_velocity),
                         radiansPerSecondToTicksPer100ms(output.right_velocity)
                     ),
-                    new DriveSignal(
+                    new WestCoastDriveSignal(
                         output.left_feedforward_voltage / 12.0,
                         output.right_feedforward_voltage / 12.0
                     )
@@ -618,7 +618,7 @@ public class WestCoastDrive extends Subsystem implements TrackableDrivetrain, Pi
                 mPeriodicIO.right_accel =
                     radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
             } else {
-                setVelocity(DriveSignal.BRAKE, DriveSignal.BRAKE);
+                setVelocity(WestCoastDriveSignal.BRAKE, WestCoastDriveSignal.BRAKE);
                 mPeriodicIO.left_accel = mPeriodicIO.right_accel = 0.0;
             }
         } else {
@@ -668,7 +668,7 @@ public class WestCoastDrive extends Subsystem implements TrackableDrivetrain, Pi
 
     @Override
     public synchronized void stop() {
-        setOpenLoop(DriveSignal.NEUTRAL);
+        setOpenLoop(WestCoastDriveSignal.NEUTRAL);
     }
 
     @Override

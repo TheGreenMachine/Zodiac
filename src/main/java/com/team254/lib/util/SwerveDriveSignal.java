@@ -11,22 +11,22 @@ import java.util.Arrays;
 /**
  * A drivetrain signal containing the speed and azimuth for each wheel
  */
-public class DriveSignal {
+public class SwerveDriveSignal {
     public static final double[] ZERO_SPEED = new double[]{0, 0, 0, 0};
     public static final Rotation2d[] ZERO_AZIMUTH = new Rotation2d[]{Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity()};
 
-    public static final DriveSignal NEUTRAL = new DriveSignal(ZERO_SPEED, ZERO_AZIMUTH, false);
-    public static final DriveSignal BRAKE = new DriveSignal(ZERO_SPEED, ZERO_AZIMUTH, true);
+    public static final SwerveDriveSignal NEUTRAL = new SwerveDriveSignal(ZERO_SPEED, ZERO_AZIMUTH, false);
+    public static final SwerveDriveSignal BRAKE = new SwerveDriveSignal(ZERO_SPEED, ZERO_AZIMUTH, true);
 
     private double[] mWheelSpeeds;
     private Rotation2d[] mWheelAzimuths; // Radians!
     private boolean mBrakeMode;
 
-    public DriveSignal() {
+    public SwerveDriveSignal() {
         this(ZERO_SPEED, ZERO_AZIMUTH, false);
     }
 
-    public DriveSignal(double left, double right) {
+    public SwerveDriveSignal(double left, double right) {
         mWheelSpeeds = new double[4];
         mWheelSpeeds[SwerveModule.kFrontLeft] = left;
         mWheelSpeeds[SwerveModule.kBackLeft] = left;
@@ -37,7 +37,7 @@ public class DriveSignal {
         mBrakeMode = false;
     }
 
-    public DriveSignal(double[] wheelSpeeds, Rotation2d[] wheelAzimuths, boolean brakeMode) {
+    public SwerveDriveSignal(double[] wheelSpeeds, Rotation2d[] wheelAzimuths, boolean brakeMode) {
         mWheelSpeeds = wheelSpeeds;
         mWheelAzimuths = wheelAzimuths;
         mBrakeMode = brakeMode;
@@ -47,8 +47,8 @@ public class DriveSignal {
         return mWheelSpeeds;
     }
 
-    public DriveSignal toVelocity() {
-        return new DriveSignal(
+    public SwerveDriveSignal toVelocity() {
+        return new SwerveDriveSignal(
             Arrays.stream(this.mWheelSpeeds)
                 .map(x ->
                     x * SwerveDrive.inchesPerSecondToTicksPer100ms(Constants.kPathFollowingMaxVel)
