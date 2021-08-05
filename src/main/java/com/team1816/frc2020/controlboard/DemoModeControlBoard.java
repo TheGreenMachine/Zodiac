@@ -21,7 +21,7 @@ public class DemoModeControlBoard implements IControlBoard {
     }
 
     private final Controller mController;
-    private double drivetrainMultiplier = 0.25;
+    private double drivetrainMultiplier = 0.2;
 
     private DemoModeControlBoard() {
         mController = new LogitechController(Constants.kDriveGamepadPort);
@@ -40,7 +40,7 @@ public class DemoModeControlBoard implements IControlBoard {
                 (table, key, entry, value, flags) -> {
                     switch (value.getString()) {
                         case "Comfort":
-                            drivetrainMultiplier = 0.25;
+                            drivetrainMultiplier = 0.2;
                             break;
                         case "Sport":
                             drivetrainMultiplier = 0.5;
