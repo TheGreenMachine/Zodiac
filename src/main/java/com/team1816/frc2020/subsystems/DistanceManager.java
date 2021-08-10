@@ -1,6 +1,6 @@
 package com.team1816.frc2020.subsystems;
 
-import com.team1816.frc2020.SwerveRobot;
+import com.team1816.frc2020.Robot;
 
 public class DistanceManager {
 
@@ -21,7 +21,7 @@ public class DistanceManager {
     private int zone;
 
     // Constants
-    public static final boolean USE_ZONES = SwerveRobot.getFactory().getConstant("useZones") > 0;
+    public static final boolean USE_ZONES = Robot.getFactory().getConstant("useZones") > 0;
 
     private DistanceManager() {
         if (USE_ZONES) {

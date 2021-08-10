@@ -1,6 +1,6 @@
 package com.team1816.frc2020.subsystems;
 
-import com.team1816.frc2020.SwerveRobot;
+import com.team1816.frc2020.Robot;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
@@ -12,7 +12,7 @@ import java.util.Optional;
  * The superstructure subsystem is the overarching class containing all components of the superstructure: the
  * turret, elevator, arm, and wrist. The superstructure subsystem also uses info from the vision system.
  * <p>
- * Instead of interacting individually with subsystems like the elevator and arm, the {@link SwerveRobot} class sends commands
+ * Instead of interacting individually with subsystems like the elevator and arm, the {@link Robot} class sends commands
  * to the superstructure, which individually decides how to move each subsystem to get there.
  * <p>
  * The Superstructure class also adjusts the overall goal based on the turret and elevator control modes.

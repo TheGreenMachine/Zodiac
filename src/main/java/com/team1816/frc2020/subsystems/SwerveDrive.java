@@ -41,7 +41,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
 
     private static final String NAME = "drivetrain";
 
-    private static SwerveDrive INSTANCE;
+    private static Drive INSTANCE;
 
     // Components
     private final SwerveModule[] swerveModules = new SwerveModule[4];
@@ -111,9 +111,9 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         Translation2d.identity()
     );
 
-    public static synchronized SwerveDrive getInstance() {
+    public static synchronized Drive getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new SwerveDrive();
+            INSTANCE = new Drive();
         }
 
         return INSTANCE;
@@ -452,7 +452,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
             new Loop() {
                 @Override
                 public void onStart(double timestamp) {
-                    synchronized (SwerveDrive.this) {
+                    synchronized (Drive.this) {
                         stop();
                         setBrakeMode(false);
                     }
@@ -461,7 +461,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
 
                 @Override
                 public void onLoop(double timestamp) {
-                    synchronized (SwerveDrive.this) {
+                    synchronized (Drive.this) {
                         mPeriodicIO.timestamp = timestamp;
                         switch (mDriveControlState) {
                             case OPEN_LOOP:

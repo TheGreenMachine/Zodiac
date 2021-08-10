@@ -2,7 +2,7 @@ package com.team1816.lib.hardware;
 
 import static org.junit.Assert.*;
 
-import com.team1816.frc2020.SwerveRobot;
+import com.team1816.frc2020.Robot;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -127,7 +127,7 @@ public class YamlConfigTest {
     public void outputMergedYaml() throws ConfigIsAbstractException, IOException {
         var configName = "alpha";
         InputStream configFile =
-            SwerveRobot.class.getClassLoader().getResourceAsStream(configName + ".config.yml");
+            Robot.class.getClassLoader().getResourceAsStream(configName + ".config.yml");
         try (var writer = new FileWriter(configName + "_check.config.yml")) {
             writer.write(YamlConfig.loadFrom(configFile).toString());
         }

@@ -1,12 +1,12 @@
 package com.team1816.lib.auto.actions;
 
-import com.team1816.frc2020.subsystems.SwerveDrive;
+import com.team1816.frc2020.subsystems.Drive;
 import com.team254.lib.util.SwerveDriveSignal;
 import edu.wpi.first.wpilibj.Timer;
 
 public class DriveOpenLoopAction implements Action {
 
-    private static final SwerveDrive mDrive = SwerveDrive.getInstance();
+    private static final Drive mDrive = Drive.getInstance();
 
     private double mStartTime;
     private final double mDuration, mLeft, mRight;
@@ -19,7 +19,7 @@ public class DriveOpenLoopAction implements Action {
 
     @Override
     public void start() {
-        mDrive.setSwerveDriveOpenLoop(new SwerveDriveSignal(mLeft, mRight));
+        mDrive.setOpenLoop(new SwerveDriveSignal(mLeft, mRight));
         mStartTime = Timer.getFPGATimestamp();
     }
 
@@ -33,6 +33,6 @@ public class DriveOpenLoopAction implements Action {
 
     @Override
     public void done() {
-        mDrive.setSwerveDriveOpenLoop(SwerveDriveSignal.BRAKE);
+        mDrive.setOpenLoop(SwerveDriveSignal.BRAKE);
     }
 }

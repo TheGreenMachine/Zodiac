@@ -1,10 +1,8 @@
 package com.team1816.frc2020;
 
 import badlog.lib.BadLog;
-import badlog.lib.DataInferMode;
 import com.team1816.frc2020.controlboard.ActionManager;
 import com.team1816.frc2020.controlboard.ControlBoard;
-import com.team1816.frc2020.controlboard.WestCoastDemoModeControlBoard;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
@@ -12,6 +10,7 @@ import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.loops.AsyncTimer;
 import com.team1816.lib.loops.Looper;
 import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
@@ -19,9 +18,9 @@ import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.WestCoastCheesyDriveHelper;
-import com.team254.lib.util.WestCoastDriveSignal;
+import com.team254.lib.util.SwerveDriveSignal;
 import com.team254.lib.util.LatchedBoolean;
+import com.team254.lib.util.TimeDelayedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -33,14 +32,14 @@ import java.util.Optional;
 
 import static com.team1816.frc2020.controlboard.ControlUtils.*;
 
-public class WestCoastRobot extends TimedRobot {
+public class Robot extends TimedRobot {
 
     private BadLog logger;
 
     private final Looper mEnabledLooper = new Looper();
     private final Looper mDisabledLooper = new Looper();
 
-    private final IControlBoard mControlBoard;
+    private final IControlBoard mControlBoard = ControlBoard.getInstance();
 
     private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
 
@@ -48,8 +47,7 @@ public class WestCoastRobot extends TimedRobot {
     private final Superstructure mSuperstructure = Superstructure.getInstance();
     private final Infrastructure mInfrastructure = Infrastructure.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
-    private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
-    private final WestCoastDrive mDrive = WestCoastDrive.getInstance();
+    private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
     private final Collector collector = Collector.getInstance();
     private final Shooter shooter = Shooter.getInstance();
@@ -58,10 +56,7 @@ public class WestCoastRobot extends TimedRobot {
     private final Hopper hopper = Hopper.getInstance();
     private final Climber climber = Climber.getInstance();
     private final Camera camera = Camera.getInstance();
-
-    // button placed on the robot to allow the drive team to zero the robot right
-    // before the start of a match
-    DigitalInput resetRobotButton = new DigitalInput(Constants.kResetButtonChannel);
+    private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
 
     private boolean mHasBeenEnabled = false;
 
@@ -72,19 +67,16 @@ public class WestCoastRobot extends TimedRobot {
     private AutoModeExecutor mAutoModeExecutor;
 
     private boolean mDriveByCameraInAuto = false;
-    public static final boolean isDemoMode = getFactory().getConstant("demoMode") >= 1;
     private double loopStart;
-    private boolean faulted;
 
     private ActionManager actionManager;
-    private WestCoastCheesyDriveHelper cheesyDriveHelper = new WestCoastCheesyDriveHelper();
+    private AsyncTimer blinkTimer;
 
-    private PowerDistributionPanel pdp = new PowerDistributionPanel();
+    // private PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
-    WestCoastRobot() {
+    Robot() {
         super();
-        mControlBoard = isDemoMode ? WestCoastDemoModeControlBoard.getInstance() : ControlBoard.getInstance();
     }
 
     public static RobotFactory getFactory() {
@@ -107,10 +99,12 @@ public class WestCoastRobot extends TimedRobot {
             if (Files.exists(Path.of("/media/sda1"))) {
                 logFileDir = "/media/sda1/";
             }
-            if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                logFileDir = System.getenv("temp") + "\\";
-            } else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-                logFileDir = System.getProperty("user.dir") + "/";
+            if (RobotBase.isSimulation()) {
+                if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                    logFileDir = System.getenv("temp") + "\\";
+                } else {
+                    logFileDir = System.getProperty("user.dir") + "/";
+                }
             }
             var filePath = logFileDir + robotName + "_" + logFile + ".bag";
             logger = BadLog.init(filePath);
@@ -185,15 +179,9 @@ public class WestCoastRobot extends TimedRobot {
                     "hide"
                 );
 
-                BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
+                // BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
 
-                BadLog.createTopicSubscriber(
-                    "Pigeon Error",
-                    BadLog.UNITLESS,
-                    DataInferMode.DEFAULT
-                );
-
-                DrivetrainLogger.init(mDrive);
+                DrivetrainLogger.initSwerve(mDrive);
 
                 BadLog.createValue("Drivetrain PID", mDrive.pidToString());
                 BadLog.createValue("Shooter PID", shooter.pidToString());
@@ -210,7 +198,7 @@ public class WestCoastRobot extends TimedRobot {
                 BadLog.createTopic(
                     "Turret/ActPos",
                     "NativeUnits",
-                    () -> (double) turret.getTurretPositionTicks(),
+                    turret::getTurretPositionTicks,
                     "hide",
                     "join:Turret/Positions"
                 );
@@ -226,30 +214,6 @@ public class WestCoastRobot extends TimedRobot {
                     "NativeUnits",
                     turret::getPositionError
                 );
-
-//                BadLog.createTopic(
-//                    "Turret/FieldToTurret",
-//                    "Degrees",
-//                    mRobotState::getLatestFieldToTurret,
-//                    "hide",
-//                    "join:Tracking/Angles"
-//                );
-                BadLog.createTopic(
-                    "Drive/HeadingRelativeToInitial",
-                    "Degrees",
-                    () -> mDrive.getHeadingRelativeToInitial().getDegrees(),
-                    "hide",
-                    "join:Tracking/Angles"
-                );
-                BadLog.createTopic(
-                    "Turret/TurretAngle",
-                    "Degrees",
-                    turret::getActualTurretPositionDegrees,
-                    "hide",
-                    "join:Tracking/Angles"
-                );
-
-                mDrive.setLogger(logger);
             }
 
             logger.finishInitialization();
@@ -308,7 +272,7 @@ public class WestCoastRobot extends TimedRobot {
                         pressed -> {
                             if (
                                 (DriverStation.getInstance().getMatchTime() <= 30) ||
-                                    (DriverStation.getInstance().getMatchTime() == -1)
+                                (DriverStation.getInstance().getMatchTime() == -1)
                             ) {
                                 climber.setDeployed(pressed);
                             }
@@ -365,7 +329,7 @@ public class WestCoastRobot extends TimedRobot {
                         power -> {
                             if (
                                 (DriverStation.getInstance().getMatchTime() <= 30) ||
-                                    (DriverStation.getInstance().getMatchTime() == -1)
+                                (DriverStation.getInstance().getMatchTime() == -1)
                             ) {
                                 climber.setClimberPower(power > 0 ? power : 0);
                             }
@@ -389,6 +353,7 @@ public class WestCoastRobot extends TimedRobot {
                                 turret.setControlMode(
                                     Turret.ControlMode.CAMERA_FOLLOWING
                                 );
+                                shooter.autoHood();
                                 shooter.startShooter();
                             } else {
                                 turret.setControlMode(prevTurretControlMode);
@@ -400,14 +365,16 @@ public class WestCoastRobot extends TimedRobot {
                         shooting -> {
                             // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                             if (shooting) {
-                                mDrive.setOpenLoop(WestCoastDriveSignal.BRAKE);
-                                shooter.startShooter(); // Uses ZED distance
+                                shooter.autoHood();
+                                mDrive.setOpenLoop(SwerveDriveSignal.BRAKE);
+                                shooter.setVelocity(Shooter.MAX_VELOCITY); // Uses ZED distance
                                 turret.lockTurret();
                             } else {
-                                turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+                                // turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
                                 shooter.stopShooter();
+                                shooter.setHood(false);
                             }
-                            hopper.lockToShooter(shooting, true);
+                            hopper.lockToShooter(shooting, false);
                             hopper.setIntake(shooting ? 1 : 0);
                             collector.setIntakePow(shooting ? 0.5 : 0);
                         }
@@ -415,11 +382,20 @@ public class WestCoastRobot extends TimedRobot {
                     createHoldAction(
                         mControlBoard::getCollectorBackSpin,
                         pressed -> collector.setIntakePow(pressed ? 0.2 : 0)
+                    ),
+                    createAction(
+                        mControlBoard::getFeederFlapOut,
+                        () -> shooter.setHood(!shooter.isHoodOut())
                     )
                 );
 
+            blinkTimer =
+                new AsyncTimer(
+                    3, // (3 s)
+                    () -> ledManager.blinkStatus(LedManager.RobotStatus.ERROR),
+                    () -> ledManager.indicateStatus(LedManager.RobotStatus.OFF)
+                );
         } catch (Throwable t) {
-            faulted = true;
             throw t;
         }
     }
@@ -448,7 +424,6 @@ public class WestCoastRobot extends TimedRobot {
 
             mDrive.setBrakeMode(false);
         } catch (Throwable t) {
-            faulted = true;
             throw t;
         }
     }
@@ -456,10 +431,6 @@ public class WestCoastRobot extends TimedRobot {
     @Override
     public void autonomousInit() {
         try {
-            if(faulted) {
-                DriverStation.reportError("Robot is in a FAULTED STATE Not Executing Auto !!!!!!", false);
-                return;
-            }
             mDisabledLooper.stop();
             ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
 
@@ -475,6 +446,8 @@ public class WestCoastRobot extends TimedRobot {
 
             mInfrastructure.setIsManualControl(true); // turn on compressor when superstructure is not moving
 
+            mDrive.setOpenLoop(SwerveDriveSignal.NEUTRAL);
+
             mDrive.zeroSensors();
             turret.zeroSensors();
 
@@ -485,7 +458,6 @@ public class WestCoastRobot extends TimedRobot {
 
             mEnabledLooper.start();
         } catch (Throwable t) {
-            faulted = true;
             throw t;
         }
     }
@@ -493,14 +465,14 @@ public class WestCoastRobot extends TimedRobot {
     @Override
     public void teleopInit() {
         try {
-            if(faulted) {
-                DriverStation.reportError("Robot is in a FAULTED STATE Not Executing Teleop !!!!!!", false);
-                return;
-            }
             mDisabledLooper.stop();
             ledManager.setDefaultStatus(LedManager.RobotStatus.ENABLED);
 
             turret.zeroSensors();
+
+            if (DistanceManager.USE_ZONES) {
+                DistanceManager.getInstance().setZone(4);
+            }
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
@@ -513,10 +485,11 @@ public class WestCoastRobot extends TimedRobot {
             turret.setTurretAngle(Turret.CARDINAL_SOUTH);
             turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
 
+            mDrive.setOpenLoop(SwerveDriveSignal.NEUTRAL);
+
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
         } catch (Throwable t) {
-            faulted = true;
             throw t;
         }
     }
@@ -524,10 +497,6 @@ public class WestCoastRobot extends TimedRobot {
     @Override
     public void testInit() {
         try {
-            if(faulted) {
-                DriverStation.reportError("Robot is in a FAULTED STATE Not Executing Test !!!!!!", false);
-                return;
-            }
             double initTime = System.currentTimeMillis();
 
             ledManager.blinkStatus(LedManager.RobotStatus.DRIVETRAIN_FLIPPED);
@@ -539,6 +508,8 @@ public class WestCoastRobot extends TimedRobot {
             mEnabledLooper.stop();
             mDisabledLooper.start();
 
+            blinkTimer.reset();
+
             ledManager.blinkStatus(LedManager.RobotStatus.DISABLED);
 
             if (mSubsystemManager.checkSubsystems()) {
@@ -549,7 +520,6 @@ public class WestCoastRobot extends TimedRobot {
                 ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
             }
         } catch (Throwable t) {
-            faulted = true;
             throw t;
         }
     }
@@ -560,8 +530,8 @@ public class WestCoastRobot extends TimedRobot {
             mSubsystemManager.outputToSmartDashboard();
             mRobotState.outputToSmartDashboard();
             mAutoModeSelector.outputToSmartDashboard();
+            mRobotStateEstimator.outputToSmartDashboard();
         } catch (Throwable t) {
-            faulted = true;
             throw t;
         }
     }
@@ -582,11 +552,7 @@ public class WestCoastRobot extends TimedRobot {
                 mDrive.setHeading(Rotation2d.identity());
                 ledManager.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
             } else {
-                if (faulted) {
-                    ledManager.blinkStatus(LedManager.RobotStatus.ERROR);
-                } else {
-                    ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
-                }
+                ledManager.indicateDefaultStatus();
             }
 
             // Update auto modes
@@ -603,7 +569,6 @@ public class WestCoastRobot extends TimedRobot {
                 mAutoModeExecutor.setAutoMode(autoMode.get());
             }
         } catch (Throwable t) {
-            faulted = true;
             throw t;
         }
     }
@@ -641,7 +606,6 @@ public class WestCoastRobot extends TimedRobot {
         try {
             manualControl();
         } catch (Throwable t) {
-            faulted = true;
             throw t;
         }
 
@@ -651,6 +615,9 @@ public class WestCoastRobot extends TimedRobot {
         }
     }
 
+    TimeDelayedBoolean mShouldMaintainAzimuth = new TimeDelayedBoolean();
+    LatchedBoolean shouldChangeAzimuthSetpoint = new LatchedBoolean();
+
     public void manualControl() {
         // boolean arcadeDrive = false;
         actionManager.update();
@@ -658,31 +625,64 @@ public class WestCoastRobot extends TimedRobot {
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
 
-        WestCoastDriveSignal driveSignal;
+        SwerveDriveSignal driveSignal;
+        boolean maintainAzimuth = mShouldMaintainAzimuth.update(
+            mControlBoard.getTurn() == 0,
+            0.2
+        );
+        boolean changeAzimuthSetpoint = shouldChangeAzimuthSetpoint.update(
+            maintainAzimuth
+        );
 
-        // if (arcadeDrive) {
-        //            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
-        //            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
-        //            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-        //            driveSignal = new DriveSignal(left, right);
-        // } else {
-        driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
-        // }
-        if (
-            mDrive.getDriveControlState() == WestCoastDrive.DriveControlState.TRAJECTORY_FOLLOWING
-        ) {
-            if (
-                driveSignal.getLeft() != 0 ||
-                    driveSignal.getRight() != 0 ||
-                    mDrive.isDoneWithTrajectory()
-            ) {
-                mDrive.setOpenLoop(driveSignal);
-            }
-        } else if (!(shooter.getTargetVelocity() > 0)) {
-            mDrive.setOpenLoop(driveSignal);
-        } else {
-            mDrive.setOpenLoop(WestCoastDriveSignal.BRAKE);
-        }
+//        if (mControlBoard.getDPad() != -1) {
+//            swerveHeadingController.setState(
+//                SwerveHeadingController.State.Snap
+//            );
+//            double heading_goal = mControlBoard.getDPad();
+//            SmartDashboard.putNumber("Heading Goal", heading_goal);
+//            swerveHeadingController.setGoal(heading_goal);
+//        } else {
+//            if (!maintainAzimuth) {
+//                swerveHeadingController.setState(
+//                    SwerveHeadingController.State.Off
+//                );
+//            } else if (
+//                (
+//                    swerveHeadingController.getState() ==
+//                    SwerveHeadingController.State.Snap &&
+//                    swerveHeadingController.is()
+//                ) ||
+//                changeAzimuthSetpoint
+//            ) {
+//                swerveHeadingController.setState(
+//                    SwerveHeadingController.HeadingControllerState.MAINTAIN
+//                );
+//                swerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
+//            }
+//        }
+//
+//        if (
+//            swerveHeadingController.getHeadingControllerState() !=
+//            SwerveHeadingController.HeadingControllerState.OFF
+//        ) {
+//            mDrive.setTeleopInputs(
+//                mControlBoard.getThrottle(),
+//                mControlBoard.getStrafe(),
+//                swerveHeadingController.update(),
+//                mControlBoard.getSlowMode(),
+//                mControlBoard.getFieldRelative(),
+//                true
+//            );
+//        } else {
+            mDrive.setTeleopInputs(
+                mControlBoard.getThrottle(),
+                mControlBoard.getStrafe(),
+                mControlBoard.getTurn(),
+                mControlBoard.getSlowMode(),
+                /*mControlBoard.getFieldRelative()*/ // Field Relative override button conflicts with collector
+                false
+            );
+//        }
     }
 
     @Override

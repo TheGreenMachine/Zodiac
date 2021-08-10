@@ -2,7 +2,7 @@ package com.team1816.lib.hardware;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.team1816.frc2020.SwerveRobot;
+import com.team1816.frc2020.Robot;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -31,7 +31,7 @@ public class EnhancedMotorChecker {
             IMotorControllerEnhanced motor
         ) {
             var name = subsystem.getName();
-            var factory = SwerveRobot.getFactory();
+            var factory = Robot.getFactory();
             return new EnhancedMotorChecker.CheckerConfig() {
                 {
                     mCurrentFloor = factory.getConstant(name, "currentFloorCheck");

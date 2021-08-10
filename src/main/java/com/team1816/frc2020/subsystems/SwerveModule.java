@@ -69,7 +69,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         public PidConfig kDrivePid = PidConfig.EMPTY;
         public double kWheelDiameter = Constants.kDriveWheelDiameterInches; // Probably should tune for each individual wheel maybe
         public double kDriveTicksPerUnitDistance =
-            (1 / SwerveDrive.DRIVE_ENCODER_PPR) * (Math.PI * kWheelDiameter);
+            (1 / Drive.DRIVE_ENCODER_PPR) * (Math.PI * kWheelDiameter);
         public double kDriveDeadband = 0.01;
 
         // drive current/voltage
@@ -453,8 +453,8 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
 
     @Override
     public double getDriveDistance() {
-        return SwerveDrive.rotationsToInches(
-            mPeriodicIO.drive_encoder_ticks / SwerveDrive.DRIVE_ENCODER_PPR
+        return Drive.rotationsToInches(
+            mPeriodicIO.drive_encoder_ticks / Drive.DRIVE_ENCODER_PPR
         );
     }
 
@@ -551,7 +551,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             " invertAzimuth: " +
             mConstants.kInvertAzimuth +
             " encPPR: " +
-            SwerveDrive.DRIVE_ENCODER_PPR +
+            Drive.DRIVE_ENCODER_PPR +
             " }"
         );
     }
