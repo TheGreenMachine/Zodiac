@@ -16,7 +16,7 @@ subsystems:
             shooterMain: 3
             shooterFollower: 2
     turret:
-        implemented: false
+        implemented: true
         constants:
             minPos: -4182
             maxPos: -715

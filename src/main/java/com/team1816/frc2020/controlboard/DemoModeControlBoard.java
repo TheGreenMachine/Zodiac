@@ -26,9 +26,9 @@ public class DemoModeControlBoard implements IControlBoard {
     private DemoModeControlBoard() {
         mController = new LogitechController(Constants.kDriveGamepadPort);
         SendableChooser<Double> speedChooser = new SendableChooser<>();
-        speedChooser.setDefaultOption("Comfort", 0.25);
-        speedChooser.addOption("Sport", 0.5);
-        speedChooser.addOption("Plaid", 1.0);
+        speedChooser.setDefaultOption("Chill", 0.25);
+        speedChooser.addOption("Standard", 0.5);
+        speedChooser.addOption("Sport", 1.0);
         speedChooser.addOption("Park", 0.0);
 
         SmartDashboard.putData("DemoModeDriveSpeed", speedChooser);
@@ -39,13 +39,13 @@ public class DemoModeControlBoard implements IControlBoard {
                 "selected",
                 (table, key, entry, value, flags) -> {
                     switch (value.getString()) {
-                        case "Comfort":
+                        case "Chill":
                             drivetrainMultiplier = 0.2;
                             break;
-                        case "Sport":
+                        case "Standard":
                             drivetrainMultiplier = 0.5;
                             break;
-                        case "Plaid":
+                        case "Sport":
                             drivetrainMultiplier = 1.0;
                             break;
                         default:
@@ -132,7 +132,7 @@ public class DemoModeControlBoard implements IControlBoard {
 
     @Override
     public boolean getFieldFollowing() {
-        return false;
+        return mController.getDPad() == 180;
     }
 
     @Override
