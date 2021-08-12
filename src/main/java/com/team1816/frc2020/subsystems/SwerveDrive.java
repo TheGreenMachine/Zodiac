@@ -10,7 +10,6 @@ import com.team1816.frc2020.planners.SwerveMotionPlanner;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
-import com.team1816.lib.subsystems.Subsystem;
 import com.team1816.lib.subsystems.SwerveDrivetrain;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
@@ -22,10 +21,7 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.util.DriveHelper;
-import com.team254.lib.util.SwerveDriveSignal;
-import com.team254.lib.util.Units;
-import com.team254.lib.util.Util;
+import com.team254.lib.util.*;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -37,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvider {
+public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider {
 
     private static final String NAME = "drivetrain";
 
@@ -71,10 +67,6 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
     boolean alwaysConfigureModules = false;
     boolean moduleConfigRequested = false;
     private boolean wantReset = false;
-
-    public boolean hasFinishedPath() {
-        return hasFinishedPath;
-    }
 
     public void requireModuleConfiguration() {
         modulesReady = false;
@@ -113,14 +105,14 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
 
     public static synchronized Drive getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new Drive();
+            INSTANCE = new SwerveDrive();
         }
 
         return INSTANCE;
     }
 
     private SwerveDrive() {
-        super(NAME);
+        super();
         mPeriodicIO = new PeriodicIO();
 
         // start all Talons in open loop mode
@@ -151,7 +143,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
 
         mPigeon.configFactoryDefault();
 
-        setSwerveDriveOpenLoop(SwerveDriveSignal.NEUTRAL);
+        setOpenLoop(SwerveDriveSignal.NEUTRAL);
 
         // force a CAN message across
         mIsBrakeMode = false;
@@ -161,10 +153,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         trajectoryMotionPlanner = new SwerveMotionPlanner();
     }
 
-    public double getHeadingDegrees() {
-        return mPeriodicIO.gyro_heading.getDegrees();
-    }
-
+    @Override
     public double getDesiredHeading() {
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             return headingController.getTargetHeading();
@@ -172,6 +161,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         return mPeriodicIO.desired_heading.getDegrees();
     }
 
+    @Override
     public double getHeadingError() {
         return headingController.getError();
     }
@@ -447,104 +437,48 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
     }
 
     @Override
-    public void registerEnabledLoops(ILooper in) {
-        in.register(
-            new Loop() {
-                @Override
-                public void onStart(double timestamp) {
-                    synchronized (Drive.this) {
-                        stop();
-                        setBrakeMode(false);
-                    }
-                    lastUpdateTimestamp = timestamp;
-                }
-
-                @Override
-                public void onLoop(double timestamp) {
-                    synchronized (Drive.this) {
-                        mPeriodicIO.timestamp = timestamp;
-                        switch (mDriveControlState) {
-                            case OPEN_LOOP:
-                                var driveHelper = driveHelperChooser.getSelected();
-                                setSwerveDriveOpenLoop(
-                                    driveHelper.calculateDriveSignal(
-                                        mPeriodicIO.forward,
-                                        mPeriodicIO.strafe,
-                                        mPeriodicIO.rotation,
-                                        mPeriodicIO.low_power,
-                                        mPeriodicIO.field_relative,
-                                        mPeriodicIO.use_heading_controller
-                                    )
-                                );
-                                break;
-                            case PATH_FOLLOWING:
-                                if (mPathFollower != null) {
-                                    //  updatePathFollower(timestamp);
-                                    break;
-                                }
-                            case TRAJECTORY_FOLLOWING:
-                                updatePathFollower(timestamp);
-                                break;
-                            default:
-                                System.out.println(
-                                    "unexpected drive control state: " +
-                                    mDriveControlState
-                                );
-                                break;
-                        }
-                    }
-                    lastUpdateTimestamp = timestamp;
-                }
-
-                @Override
-                public void onStop(double timestamp) {
-                    stop();
-                }
-            }
+    protected void updateOpenLoopPeriodic() {
+        var driveHelper = driveHelperChooser.getSelected();
+        setOpenLoop(
+            driveHelper.calculateDriveSignal(
+                mPeriodicIO.forward,
+                mPeriodicIO.strafe,
+                mPeriodicIO.rotation,
+                mPeriodicIO.low_power,
+                mPeriodicIO.field_relative,
+                mPeriodicIO.use_heading_controller
+            )
         );
     }
 
-    public static double rotationsToInches(double rotations) {
-        return rotations * (Constants.kDriveWheelDiameterInches * Math.PI);
-    }
-
-    private static double rpmToInchesPerSecond(double rpm) {
-        return rotationsToInches(rpm) / 60;
-    }
-
-    private static double inchesToRotations(double inches) {
-        return inches / (Constants.kDriveWheelDiameterInches * Math.PI);
-    }
-
-    public static double inchesPerSecondToTicksPer100ms(double inches_per_second) {
-        return inchesToRotations(inches_per_second) * DRIVE_ENCODER_PPR / 10.0;
-    }
-
-    private static double radiansPerSecondToTicksPer100ms(double rad_s) {
-        return rad_s / (Math.PI * 2.0) * DRIVE_ENCODER_PPR / 10.0;
-    }
-
-    /**
-     * Configure talons for open loop control
-     */
-    public synchronized void setSwerveDriveOpenLoop(SwerveDriveSignal signal) {
+    @Override
+    public void setOpenLoop(DriveSignal signal) {
         if (mDriveControlState != DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
             System.out.println("switching to open loop");
             System.out.println(signal);
             mDriveControlState = DriveControlState.OPEN_LOOP;
         }
-        mPeriodicIO.wheel_speeds = signal.getWheelSpeeds();
-        mPeriodicIO.wheel_azimuths = signal.getWheelAzimuths();
+        SwerveDriveSignal swerveSignal;
+
+        if (signal instanceof SwerveDriveSignal) {
+            swerveSignal = (SwerveDriveSignal) signal;
+        } else {
+            swerveSignal = new SwerveDriveSignal(signal.getLeft(), signal.getRight());
+        }
+        mPeriodicIO.wheel_speeds = swerveSignal.getWheelSpeeds();
+        mPeriodicIO.wheel_azimuths = swerveSignal.getWheelAzimuths();
     }
 
+    @Override
     public void setOpenLoopRampRate(double openLoopRampRate) {
-        this.openLoopRampRate = openLoopRampRate;
+        super.setOpenLoopRampRate(openLoopRampRate);
         for (SwerveModule module : swerveModules) {
             module.setOpenLoopRampRate(openLoopRampRate);
         }
     }
 
+    @Override
     public void setTeleopInputs(
         double forward,
         double strafe,
@@ -563,13 +497,10 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         mPeriodicIO.use_heading_controller = use_heading_controller;
     }
 
-    public double getOpenLoopRampRate() {
-        return this.openLoopRampRate;
-    }
-
     /**
      * Configure talons for velocity control
      */
+    @Override
     public synchronized void setVelocity(List<Translation2d> driveVectors) {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
@@ -595,36 +526,12 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         }
     }
 
-    public boolean isBrakeMode() {
-        return mIsBrakeMode;
-    }
-
-    public void setSlowMode(boolean slowMode) {
-        isSlowMode = slowMode;
-    }
-
+    @Override
     public synchronized void setBrakeMode(boolean on) {
+        super.setBrakeMode(on);
         for (SwerveModule module : swerveModules) {
             module.setDriveBrakeMode(on);
         }
-    }
-
-    public synchronized Rotation2d getHeading() {
-        return mPeriodicIO.gyro_heading;
-    }
-
-    public synchronized Rotation2d getHeadingRelativeToInitial() {
-        return mPeriodicIO.gyro_heading_no_offset;
-    }
-
-    public synchronized void setHeading(Rotation2d heading) {
-        System.out.println("set heading: " + heading.getDegrees());
-
-        mGyroOffset =
-            heading.rotateBy(Rotation2d.fromDegrees(mPigeon.getFusedHeading()).inverse());
-        System.out.println("gyro offset: " + mGyroOffset.getDegrees());
-
-        mPeriodicIO.desired_heading = heading;
     }
 
     public synchronized double[] getModuleVelocities() {
@@ -645,56 +552,6 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         return ret_val;
     }
 
-    public synchronized void resetPigeon() {
-        mPigeon.setFusedHeading(0);
-    }
-
-    public DriveControlState getDriveControlState() {
-        return mDriveControlState;
-    }
-
-    /**
-     * Configures the drivebase to drive a path. Used for autonomous driving
-     *
-     * @see Path
-     */
-    public synchronized void setWantDrivePath(Path path, boolean reversed) {
-        if (
-            mCurrentPath != path || mDriveControlState != DriveControlState.PATH_FOLLOWING
-        ) {
-            RobotState.getInstance().resetDistanceDriven();
-            mPathFollower =
-                new PathFollower(
-                    path,
-                    reversed,
-                    new PathFollower.Parameters(
-                        new Lookahead(
-                            Constants.kMinLookAhead,
-                            Constants.kMaxLookAhead,
-                            Constants.kMinLookAheadSpeed,
-                            Constants.kMaxLookAheadSpeed
-                        ),
-                        Constants.kInertiaSteeringGain,
-                        Constants.kPathFollowingProfileKp,
-                        Constants.kPathFollowingProfileKi,
-                        Constants.kPathFollowingProfileKv,
-                        Constants.kPathFollowingProfileKffv,
-                        Constants.kPathFollowingProfileKffa,
-                        Constants.kPathFollowingProfileKs,
-                        Constants.kPathFollowingMaxVel,
-                        Constants.kPathFollowingMaxAccel,
-                        Constants.kPathFollowingGoalPosTolerance,
-                        Constants.kPathFollowingGoalVelTolerance,
-                        Constants.kPathStopSteeringDistance
-                    )
-                );
-            mDriveControlState = DriveControlState.PATH_FOLLOWING;
-            mCurrentPath = path;
-        } else {
-            setVelocity(ZERO_DRIVE_VECTOR);
-        }
-    }
-
     public void setWantReset(boolean wantReset) {
         this.wantReset = wantReset;
     }
@@ -703,6 +560,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         return wantReset;
     }
 
+    @Override
     public synchronized void setTrajectory(
         TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory,
         Rotation2d targetHeading
@@ -722,6 +580,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         }
     }
 
+    @Override
     public boolean isDoneWithTrajectory() {
         if (mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING) {
             return false;
@@ -729,6 +588,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         return trajectoryMotionPlanner.isDone() || mOverrideTrajectory;
     }
 
+    @Override
     public synchronized boolean isDoneWithPath() {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
@@ -741,18 +601,8 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         }
     }
 
-    public synchronized void forceDoneWithPath() {
-        if (
-            mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-            mPathFollower != null
-        ) {
-            mPathFollower.forceFinish();
-        } else {
-            System.out.println("Robot is not in path following mode");
-        }
-    }
-
-    private void updatePathFollower(double timestamp) {
+    @Override
+    public void updatePathFollower(double timestamp) {
         double rotationCorrection = headingController.updateRotationCorrection(getHeadingDegrees(), timestamp);
         updatePose(timestamp);
         // alternatePoseUpdate(timestamp);
@@ -806,34 +656,12 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         }
     }
 
-    public synchronized boolean hasPassedMarker(String marker) {
-        if (
-            mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-            mPathFollower != null
-        ) {
-            return mPathFollower.hasPassedMarker(marker);
-        } else {
-            System.out.println("Robot is not in path following mode");
-            return false;
-        }
-    }
-
-    public enum DriveControlState {
-        OPEN_LOOP, // open loop voltage control
-        PATH_FOLLOWING, // velocity PID control
-        TRAJECTORY_FOLLOWING,
-    }
-
     @Override
     public SwerveModule[] getSwerveModules() {
         return swerveModules;
     }
 
     @Override
-    public void zeroSensors() {
-        zeroSensors(Pose2d.identity());
-    }
-
     public void zeroSensors(Pose2d pose) {
         System.out.println("Zeroing drive sensors!");
         resetPigeon();
@@ -857,13 +685,9 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
         }
     }
 
-    public boolean hasPigeonResetOccurred() {
-        return mPigeon.hasResetOccurred();
-    }
-
     @Override
     public synchronized void stop() {
-        setSwerveDriveOpenLoop(SwerveDriveSignal.NEUTRAL);
+        setOpenLoop(SwerveDriveSignal.NEUTRAL);
     }
 
     @Override
@@ -883,28 +707,7 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addStringProperty(
-            "Drive/ControlState",
-            () -> this.getDriveControlState().toString(),
-            null
-        );
-
-        driveHelperChooser = new SendableChooser<>();
-        driveHelperChooser.addOption("Cheesy Drive", DriveHelper.CHEESY);
-        driveHelperChooser.setDefaultOption("Swerve Classic", DriveHelper.SWERVE_CLASSIC);
-        SmartDashboard.putData("Drive Algorithm", driveHelperChooser);
-        SmartDashboard.putData("Field", fieldSim);
-
-        SmartDashboard.putNumber("Drive/Vector Direction", 0);
-        SmartDashboard.putNumber("Drive/Robot Velocity", 0);
-        SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
-        SmartDashboard
-            .getEntry("Drive/OpenLoopRampRate")
-            .addListener(
-                notification -> setOpenLoopRampRate(notification.value.getDouble()),
-                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-            );
-
+        super.initSendable(builder);
         SmartDashboard.putBoolean("Drive/TeleopFieldCentric", this.mPeriodicIO.field_relative);
         SmartDashboard.getEntry("Drive/TeleopFieldCentric")
             .addListener(
@@ -913,22 +716,6 @@ public class SwerveDrive extends Subsystem implements SwerveDrivetrain, PidProvi
                 },
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
-
-        SmartDashboard.putBoolean("Drive/Zero Sensors", false);
-        SmartDashboard
-            .getEntry("Drive/Zero Sensors")
-            .addListener(
-                entryNotification -> {
-                    if (entryNotification.value.getBoolean()) {
-                        zeroSensors();
-                        entryNotification.getEntry().setBoolean(false);
-                    }
-                },
-                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-            );
     }
 
-    public synchronized double getTimestamp() {
-        return mPeriodicIO.timestamp;
-    }
 }

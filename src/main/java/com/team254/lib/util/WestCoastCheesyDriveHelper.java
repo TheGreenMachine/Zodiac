@@ -39,11 +39,11 @@ public class WestCoastCheesyDriveHelper {
     private double leftPrevPwm = 0;
     private double rightPrevPwm = 0;
 
-    public WestCoastDriveSignal arcadeDrive(double throttle, double wheel) {
+    public DriveSignal arcadeDrive(double throttle, double wheel) {
         return null;
     }
 
-    public WestCoastDriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn,
+    public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn,
                                    boolean isHighGear) {
 
         wheel = handleDeadband(wheel, kWheelDeadband);
@@ -143,10 +143,10 @@ public class WestCoastCheesyDriveHelper {
             rightPwm = -1.0;
         }
 
-        return new WestCoastDriveSignal(leftPwm, rightPwm);
+        return new DriveSignal(leftPwm, rightPwm);
     }
 
-    public WestCoastDriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn) {
+    public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn) {
         return cheesyDrive(throttle, wheel, isQuickTurn, false); // TODO: no gearshift, isHighGear = true?
     }
 

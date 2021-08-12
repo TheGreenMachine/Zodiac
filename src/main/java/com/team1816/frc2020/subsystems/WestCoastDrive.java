@@ -23,7 +23,7 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.util.WestCoastDriveSignal;
+import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -132,7 +132,7 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         }
         mPigeon.configFactoryDefault();
 
-        setOpenLoop(WestCoastDriveSignal.NEUTRAL);
+        setOpenLoop(DriveSignal.NEUTRAL);
 
         // force a CAN message across
         mIsBrakeMode = false;
@@ -321,7 +321,7 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
     /**
      * Configure talons for open loop control
      */
-    public synchronized void setOpenLoop(WestCoastDriveSignal signal) {
+    public synchronized void setOpenLoop(DriveSignal signal) {
         if (mDriveControlState != DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
             System.out.println("switching to open loop");
@@ -348,7 +348,7 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
     /**
      * Configure talons for velocity control
      */
-    public synchronized void setVelocity(WestCoastDriveSignal signal, WestCoastDriveSignal feedforward) {
+    public synchronized void setVelocity(DriveSignal signal, DriveSignal feedforward) {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
             System.out.println("Switching to Velocity");
@@ -516,7 +516,7 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
             mDriveControlState = DriveControlState.PATH_FOLLOWING;
             mCurrentPath = path;
         } else {
-            setVelocity(new WestCoastDriveSignal(0, 0), new WestCoastDriveSignal(0, 0));
+            setVelocity(new DriveSignal(0, 0), new DriveSignal(0, 0));
         }
     }
 
@@ -666,7 +666,7 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
 
     @Override
     public synchronized void stop() {
-        setOpenLoop(WestCoastDriveSignal.NEUTRAL);
+        setOpenLoop(DriveSignal.NEUTRAL);
     }
 
     @Override

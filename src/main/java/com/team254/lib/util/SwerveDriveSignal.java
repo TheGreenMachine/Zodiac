@@ -11,7 +11,7 @@ import java.util.Arrays;
 /**
  * A drivetrain signal containing the speed and azimuth for each wheel
  */
-public class SwerveDriveSignal {
+public class SwerveDriveSignal extends DriveSignal {
     public static final double[] ZERO_SPEED = new double[]{0, 0, 0, 0};
     public static final Rotation2d[] ZERO_AZIMUTH = new Rotation2d[]{Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity(), Rotation2d.identity()};
 
@@ -27,6 +27,7 @@ public class SwerveDriveSignal {
     }
 
     public SwerveDriveSignal(double left, double right) {
+        super(left, right);
         mWheelSpeeds = new double[4];
         mWheelSpeeds[SwerveModule.kFrontLeft] = left;
         mWheelSpeeds[SwerveModule.kBackLeft] = left;
@@ -38,6 +39,10 @@ public class SwerveDriveSignal {
     }
 
     public SwerveDriveSignal(double[] wheelSpeeds, Rotation2d[] wheelAzimuths, boolean brakeMode) {
+        super(
+            wheelSpeeds[SwerveModule.kFrontLeft],
+            wheelSpeeds[SwerveModule.kFrontRight]
+        );
         mWheelSpeeds = wheelSpeeds;
         mWheelAzimuths = wheelAzimuths;
         mBrakeMode = brakeMode;

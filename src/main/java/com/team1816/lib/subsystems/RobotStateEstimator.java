@@ -3,12 +3,15 @@ package com.team1816.lib.subsystems;
 import com.team1816.frc2020.SwerveKinematics;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team1816.frc2020.subsystems.Turret;
+import com.team1816.frc2020.subsystems.WestCoastDrive;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Twist2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotStateEstimator extends Subsystem {
@@ -56,40 +59,14 @@ public class RobotStateEstimator extends Subsystem {
                     mRobotState.getLatestFieldToVehicle().getValue().getRotation();
             }
             final double dt = timestamp - prev_timestamp_;
-            final double[] wheel_speeds = mDrive.getModuleVelocities();
-            final Rotation2d[] wheel_azimuths = mDrive.getModuleAzimuths();
-            final Rotation2d gyro_angle = mDrive.getHeading();
-            Twist2d odometry_twist;
-            synchronized (mRobotState) {
-                final Pose2d last_measurement = mRobotState
-                    .getLatestFieldToVehicle()
-                    .getValue();
 
-                // this should be used for debugging forward kinematics without gyro (shouldn't be used in actual code)
-                // odometry_twist = Kinematics.forwardKinematics(wheel_speeds, wheel_azimuths).scaled(dt);
-
-                // this should be used for more accurate measurements for actual code
-                odometry_twist =
-                    SwerveKinematics
-                        .forwardKinematics(
-                            wheel_speeds,
-                            wheel_azimuths,
-                            last_measurement.getRotation(),
-                            gyro_angle,
-                            dt
-                        )
-                        .scaled(dt);
+            if (mDrive instanceof SwerveDrive) {
+                estimateSwerve((SwerveDrive) mDrive, timestamp, dt);
+            } else if (mDrive instanceof WestCoastDrive) {
+                estimateWestCoast((WestCoastDrive) mDrive, timestamp, dt);
+            } else {
+                DriverStation.reportError("RobotStateEstimator - Drive is not of known type", false);
             }
-            final Twist2d measured_velocity = SwerveKinematics.forwardKinematics(
-                wheel_speeds,
-                wheel_azimuths,
-                prev_heading_,
-                gyro_angle,
-                dt
-            );
-            mRobotState.addFieldToVehicleObservation(timestamp, mDrive.getPose());
-            mRobotState.setHeadingRelativeToInitial(mDrive.getHeadingRelativeToInitial());
-            //    mRobotState.addObservations(timestamp, odometry_twist, measured_velocity);
 
             prev_heading_ = gyro_angle;
             prev_timestamp_ = timestamp;
@@ -97,6 +74,45 @@ public class RobotStateEstimator extends Subsystem {
 
         @Override
         public void onStop(double timestamp) {}
+    }
+
+    private void estimateWestCoast(WestCoastDrive drivetrain, double timestamp, double dt) {}
+
+    private void estimateSwerve(SwerveDrive drivetrain, double timestamp, double dt) {
+        final double[] wheel_speeds = drivetrain.getModuleVelocities();
+        final Rotation2d[] wheel_azimuths = drivetrain.getModuleAzimuths();
+        final Rotation2d gyro_angle = drivetrain.getHeading();
+        Twist2d odometry_twist;
+        synchronized (mRobotState) {
+            final Pose2d last_measurement = mRobotState
+                .getLatestFieldToVehicle()
+                .getValue();
+
+            // this should be used for debugging forward kinematics without gyro (shouldn't be used in actual code)
+            // odometry_twist = Kinematics.forwardKinematics(wheel_speeds, wheel_azimuths).scaled(dt);
+
+            // this should be used for more accurate measurements for actual code
+            odometry_twist =
+                SwerveKinematics
+                    .forwardKinematics(
+                        wheel_speeds,
+                        wheel_azimuths,
+                        last_measurement.getRotation(),
+                        gyro_angle,
+                        dt
+                    )
+                    .scaled(dt);
+        }
+        final Twist2d measured_velocity = SwerveKinematics.forwardKinematics(
+            wheel_speeds,
+            wheel_azimuths,
+            prev_heading_,
+            gyro_angle,
+            dt
+        );
+        mRobotState.addFieldToVehicleObservation(timestamp, drivetrain.getPose());
+        mRobotState.setHeadingRelativeToInitial(drivetrain.getHeadingRelativeToInitial());
+        //    mRobotState.addObservations(timestamp, odometry_twist, measured_velocity);
     }
 
     @Override

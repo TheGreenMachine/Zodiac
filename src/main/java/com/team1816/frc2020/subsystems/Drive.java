@@ -18,6 +18,7 @@ import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveHelper;
+import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.SwerveDriveSignal;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -29,26 +30,24 @@ import java.util.List;
 
 public abstract class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
 
-    private static final String NAME = "drivetrain";
-
-    private static Drive INSTANCE;
+    protected static final String NAME = "drivetrain";
 
     // Components
-    private final LedManager ledManager = LedManager.getInstance();
-    private final PigeonIMU mPigeon;
+    protected final LedManager ledManager = LedManager.getInstance();
+    protected final PigeonIMU mPigeon;
 
     // Controllers
-    private PathFollower mPathFollower;
-    private Path mCurrentPath = null;
+    protected PathFollower mPathFollower;
+    protected Path mCurrentPath = null;
 
     // control states
-    private DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
-    private final RobotState mRobotState = RobotState.getInstance();
+    protected DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
+    protected final RobotState mRobotState = RobotState.getInstance();
 
     // Odometry variables
-    private Pose2d pose = Pose2d.identity();
-    private Pose2d startingPosition = Pose2d.identity();
-    private double lastUpdateTimestamp = 0;
+    protected Pose2d pose = Pose2d.identity();
+    protected Pose2d startingPosition = Pose2d.identity();
+    protected double lastUpdateTimestamp = 0;
 
     // Path control variables
     boolean hasStartedFollowing = false;
@@ -59,22 +58,22 @@ public abstract class Drive extends Subsystem implements SwerveDrivetrain, PidPr
     }
 
     // hardware states
-    private boolean mIsBrakeMode;
-    private Rotation2d mGyroOffset = Rotation2d.identity();
-    private double openLoopRampRate;
+    protected boolean mIsBrakeMode;
+    protected Rotation2d mGyroOffset = Rotation2d.identity();
+    protected double openLoopRampRate;
 
-    private PeriodicIO mPeriodicIO;
-    private boolean mOverrideTrajectory = false;
+    protected PeriodicIO mPeriodicIO;
+    protected boolean mOverrideTrajectory = false;
 
-    private boolean isSlowMode;
-    private double rotationScalar = 1;
-    private boolean robotCentric = false;
-    private SendableChooser<DriveHelper> driveHelperChooser;
+    protected boolean isSlowMode;
+    protected double rotationScalar = 1;
+    protected boolean robotCentric = false;
+    protected SendableChooser<DriveHelper> driveHelperChooser;
 
     // Simulator
-    private final Field2d fieldSim = new Field2d();
-    private double gyroDrift;
-    private final double robotWidthTicks = inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
+    protected final Field2d fieldSim = new Field2d();
+    protected double gyroDrift;
+    protected final double robotWidthTicks = inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
 
     // Constants
     public static final double DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
@@ -85,7 +84,7 @@ public abstract class Drive extends Subsystem implements SwerveDrivetrain, PidPr
         Translation2d.identity()
     );
 
-    private Drive() {
+    protected Drive() {
         super(NAME);
         mPeriodicIO = new PeriodicIO();
 
@@ -102,12 +101,15 @@ public abstract class Drive extends Subsystem implements SwerveDrivetrain, PidPr
         setBrakeMode(mIsBrakeMode);
     }
 
+    @Override
     public double getHeadingDegrees() {
         return mPeriodicIO.gyro_heading.getDegrees();
     }
 
+    @Override
     public abstract double getDesiredHeading();
 
+    @Override
     public abstract double getHeadingError();
 
     @Override
@@ -210,11 +212,11 @@ public abstract class Drive extends Subsystem implements SwerveDrivetrain, PidPr
         return rotations * (Constants.kDriveWheelDiameterInches * Math.PI);
     }
 
-    private static double rpmToInchesPerSecond(double rpm) {
+    protected static double rpmToInchesPerSecond(double rpm) {
         return rotationsToInches(rpm) / 60;
     }
 
-    private static double inchesToRotations(double inches) {
+    protected static double inchesToRotations(double inches) {
         return inches / (Constants.kDriveWheelDiameterInches * Math.PI);
     }
 
@@ -222,16 +224,19 @@ public abstract class Drive extends Subsystem implements SwerveDrivetrain, PidPr
         return inchesToRotations(inches_per_second) * DRIVE_ENCODER_PPR / 10.0;
     }
 
-    private static double radiansPerSecondToTicksPer100ms(double rad_s) {
+    protected static double radiansPerSecondToTicksPer100ms(double rad_s) {
         return rad_s / (Math.PI * 2.0) * DRIVE_ENCODER_PPR / 10.0;
     }
 
     /**
      * Configure talons for open loop control
+     * @param signal
      */
-    public abstract void setOpenLoop(SwerveDriveSignal signal);
+    public abstract void setOpenLoop(DriveSignal signal);
 
-    public abstract void setOpenLoopRampRate(double openLoopRampRate);
+    public void setOpenLoopRampRate(double openLoopRampRate) {
+        this.openLoopRampRate = openLoopRampRate;
+    }
 
     public abstract void setTeleopInputs(
         double forward,
@@ -258,7 +263,9 @@ public abstract class Drive extends Subsystem implements SwerveDrivetrain, PidPr
         isSlowMode = slowMode;
     }
 
-    public abstract void setBrakeMode(boolean on);
+    public void setBrakeMode(boolean on) {
+        mIsBrakeMode = on;
+    }
 
     public synchronized Rotation2d getHeading() {
         return mPeriodicIO.gyro_heading;
@@ -409,15 +416,6 @@ public abstract class Drive extends Subsystem implements SwerveDrivetrain, PidPr
                 notification -> setOpenLoopRampRate(notification.value.getDouble()),
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
-
-//        SmartDashboard.putBoolean("Drive/TeleopFieldCentric", this.mPeriodicIO.field_relative);
-//        SmartDashboard.getEntry("Drive/TeleopFieldCentric")
-//            .addListener(
-//                notification -> {
-//                    this.mPeriodicIO.field_relative = notification.value.getBoolean();
-//                },
-//                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-//            );
 
         SmartDashboard.putBoolean("Drive/Zero Sensors", false);
         SmartDashboard
