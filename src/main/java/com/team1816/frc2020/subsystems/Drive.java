@@ -8,6 +8,7 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team1816.lib.subsystems.SwerveDrivetrain;
+import com.team1816.lib.subsystems.TrackableDrivetrain;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
 import com.team254.lib.control.PathFollower;
@@ -28,13 +29,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.List;
 
-public abstract class Drive extends Subsystem implements SwerveDrivetrain, PidProvider {
+public abstract class Drive extends Subsystem implements TrackableDrivetrain, PidProvider {
 
     protected static final String NAME = "drivetrain";
 
     // Components
     protected final LedManager ledManager = LedManager.getInstance();
     protected final PigeonIMU mPigeon;
+    protected SwerveModule[] swerveModules = new SwerveModule[0];
 
     // Controllers
     protected PathFollower mPathFollower;
@@ -84,17 +86,21 @@ public abstract class Drive extends Subsystem implements SwerveDrivetrain, PidPr
         Translation2d.identity()
     );
 
+    public static synchronized Drive getInstance() {
+        //THIS IS WHERE TO DETERMINE WHAT TYPE OF DRIVETRAIN IS IN USE
+        return SwerveDrive.getInstance();
+    }
+
     protected Drive() {
         super(NAME);
-        mPeriodicIO = new PeriodicIO();
 
-        setOpenLoopRampRate(Constants.kOpenLoopRampRate);
+        openLoopRampRate = Constants.kOpenLoopRampRate;
 
         mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId", -1));
 
         mPigeon.configFactoryDefault();
 
-        setOpenLoop(SwerveDriveSignal.NEUTRAL);
+        setOpenLoop(DriveSignal.NEUTRAL);
 
         // force a CAN message across
         mIsBrakeMode = false;
@@ -334,7 +340,6 @@ public abstract class Drive extends Subsystem implements SwerveDrivetrain, PidPr
             setVelocity(ZERO_DRIVE_VECTOR);
         }
     }
-
 
     public abstract void setTrajectory(
         TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory,

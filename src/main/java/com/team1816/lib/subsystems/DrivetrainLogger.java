@@ -4,7 +4,7 @@ import badlog.lib.BadLog;
 
 public class DrivetrainLogger {
 
-    public static void init(DifferentialDrivetrain drivetrain) {
+    public static void initDifferential(DifferentialDrivetrain drivetrain) {
         BadLog.createTopic(
             "Drivetrain/LeftActVel",
             "NativeUnits",
@@ -132,5 +132,14 @@ public class DrivetrainLogger {
 //            "Angle",
 //            drivetrain::getHeadingError
 //        );
+    }
+
+    public static void init(TrackableDrivetrain drivetrain){
+        if(drivetrain instanceof SwerveDrivetrain)
+            DrivetrainLogger.initSwerve((SwerveDrivetrain) drivetrain);
+        else if(drivetrain instanceof DifferentialDrivetrain)
+            DrivetrainLogger.initDifferential((DifferentialDrivetrain) drivetrain);
+        else
+            DrivetrainLogger.baseInit(drivetrain);
     }
 }

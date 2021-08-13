@@ -40,7 +40,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     private static Drive INSTANCE;
 
     // Components
-    private final SwerveModule[] swerveModules = new SwerveModule[4];
     private final LedManager ledManager = LedManager.getInstance();
     private final PigeonIMU mPigeon;
 
@@ -68,20 +67,12 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     boolean moduleConfigRequested = false;
     private boolean wantReset = false;
 
-    public void requireModuleConfiguration() {
-        modulesReady = false;
-    }
-
-    public void alwaysConfigureModules() {
-        alwaysConfigureModules = true;
-    }
-
     // hardware states
     private boolean mIsBrakeMode;
     private Rotation2d mGyroOffset = Rotation2d.identity();
     private double openLoopRampRate;
 
-    private PeriodicIO mPeriodicIO;
+    protected PeriodicIO mPeriodicIO;
     private boolean mOverrideTrajectory = false;
 
     private boolean isSlowMode;
@@ -107,7 +98,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         if (INSTANCE == null) {
             INSTANCE = new SwerveDrive();
         }
-
         return INSTANCE;
     }
 
@@ -166,24 +156,12 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         return headingController.getError();
     }
 
-    @Override
-    public double getKP() {
-        return factory.getConstant(NAME, "kP");
+    public void requireModuleConfiguration() {
+        modulesReady = false;
     }
 
-    @Override
-    public double getKI() {
-        return factory.getConstant(NAME, "kI");
-    }
-
-    @Override
-    public double getKD() {
-        return factory.getConstant(NAME, "kD");
-    }
-
-    @Override
-    public double getKF() {
-        return factory.getConstant(NAME, "kF");
+    public void alwaysConfigureModules() {
+        alwaysConfigureModules = true;
     }
 
     public static class PeriodicIO {

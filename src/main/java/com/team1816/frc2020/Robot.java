@@ -181,7 +181,9 @@ public class Robot extends TimedRobot {
 
                 // BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
 
-                DrivetrainLogger.initSwerve(mDrive);
+
+
+
 
                 BadLog.createValue("Drivetrain PID", mDrive.pidToString());
                 BadLog.createValue("Shooter PID", shooter.pidToString());

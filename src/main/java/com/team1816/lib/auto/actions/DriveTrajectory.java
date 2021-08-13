@@ -2,6 +2,7 @@ package com.team1816.lib.auto.actions;
 
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.TimedView;
@@ -65,8 +66,11 @@ public class DriveTrajectory implements Action {
         if (mResetPose) {
             mDrive.setHeading(pose.getRotation());
             mRobotState.reset(Timer.getFPGATimestamp(), pose);
-            mDrive.setStartingPose(pose);
-            mDrive.setWantReset(true);
+            if(mDrive instanceof SwerveDrive) {
+                ((SwerveDrive)mDrive).setStartingPose(pose);
+                ((SwerveDrive)mDrive).setWantReset(true);
+            }
+
         }
         mDrive.setTrajectory(mTrajectory, targetHeading);
     }

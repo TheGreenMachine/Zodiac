@@ -8,29 +8,26 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
+import com.team1816.frc2020.WestCoastKinematics;
 import com.team1816.frc2020.planners.WestCoastMotionPlanner;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
-import com.team1816.lib.loops.ILooper;
-import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.DifferentialDrivetrain;
-import com.team1816.lib.subsystems.PidProvider;
-import com.team1816.lib.subsystems.Subsystem;
-import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
 import com.team254.lib.control.PathFollower;
-import com.team254.lib.geometry.Pose2d;
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.*;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain, PidProvider {
+import java.util.List;
+
+public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
 
     private static WestCoastDrive mInstance;
     private static final String NAME = "drivetrain";
@@ -78,7 +75,7 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
     }
 
     private WestCoastDrive() {
-        super(NAME);
+        super();
         DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
         mPeriodicIO = new PeriodicIO();
 
@@ -143,10 +140,7 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         SmartDashboard.putData("Field", fieldSim);
     }
 
-    public double getHeadingDegrees() {
-        return mPeriodicIO.gyro_heading.getDegrees();
-    }
-
+    @Override
     public double getDesiredHeading() {
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             return mPeriodicIO.path_setpoint.state().getRotation().getDegrees();
@@ -155,23 +149,8 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
     }
 
     @Override
-    public double getKP() {
-        return factory.getConstant(NAME, "kP");
-    }
-
-    @Override
-    public double getKI() {
-        return factory.getConstant(NAME, "kI");
-    }
-
-    @Override
-    public double getKD() {
-        return factory.getConstant(NAME, "kD");
-    }
-
-    @Override
-    public double getKF() {
-        return factory.getConstant(NAME, "kF");
+    public double getHeadingError() {
+        return 0; //TODO
     }
 
     public static class PeriodicIO {
@@ -256,71 +235,15 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
     }
 
     @Override
-    public void registerEnabledLoops(ILooper in) {
-        in.register(
-            new Loop() {
-                @Override
-                public void onStart(double timestamp) {
-                    synchronized (WestCoastDrive.this) {
-                        stop();
-                        setBrakeMode(false);
-                    }
-                }
-
-                @Override
-                public void onLoop(double timestamp) {
-                    synchronized (WestCoastDrive.this) {
-                        switch (mDriveControlState) {
-                            case OPEN_LOOP:
-                                break;
-                            case TRAJECTORY_FOLLOWING:
-//                                if (Constants.kIsBadlogEnabled) {
-//                                    mLogger.updateTopics();
-//                                    mLogger.log();
-//                                }
-                                updatePathFollower(timestamp);
-                                break;
-                            default:
-                                System.out.println(
-                                    "unexpected drive control state: " +
-                                        mDriveControlState
-                                );
-                                break;
-                        }
-                    }
-                }
-
-                @Override
-                public void onStop(double timestamp) {
-                    stop();
-                }
-            }
-        );
-    }
-
-    private static double rotationsToInches(double rotations) {
-        return rotations * (Constants.kDriveWheelDiameterInches * Math.PI);
-    }
-
-    private static double rpmToInchesPerSecond(double rpm) {
-        return rotationsToInches(rpm) / 60;
-    }
-
-    private static double inchesToRotations(double inches) {
-        return inches / (Constants.kDriveWheelDiameterInches * Math.PI);
-    }
-
-    private static double inchesPerSecondToTicksPer100ms(double inches_per_second) {
-        return inchesToRotations(inches_per_second) * DRIVE_ENCODER_PPR / 10.0;
-    }
-
-    private static double radiansPerSecondToTicksPer100ms(double rad_s) {
-        return rad_s / (Math.PI * 2.0) * DRIVE_ENCODER_PPR / 10.0;
+    protected void updateOpenLoopPeriodic() {
+        // no openLoop update needed
     }
 
     /**
      * Configure talons for open loop control
      */
+
+    @Override
     public synchronized void setOpenLoop(DriveSignal signal) {
         if (mDriveControlState != DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
@@ -335,14 +258,27 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         mPeriodicIO.right_feedforward = 0.0;
     }
 
+    @Override
     public void setOpenLoopRampRate(double openLoopRampRate) {
-        this.openLoopRampRate = openLoopRampRate;
+        super.setOpenLoopRampRate(openLoopRampRate);
         mLeftMaster.configOpenloopRamp(openLoopRampRate, Constants.kCANTimeoutMs);
         mRightMaster.configOpenloopRamp(openLoopRampRate, Constants.kCANTimeoutMs);
     }
 
-    public double getOpenLoopRampRate() {
-        return this.openLoopRampRate;
+    @Override
+    public void setTeleopInputs(double forward, double strafe, double rotation, boolean low_power, boolean use_heading_controller) {
+
+    }
+
+    @Override
+    public void setVelocity(List<Translation2d> driveVectors) {
+        setVelocity(
+            new DriveSignal(
+                driveVectors.get(0).norm(),
+                driveVectors.get(1).norm()
+            ),
+            DriveSignal.NEUTRAL
+        );
     }
 
     /**
@@ -364,18 +300,11 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         mPeriodicIO.right_feedforward = feedforward.getRight();
     }
 
-    public boolean isBrakeMode() {
-        return mIsBrakeMode;
-    }
-
-    public void setSlowMode(boolean slowMode) {
-        isSlowMode = slowMode;
-    }
-
     public void setLogger(BadLog logger) {
         mLogger = logger;
     }
 
+    @Override
     public synchronized void setBrakeMode(boolean on) {
         if (mIsBrakeMode != on) {
             System.out.println("setBrakeMode " + on);
@@ -391,14 +320,7 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         }
     }
 
-    public synchronized Rotation2d getHeading() {
-        return mPeriodicIO.gyro_heading;
-    }
-
-    public synchronized Rotation2d getHeadingRelativeToInitial() {
-        return mPeriodicIO.gyro_heading_no_offset;
-    }
-
+    @Override
     public synchronized void setHeading(Rotation2d heading) {
         System.out.println("set heading: " + heading.getDegrees());
 
@@ -409,18 +331,15 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         mPeriodicIO.desired_heading = heading;
     }
 
-    public synchronized void resetPigeon() {
-        mPigeon.setFusedHeading(0);
+    @Override
+    public void setTrajectory(TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory, Rotation2d targetHeading) {
+
     }
 
     public synchronized void resetEncoders() {
         mLeftMaster.setSelectedSensorPosition(0, 0, 0);
         mRightMaster.setSelectedSensorPosition(0, 0, 0);
         mPeriodicIO = new PeriodicIO();
-    }
-
-    public DriveControlState getDriveControlState() {
-        return mDriveControlState;
     }
 
     public double getLeftEncoderRotations() {
@@ -478,48 +397,6 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         );
     }
 
-    /**
-     * Configures the drivebase to drive a path. Used for autonomous driving
-     *
-     * @see Path
-     */
-    public synchronized void setWantDrivePath(Path path, boolean reversed) {
-        if (
-            mCurrentPath != path || mDriveControlState != DriveControlState.PATH_FOLLOWING
-        ) {
-            mRobotState.getInstance().resetDistanceDriven();
-            mPathFollower =
-                new PathFollower(
-                    path,
-                    reversed,
-                    new PathFollower.Parameters(
-                        new Lookahead(
-                            Constants.kMinLookAhead,
-                            Constants.kMaxLookAhead,
-                            Constants.kMinLookAheadSpeed,
-                            Constants.kMaxLookAheadSpeed
-                        ),
-                        Constants.kInertiaSteeringGain,
-                        Constants.kPathFollowingProfileKp,
-                        Constants.kPathFollowingProfileKi,
-                        Constants.kPathFollowingProfileKv,
-                        Constants.kPathFollowingProfileKffv,
-                        Constants.kPathFollowingProfileKffa,
-                        Constants.kPathFollowingProfileKs,
-                        Constants.kPathFollowingMaxVel,
-                        Constants.kPathFollowingMaxAccel,
-                        Constants.kPathFollowingGoalPosTolerance,
-                        Constants.kPathFollowingGoalVelTolerance,
-                        Constants.kPathStopSteeringDistance
-                    )
-                );
-            mDriveControlState = DriveControlState.PATH_FOLLOWING;
-            mCurrentPath = path;
-        } else {
-            setVelocity(new DriveSignal(0, 0), new DriveSignal(0, 0));
-        }
-    }
-
     public synchronized void setTrajectory(
         TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
     ) {
@@ -533,6 +410,7 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         }
     }
 
+    @Override
     public boolean isDoneWithTrajectory() {
         if (
             mMotionPlanner == null ||
@@ -543,6 +421,7 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         return mMotionPlanner.isDone() || mOverrideTrajectory;
     }
 
+    @Override
     public synchronized boolean isDoneWithPath() {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
@@ -555,6 +434,7 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         }
     }
 
+    @Override
     public synchronized void forceDoneWithPath() {
         if (
             mDriveControlState == DriveControlState.PATH_FOLLOWING &&
@@ -566,73 +446,61 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         }
     }
 
-    private void updatePathFollower(double timestamp) {
-        // COMMENTED OUT IN ORDER TO CHECK FOR OTHER ERRORS
-//        if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
-//            Pose2d field_to_vehicle = mRobotState.getLatestFieldToVehicle().getValue();
-//            Twist2d command = mPathFollower.update(
-//                timestamp,
-//                field_to_vehicle,
-//                mRobotState.getDistanceDriven(),
-//                mRobotState.getPredictedVelocity().dx
-//            );
-//            if (!mPathFollower.isFinished()) {
-//                WestCoastDriveSignal setpoint = WestCoastKinematics.inverseKinematics(command);
-//                setVelocity(
-//                    new WestCoastDriveSignal(
-//                        inchesPerSecondToTicksPer100ms(setpoint.getLeft()),
-//                        inchesPerSecondToTicksPer100ms(setpoint.getRight())
-//                    ),
-//                    new WestCoastDriveSignal(0, 0)
-//                );
-//            } else {
-//                if (!mPathFollower.isForceFinished()) {
-//                    setVelocity(new WestCoastDriveSignal(0, 0), new WestCoastDriveSignal(0, 0));
-//                }
-//            }
-//        } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-//            WestCoastMotionPlanner.Output output = mMotionPlanner.update(
-//                timestamp,
-//                RobotState.getInstance().getFieldToVehicle(timestamp)
-//            );
-//
-//            mPeriodicIO.error = mMotionPlanner.error();
-//            mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
-//
-//            if (!mOverrideTrajectory) {
-//                setVelocity(
-//                    new WestCoastDriveSignal(
-//                        radiansPerSecondToTicksPer100ms(output.left_velocity),
-//                        radiansPerSecondToTicksPer100ms(output.right_velocity)
-//                    ),
-//                    new WestCoastDriveSignal(
-//                        output.left_feedforward_voltage / 12.0,
-//                        output.right_feedforward_voltage / 12.0
-//                    )
-//                );
-//
-//                mPeriodicIO.left_accel =
-//                    radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
-//                mPeriodicIO.right_accel =
-//                    radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
-//            } else {
-//                setVelocity(WestCoastDriveSignal.BRAKE, WestCoastDriveSignal.BRAKE);
-//                mPeriodicIO.left_accel = mPeriodicIO.right_accel = 0.0;
-//            }
-//        } else {
-//            DriverStation.reportError("drive is not in path following state", false);
-//        }
-    }
+    @Override
+    protected void updatePathFollower(double timestamp) {
+        if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
+            Pose2d field_to_vehicle = mRobotState.getLatestFieldToVehicle().getValue();
+            Twist2d command = mPathFollower.update(
+                timestamp,
+                field_to_vehicle,
+                mRobotState.getDistanceDriven(),
+                mRobotState.getPredictedVelocity().dx
+            );
+            if (!mPathFollower.isFinished()) {
+                DriveSignal setpoint = WestCoastKinematics.inverseKinematics(command);
+                setVelocity(
+                    new DriveSignal(
+                        inchesPerSecondToTicksPer100ms(setpoint.getLeft()),
+                        inchesPerSecondToTicksPer100ms(setpoint.getRight())
+                    ),
+                    new DriveSignal(0, 0)
+                );
+            } else {
+                if (!mPathFollower.isForceFinished()) {
+                    setVelocity(new DriveSignal(0, 0), new DriveSignal(0, 0));
+                }
+            }
+        } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
+            WestCoastMotionPlanner.Output output = mMotionPlanner.update(
+                timestamp,
+                RobotState.getInstance().getFieldToVehicle(timestamp)
+            );
 
-    public synchronized boolean hasPassedMarker(String marker) {
-        if (
-            mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-                mPathFollower != null
-        ) {
-            return mPathFollower.hasPassedMarker(marker);
+            mPeriodicIO.error = mMotionPlanner.error();
+            mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
+
+            if (!mOverrideTrajectory) {
+                setVelocity(
+                    new DriveSignal(
+                        radiansPerSecondToTicksPer100ms(output.left_velocity),
+                        radiansPerSecondToTicksPer100ms(output.right_velocity)
+                    ),
+                    new DriveSignal(
+                        output.left_feedforward_voltage / 12.0,
+                        output.right_feedforward_voltage / 12.0
+                    )
+                );
+
+                mPeriodicIO.left_accel =
+                    radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
+                mPeriodicIO.right_accel =
+                    radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
+            } else {
+                setVelocity(DriveSignal.BRAKE, DriveSignal.BRAKE);
+                mPeriodicIO.left_accel = mPeriodicIO.right_accel = 0.0;
+            }
         } else {
-            System.out.println("Robot is not in path following mode");
-            return false;
+            DriverStation.reportError("drive is not in path following state", false);
         }
     }
 
@@ -660,8 +528,9 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         }
     }
 
-    public boolean hasPigeonResetOccurred() {
-        return mPigeon.hasResetOccurred();
+    @Override
+    public void zeroSensors(Pose2d pose) {
+
     }
 
     @Override
@@ -800,7 +669,4 @@ public class WestCoastDrive extends Subsystem implements DifferentialDrivetrain,
         // }
     }
 
-    public synchronized double getTimestamp() {
-        return mPeriodicIO.timestamp;
-    }
 }

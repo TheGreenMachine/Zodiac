@@ -59,9 +59,10 @@ public class RobotStateEstimator extends Subsystem {
                     mRobotState.getLatestFieldToVehicle().getValue().getRotation();
             }
             final double dt = timestamp - prev_timestamp_;
+            final Rotation2d gyro_angle = mDrive.getHeading();
 
             if (mDrive instanceof SwerveDrive) {
-                estimateSwerve((SwerveDrive) mDrive, timestamp, dt);
+                estimateSwerve((SwerveDrive) mDrive, timestamp, dt, gyro_angle);
             } else if (mDrive instanceof WestCoastDrive) {
                 estimateWestCoast((WestCoastDrive) mDrive, timestamp, dt);
             } else {
@@ -78,10 +79,10 @@ public class RobotStateEstimator extends Subsystem {
 
     private void estimateWestCoast(WestCoastDrive drivetrain, double timestamp, double dt) {}
 
-    private void estimateSwerve(SwerveDrive drivetrain, double timestamp, double dt) {
+    private void estimateSwerve(SwerveDrive drivetrain, double timestamp, double dt, Rotation2d gyro_angle) {
         final double[] wheel_speeds = drivetrain.getModuleVelocities();
         final Rotation2d[] wheel_azimuths = drivetrain.getModuleAzimuths();
-        final Rotation2d gyro_angle = drivetrain.getHeading();
+
         Twist2d odometry_twist;
         synchronized (mRobotState) {
             final Pose2d last_measurement = mRobotState
@@ -114,6 +115,8 @@ public class RobotStateEstimator extends Subsystem {
         mRobotState.setHeadingRelativeToInitial(drivetrain.getHeadingRelativeToInitial());
         //    mRobotState.addObservations(timestamp, odometry_twist, measured_velocity);
     }
+
+
 
     @Override
     public void stop() {}
