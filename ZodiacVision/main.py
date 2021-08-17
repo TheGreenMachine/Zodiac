@@ -4,9 +4,6 @@ import yaml
 from vision import *
 import time
 
-
-hardware = hwcheck.HWCheck()
-isZed = hardware.CheckZed()
 time.sleep(1)
 path = 'vision.yml'
 with open(path, 'r') as file:
