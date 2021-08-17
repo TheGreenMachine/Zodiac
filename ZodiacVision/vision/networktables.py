@@ -31,6 +31,7 @@ class NetworkTables:
         def valueChanged(table, key, value, isNew):
             if key == "VISION":
                 self.vision_use = value
+                print(value)
             if key == "HMIN":
                 self.yml_data['color']['lower']['H'] = value
                 dumpYML()
