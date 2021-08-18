@@ -1,5 +1,7 @@
 package com.team1816.lib.auto.actions;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.lib.paths.PathContainer;
 import com.team254.lib.control.Path;
@@ -16,17 +18,19 @@ public class DrivePathAction implements Action {
 
     private PathContainer mPathContainer;
     private Path mPath;
-    private Drive mDrive = Drive.getInstance();
+    private Drive mDrive;
     private boolean mStopWhenDone;
 
-    public DrivePathAction(PathContainer p, boolean stopWhenDone) {
+    @Inject
+    public DrivePathAction(Drive.Factory driveFactory, @Assisted PathContainer p,@Assisted boolean stopWhenDone) {
+        mDrive = driveFactory.getInstance();
         mPathContainer = p;
         mPath = mPathContainer.buildPath();
         mStopWhenDone = stopWhenDone;
     }
 
     public DrivePathAction(PathContainer p) {
-        this(p, false);
+        //this(p, false);
     }
 
     @Override

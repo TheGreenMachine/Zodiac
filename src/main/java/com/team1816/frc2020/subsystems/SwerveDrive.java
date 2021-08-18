@@ -101,7 +101,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         return INSTANCE;
     }
 
-    private SwerveDrive() {
+    protected SwerveDrive() {
         super();
         mPeriodicIO = new PeriodicIO();
 

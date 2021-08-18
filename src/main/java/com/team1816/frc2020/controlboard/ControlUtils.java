@@ -2,30 +2,37 @@ package com.team1816.frc2020.controlboard;
 
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.LogitechController;
+import com.team1816.lib.controlboard.WasdController;
 import com.team1816.lib.controlboard.XboxController;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.Joystick;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
-public class ControlUtils {
+public class ControlUtils  implements Controller.Factory{
 
-    public static PressAction createAction(BooleanSupplier input, Runnable action) {
-        return new PressAction(input, action);
-    }
-
-    public static Controller getControllerInstance(int port) {
+    @Override
+    public Controller getControllerInstance(int port) {
         var hid = new Joystick(port);
         var axisCount = hid.getAxisCount();
-        if (axisCount <= 4) {
+        if(axisCount <= 3) {
+            System.out.println("Using Wasd Controller for port: " + port);
+            return new WasdController(port);
+        }
+        else if (axisCount == 4) {
             System.out.println("Using Logitech Controller for port: " + port);
             return new LogitechController(port);
         } else {
             System.out.println("Using XboxController Controller for port: " + port);
             return new XboxController(port);
         }
+    }
+
+    public static PressAction createAction(BooleanSupplier input, Runnable action) {
+        return new PressAction(input, action);
     }
 
     public static HoldAction createHoldAction(

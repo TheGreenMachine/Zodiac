@@ -49,7 +49,7 @@ public abstract class Subsystem implements Sendable {
     @Override
     public void initSendable(SendableBuilder builder) {}
 
-    public String getName() {
+    public String getSubsystemName() {
         return name;
     }
 

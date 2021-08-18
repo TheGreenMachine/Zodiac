@@ -16,30 +16,16 @@ public class XboxController extends Controller {
 
     public XboxController(int port) {
         super(port);
-    }
-
-    public enum Button implements Controller.Button {
-        A(1),
-        B(2),
-        X(3),
-        Y(4),
-        LB(5),
-        RB(6),
-        BACK(7),
-        START(8),
-        L_JOYSTICK(9),
-        R_JOYSTICK(10);
-
-        public final int id;
-
-        Button(int id) {
-            this.id = id;
-        }
-
-        @Override
-        public int getId() {
-            return this.id;
-        }
+        mJoystickMap.put(Controller.Button.A,1);
+        mJoystickMap.put(Controller.Button.B,2);
+        mJoystickMap.put(Controller.Button.X,3);
+        mJoystickMap.put(Controller.Button.Y,4);
+        mJoystickMap.put(Controller.Button.LB,5);
+        mJoystickMap.put(Controller.Button.RB,6);
+        mJoystickMap.put(Controller.Button.BACK,7);
+        mJoystickMap.put(Controller.Button.START,8);
+        mJoystickMap.put(Controller.Button.L_JOYSTICK,9);
+        mJoystickMap.put(Controller.Button.R_JOYSTICK,10);
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.team1816.frc2020;
 
 import badlog.lib.BadLog;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.team1816.frc2020.controlboard.ActionManager;
-import com.team1816.frc2020.controlboard.ControlBoard;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.*;
+import com.team1816.lib.LibModule;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.modes.AutoModeBase;
@@ -12,7 +14,6 @@ import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.AsyncTimer;
 import com.team1816.lib.loops.Looper;
-import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
 import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
@@ -24,6 +25,7 @@ import com.team254.lib.util.TimeDelayedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import javax.inject.Inject;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -39,7 +41,7 @@ public class Robot extends TimedRobot {
     private final Looper mEnabledLooper = new Looper();
     private final Looper mDisabledLooper = new Looper();
 
-    private final IControlBoard mControlBoard = ControlBoard.getInstance();
+    private final IControlBoard mControlBoard;
 
     private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
 
@@ -47,7 +49,7 @@ public class Robot extends TimedRobot {
     private final Superstructure mSuperstructure = Superstructure.getInstance();
     private final Infrastructure mInfrastructure = Infrastructure.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
-    private final Drive mDrive = Drive.getInstance();
+    private Drive mDrive;
     private final LedManager ledManager = LedManager.getInstance();
     private final Collector collector = Collector.getInstance();
     private final Shooter shooter = Shooter.getInstance();
@@ -77,6 +79,10 @@ public class Robot extends TimedRobot {
 
     Robot() {
         super();
+        // initialize injector
+        Injector injector = Guice.createInjector(new LibModule(), new SeasonModule());
+        mDrive = (injector.getInstance(Drive.Factory.class)).getInstance();
+        mControlBoard = injector.getInstance(IControlBoard.class);
     }
 
     public static RobotFactory getFactory() {

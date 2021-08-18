@@ -1,17 +1,22 @@
 package com.team1816.lib.auto.actions;
 
+import com.google.inject.assistedinject.Assisted;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team254.lib.util.SwerveDriveSignal;
 import edu.wpi.first.wpilibj.Timer;
 
+import javax.inject.Inject;
+
 public class DriveOpenLoopAction implements Action {
 
-    private static final Drive mDrive = Drive.getInstance();
+    private static Drive mDrive;
 
     private double mStartTime;
     private final double mDuration, mLeft, mRight;
 
-    public DriveOpenLoopAction(double left, double right, double duration) {
+    @Inject
+    public DriveOpenLoopAction(Drive.Factory driveFactory, @Assisted double left, @Assisted double right, @Assisted double duration) {
+        mDrive = driveFactory.getInstance();
         mDuration = duration;
         mLeft = left;
         mRight = right;

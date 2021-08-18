@@ -1,7 +1,7 @@
 package com.team1816.frc2020.controlboard;
 
-import static com.team1816.frc2020.controlboard.ControlUtils.getControllerInstance;
-
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IButtonControlBoard;
@@ -9,6 +9,7 @@ import com.team1816.lib.controlboard.LogitechController;
 import com.team254.lib.util.DelayedBoolean;
 import edu.wpi.first.wpilibj.Timer;
 
+@Singleton
 public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     private final double kDeadband = 0.15;
@@ -16,22 +17,13 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     private final double kDPadDelay = 0.02;
     private DelayedBoolean mDPadValid;
 
-    private static GamepadButtonControlBoard mInstance = null;
-
-    public static GamepadButtonControlBoard getInstance() {
-        if (mInstance == null) {
-            mInstance = new GamepadButtonControlBoard();
-        }
-
-        return mInstance;
+    @Inject
+    private GamepadButtonControlBoard(Controller.Factory controller) {
+        mController = controller.getControllerInstance(Constants.kButtonGamepadPort);
+        reset();
     }
 
     private final Controller mController;
-
-    private GamepadButtonControlBoard() {
-        mController = getControllerInstance(Constants.kButtonGamepadPort);
-        reset();
-    }
 
     @Override
     public void setRumble(boolean on) {

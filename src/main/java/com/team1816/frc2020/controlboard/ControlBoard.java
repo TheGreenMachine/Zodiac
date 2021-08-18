@@ -1,27 +1,21 @@
 package com.team1816.frc2020.controlboard;
 
+import com.google.inject.Inject;
 import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.controlboard.IDriveControlBoard;
+import com.team1816.lib.hardware.components.pcm.ISolenoid;
 
 public class ControlBoard implements IControlBoard {
 
-    private static ControlBoard mInstance = null;
-
-    public static ControlBoard getInstance() {
-        if (mInstance == null) {
-            mInstance = new ControlBoard();
-        }
-
-        return mInstance;
-    }
 
     private final IDriveControlBoard mDriveControlBoard;
     private final IButtonControlBoard mButtonControlBoard;
 
-    private ControlBoard() {
-        mDriveControlBoard = GamepadDriveControlBoard.getInstance();
-        mButtonControlBoard = GamepadButtonControlBoard.getInstance();
+    @Inject
+    private ControlBoard(IDriveControlBoard driveControlBoard, IButtonControlBoard buttonControlBoard, ISolenoid solenoid) {
+        mDriveControlBoard = driveControlBoard;
+        mButtonControlBoard = buttonControlBoard;
     }
 
     @Override

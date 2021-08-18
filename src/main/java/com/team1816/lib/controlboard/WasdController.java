@@ -1,18 +1,8 @@
 package com.team1816.lib.controlboard;
 
-public class LogitechController extends Controller {
+public class WasdController extends Controller{
 
-    @Override
-    protected int getLeftAxisId() {
-        return 0;
-    }
-
-    @Override
-    protected int getRightAxisId() {
-        return 2;
-    }
-
-    public LogitechController(int port) {
+    public WasdController(int port) {
         super(port);
         mJoystickMap.put(Controller.Button.A,2);
         mJoystickMap.put(Controller.Button.B,3);
@@ -27,12 +17,17 @@ public class LogitechController extends Controller {
     }
 
     @Override
-    public boolean getTrigger(Side side) {
-        return mController.getRawButton(side == Side.LEFT ? 7 : 8);
+    protected int getLeftAxisId() {
+        return 1;
     }
 
     @Override
-    public double getTriggerScalar(Controller.Side side) {
-        return getTrigger(side) ? 1 : 0;
+    protected int getRightAxisId() {
+        return 0;
+    }
+
+    @Override
+    public double getTriggerScalar(Side side) {
+        return 2;
     }
 }

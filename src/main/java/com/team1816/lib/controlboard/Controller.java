@@ -3,9 +3,18 @@ package com.team1816.lib.controlboard;
 import com.team1816.frc2020.Constants;
 import edu.wpi.first.wpilibj.Joystick;
 
+import java.util.EnumMap;
+
 public abstract class Controller {
 
+    public interface Factory {
+        Controller getControllerInstance(int port);
+    }
+
     protected final Joystick mController;
+    protected final EnumMap<Button, Integer> mJoystickMap = new EnumMap<Button, Integer>(
+        Button.class
+    );
 
     public enum Side {
         LEFT,
@@ -17,8 +26,17 @@ public abstract class Controller {
         Y,
     }
 
-    public interface Button {
-        int getId();
+    public enum Button {
+        A,
+        B,
+        X,
+        Y,
+        LB,
+        RB,
+        BACK,
+        START,
+        L_JOYSTICK,
+        R_JOYSTICK,
     }
 
     public double getJoystick(Controller.Side side, Controller.Axis axis) {
@@ -55,7 +73,7 @@ public abstract class Controller {
     }
 
     public boolean getButton(Button button) {
-        return mController.getRawButton(button.getId());
+        return mController.getRawButton(mJoystickMap.get(button));
     }
 
     public boolean getTrigger(Side side) {

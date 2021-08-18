@@ -8,6 +8,8 @@ import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.util.SwerveDriveSignal;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,7 @@ import java.util.List;
 
 public class SwerveKinematics {
 
+    private static Drive mDrive;
     private static Translation2d[] moduleRelativePositions = Constants.kModulePositions;
     private static List<Translation2d> moduleRotationDirections = updateRotationDirections();
 
@@ -38,6 +41,10 @@ public class SwerveKinematics {
 
     private static Rotation2d[] prev_wheel_azimuths = SwerveDriveSignal.ZERO_AZIMUTH;
 
+    @Inject
+    public SwerveKinematics(Drive.Factory driveFactory){
+        mDrive = driveFactory.getInstance();
+    }
     /**
      * Forward kinematics using only encoders
      */
@@ -152,7 +159,7 @@ public class SwerveKinematics {
         boolean normalize_outputs
     ) {
         if (field_relative) {
-            Rotation2d gyroHeading = Drive.getInstance().getHeading();
+            Rotation2d gyroHeading = mDrive.getHeading();
             double temp = forward * gyroHeading.cos() + strafe * gyroHeading.sin();
             strafe = -forward * gyroHeading.sin() + strafe * gyroHeading.cos();
             forward = temp;

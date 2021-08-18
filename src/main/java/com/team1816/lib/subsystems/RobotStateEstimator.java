@@ -14,9 +14,9 @@ import com.team254.lib.geometry.Twist2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class RobotStateEstimator extends Subsystem {
+import javax.inject.Inject;
 
-    private static RobotStateEstimator INSTANCE;
+public class RobotStateEstimator extends Subsystem {
 
     private final RobotState mRobotState = RobotState.getInstance();
     private Drive mDrive;
@@ -25,16 +25,11 @@ public class RobotStateEstimator extends Subsystem {
     private double prev_timestamp_ = -1.0;
     private Rotation2d prev_heading_ = null;
 
-    public static RobotStateEstimator getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new RobotStateEstimator();
-        }
-
-        return INSTANCE;
-    }
-
-    private RobotStateEstimator() {
+    @Inject
+    private RobotStateEstimator(Drive.Factory driveFactory) {
         super("RobotStateEstimator");
+        mDrive = driveFactory.getInstance();
+
     }
 
     @Override
@@ -46,9 +41,6 @@ public class RobotStateEstimator extends Subsystem {
 
         @Override
         public synchronized void onStart(double timestamp) {
-            if(mDrive == null) {
-                mDrive = Drive.getInstance();
-            }
             prev_timestamp_ = timestamp;
         }
 

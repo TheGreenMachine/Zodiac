@@ -31,6 +31,10 @@ import java.util.List;
 
 public abstract class Drive extends Subsystem implements TrackableDrivetrain, PidProvider {
 
+    public interface Factory{
+        Drive getInstance();
+    }
+
     protected static final String NAME = "drivetrain";
 
     // Components
@@ -85,11 +89,6 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
         Translation2d.identity(),
         Translation2d.identity()
     );
-
-    public static synchronized Drive getInstance() {
-        //THIS IS WHERE TO DETERMINE WHAT TYPE OF DRIVETRAIN IS IN USE
-        return SwerveDrive.getInstance();
-    }
 
     protected Drive() {
         super(NAME);

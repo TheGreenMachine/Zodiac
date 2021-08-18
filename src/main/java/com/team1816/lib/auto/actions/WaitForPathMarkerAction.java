@@ -1,13 +1,17 @@
 package com.team1816.lib.auto.actions;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.team1816.frc2020.subsystems.Drive;
 
 public class WaitForPathMarkerAction implements Action {
 
-    private Drive mDrive = Drive.getInstance();
+    private Drive mDrive;
     private String mMarker;
 
-    public WaitForPathMarkerAction(String marker) {
+    @Inject
+    public WaitForPathMarkerAction(Drive.Factory driveFactory, @Assisted String marker) {
+        mDrive = driveFactory.getInstance();
         mMarker = marker;
     }
 

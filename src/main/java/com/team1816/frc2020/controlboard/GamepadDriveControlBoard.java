@@ -1,7 +1,7 @@
 package com.team1816.frc2020.controlboard;
 
-import static com.team1816.frc2020.controlboard.ControlUtils.getControllerInstance;
-
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IDriveControlBoard;
@@ -9,83 +9,75 @@ import com.team1816.lib.controlboard.LogitechController;
 import com.team1816.lib.controlboard.XboxController;
 import com.team254.lib.geometry.Rotation2d;
 
+@Singleton
 public class GamepadDriveControlBoard implements IDriveControlBoard {
-
-    private static GamepadDriveControlBoard mInstance = null;
-
-    public static GamepadDriveControlBoard getInstance() {
-        if (mInstance == null) {
-            mInstance = new GamepadDriveControlBoard();
-        }
-
-        return mInstance;
-    }
 
     private final Controller mController;
 
-    private GamepadDriveControlBoard() {
-        mController = getControllerInstance(Constants.kDriveGamepadPort);
+    @Inject
+    private GamepadDriveControlBoard(Controller.Factory controller) {
+        mController = controller.getControllerInstance(Constants.kDriveGamepadPort);
+    }
+
+    @Override
+    public double getStrafe() {
+        return mController.getJoystick(Controller.Side.LEFT, Controller.Axis.X);
     }
 
     @Override
     public double getThrottle() {
         return mController.getJoystick(
-            LogitechController.Side.LEFT,
-            LogitechController.Axis.Y
+            Controller.Side.LEFT,
+            Controller.Axis.Y
         );
     }
 
     @Override
     public double getTurn() {
         return mController.getJoystick(
-            LogitechController.Side.RIGHT,
-            LogitechController.Axis.X
+            Controller.Side.RIGHT,
+            Controller.Axis.X
         );
     }
 
     @Override
-    public double getStrafe() {
-        return mController.getJoystick(XboxController.Side.LEFT, XboxController.Axis.X);
-    }
-
-    @Override
     public boolean getSlowMode() {
-        return mController.getTrigger(LogitechController.Side.RIGHT);
+        return mController.getTrigger(Controller.Side.RIGHT);
     }
 
     @Override
     public boolean getDrivetrainFlipped() {
-        return false /* mController.getButton(LogitechController.Button.Y) */;
+        return mController.getButton(Controller.Button.Y);
     }
 
     @Override
     public boolean getQuickTurn() {
-        return mController.getButton(LogitechController.Button.R_JOYSTICK);
+        return mController.getButton(Controller.Button.R_JOYSTICK);
     }
 
     @Override
     public boolean getCollectorToggle() {
-        return mController.getButton(LogitechController.Button.LB);
+        return mController.getButton(Controller.Button.LB);
     }
 
     @Override
     public boolean getCollectorUp() {
-        return mController.getButton(LogitechController.Button.RB);
+        return mController.getButton(Controller.Button.RB);
     }
 
     @Override
     public boolean getFeederToTrenchSpline() {
-        return mController.getButton(LogitechController.Button.X);
+        return mController.getButton(Controller.Button.X);
     }
 
     @Override
     public boolean getTrenchToFeederSpline() {
-        return mController.getButton(LogitechController.Button.B);
+        return mController.getButton(Controller.Button.B);
     }
 
     @Override
     public boolean getBrakeMode() {
-        return mController.getButton(LogitechController.Button.A);
+        return mController.getButton(Controller.Button.A);
     }
 
     @Override
@@ -93,6 +85,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
         return !mController.getButton(XboxController.Button.LB);
     }
 
+    @Override
     public boolean getHood(){
         return mController.getButton(LogitechController.Button.Y);
     }
