@@ -52,7 +52,7 @@ public class DrivetrainLogger {
 
     public static void initSwerve(SwerveDrivetrain drivetrain) {
         for (ISwerveModule module : drivetrain.getSwerveModules()) {
-            var name = module.getName();
+            var name = module.getSubsystemName();
             var prefix = "Drivetrain/" + name;
 
             // Azimuth

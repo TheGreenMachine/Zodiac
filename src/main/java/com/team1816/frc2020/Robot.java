@@ -25,7 +25,6 @@ import com.team254.lib.util.TimeDelayedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import javax.inject.Inject;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -58,7 +57,7 @@ public class Robot extends TimedRobot {
     private final Hopper hopper = Hopper.getInstance();
     private final Climber climber = Climber.getInstance();
     private final Camera camera = Camera.getInstance();
-    private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
+    private final RobotStateEstimator mRobotStateEstimator;
 
     private boolean mHasBeenEnabled = false;
 
@@ -83,6 +82,7 @@ public class Robot extends TimedRobot {
         Injector injector = Guice.createInjector(new LibModule(), new SeasonModule());
         mDrive = (injector.getInstance(Drive.Factory.class)).getInstance();
         mControlBoard = injector.getInstance(IControlBoard.class);
+        mRobotStateEstimator = injector.getInstance(RobotStateEstimator.class);
     }
 
     public static RobotFactory getFactory() {

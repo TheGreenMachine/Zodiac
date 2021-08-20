@@ -1,6 +1,6 @@
 package com.team1816.lib.auto.actions;
 
-import com.google.inject.assistedinject.Assisted;
+import com.google.inject.Inject;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.SwerveDrive;
@@ -12,43 +12,37 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import edu.wpi.first.wpilibj.Timer;
 
-import javax.inject.Inject;
-
 public class DriveTrajectory implements Action {
 
-    private static Drive mDrive;
+    @Inject
+    private Drive.Factory mDriveFactory;
     private static final RobotState mRobotState = RobotState.getInstance();
 
-    private TrajectoryIterator<TimedState<Pose2dWithCurvature>> mTrajectory;
-    private Rotation2d targetHeading;
-    private boolean mResetPose;
+    private final TrajectoryIterator<TimedState<Pose2dWithCurvature>> mTrajectory;
+    private final Rotation2d targetHeading;
+    private final boolean mResetPose;
     private boolean done;
 
-    @Inject
     public DriveTrajectory(
-        Drive.Factory driveFactory,
-        @Assisted Trajectory<TimedState<Pose2dWithCurvature>> trajectory,
-        @Assisted Rotation2d targetHeading,
-        @Assisted boolean resetPose
+        Trajectory<TimedState<Pose2dWithCurvature>> trajectory,
+        Rotation2d targetHeading,
+        boolean resetPose
     ) {
-        mDrive = driveFactory.getInstance();
         mTrajectory = new TrajectoryIterator<>(new TimedView<>(trajectory));
         this.targetHeading = targetHeading;
         mResetPose = resetPose;
     }
 
-    @Inject
     public DriveTrajectory(
-        Drive.Factory driveFactory,
-        @Assisted Trajectory<TimedState<Pose2dWithCurvature>> trajectory,
-        @Assisted boolean resetPose
+        Trajectory<TimedState<Pose2dWithCurvature>> trajectory,
+        boolean resetPose
     ) {
-        this(driveFactory, trajectory, Rotation2d.identity(), resetPose);
-
+        this(trajectory, Rotation2d.identity(), resetPose);
     }
 
     @Override
     public boolean isFinished() {
+        Drive mDrive = mDriveFactory.getInstance();
         if (mDrive.isDoneWithTrajectory()) {
             if (!done) {
                 System.out.println("Trajectory finished");
@@ -67,6 +61,8 @@ public class DriveTrajectory implements Action {
 
     @Override
     public void start() {
+        Drive mDrive = mDriveFactory.getInstance();
+
         System.out.println(
             "Starting trajectory! (length=" + mTrajectory.getRemainingProgress() + ")"
         );

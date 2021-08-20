@@ -5,6 +5,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.google.inject.Singleton;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
@@ -25,8 +26,10 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.util.List;
 
+@Singleton
 public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
 
     private static WestCoastDrive mInstance;
@@ -54,7 +57,6 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
     private double openLoopRampRate;
     private BadLog mLogger;
 
-    private PeriodicIO mPeriodicIO;
     private final WestCoastMotionPlanner mMotionPlanner;
     private boolean mOverrideTrajectory = false;
 
@@ -74,8 +76,10 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
         return mInstance;
     }
 
-    private WestCoastDrive() {
+    public WestCoastDrive() {
         super();
+        swerveModules = new SwerveModule[2];
+
         DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
         mPeriodicIO = new PeriodicIO();
 
@@ -153,46 +157,29 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
         return 0; //TODO
     }
 
-    public static class PeriodicIO {
-
-        // INPUTS
-        public double timestamp;
-        public double left_position_ticks;
-        public double right_position_ticks;
-        public double left_velocity_ticks_per_100ms;
-        public double right_velocity_ticks_per_100ms;
-        public Rotation2d gyro_heading = Rotation2d.identity();
-        // no_offset = Relative to initial position, unaffected by reset
-        public Rotation2d gyro_heading_no_offset = Rotation2d.identity();
-        public Pose2d error = Pose2d.identity();
-        double left_error;
-        double right_error;
-
-        // OUTPUTS
-        public double left_demand;
-        public double right_demand;
-        public double left_accel;
-        public double right_accel;
-        public double left_feedforward;
-        public double right_feedforward;
-        public Rotation2d desired_heading = Rotation2d.identity();
-        TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(
-            Pose2dWithCurvature.identity()
-        );
-    }
-
     @Override
     public synchronized void readPeriodicInputs() {
         if(RobotBase.isSimulation()) {
-            leftEncoderSimPosition += mPeriodicIO.left_demand * tickRatioPerLoop;
-            rightEncoderSimPosition += mPeriodicIO.right_demand * tickRatioPerLoop;
+            double leftAdjDemand = mPeriodicIO.left_demand;
+            double  rightAdjDemand = mPeriodicIO.right_demand;
+            if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+                leftAdjDemand = mPeriodicIO.left_demand * maxVelTicksPer100ms;
+                rightAdjDemand = mPeriodicIO.right_demand * maxVelTicksPer100ms;
+                System.out.println(mPeriodicIO.left_demand);
+            }
+            var driveTrainErrorPercent = .05;
+            mPeriodicIO.left_error = leftAdjDemand * driveTrainErrorPercent;
+            leftEncoderSimPosition += (leftAdjDemand - mPeriodicIO.left_error) * tickRatioPerLoop;
+            rightEncoderSimPosition += rightAdjDemand * tickRatioPerLoop;
             mPeriodicIO.left_position_ticks = leftEncoderSimPosition;
             mPeriodicIO.right_position_ticks = rightEncoderSimPosition;
-            mPeriodicIO.left_velocity_ticks_per_100ms = mPeriodicIO.left_demand;
-            mPeriodicIO.right_velocity_ticks_per_100ms = mPeriodicIO.right_demand;
-            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(getDesiredHeading());
+            mPeriodicIO.left_velocity_ticks_per_100ms = leftAdjDemand - mPeriodicIO.left_error;
+            mPeriodicIO.right_velocity_ticks_per_100ms = rightAdjDemand;
+            // calculate rotation based on left/right vel differences
+            gyroDrift -= (mPeriodicIO.left_velocity_ticks_per_100ms-mPeriodicIO.right_velocity_ticks_per_100ms)/robotWidthTicks;
+            //mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
             var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
-            fieldSim.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY()), rot2d);
+            fieldSim.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY())+3.5, rot2d);
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);

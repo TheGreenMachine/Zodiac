@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.controlboard.IDriveControlBoard;
-import com.team1816.lib.hardware.components.pcm.ISolenoid;
 
 public class ControlBoard implements IControlBoard {
 
@@ -13,7 +12,7 @@ public class ControlBoard implements IControlBoard {
     private final IButtonControlBoard mButtonControlBoard;
 
     @Inject
-    private ControlBoard(IDriveControlBoard driveControlBoard, IButtonControlBoard buttonControlBoard, ISolenoid solenoid) {
+    private ControlBoard(IDriveControlBoard driveControlBoard, IButtonControlBoard buttonControlBoard) {
         mDriveControlBoard = driveControlBoard;
         mButtonControlBoard = buttonControlBoard;
     }

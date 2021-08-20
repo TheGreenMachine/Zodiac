@@ -50,6 +50,7 @@ subsystems:
             kD: 30
             kF: 0
         constants:
+            isSwerve: 0
             encPPR: 12275.7
             azimuthEncPPR: 4096
             azimuthAllowableErrorTicks: 10

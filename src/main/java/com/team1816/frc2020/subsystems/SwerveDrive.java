@@ -2,6 +2,7 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.google.inject.Singleton;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.SwerveKinematics;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Singleton
 public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider {
 
     private static final String NAME = "drivetrain";
@@ -72,7 +74,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     private Rotation2d mGyroOffset = Rotation2d.identity();
     private double openLoopRampRate;
 
-    protected PeriodicIO mPeriodicIO;
     private boolean mOverrideTrajectory = false;
 
     private boolean isSlowMode;
@@ -101,9 +102,11 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         return INSTANCE;
     }
 
-    protected SwerveDrive() {
+    public SwerveDrive() {
         super();
-        mPeriodicIO = new PeriodicIO();
+        swerveModules = new SwerveModule[4];
+
+        setOpenLoop(DriveSignal.NEUTRAL);
 
         // start all Talons in open loop mode
         swerveModules[SwerveModule.kFrontLeft] =
@@ -162,40 +165,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     public void alwaysConfigureModules() {
         alwaysConfigureModules = true;
-    }
-
-    public static class PeriodicIO {
-
-        // INPUTS
-        public double timestamp;
-        public Rotation2d gyro_heading = Rotation2d.identity();
-        // no_offset = Relative to initial position, unaffected by reset
-        public Rotation2d gyro_heading_no_offset = Rotation2d.identity();
-        public Pose2d error = Pose2d.identity();
-        private double drive_distance_inches;
-        private double velocity_inches_per_second = 0;
-
-        // SWERVE
-        public double forward;
-        public double strafe;
-        public double rotation;
-        public boolean low_power;
-        public boolean field_relative = factory.getConstant("teleopFieldCentric") > 0;
-        public boolean use_heading_controller;
-
-        // OUTPUTS
-        public double[] wheel_speeds = new double[] { 0, 0, 0, 0 };
-        public Rotation2d[] wheel_azimuths = new Rotation2d[] {
-            Rotation2d.identity(),
-            Rotation2d.identity(),
-            Rotation2d.identity(),
-            Rotation2d.identity(),
-        };
-        public Rotation2d desired_heading = Rotation2d.identity();
-        TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(
-            Pose2dWithCurvature.identity()
-        );
-        public Translation2d drive_vector = Translation2d.identity();
     }
 
     @Override

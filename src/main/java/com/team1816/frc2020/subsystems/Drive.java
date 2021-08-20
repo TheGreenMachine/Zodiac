@@ -1,6 +1,7 @@
 package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.google.inject.Singleton;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
 import com.team1816.lib.loops.ILooper;
@@ -35,12 +36,12 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
         Drive getInstance();
     }
 
-    protected static final String NAME = "drivetrain";
+    public static final String NAME = "drivetrain";
 
     // Components
     protected final LedManager ledManager = LedManager.getInstance();
     protected final PigeonIMU mPigeon;
-    protected SwerveModule[] swerveModules = new SwerveModule[0];
+    protected SwerveModule[] swerveModules;
 
     // Controllers
     protected PathFollower mPathFollower;
@@ -82,6 +83,7 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
     protected final double robotWidthTicks = inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
 
     // Constants
+    public static final double maxVelTicksPer100ms = factory.getConstant("maxTicks");
     public static final double DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
     public static final List<Translation2d> ZERO_DRIVE_VECTOR = List.of(
         Translation2d.identity(),
@@ -93,17 +95,13 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
     protected Drive() {
         super(NAME);
 
+        mPeriodicIO = new PeriodicIO();
+
         openLoopRampRate = Constants.kOpenLoopRampRate;
 
         mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId", -1));
 
         mPigeon.configFactoryDefault();
-
-        setOpenLoop(DriveSignal.NEUTRAL);
-
-        // force a CAN message across
-        mIsBrakeMode = false;
-        setBrakeMode(mIsBrakeMode);
     }
 
     @Override
@@ -137,28 +135,51 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
         return factory.getConstant(NAME, "kF");
     }
 
+    @Singleton
     public static class PeriodicIO {
-
         // INPUTS
         public double timestamp;
         public Rotation2d gyro_heading = Rotation2d.identity();
         // no_offset = Relative to initial position, unaffected by reset
         public Rotation2d gyro_heading_no_offset = Rotation2d.identity();
         public Pose2d error = Pose2d.identity();
-        private double drive_distance_inches;
-        private double velocity_inches_per_second = 0;
+        public double drive_distance_inches;
+        public double velocity_inches_per_second = 0;
+        public double left_position_ticks;
+        public double right_position_ticks;
+        public double left_velocity_ticks_per_100ms;
+        public double right_velocity_ticks_per_100ms;
+        // no_offset = Relative to initial position, unaffected by reset
+        double left_error;
+        double right_error;
 
         // SWERVE
         public double forward;
+        public double strafe;
         public double rotation;
         public boolean low_power;
+        public boolean field_relative = factory.getConstant("teleopFieldCentric") > 0;
+        public boolean use_heading_controller;
 
         // OUTPUTS
-
+        public double left_demand;
+        public double right_demand;
+        public double left_accel;
+        public double right_accel;
+        public double left_feedforward;
+        public double right_feedforward;
+        public double[] wheel_speeds = new double[] { 0, 0, 0, 0 };
+        public Rotation2d[] wheel_azimuths = new Rotation2d[] {
+            Rotation2d.identity(),
+            Rotation2d.identity(),
+            Rotation2d.identity(),
+            Rotation2d.identity(),
+        };
         public Rotation2d desired_heading = Rotation2d.identity();
         TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(
             Pose2dWithCurvature.identity()
         );
+        public Translation2d drive_vector = Translation2d.identity();
     }
 
     @Override

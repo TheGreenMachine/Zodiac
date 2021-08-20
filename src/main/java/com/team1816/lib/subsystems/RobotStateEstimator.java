@@ -18,18 +18,16 @@ import javax.inject.Inject;
 
 public class RobotStateEstimator extends Subsystem {
 
+    @Inject
+    private Drive.Factory mDriveFactory;
     private final RobotState mRobotState = RobotState.getInstance();
-    private Drive mDrive;
     private final Turret turret = Turret.getInstance();
 
     private double prev_timestamp_ = -1.0;
     private Rotation2d prev_heading_ = null;
 
-    @Inject
-    private RobotStateEstimator(Drive.Factory driveFactory) {
+    public RobotStateEstimator() {
         super("RobotStateEstimator");
-        mDrive = driveFactory.getInstance();
-
     }
 
     @Override
@@ -46,6 +44,7 @@ public class RobotStateEstimator extends Subsystem {
 
         @Override
         public synchronized void onLoop(double timestamp) {
+            Drive mDrive = mDriveFactory.getInstance();
             if (prev_heading_ == null) {
                 prev_heading_ =
                     mRobotState.getLatestFieldToVehicle().getValue().getRotation();
@@ -66,10 +65,12 @@ public class RobotStateEstimator extends Subsystem {
         }
 
         @Override
-        public void onStop(double timestamp) {}
+        public void onStop(double timestamp) {
+        }
     }
 
-    private void estimateWestCoast(WestCoastDrive drivetrain, double timestamp, double dt) {}
+    private void estimateWestCoast(WestCoastDrive drivetrain, double timestamp, double dt) {
+    }
 
     private void estimateSwerve(SwerveDrive drivetrain, double timestamp, double dt, Rotation2d gyro_angle) {
         final double[] wheel_speeds = drivetrain.getModuleVelocities();
@@ -109,9 +110,9 @@ public class RobotStateEstimator extends Subsystem {
     }
 
 
-
     @Override
-    public void stop() {}
+    public void stop() {
+    }
 
     @Override
     public boolean checkSystem() {
