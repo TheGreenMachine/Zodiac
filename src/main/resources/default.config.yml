@@ -4,10 +4,10 @@ subsystems:
         implemented: true
         talons:
             leftMain: -1
-            leftFollowerOne: -1
+            leftFollower: -1
             leftFollowerTwo: -1
             rightMain: -1
-            rightFollowerOne: -1
+            rightFollower: -1
             rightFollowerTwo: -1
         invertMotor:
             - leftMain
