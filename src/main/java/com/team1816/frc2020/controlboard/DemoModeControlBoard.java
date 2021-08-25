@@ -9,6 +9,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DemoModeControlBoard implements IControlBoard {
     private static DemoModeControlBoard INSTANCE = null;
 
@@ -20,15 +23,29 @@ public class DemoModeControlBoard implements IControlBoard {
     }
 
     private final Controller mController;
-    private double drivetrainMultiplier = 0.2;
+    private final Map<String, Double> driveModeMap = Map.of(
+        DEFAULT_DRIVE_MODE, 0.25,
+        "Standard", 0.5,
+        "Sport", 1.0,
+        "Park", 0.0
+    );
+    private double drivetrainMultiplier;
+
+    // Constants
+    private static final String DEFAULT_DRIVE_MODE = "Chill";;
 
     private DemoModeControlBoard() {
         mController = new LogitechController(Constants.kDriveGamepadPort);
-        SendableChooser<Double> speedChooser = new SendableChooser<>();
-        speedChooser.setDefaultOption("Chill", 0.25);
-        speedChooser.addOption("Standard", 0.5);
-        speedChooser.addOption("Sport", 1.0);
-        speedChooser.addOption("Park", 0.0);
+        SendableChooser<Void> speedChooser = new SendableChooser<>();
+        for (String mode : driveModeMap.keySet()) {
+            if (mode.equals(DEFAULT_DRIVE_MODE)) {
+                speedChooser.setDefaultOption(mode, null);
+            }
+            speedChooser.addOption(mode, null);
+        }
+
+        drivetrainMultiplier = driveModeMap.get(DEFAULT_DRIVE_MODE);
+        SmartDashboard.putNumber("DrivetrainMultiplier", drivetrainMultiplier);
 
         SmartDashboard.putData("DemoModeDriveSpeed", speedChooser);
         NetworkTableInstance.getDefault()
@@ -37,25 +54,12 @@ public class DemoModeControlBoard implements IControlBoard {
             .addEntryListener(
                 "selected",
                 (table, key, entry, value, flags) -> {
-                    switch (value.getString()) {
-                        case "Chill":
-                            drivetrainMultiplier = 0.2;
-                            break;
-                        case "Standard":
-                            drivetrainMultiplier = 0.5;
-                            break;
-                        case "Sport":
-                            drivetrainMultiplier = 1.0;
-                            break;
-                        default:
-                            drivetrainMultiplier = 0;
-                    }
+                    // This is all because SendableChooser.getSelected() does not update when listener is fired
+                    drivetrainMultiplier = driveModeMap.get(value.getString());
+                    SmartDashboard.putNumber("DrivetrainMultiplier", drivetrainMultiplier);
                 },
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
-
-
-        drivetrainMultiplier = speedChooser.getSelected();
     }
 
 
