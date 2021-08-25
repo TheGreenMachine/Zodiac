@@ -2,6 +2,7 @@ package com.team1816.lib.subsystems;
 
 import com.team1816.frc2020.SwerveKinematics;
 import com.team1816.frc2020.RobotState;
+import com.team1816.frc2020.WestCoastKinematics;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team1816.frc2020.subsystems.Turret;
@@ -22,6 +23,8 @@ public class RobotStateEstimator extends Subsystem {
     private Drive.Factory mDriveFactory;
     private final RobotState mRobotState = RobotState.getInstance();
     private final Turret turret = Turret.getInstance();
+    private double left_encoder_prev_distance_ = 0.0;
+    private double right_encoder_prev_distance_ = 0.0;
 
     private double prev_timestamp_ = -1.0;
     private Rotation2d prev_heading_ = null;
@@ -69,12 +72,58 @@ public class RobotStateEstimator extends Subsystem {
         }
     }
 
-    private void estimateWestCoast(WestCoastDrive drivetrain, double timestamp, double dt) {
+    private void estimateWestCoast(WestCoastDrive mDrive, double timestamp, double dt) {
+        final double left_distance = mDrive.getLeftEncoderDistance();
+        final double right_distance = mDrive.getRightEncoderDistance();
+        final double delta_left = left_distance - left_encoder_prev_distance_;
+        final double delta_right = right_distance - right_encoder_prev_distance_;
+        final Rotation2d gyro_angle = mDrive.getHeading();
+        final Rotation2d gyro_angle_relative_to_initial = mDrive.getHeadingRelativeToInitial();
+
+        Twist2d odometry_twist;
+        /* final */Rotation2d turret_angle = Rotation2d.fromDegrees(
+            turret.getActualTurretPositionDegrees() - Turret.CARDINAL_SOUTH
+        ); // - Turret.CARDINAL_NORTH);
+        synchronized (mRobotState) {
+            final Pose2d last_measurement = mRobotState
+                .getLatestFieldToVehicle()
+                .getValue();
+            odometry_twist =
+                WestCoastKinematics.forwardKinematics(
+                    last_measurement.getRotation(),
+                    delta_left,
+                    delta_right,
+                    gyro_angle
+                );
+        }
+        final Twist2d measured_velocity = WestCoastKinematics
+            .forwardKinematics(
+                delta_left,
+                delta_right,
+                prev_heading_.inverse().rotateBy(gyro_angle).getRadians()
+            )
+            .scaled(1.0 / dt);
+        final Twist2d predicted_velocity = WestCoastKinematics
+            .forwardKinematics(
+                mDrive.getLeftLinearVelocity(),
+                mDrive.getRightLinearVelocity()
+            )
+            .scaled(dt);
+        mRobotState.addObservations(
+            timestamp,
+            odometry_twist,
+            measured_velocity,
+            predicted_velocity
+        );
+        mRobotState.setHeadingRelativeToInitial(gyro_angle_relative_to_initial);
+        mRobotState.addVehicleToTurretObservation(timestamp, turret_angle);
+        left_encoder_prev_distance_ = left_distance;
+        right_encoder_prev_distance_ = right_distance;
     }
 
-    private void estimateSwerve(SwerveDrive drivetrain, double timestamp, double dt, Rotation2d gyro_angle) {
-        final double[] wheel_speeds = drivetrain.getModuleVelocities();
-        final Rotation2d[] wheel_azimuths = drivetrain.getModuleAzimuths();
+    private void estimateSwerve(SwerveDrive mDrive, double timestamp, double dt, Rotation2d gyro_angle) {
+        final double[] wheel_speeds = mDrive.getModuleVelocities();
+        final Rotation2d[] wheel_azimuths = mDrive.getModuleAzimuths();
 
         Twist2d odometry_twist;
         synchronized (mRobotState) {
@@ -104,8 +153,8 @@ public class RobotStateEstimator extends Subsystem {
             gyro_angle,
             dt
         );
-        mRobotState.addFieldToVehicleObservation(timestamp, drivetrain.getPose());
-        mRobotState.setHeadingRelativeToInitial(drivetrain.getHeadingRelativeToInitial());
+        mRobotState.addFieldToVehicleObservation(timestamp, mDrive.getPose());
+        mRobotState.setHeadingRelativeToInitial(mDrive.getHeadingRelativeToInitial());
         //    mRobotState.addObservations(timestamp, odometry_twist, measured_velocity);
     }
 

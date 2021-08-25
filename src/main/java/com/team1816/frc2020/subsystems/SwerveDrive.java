@@ -439,7 +439,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
         mPeriodicIO.forward = forward;
         mPeriodicIO.strafe = strafe;
-        mPeriodicIO. rotation = rotation;
+        mPeriodicIO.rotation = rotation;
         mPeriodicIO.low_power = low_power;
         mPeriodicIO.use_heading_controller = use_heading_controller;
     }

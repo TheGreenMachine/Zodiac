@@ -5,6 +5,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
@@ -18,6 +19,7 @@ import com.team254.lib.control.PathFollower;
 import com.team254.lib.geometry.*;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,10 +29,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import javax.swing.plaf.synth.SynthOptionPaneUI;
+import java.sql.SQLOutput;
 import java.util.List;
 
 @Singleton
 public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
+
+    private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
 
     private static WestCoastDrive mInstance;
     private static final String NAME = "drivetrain";
@@ -165,7 +170,6 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
             if(mDriveControlState == DriveControlState.OPEN_LOOP) {
                 leftAdjDemand = mPeriodicIO.left_demand * maxVelTicksPer100ms;
                 rightAdjDemand = mPeriodicIO.right_demand * maxVelTicksPer100ms;
-                System.out.println(mPeriodicIO.left_demand);
             }
             var driveTrainErrorPercent = .05;
             mPeriodicIO.left_error = leftAdjDemand * driveTrainErrorPercent;
@@ -253,8 +257,36 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
     }
 
     @Override
-    public void setTeleopInputs(double forward, double strafe, double rotation, boolean low_power, boolean use_heading_controller) {
+    public void setTeleopInputs(
+        double forward,
+        double strafe,
+        double rotation,
+        boolean low_power,
+        boolean use_heading_controller
+    ) {
+        DriveSignal driveSignal = cheesyDriveHelper.cheesyDrive(forward, rotation, false);// quick turn temporarily eliminated
+        // }
 
+        if (
+            getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING
+        ) {
+            if (
+                driveSignal.getLeft() != 0 ||
+                    driveSignal.getRight() != 0 ||
+                    isDoneWithTrajectory()
+            ) {
+                setOpenLoop(driveSignal);
+            }
+        } else {
+            setOpenLoop(driveSignal);
+        }
+
+        if (mDriveControlState != Drive.DriveControlState.OPEN_LOOP) {
+            mDriveControlState = Drive.DriveControlState.OPEN_LOOP;
+        }
+
+        mPeriodicIO.left_demand = driveSignal.getLeft();
+        mPeriodicIO.right_demand = driveSignal.getRight();
     }
 
     @Override
@@ -489,12 +521,6 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
         } else {
             DriverStation.reportError("drive is not in path following state", false);
         }
-    }
-
-    public enum DriveControlState {
-        OPEN_LOOP, // open loop voltage control
-        PATH_FOLLOWING, // velocity PID control
-        TRAJECTORY_FOLLOWING,
     }
 
     @Override

@@ -210,7 +210,8 @@ public class RobotState {
     public synchronized void addObservations(
         double timestamp,
         Twist2d displacement,
-        Twist2d measured_velocity
+        Twist2d measured_velocity,
+        Twist2d predicted_velocity
     ) {
         distance_driven_ += displacement.norm();
 
@@ -234,6 +235,7 @@ public class RobotState {
                 )
             );
         }
+        vehicle_velocity_predicted_ = predicted_velocity;
     }
 
     public synchronized double getDistanceDriven() {

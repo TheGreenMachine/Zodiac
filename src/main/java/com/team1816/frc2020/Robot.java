@@ -630,10 +630,6 @@ public class Robot extends TimedRobot {
         // boolean arcadeDrive = false;
         actionManager.update();
 
-        double throttle = mControlBoard.getThrottle();
-        double turn = mControlBoard.getTurn();
-
-        SwerveDriveSignal driveSignal;
         boolean maintainAzimuth = mShouldMaintainAzimuth.update(
             mControlBoard.getTurn() == 0,
             0.2
