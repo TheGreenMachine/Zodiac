@@ -14,14 +14,14 @@ let interactive;
 let clipboardToast;
 let isReversedCheckbox;
 
-const fieldWidth = 360; // inches
-const fieldHeight = 180; // inches
+const fieldWidth = 624; // inches
+const fieldHeight = 315; // inches
 
 const xOffset = 0; // inches
 const yOffset = 0; // inches
 
-const width = 980; //pixels
-const height = 490; //pixels
+const width = 980; // pixels
+const height = 490; // pixels
 
 const robotWidth = 34; // inches
 const robotHeight = 34; // inches
