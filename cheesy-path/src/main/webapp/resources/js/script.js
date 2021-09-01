@@ -411,7 +411,7 @@ function init() {
     interactive.addEventListener('click', onCanvasClick);
 
 	image = new Image();
-	image.src = 'resources/img/6_field1.jpg';
+	image.src = 'resources/img/season.jpg';
 	image.onload = function() {
 		ctxBackground.drawImage(image, 0, 0, width, height);
 		update(false);
