@@ -21,28 +21,26 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public double getStrafe() {
-        return mController.getJoystick(Controller.Side.LEFT, Controller.Axis.X);
+        return mController.getJoystick(Controller.Axis.LEFT_X);
     }
 
     @Override
     public double getThrottle() {
         return mController.getJoystick(
-            Controller.Side.LEFT,
-            Controller.Axis.Y
+            Controller.Axis.LEFT_Y
         );
     }
 
     @Override
     public double getTurn() {
         return mController.getJoystick(
-            Controller.Side.RIGHT,
-            Controller.Axis.X
+            Controller.Axis.RIGHT_X
         );
     }
 
     @Override
     public boolean getSlowMode() {
-        return mController.getTrigger(Controller.Side.RIGHT);
+        return mController.getTrigger(Controller.Axis.RIGHT_TRIGGER);
     }
 
     @Override
@@ -57,12 +55,12 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public boolean getCollectorToggle() {
-        return mController.getButton(Controller.Button.LB);
+        return mController.getButton(Controller.Button.LEFT_BUMPER);
     }
 
     @Override
     public boolean getCollectorUp() {
-        return mController.getButton(Controller.Button.RB);
+        return mController.getButton(Controller.Button.RIGHT_BUMPER);
     }
 
     @Override
@@ -82,7 +80,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public boolean getFieldRelative() {
-        return !mController.getButton(XboxController.Button.LB);
+        return !mController.getButton(XboxController.Button.LEFT_BUMPER);
     }
 
     @Override
@@ -96,7 +94,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
             return -1;
         }
 
-        if (mController.getTrigger(XboxController.Side.LEFT)) {
+        if (mController.getTrigger(XboxController.Axis.LEFT_TRIGGER)) {
             double degs = SwerveCardinal
                 .findClosest(Rotation2d.fromDegrees(mController.getDPad()), true)
                 .rotation.getDegrees();

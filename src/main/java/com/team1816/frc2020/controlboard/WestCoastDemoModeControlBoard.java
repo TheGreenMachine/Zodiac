@@ -111,7 +111,7 @@ public class WestCoastDemoModeControlBoard implements IControlBoard {
 
     @Override
     public boolean getShoot() {
-        return mController.getTrigger(Controller.Side.RIGHT);
+        return mController.getTrigger(Controller.Axis.RIGHT_TRIGGER);
     }
 
     @Override
@@ -137,16 +137,14 @@ public class WestCoastDemoModeControlBoard implements IControlBoard {
     @Override
     public double getThrottle() {
         return drivetrainMultiplier * mController.getJoystick(
-            Controller.Side.LEFT,
-            Controller.Axis.Y
+            Controller.Axis.LEFT_Y
         );
     }
 
     @Override
     public double getTurn() {
         return drivetrainMultiplier * mController.getJoystick(
-            Controller.Side.RIGHT,
-            Controller.Axis.X
+            Controller.Axis.RIGHT_X
         );
     }
 
@@ -173,7 +171,7 @@ public class WestCoastDemoModeControlBoard implements IControlBoard {
 
     @Override
     public boolean getCollectorToggle() {
-        return mController.getButton(LogitechController.Button.LB);
+        return mController.getButton(LogitechController.Button.LEFT_BUMPER);
     }
 
     @Override

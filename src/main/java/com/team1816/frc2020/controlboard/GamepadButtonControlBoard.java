@@ -80,22 +80,22 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     @Override
     public double getClimber() {
-        return -mController.getJoystick(Controller.Side.LEFT, Controller.Axis.Y);
+        return -mController.getJoystick(Controller.Axis.LEFT_Y);
     }
 
     @Override
     public boolean getShoot() {
-        return mController.getTrigger(Controller.Side.RIGHT);
+        return mController.getTrigger(Controller.Axis.RIGHT_TRIGGER);
     }
 
     @Override
     public boolean getAutoAim() {
-        return mController.getButton(LogitechController.Button.LB);
+        return mController.getButton(LogitechController.Button.LEFT_BUMPER);
     }
 
     @Override
     public boolean getCollectorBackSpin() {
-        return mController.getButton(LogitechController.Button.RB);
+        return mController.getButton(LogitechController.Button.RIGHT_BUMPER);
     }
 
     @Override
