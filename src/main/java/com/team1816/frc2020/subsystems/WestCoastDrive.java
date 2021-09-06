@@ -151,10 +151,14 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public double getDesiredHeading() {
+        return getDesiredRotation2d().getDegrees();
+    }
+
+    public Rotation2d getDesiredRotation2d() {
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-            return mPeriodicIO.path_setpoint.state().getRotation().getDegrees();
+            return mPeriodicIO.path_setpoint.state().getRotation();
         }
-        return mPeriodicIO.desired_heading.getDegrees();
+        return mPeriodicIO.desired_heading;
     }
 
     @Override
@@ -181,7 +185,7 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
             mPeriodicIO.right_velocity_ticks_per_100ms = rightAdjDemand;
             // calculate rotation based on left/right vel differences
             gyroDrift -= (mPeriodicIO.left_velocity_ticks_per_100ms-mPeriodicIO.right_velocity_ticks_per_100ms)/robotWidthTicks;
-            //mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
+            mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
             var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
             fieldSim.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY())+3.5, rot2d);
         } else {
