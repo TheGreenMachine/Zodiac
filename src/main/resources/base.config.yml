@@ -57,7 +57,7 @@ subsystems:
 pcm: -1
 constants:
     maxVel: 40 #inch/s
-    maxTicks: 2000 # ticks per 100ms TODO test actual maxTicks value
+    maxTicks: 14000 # ticks per 100ms TODO test actual maxTicks value
     maxAccel: 20 #inch/s^2
     sensorPhase: 0
     kLooperDt: .010

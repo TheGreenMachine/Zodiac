@@ -9,12 +9,12 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class WestCoastDemoModeControlBoard implements IControlBoard {
-    private static WestCoastDemoModeControlBoard INSTANCE = null;
+public class TankDemoModeControlBoard implements IControlBoard {
+    private static TankDemoModeControlBoard INSTANCE = null;
 
-    public static WestCoastDemoModeControlBoard getInstance() {
+    public static TankDemoModeControlBoard getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new WestCoastDemoModeControlBoard();
+            INSTANCE = new TankDemoModeControlBoard();
         }
         return INSTANCE;
     }
@@ -22,7 +22,7 @@ public class WestCoastDemoModeControlBoard implements IControlBoard {
     private final Controller mController;
     private double drivetrainMultiplier = 0.25;
 
-    private WestCoastDemoModeControlBoard() {
+    private TankDemoModeControlBoard() {
         mController = new LogitechController(Constants.kDriveGamepadPort);
         SendableChooser<Double> speedChooser = new SendableChooser<>();
         speedChooser.setDefaultOption("Comfort", 0.25);

@@ -5,13 +5,12 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
-import com.team1816.frc2020.WestCoastKinematics;
-import com.team1816.frc2020.planners.WestCoastMotionPlanner;
+import com.team1816.frc2020.TankKinematics;
+import com.team1816.frc2020.planners.TankMotionPlanner;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.subsystems.DifferentialDrivetrain;
 import com.team254.lib.control.Path;
@@ -28,16 +27,14 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
-import java.sql.SQLOutput;
 import java.util.List;
 
 @Singleton
-public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
+public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
 
-    private static WestCoastDrive mInstance;
+    private static TankDrive mInstance;
     private static final String NAME = "drivetrain";
     private static double DRIVE_ENCODER_PPR;
 
@@ -62,7 +59,7 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
     private double openLoopRampRate;
     private BadLog mLogger;
 
-    private final WestCoastMotionPlanner mMotionPlanner;
+    private final TankMotionPlanner mMotionPlanner;
     private boolean mOverrideTrajectory = false;
 
     private boolean isSlowMode;
@@ -73,15 +70,15 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
     private final double tickRatioPerLoop = Constants.kLooperDt/.1d;
 
-    public static synchronized WestCoastDrive getInstance() {
+    public static synchronized TankDrive getInstance() {
         if (mInstance == null) {
-            mInstance = new WestCoastDrive();
+            mInstance = new TankDrive();
         }
 
         return mInstance;
     }
 
-    public WestCoastDrive() {
+    public TankDrive() {
         super();
         swerveModules = new SwerveModule[2];
 
@@ -144,7 +141,7 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
         mIsBrakeMode = false;
         setBrakeMode(mIsBrakeMode);
 
-        mMotionPlanner = new WestCoastMotionPlanner();
+        mMotionPlanner = new TankMotionPlanner();
 
         SmartDashboard.putData("Field", fieldSim);
     }
@@ -480,7 +477,7 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
                 mRobotState.getPredictedVelocity().dx
             );
             if (!mPathFollower.isFinished()) {
-                DriveSignal setpoint = WestCoastKinematics.inverseKinematics(command);
+                DriveSignal setpoint = TankKinematics.inverseKinematics(command);
                 setVelocity(
                     new DriveSignal(
                         inchesPerSecondToTicksPer100ms(setpoint.getLeft()),
@@ -494,7 +491,7 @@ public class WestCoastDrive extends Drive implements DifferentialDrivetrain {
                 }
             }
         } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-            WestCoastMotionPlanner.Output output = mMotionPlanner.update(
+            TankMotionPlanner.Output output = mMotionPlanner.update(
                 timestamp,
                 RobotState.getInstance().getFieldToVehicle(timestamp)
             );

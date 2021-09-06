@@ -2,11 +2,11 @@ package com.team1816.lib.subsystems;
 
 import com.team1816.frc2020.SwerveKinematics;
 import com.team1816.frc2020.RobotState;
-import com.team1816.frc2020.WestCoastKinematics;
+import com.team1816.frc2020.TankKinematics;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team1816.frc2020.subsystems.Turret;
-import com.team1816.frc2020.subsystems.WestCoastDrive;
+import com.team1816.frc2020.subsystems.TankDrive;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team254.lib.geometry.Pose2d;
@@ -57,8 +57,8 @@ public class RobotStateEstimator extends Subsystem {
 
             if (mDrive instanceof SwerveDrive) {
                 estimateSwerve((SwerveDrive) mDrive, timestamp, dt, gyro_angle);
-            } else if (mDrive instanceof WestCoastDrive) {
-                estimateWestCoast((WestCoastDrive) mDrive, timestamp, dt);
+            } else if (mDrive instanceof TankDrive) {
+                estimateTankDrive((TankDrive) mDrive, timestamp, dt);
             } else {
                 DriverStation.reportError("RobotStateEstimator - Drive is not of known type", false);
             }
@@ -72,7 +72,7 @@ public class RobotStateEstimator extends Subsystem {
         }
     }
 
-    private void estimateWestCoast(WestCoastDrive mDrive, double timestamp, double dt) {
+    private void estimateTankDrive(TankDrive mDrive, double timestamp, double dt) {
         final double left_distance = mDrive.getLeftEncoderDistance();
         final double right_distance = mDrive.getRightEncoderDistance();
         final double delta_left = left_distance - left_encoder_prev_distance_;
@@ -89,21 +89,21 @@ public class RobotStateEstimator extends Subsystem {
                 .getLatestFieldToVehicle()
                 .getValue();
             odometry_twist =
-                WestCoastKinematics.forwardKinematics(
+                TankKinematics.forwardKinematics(
                     last_measurement.getRotation(),
                     delta_left,
                     delta_right,
                     gyro_angle
                 );
         }
-        final Twist2d measured_velocity = WestCoastKinematics
+        final Twist2d measured_velocity = TankKinematics
             .forwardKinematics(
                 delta_left,
                 delta_right,
                 prev_heading_.inverse().rotateBy(gyro_angle).getRadians()
             )
             .scaled(1.0 / dt);
-        final Twist2d predicted_velocity = WestCoastKinematics
+        final Twist2d predicted_velocity = TankKinematics
             .forwardKinematics(
                 mDrive.getLeftLinearVelocity(),
                 mDrive.getRightLinearVelocity()
