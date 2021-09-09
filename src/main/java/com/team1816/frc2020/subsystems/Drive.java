@@ -19,9 +19,7 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.util.DriveHelper;
-import com.team254.lib.util.DriveSignal;
-import com.team254.lib.util.SwerveDriveSignal;
+import com.team254.lib.util.*;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -111,9 +109,6 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
 
     @Override
     public abstract double getDesiredHeading();
-
-    @Override
-    public abstract double getHeadingError();
 
     @Override
     public double getKP() {
@@ -419,6 +414,26 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
     public abstract boolean checkSystem();
 
     @Override
+    public double getFieldXDistance() {
+        return mRobotState.getEstimatedX();
+    }
+
+    @Override
+    public double getFieldYDistance() {
+        return mRobotState.getEstimatedY();
+    }
+
+    @Override
+    public double getFieldDesiredXDistance() {
+        return 0;
+    }
+
+    @Override
+    public double getFieldYDesiredYDistance() {
+        return 0;
+    }
+
+    @Override
     public void initSendable(SendableBuilder builder) {
         builder.addStringProperty(
             "Drive/ControlState",
@@ -427,8 +442,8 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
         );
 
         driveHelperChooser = new SendableChooser<>();
-        driveHelperChooser.addOption("Cheesy Drive", DriveHelper.CHEESY);
-        driveHelperChooser.setDefaultOption("Swerve Classic", DriveHelper.SWERVE_CLASSIC);
+        driveHelperChooser.addOption("Cheesy Drive", new CheesyDriveHelper());
+        driveHelperChooser.setDefaultOption("Swerve Classic", new SwerveCheesyDriveHelper());
         SmartDashboard.putData("Drive Algorithm", driveHelperChooser);
         SmartDashboard.putData("Field", fieldSim);
 

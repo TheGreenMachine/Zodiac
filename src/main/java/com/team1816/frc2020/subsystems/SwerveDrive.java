@@ -49,7 +49,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     private PathFollower mPathFollower;
     private Path mCurrentPath = null;
     private final SwerveMotionPlanner motionPlanner;
-    private final SwerveMotionPlanner trajectoryMotionPlanner;
     private final SwerveHeadingController headingController = SwerveHeadingController.getInstance();
 
     // control states
@@ -79,7 +78,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     private boolean isSlowMode;
     private double rotationScalar = 1;
     private boolean robotCentric = false;
-    private SendableChooser<DriveHelper> driveHelperChooser;
 
     // Simulator
     private final Field2d fieldSim = new Field2d();
@@ -143,7 +141,37 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         setBrakeMode(mIsBrakeMode);
 
         motionPlanner = new SwerveMotionPlanner();
-        trajectoryMotionPlanner = new SwerveMotionPlanner();
+        SmartDashboard.putData("Field", fieldSim);
+    }
+
+    @Override
+    public double getLeftVelocityNativeUnits() {
+        return 0;
+    }
+
+    @Override
+    public double getRightVelocityNativeUnits() {
+        return 0;
+    }
+
+    @Override
+    public double getLeftVelocityDemand() {
+        return 0;
+    }
+
+    @Override
+    public double getRightVelocityDemand() {
+        return 0;
+    }
+
+    @Override
+    public double getLeftVelocityError() {
+        return 0;
+    }
+
+    @Override
+    public double getRightVelocityError() {
+        return 0;
     }
 
     @Override
@@ -152,11 +180,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
             return headingController.getTargetHeading();
         }
         return mPeriodicIO.desired_heading.getDegrees();
-    }
-
-    @Override
-    public double getHeadingError() {
-        return headingController.getError();
     }
 
     public void requireModuleConfiguration() {
@@ -169,17 +192,14 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     @Override
     public synchronized void readPeriodicInputs() {
-        if (mPigeon.getLastError() != ErrorCode.OK) {
-            ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
-            //    System.out.println("Pigeon error detected, maybe reinitialized");
-        }
-        if(RobotBase.isReal()) {
-            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+        if(RobotBase.isSimulation()) {
+            // calculate rotation based on left/right vel differences
+            gyroDrift -= (mPeriodicIO.left_velocity_ticks_per_100ms-mPeriodicIO.right_velocity_ticks_per_100ms)/robotWidthTicks;
+            //mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
+            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
+            fieldSim.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY())+3.5, rot2d);
         } else {
-            // calculate angular velocity
-            var twist = (mPeriodicIO.wheel_speeds[SwerveModule.kFrontLeft]-mPeriodicIO.wheel_speeds[SwerveModule.kFrontRight])/robotWidthTicks;
-            gyroDrift += twist;
-            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPeriodicIO.desired_heading.getDegrees() - gyroDrift);
+            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
         }
         mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
         // System.out.println("control state: " + mDriveControlState + ", left: " + mPeriodicIO.left_demand + ", right: " + mPeriodicIO.right_demand);
@@ -190,14 +210,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     @Override
     public synchronized void writePeriodicOutputs() {
-        var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(
-            mPeriodicIO.gyro_heading_no_offset.getRadians()
-        );
-        fieldSim.setRobotPose(
-            Units.inches_to_meters(mRobotState.getEstimatedX()),
-            Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5,
-            rot2d
-        );
         for (int i = 0; i < swerveModules.length; i++) {
             if (swerveModules[i] != null) {
                 // change speeds to add some imperfection in tuning to cause rotation
@@ -512,7 +524,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory,
         Rotation2d targetHeading
     ) {
-        if (trajectoryMotionPlanner != null) {
+        if (motionPlanner != null) {
             hasStartedFollowing = false;
             hasFinishedPath = false;
             moduleConfigRequested = false;
@@ -520,10 +532,9 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
             setBrakeMode(true);
             mOverrideTrajectory = false;
             headingController.setSnapTarget(targetHeading.getDegrees());
-            trajectoryMotionPlanner.reset();
             motionPlanner.reset();
             mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
-            trajectoryMotionPlanner.setTrajectory(trajectory);
+            motionPlanner.setTrajectory(trajectory);
         }
     }
 
@@ -532,7 +543,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         if (mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING) {
             return false;
         }
-        return trajectoryMotionPlanner.isDone() || mOverrideTrajectory;
+        return motionPlanner.isDone() || mOverrideTrajectory;
     }
 
     @Override
@@ -579,7 +590,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                     0.01
                 );
 
-                mPeriodicIO.error = trajectoryMotionPlanner.error();
+                mPeriodicIO.error = motionPlanner.error();
                 mPeriodicIO.path_setpoint = motionPlanner.setpoint();
                 mPeriodicIO.drive_vector = driveVector;
                 if (!mOverrideTrajectory) {

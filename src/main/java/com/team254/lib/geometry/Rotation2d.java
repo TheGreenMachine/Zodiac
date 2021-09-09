@@ -110,11 +110,13 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
         return sin_angle_ / cos_angle_;
     }
 
+    @Override
     public double getRadians() {
         ensureRadiansComputed();
         return radians_;
     }
 
+    @Override
     public double getDegrees() {
         return Math.toDegrees(getRadians());
     }

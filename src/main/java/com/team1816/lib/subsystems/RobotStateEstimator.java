@@ -15,7 +15,7 @@ import com.team254.lib.geometry.Twist2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import javax.inject.Inject;
+import com.google.inject.Inject;
 
 public class RobotStateEstimator extends Subsystem {
 

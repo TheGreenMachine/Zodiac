@@ -1,8 +1,0 @@
-$extends: zodiac_base
-subsystems:
-    turret:
-        constants:
-            minPos: -4220
-            maxPos: -1072
-constants:
-    wheelDiameter: 6.15 #inches

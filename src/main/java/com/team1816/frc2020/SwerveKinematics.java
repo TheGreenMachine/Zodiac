@@ -41,10 +41,6 @@ public class SwerveKinematics {
 
     private static Rotation2d[] prev_wheel_azimuths = SwerveDriveSignal.ZERO_AZIMUTH;
 
-    @Inject
-    public SwerveKinematics(Drive.Factory driveFactory){
-        mDrive = driveFactory.getInstance();
-    }
     /**
      * Forward kinematics using only encoders
      */
@@ -142,7 +138,7 @@ public class SwerveKinematics {
         );
     }
 
-    public static SwerveDriveSignal inverseKinematics(
+    public SwerveDriveSignal inverseKinematics(
         double forward,
         double strafe,
         double rotation,
@@ -151,13 +147,14 @@ public class SwerveKinematics {
         return inverseKinematics(forward, strafe, rotation, field_relative, true);
     }
 
-    public static SwerveDriveSignal inverseKinematics(
+    public SwerveDriveSignal inverseKinematics(
         double forward,
         double strafe,
         double rotation,
         boolean field_relative,
         boolean normalize_outputs
     ) {
+
         if (field_relative) {
             Rotation2d gyroHeading = mDrive.getHeading();
             double temp = forward * gyroHeading.cos() + strafe * gyroHeading.sin();

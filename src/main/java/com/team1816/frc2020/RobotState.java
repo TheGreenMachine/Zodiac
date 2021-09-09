@@ -217,7 +217,7 @@ public class RobotState {
 
         addFieldToVehicleObservation(
             timestamp,
-            SwerveKinematics.integrateForwardKinematics(
+            TankKinematics.integrateForwardKinematics(
                 getLatestFieldToVehicle().getValue(),
                 displacement
             )

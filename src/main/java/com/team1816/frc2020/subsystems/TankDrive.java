@@ -159,11 +159,6 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     }
 
     @Override
-    public double getHeadingError() {
-        return 0; //TODO
-    }
-
-    @Override
     public synchronized void readPeriodicInputs() {
         if(RobotBase.isSimulation()) {
             double leftAdjDemand = mPeriodicIO.left_demand;
@@ -188,7 +183,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
-            mPeriodicIO.left_velocity_ticks_per_100ms =
+            mPeriodicIO.left_velocity_ticks_per_100ms =+
                 mLeftMaster.getSelectedSensorVelocity(0);
             mPeriodicIO.right_velocity_ticks_per_100ms =
                 mRightMaster.getSelectedSensorVelocity(0);

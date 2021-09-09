@@ -1,9 +1,6 @@
 package com.team254.lib.util;
 
 public interface DriveHelper {
-    public static final DriveHelper SWERVE_CLASSIC = new SwerveDriveHelper();
-    DriveHelper CHEESY = new SwerveCheesyDriveHelper();
-
     SwerveDriveSignal calculateDriveSignal(
         double forwardInput,
         double strafeInput,

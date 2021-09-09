@@ -1,17 +1,50 @@
-$extends: zodiac_base
+$extends: base
 subsystems:
+    drivetrain:
+        implemented: true
+        falcons:
+            leftMain: 17
+            leftFollower: 1
+            leftFollowerTwo: -1
+            rightMain: 14
+            rightFollower: 15
+            rightFollowerTwo: -1
+        invertMotor:
+            - leftMain
+        constants:
+            pigeonId: 9
+            encPPR: 22220.8
+            isSwerve: 0
     climber:
         implemented: true
+        falcons:
+            intake: 11
+        talons:
+            elevator: 12
+        solenoids:
+            arm: 0
+            deployer: 5
         invertMotor:
             - elevator
     hopper:
+        implemented: true
+        talons:
+            spindexer: 4
+            elevator: 5
+        solenoids:
+            feederFlap: 4
         invertMotor:
             - elevator
+            - spindexer
     shooter:
+        implemented: true
         falcons:
             shooterMain: 3
             shooterFollower: 2
     turret:
+        implemented: true
+        talons:
+            turret: 13
         constants:
             minPos: -3802
             maxPos: -757
@@ -21,7 +54,10 @@ subsystems:
     camera:
         implemented: true
         canifier: 19
+pcm: 8
 constants:
+    trackWidth: 25 #inches
+    compressorEnabled: 1 # 0 or 1
     wheelDiameter: 6.32 #inches
     logTeleop: 1
     logAuto: 1

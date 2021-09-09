@@ -285,9 +285,6 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                 // throttle is 0
                 stop();
             } else {
-                System.out.println(
-                    mConstants.kName + " drive demand: " + mPeriodicIO.drive_demand
-                );
                 mDriveMotor.set(ControlMode.PercentOutput, mPeriodicIO.drive_demand);
             }
         } else if (mControlState == ControlState.VELOCITY) {

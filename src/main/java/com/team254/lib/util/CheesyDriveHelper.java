@@ -6,7 +6,7 @@ package com.team254.lib.util;
  * speeds. Also handles the robot's quick turn functionality - "quick turn" overrides constant-curvature turning for
  * turn-in-place maneuvers.
  */
-public class CheesyDriveHelper {
+public class CheesyDriveHelper implements DriveHelper {
     private static final double kThrottleDeadband = 0.035; // 0.035
     private static final double kWheelDeadband = 0.02; // 0.02, 0.01
 
@@ -152,5 +152,10 @@ public class CheesyDriveHelper {
 
     public double handleDeadband(double val, double deadband) {
         return (Math.abs(val) > Math.abs(deadband)) ? val : 0.0;
+    }
+
+    @Override
+    public SwerveDriveSignal calculateDriveSignal(double forwardInput, double strafeInput, double rotationInput, boolean low_power, boolean field_relative, boolean use_heading_controller) {
+        return null;
     }
 }

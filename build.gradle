@@ -114,7 +114,7 @@ processResources {
     }
 }
 
-task run(type: JavaExec) {
+task runSwerve(type: JavaExec) {
     String jniDir = "${project.buildDir}/tmp/jniExtractDir"
     environment "PATH", jniDir
     String hal = fileTree(dir: "${project.buildDir}/tmp/expandedArchives", include: 'halsim*/**/*.*').asPath
@@ -125,6 +125,22 @@ task run(type: JavaExec) {
     }
     environment "HALSIM_EXTENSIONS", hal
     environment "ROBOT_NAME", "zodiac_swerve"
+    dependsOn(jar, simulateExternalJava)
+    classpath = files(jar)
+    jvmArgs "-Djava.library.path=${jniDir}"
+}
+
+task runTank(type: JavaExec) {
+    String jniDir = "${project.buildDir}/tmp/jniExtractDir"
+    environment "PATH", jniDir
+    String hal = fileTree(dir: "${project.buildDir}/tmp/expandedArchives", include: 'halsim*/**/*.*').asPath
+    if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
+        environment "LD_LIBRARY_PATH", jniDir
+        environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
+        environment "DYLD_LIBRARY_PATH", jniDir
+    }
+    environment "HALSIM_EXTENSIONS", hal
+    environment "ROBOT_NAME", "zodiac_pro"
     dependsOn(jar, simulateExternalJava)
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"

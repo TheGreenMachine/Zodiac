@@ -26,7 +26,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public double getThrottle() {
-        return mController.getJoystick(
+        return -mController.getJoystick(
             Controller.Axis.LEFT_Y
         );
     }

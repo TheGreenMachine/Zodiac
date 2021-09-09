@@ -40,20 +40,7 @@ public class AutoModeSelector {
         SIX_BALL_ALLIANCE_STRAIGHT,
 
         // 2021
-        BLUE_RED_PATHB,
-        RED_PATHA,
-        BLUE_PATHA,
-        PATHA,
-        SLALOM,
-        BARREL,
-        BOUNCE,
-        ATROCITY,
-        NICO_TEST,
-        POWER_PORT,
-
-        // MSHSL
-        SNOW_REMOVAL,
-        SNOW_THROWER
+        BARREL
     }
 
     private DesiredMode mCachedDesiredMode = null;

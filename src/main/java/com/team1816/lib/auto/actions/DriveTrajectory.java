@@ -75,7 +75,6 @@ public class DriveTrajectory implements Action {
                 ((SwerveDrive)mDrive).setStartingPose(pose);
                 ((SwerveDrive)mDrive).setWantReset(true);
             }
-
         }
         mDrive.setTrajectory(mTrajectory, targetHeading);
     }

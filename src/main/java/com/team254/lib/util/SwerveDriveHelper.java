@@ -1,5 +1,6 @@
 package com.team254.lib.util;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.SwerveKinematics;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -18,8 +19,12 @@ public class SwerveDriveHelper implements DriveHelper {
     private final static double kRobotRelativePoleThreshold = Math.toRadians(5);
     private final static double kDeadband = 0.25;
     private final static double kRotationDeadband = 0.15;
+    private final SwerveKinematics swerveKinematics;
 
-    SwerveDriveHelper() {}
+    @Inject
+    SwerveDriveHelper(SwerveKinematics swerveKinematics) {
+        this.swerveKinematics = swerveKinematics;
+    }
 
     @Override
     public SwerveDriveSignal calculateDriveSignal(double forwardInput, double strafeInput, double rotationInput,
@@ -73,7 +78,7 @@ public class SwerveDriveHelper implements DriveHelper {
             rotationInput *= kHighPowerRotationScalar;
         }
 
-        return SwerveKinematics.inverseKinematics(translationalInput.x(), translationalInput.y(), rotationInput,
+        return swerveKinematics.inverseKinematics(translationalInput.x(), translationalInput.y(), rotationInput,
             field_relative);
     }
 }
