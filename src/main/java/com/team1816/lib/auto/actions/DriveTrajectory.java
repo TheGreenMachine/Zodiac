@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class DriveTrajectory implements Action {
 
     @Inject
-    private Drive.Factory mDriveFactory;
+    private static Drive.Factory mDriveFactory;
     private static final RobotState mRobotState = RobotState.getInstance();
 
     private final TrajectoryIterator<TimedState<Pose2dWithCurvature>> mTrajectory;
