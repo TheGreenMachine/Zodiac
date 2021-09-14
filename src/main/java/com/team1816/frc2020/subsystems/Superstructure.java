@@ -35,6 +35,11 @@ public class Superstructure extends Subsystem {
     }
 
     @Override
+    public boolean isImplemented() {
+        return true;
+    }
+
+    @Override
     public void registerEnabledLoops(ILooper mEnabledLooper) {
         mEnabledLooper.register(
             new Loop() {

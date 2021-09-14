@@ -38,6 +38,11 @@ public class RobotStateEstimator extends Subsystem {
         looper.register(new EnabledLoop());
     }
 
+    @Override
+    public boolean isImplemented() {
+        return true;
+    }
+
     private class EnabledLoop implements Loop {
 
         @Override

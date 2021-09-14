@@ -26,6 +26,11 @@ public class Infrastructure extends Subsystem {
         mCompressor = factory.getCompressor();
     }
 
+    @Override
+    public boolean isImplemented() {
+        return true;
+    }
+
     public static Infrastructure getInstance() {
         if (mInstance == null) {
             mInstance = new Infrastructure();
