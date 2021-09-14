@@ -348,7 +348,14 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public void setTrajectory(TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory, Rotation2d targetHeading) {
-
+        if (mMotionPlanner != null) {
+            System.out.println("Now setting trajectory");
+            setBrakeMode(true);
+            mOverrideTrajectory = false;
+            mMotionPlanner.reset();
+            mMotionPlanner.setTrajectory(trajectory);
+            mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
+        }
     }
 
     public synchronized void resetEncoders() {

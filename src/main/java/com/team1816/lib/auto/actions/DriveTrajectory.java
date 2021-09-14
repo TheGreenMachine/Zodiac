@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.SwerveDrive;
+import com.team1816.frc2020.subsystems.TankDrive;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.TimedView;
@@ -17,6 +18,8 @@ public class DriveTrajectory implements Action {
     @Inject
     private static Drive.Factory mDriveFactory;
     private static final RobotState mRobotState = RobotState.getInstance();
+    private static Drive mDrive;
+
 
     private final TrajectoryIterator<TimedState<Pose2dWithCurvature>> mTrajectory;
     private final Rotation2d targetHeading;
@@ -28,6 +31,7 @@ public class DriveTrajectory implements Action {
         Rotation2d targetHeading,
         boolean resetPose
     ) {
+        mDrive = mDriveFactory.getInstance();
         mTrajectory = new TrajectoryIterator<>(new TimedView<>(trajectory));
         this.targetHeading = targetHeading;
         mResetPose = resetPose;
@@ -42,7 +46,6 @@ public class DriveTrajectory implements Action {
 
     @Override
     public boolean isFinished() {
-        Drive mDrive = mDriveFactory.getInstance();
         if (mDrive.isDoneWithTrajectory()) {
             if (!done) {
                 System.out.println("Trajectory finished");
@@ -61,8 +64,6 @@ public class DriveTrajectory implements Action {
 
     @Override
     public void start() {
-        Drive mDrive = mDriveFactory.getInstance();
-
         System.out.println(
             "Starting trajectory! (length=" + mTrajectory.getRemainingProgress() + ")"
         );

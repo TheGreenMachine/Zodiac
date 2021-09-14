@@ -9,14 +9,15 @@ import javax.inject.Inject;
 
 public class DriveOpenLoopAction implements Action {
 
+    @Inject
+    private static Drive.Factory mDriveFactory;
     private static Drive mDrive;
 
     private double mStartTime;
     private final double mDuration, mLeft, mRight;
 
-    @Inject
-    public DriveOpenLoopAction(Drive.Factory driveFactory, @Assisted double left, @Assisted double right, @Assisted double duration) {
-        mDrive = driveFactory.getInstance();
+    public DriveOpenLoopAction(double left, double right, double duration) {
+        mDrive = mDriveFactory.getInstance();
         mDuration = duration;
         mLeft = left;
         mRight = right;

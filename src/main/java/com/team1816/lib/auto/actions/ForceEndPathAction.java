@@ -5,11 +5,12 @@ import com.team1816.frc2020.subsystems.Drive;
 
 public class ForceEndPathAction extends RunOnceAction {
 
+    @Inject
+    private static Drive.Factory mDriveFactory;
     private Drive mDrive;
 
-    @Inject
-    public ForceEndPathAction(Drive.Factory driveFactory) {
-        mDrive = driveFactory.getInstance();
+    public ForceEndPathAction() {
+        mDrive = mDriveFactory.getInstance();
     }
 
     @Override

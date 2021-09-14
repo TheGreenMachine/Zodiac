@@ -6,12 +6,13 @@ import com.team1816.frc2020.subsystems.Drive;
 
 public class WaitForPathMarkerAction implements Action {
 
+    @Inject
+    private static Drive.Factory mDriveFactory;
     private Drive mDrive;
     private String mMarker;
 
-    @Inject
-    public WaitForPathMarkerAction(Drive.Factory driveFactory, @Assisted String marker) {
-        mDrive = driveFactory.getInstance();
+    public WaitForPathMarkerAction( String marker) {
+        mDrive = mDriveFactory.getInstance();
         mMarker = marker;
     }
 

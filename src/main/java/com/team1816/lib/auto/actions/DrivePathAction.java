@@ -16,14 +16,15 @@ import com.team254.lib.control.Path;
  */
 public class DrivePathAction implements Action {
 
+    @Inject
+    private static Drive.Factory mDriveFactory;
     private PathContainer mPathContainer;
     private Path mPath;
     private Drive mDrive;
     private boolean mStopWhenDone;
 
-    @Inject
-    public DrivePathAction(Drive.Factory driveFactory, @Assisted PathContainer p,@Assisted boolean stopWhenDone) {
-        mDrive = driveFactory.getInstance();
+    public DrivePathAction(PathContainer p, boolean stopWhenDone) {
+        mDrive = mDriveFactory.getInstance();
         mPathContainer = p;
         mPath = mPathContainer.buildPath();
         mStopWhenDone = stopWhenDone;
