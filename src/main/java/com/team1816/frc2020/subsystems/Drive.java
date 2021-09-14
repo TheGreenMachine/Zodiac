@@ -38,7 +38,7 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
 
     // Components
     protected final LedManager ledManager = LedManager.getInstance();
-    protected final PigeonIMU mPigeon;
+    protected PigeonIMU mPigeon;
     protected SwerveModule[] swerveModules;
 
     // Controllers

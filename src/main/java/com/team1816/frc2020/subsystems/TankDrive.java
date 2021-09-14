@@ -44,19 +44,8 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     private final IMotorControllerEnhanced mLeftMaster, mRightMaster;
     private final IMotorController mLeftSlaveA, mRightSlaveA, mLeftSlaveB, mRightSlaveB;
 
-    // Controllers
-    private PathFollower mPathFollower;
-    private Path mCurrentPath = null;
-
-    // control states
-    private DriveControlState mDriveControlState;
-    private PigeonIMU mPigeon;
 
     // hardware states
-    private boolean mIsBrakeMode;
-    private Rotation2d mGyroOffset = Rotation2d.identity();
-    private double mLastDriveCurrentSwitchTime = -1;
-    private double openLoopRampRate;
     private BadLog mLogger;
 
     private final TankMotionPlanner mMotionPlanner;

@@ -43,7 +43,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     // Components
     private final LedManager ledManager = LedManager.getInstance();
-    private final PigeonIMU mPigeon;
 
     // Controllers
     private PathFollower mPathFollower;
@@ -51,9 +50,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     private final SwerveMotionPlanner motionPlanner;
     private final SwerveHeadingController headingController = SwerveHeadingController.getInstance();
 
-    // control states
-    private DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
-    private final RobotState mRobotState = RobotState.getInstance();
 
     // Odometry variables
     private Pose2d pose = Pose2d.identity();
@@ -631,16 +627,16 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                 module.zeroSensors();
             }
         }
-        if (mPigeon.getLastError() != ErrorCode.OK) {
-            // BadLog.createValue("PigeonErrorDetected", "true");
-            System.out.println(
-                "Error detected with Pigeon IMU - check if the sensor is present and plugged in!"
-            );
-            System.out.println("Defaulting to drive straight mode");
-            AutoModeSelector.getInstance().setHardwareFailure(true);
-        } else {
+//        if (mPigeon.getLastError() != ErrorCode.OK) {
+//            // BadLog.createValue("PigeonErrorDetected", "true");
+//            System.out.println(
+//                "Error detected with Pigeon IMU - check if the sensor is present and plugged in!"
+//            );
+//            System.out.println("Defaulting to drive straight mode");
+//            AutoModeSelector.getInstance().setHardwareFailure(true);
+//        } else {
             AutoModeSelector.getInstance().setHardwareFailure(false);
-        }
+//        }
     }
 
     @Override
