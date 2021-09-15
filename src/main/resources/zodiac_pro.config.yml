@@ -4,7 +4,7 @@ subsystems:
         constants:
             currentLimit: 35 # amps
     climber:
-        implemented: false
+        implemented: true
         invertMotor:
             - elevator
     hopper:
@@ -35,4 +35,5 @@ constants:
     logTeleop: 1
     logAuto: 1
     badLogEnabled: 1
-    demoMode: 1
+    
+    demoMode: 0

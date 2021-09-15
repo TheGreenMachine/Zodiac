@@ -1,34 +1,124 @@
-$extends: zodiac_base
+$extends: base
 subsystems:
     drivetrain:
+        implemented: true
         falcons:
-            leftMain: 2
-            leftFollower: 1
-            rightMain: 13
-            rightFollower: 14
+            flDrive: 2
+            blDrive: 1
+            frDrive: 13
+            brDrive: 14
+        talons:
+            flAzimuth: 4
+            frAzimuth: 11
+            blAzimuth: 3
+            brAzimuth: 12
+        invertMotor:
+            - frAzimuth
+            - blAzimuth
+            - brAzimuth
+            - frDrive
+            - brDrive
+        swerveModules:
+            frontLeft:
+                drive: flDrive
+                azimuth: flAzimuth
+                encoderOffset: 1443
+                invertSensorPhase: false
+            frontRight:
+                drive: frDrive
+                azimuth: frAzimuth
+                encoderOffset: 3356
+                invertSensorPhase: true
+            backLeft:
+                drive: blDrive
+                azimuth: blAzimuth
+                encoderOffset: 3450
+                invertSensorPhase: true
+            backRight:
+                drive: brDrive
+                azimuth: brAzimuth
+                encoderOffset: 2551
+                invertSensorPhase: true
+        drivePid:
+            kP: 0.1
+            kI: 0.0001
+            kD: 4.0
+            kF: 0.0499
+        azimuthPid:
+            kP: 10.0 # 6.0
+            kI: 0.0005
+            kD: 30
+            kF: 0
         constants:
-            currentLimit: 35 # amps
-    climber:
-        implemented: false
-        invertMotor:
-            - elevator
-    hopper:
-        invertMotor:
-            - elevator
-    shooter:
-        falcons:
-            shooterMain: -3
-            shooterFollower: -2
+            encPPR: 12275.7
+            azimuthEncPPR: 4096
+            azimuthAllowableErrorTicks: 10
+            pigeonId: 32
+            azimuthHomeAdjustmentDegrees: 1
+    ledmanager:
+        implemented: true
+        canifier: 18
+        constants:
+            raveEnabled: 0
+            raveSpeed: 0.05
     turret:
-        implemented: false
+        implemented: true
+        talons:
+            turret: 9
         constants:
-            minPos: 326
-            maxPos: 1054
-            absPosTicksSouth: 3415
+            minPos: -3989
+            absPosTicksSouth: -3461
+            maxPos: -1204
+            invertSensorPhase: 1
+    shooter:
+        implemented: true
+        invertMotor:
+            - shooterMain
+        falcons:
+            shooterMain: 16
+            shooterFollower: 15
+        solenoids:
+            hood: 1
+    hopper:
+        implemented: true
+        talons:
+            spindexer: 10
+            elevator: 5
+        solenoids:
+            feederFlap: -4
+        constants:
+            ballSensor: 0
+    collector:
+        implemented: true
+        talons:
+            intake: 7
+        invertMotor:
+            - intake
+        solenoids:
+            arm: 0
+pcm: 8
 constants:
-    maxVel: 100
-    maxAccel: 30
-    wheelDiameter: 6.32 #inches
-    logTeleop: 1
-    logAuto: 1
-    badLogEnabled: 1
+    ## Drivetrain characterization ##
+    trackWidth: 21 #inches
+    wheelbaseLength: 21.5 #inches
+    wheelDiameter: 3.8989736842 #inches
+    ## Path following ##
+    maxVel: 120 # 160 # 240 # inches/s # 22560 native units ---30
+    maxAccel: 100 # inches/s^2
+    maxDecel: 170 # inches/s^2 # Start with this matching maxAccel and then adjust as needed
+    maxCentripetalAccel: 120 # 160 #inches/s^2
+    ## Heading Controller ##
+    heading_kP: 0.0012
+    heading_kI: 0
+    heading_kD: 0
+    heading_kF: 0
+    ## Logging ##
+    logTeleOp: 1 # 0 or 1
+    logAuto: 1 # 0 or 1
+    badLogEnabled: 1 # 0 or 1
+    ## General ##
+    teleopFieldCentric: 1 # 0 or 1
+    compressorEnabled: 0 # 0 or 1
+    kLooperDt: .030 # seconds
+    useZones: 1
+    demoMode: 1

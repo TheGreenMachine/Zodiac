@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class Hopper extends Subsystem {
 
@@ -24,6 +26,7 @@ public class Hopper extends Subsystem {
     private final IMotorControllerEnhanced elevator;
     private final DistanceManager distanceManager = DistanceManager.getInstance();
     private final Camera camera = Camera.getInstance();
+    private final DigitalInput ballSensor;
 
     // State
     private boolean feederFlapOut;
@@ -42,6 +45,7 @@ public class Hopper extends Subsystem {
         this.feederFlap = factory.getSolenoid(NAME, "feederFlap");
         this.spindexer = factory.getMotor(NAME, "spindexer");
         this.elevator = factory.getMotor(NAME, "elevator");
+        this.ballSensor = new DigitalInput((int) factory.getConstant(NAME, "ballSensor"));
     }
 
     public void setFeederFlap(boolean feederFlapOut) {
@@ -50,12 +54,12 @@ public class Hopper extends Subsystem {
     }
 
     public void setSpindexer(double spindexerOutput) {
-        this.spindexerPower = 0.5 * spindexerOutput;
+        this.spindexerPower = 0.25 * spindexerOutput;
         outputsChanged = true;
     }
 
     public void startSpindexerBasedOnDistance() {
-        setSpindexer(distanceManager.getSpindexerOutput(camera.getDistance()));
+        setSpindexer(distanceManager.getSpindexerOutput());
     }
 
     public void setElevator(double elevatorOutput) {
@@ -76,6 +80,10 @@ public class Hopper extends Subsystem {
         this.lockToShooter = lock;
         this.wantUnjam = unjam;
         this.waitForShooterLoopCounter = 0;
+    }
+
+    public boolean hasBall() {
+        return ballSensor.get();
     }
 
     @Override
@@ -107,6 +115,11 @@ public class Hopper extends Subsystem {
             this.feederFlap.set(feederFlapOut);
             outputsChanged = false;
         }
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addBooleanProperty("Hopper/HasBall", this::hasBall, null);
     }
 
     @Override
