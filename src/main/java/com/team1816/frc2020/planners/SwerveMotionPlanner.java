@@ -84,6 +84,7 @@ public class SwerveMotionPlanner implements CSVWritable {
     }
 
     public SwerveMotionPlanner() {
+
         mCurrentTrajectory = null;
     }
 
@@ -133,7 +134,7 @@ public class SwerveMotionPlanner implements CSVWritable {
             max_accel,
             max_decel,
             max_voltage,
-            0.0,
+            max_vel * .05, // 5% of max vel
             0
         );
     }
@@ -181,8 +182,8 @@ public class SwerveMotionPlanner implements CSVWritable {
         // TODO re-architect the spline generator to support reverse.
         if (reversed) {
             waypoints_maybe_flipped = new ArrayList<>(waypoints.size());
-            for (int i = 0; i < waypoints.size(); ++i) {
-                waypoints_maybe_flipped.add(waypoints.get(i).transformBy(flip));
+            for (Pose2d waypoint : waypoints) {
+                waypoints_maybe_flipped.add(waypoint.transformBy(flip));
             }
         }
 
@@ -319,13 +320,11 @@ public class SwerveMotionPlanner implements CSVWritable {
 
         //System.out.println("Steering direction " + steeringDirection.getDegrees() + " Speed: " + normalizedSpeed);
 
-        final Translation2d steeringVector = Translation2d.fromPolar(
+        //System.out.println("Pure pursuit updated, vector is: " + steeringVector.toString());
+        return Translation2d.fromPolar(
             steeringDirection,
             normalizedSpeed
         );
-
-        //System.out.println("Pure pursuit updated, vector is: " + steeringVector.toString());
-        return steeringVector;
     }
 
     public Translation2d update(double timestamp, Pose2d current_state) {
@@ -345,7 +344,7 @@ public class SwerveMotionPlanner implements CSVWritable {
 
         double searchStepSize = 1.0;
         double previewQuantity = 0.0;
-        double searchDirection = 1.0;
+        double searchDirection;
         double forwardDistance = distance(
             current_state,
             previewQuantity + searchStepSize
