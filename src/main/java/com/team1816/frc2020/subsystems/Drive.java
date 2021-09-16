@@ -8,18 +8,17 @@ import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
-import com.team1816.lib.subsystems.SwerveDrivetrain;
 import com.team1816.lib.subsystems.TrackableDrivetrain;
-import com.team254.lib.control.Lookahead;
-import com.team254.lib.control.Path;
-import com.team254.lib.control.PathFollower;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.util.*;
+import com.team254.lib.util.CheesyDriveHelper;
+import com.team254.lib.util.DriveHelper;
+import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.SwerveCheesyDriveHelper;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -41,10 +40,6 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
     protected PigeonIMU mPigeon;
     protected SwerveModule[] swerveModules;
 
-    // Controllers
-    protected PathFollower mPathFollower;
-    protected Path mCurrentPath = null;
-
     // control states
     protected DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
     protected final RobotState mRobotState = RobotState.getInstance();
@@ -53,14 +48,6 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
     protected Pose2d pose = Pose2d.identity();
     protected Pose2d startingPosition = Pose2d.identity();
     protected double lastUpdateTimestamp = 0;
-
-    // Path control variables
-    boolean hasStartedFollowing = false;
-    boolean hasFinishedPath = false;
-
-    public boolean hasFinishedPath() {
-        return hasFinishedPath;
-    }
 
     // hardware states
     protected boolean mIsBrakeMode;
@@ -198,11 +185,6 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
                             case OPEN_LOOP:
                                 updateOpenLoopPeriodic();
                                 break;
-                            case PATH_FOLLOWING:
-                                if (mPathFollower != null) {
-                                    //  updatePathFollower(timestamp);
-                                    break;
-                                }
                             case TRAJECTORY_FOLLOWING:
                                 updatePathFollower(timestamp);
                                 break;
@@ -314,79 +296,12 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
         return mDriveControlState;
     }
 
-    /**
-     * Configures the drivebase to drive a path. Used for autonomous driving
-     *
-     * @see Path
-     */
-    public synchronized void setWantDrivePath(Path path, boolean reversed) {
-        if (
-            mCurrentPath != path || mDriveControlState != DriveControlState.PATH_FOLLOWING
-        ) {
-            RobotState.getInstance().resetDistanceDriven();
-            mPathFollower =
-                new PathFollower(
-                    path,
-                    reversed,
-                    new PathFollower.Parameters(
-                        new Lookahead(
-                            Constants.kMinLookAhead,
-                            Constants.kMaxLookAhead,
-                            Constants.kMinLookAheadSpeed,
-                            Constants.kMaxLookAheadSpeed
-                        ),
-                        Constants.kInertiaSteeringGain,
-                        Constants.kPathFollowingProfileKp,
-                        Constants.kPathFollowingProfileKi,
-                        Constants.kPathFollowingProfileKv,
-                        Constants.kPathFollowingProfileKffv,
-                        Constants.kPathFollowingProfileKffa,
-                        Constants.kPathFollowingProfileKs,
-                        Constants.kPathFollowingMaxVel,
-                        Constants.kPathFollowingMaxAccel,
-                        Constants.kPathFollowingGoalPosTolerance,
-                        Constants.kPathFollowingGoalVelTolerance,
-                        Constants.kPathStopSteeringDistance
-                    )
-                );
-            mDriveControlState = DriveControlState.PATH_FOLLOWING;
-            mCurrentPath = path;
-        } else {
-            setVelocity(ZERO_DRIVE_VECTOR);
-        }
-    }
-
     public abstract void setTrajectory(
         TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory,
         Rotation2d targetHeading
     );
 
     public abstract boolean isDoneWithTrajectory();
-
-    public abstract boolean isDoneWithPath();
-
-    public synchronized void forceDoneWithPath() {
-        if (
-            mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-                mPathFollower != null
-        ) {
-            mPathFollower.forceFinish();
-        } else {
-            System.out.println("Robot is not in path following mode");
-        }
-    }
-
-    public synchronized boolean hasPassedMarker(String marker) {
-        if (
-            mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-                mPathFollower != null
-        ) {
-            return mPathFollower.hasPassedMarker(marker);
-        } else {
-            System.out.println("Robot is not in path following mode");
-            return false;
-        }
-    }
 
     public enum DriveControlState {
         OPEN_LOOP, // open loop voltage control

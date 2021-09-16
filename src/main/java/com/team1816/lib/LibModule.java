@@ -12,9 +12,5 @@ public class LibModule extends AbstractModule {
         bind(Controller.Factory.class).to(ControlUtils.class);
         requestStaticInjection(DriveTrajectory.class);
         //None of these four actions are actually used in the project -- remove?
-        requestStaticInjection(DriveOpenLoopAction.class);
-        requestStaticInjection(DrivePathAction.class);
-        requestStaticInjection(WaitForPathMarkerAction.class);
-        requestStaticInjection(ForceEndPathAction.class);
     }
 }

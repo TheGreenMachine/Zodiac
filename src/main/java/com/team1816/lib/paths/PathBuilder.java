@@ -1,6 +1,5 @@
 package com.team1816.lib.paths;
 
-import com.team1816.lib.auto.actions.WaitForPathMarkerAction;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team254.lib.control.Path;
 import com.team254.lib.control.PathSegment;

@@ -1,20 +1,13 @@
 package com.team1816.frc2020.subsystems;
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.SwerveKinematics;
-import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.planners.SwerveMotionPlanner;
-import com.team1816.lib.loops.ILooper;
-import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.SwerveDrivetrain;
-import com.team254.lib.control.Lookahead;
-import com.team254.lib.control.Path;
-import com.team254.lib.control.PathFollower;
 import com.team254.lib.control.SwerveHeadingController;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -22,14 +15,17 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.util.*;
+import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.SwerveDriveSignal;
+import com.team254.lib.util.Units;
+import com.team254.lib.util.Util;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,14 +35,9 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     private static final String NAME = "drivetrain";
 
-    private static Drive INSTANCE;
-
-    // Components
-    private final LedManager ledManager = LedManager.getInstance();
+    private static SwerveDrive INSTANCE;
 
     // Controllers
-    private PathFollower mPathFollower;
-    private Path mCurrentPath = null;
     private final SwerveMotionPlanner motionPlanner;
     private final SwerveHeadingController headingController = SwerveHeadingController.getInstance();
 
@@ -58,36 +49,10 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     // Path control variables
     boolean hasStartedFollowing = false;
-    boolean hasFinishedPath = false;
     boolean modulesReady = false;
     boolean alwaysConfigureModules = false;
     boolean moduleConfigRequested = false;
     private boolean wantReset = false;
-
-    // hardware states
-    private boolean mIsBrakeMode;
-    private Rotation2d mGyroOffset = Rotation2d.identity();
-    private double openLoopRampRate;
-
-    private boolean mOverrideTrajectory = false;
-
-    private boolean isSlowMode;
-    private double rotationScalar = 1;
-    private boolean robotCentric = false;
-
-    // Simulator
-    private final Field2d fieldSim = new Field2d();
-    private double gyroDrift;
-    private final double robotWidthTicks = inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
-
-    // Constants
-    public static final double DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
-    public static final List<Translation2d> ZERO_DRIVE_VECTOR = List.of(
-        Translation2d.identity(),
-        Translation2d.identity(),
-        Translation2d.identity(),
-        Translation2d.identity()
-    );
 
     public static synchronized Drive getInstance() {
         if (INSTANCE == null) {
@@ -189,6 +154,10 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     @Override
     public synchronized void readPeriodicInputs() {
         if(RobotBase.isSimulation()) {
+            if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+                leftAdjDemand = mPeriodicIO. * maxVelTicksPer100ms;
+                rightAdjDemand = mPeriodicIO.right_demand * maxVelTicksPer100ms;
+            }
             // calculate rotation based on left/right vel differences
             gyroDrift -= (mPeriodicIO.left_velocity_ticks_per_100ms-mPeriodicIO.right_velocity_ticks_per_100ms)/robotWidthTicks;
             //mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
@@ -522,7 +491,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     ) {
         if (motionPlanner != null) {
             hasStartedFollowing = false;
-            hasFinishedPath = false;
             moduleConfigRequested = false;
             System.out.println("Now setting trajectory");
             setBrakeMode(true);
@@ -540,19 +508,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
             return false;
         }
         return motionPlanner.isDone() || mOverrideTrajectory;
-    }
-
-    @Override
-    public synchronized boolean isDoneWithPath() {
-        if (
-            mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-            mPathFollower != null
-        ) {
-            return mPathFollower.isFinished();
-        } else {
-            System.out.println("Robot is not in path following mode");
-            return true;
-        }
     }
 
     @Override
@@ -602,7 +557,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                 }
             } else {
                 setVelocity(ZERO_DRIVE_VECTOR);
-                hasFinishedPath = true;
                 if (alwaysConfigureModules) requireModuleConfiguration();
             }
         } else {

@@ -9,13 +9,13 @@ import com.google.inject.Singleton;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
-import com.team1816.frc2020.TankKinematics;
 import com.team1816.frc2020.planners.TankMotionPlanner;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.subsystems.DifferentialDrivetrain;
-import com.team254.lib.control.Path;
-import com.team254.lib.control.PathFollower;
-import com.team254.lib.geometry.*;
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.CheesyDriveHelper;
@@ -23,7 +23,6 @@ import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -34,44 +33,35 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
 
-    private static TankDrive mInstance;
+    private static TankDrive INSTANCE;
     private static final String NAME = "drivetrain";
-    private static double DRIVE_ENCODER_PPR;
-
-    private LedManager ledManager = LedManager.getInstance();
 
     // hardware
     private final IMotorControllerEnhanced mLeftMaster, mRightMaster;
     private final IMotorController mLeftSlaveA, mRightSlaveA, mLeftSlaveB, mRightSlaveB;
 
-
     // hardware states
     private BadLog mLogger;
 
     private final TankMotionPlanner mMotionPlanner;
-    private boolean mOverrideTrajectory = false;
-
-    private boolean isSlowMode;
 
     private final RobotState mRobotState = RobotState.getInstance();
 
-    private final Field2d fieldSim = new Field2d();
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
     private final double tickRatioPerLoop = Constants.kLooperDt/.1d;
 
     public static synchronized TankDrive getInstance() {
-        if (mInstance == null) {
-            mInstance = new TankDrive();
+        if (INSTANCE == null) {
+            INSTANCE = new TankDrive();
         }
 
-        return mInstance;
+        return INSTANCE;
     }
 
     public TankDrive() {
         super();
         swerveModules = new SwerveModule[2];
 
-        DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
         mPeriodicIO = new PeriodicIO();
 
         // start all Talons in open loop mode
@@ -433,55 +423,8 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     }
 
     @Override
-    public synchronized boolean isDoneWithPath() {
-        if (
-            mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-                mPathFollower != null
-        ) {
-            return mPathFollower.isFinished();
-        } else {
-            System.out.println("Robot is not in path following mode");
-            return true;
-        }
-    }
-
-    @Override
-    public synchronized void forceDoneWithPath() {
-        if (
-            mDriveControlState == DriveControlState.PATH_FOLLOWING &&
-                mPathFollower != null
-        ) {
-            mPathFollower.forceFinish();
-        } else {
-            System.out.println("Robot is not in path following mode");
-        }
-    }
-
-    @Override
     protected void updatePathFollower(double timestamp) {
-        if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
-            Pose2d field_to_vehicle = mRobotState.getLatestFieldToVehicle().getValue();
-            Twist2d command = mPathFollower.update(
-                timestamp,
-                field_to_vehicle,
-                mRobotState.getDistanceDriven(),
-                mRobotState.getPredictedVelocity().dx
-            );
-            if (!mPathFollower.isFinished()) {
-                DriveSignal setpoint = TankKinematics.inverseKinematics(command);
-                setVelocity(
-                    new DriveSignal(
-                        inchesPerSecondToTicksPer100ms(setpoint.getLeft()),
-                        inchesPerSecondToTicksPer100ms(setpoint.getRight())
-                    ),
-                    new DriveSignal(0, 0)
-                );
-            } else {
-                if (!mPathFollower.isForceFinished()) {
-                    setVelocity(new DriveSignal(0, 0), new DriveSignal(0, 0));
-                }
-            }
-        } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
+        if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             TankMotionPlanner.Output output = mMotionPlanner.update(
                 timestamp,
                 RobotState.getInstance().getFieldToVehicle(timestamp)
