@@ -9,6 +9,7 @@ import com.team254.lib.geometry.Translation2d;
  * Class based on Team 1323's sendInput method to make driving feel better
  */
 public class SwerveDriveHelper implements DriveHelper {
+
     private final static double kHighAdjustmentPower = 1.75 + 0.4375;
     private final static double kLowAdjustmentPower = 1.50;
     private final static double kMaxSpeed = 1.0;
@@ -19,11 +20,10 @@ public class SwerveDriveHelper implements DriveHelper {
     private final static double kRobotRelativePoleThreshold = Math.toRadians(5);
     private final static double kDeadband = 0.25;
     private final static double kRotationDeadband = 0.15;
-    private final SwerveKinematics swerveKinematics;
 
-    @Inject
-    SwerveDriveHelper(SwerveKinematics swerveKinematics) {
-        this.swerveKinematics = swerveKinematics;
+
+    public SwerveDriveHelper() {
+
     }
 
     @Override
@@ -78,7 +78,7 @@ public class SwerveDriveHelper implements DriveHelper {
             rotationInput *= kHighPowerRotationScalar;
         }
 
-        return swerveKinematics.inverseKinematics(translationalInput.x(), translationalInput.y(), rotationInput,
+        return SwerveKinematics.inverseKinematics(translationalInput.x(), translationalInput.y(), rotationInput,
             field_relative);
     }
 }

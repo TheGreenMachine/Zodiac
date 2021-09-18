@@ -154,10 +154,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     @Override
     public synchronized void readPeriodicInputs() {
         if(RobotBase.isSimulation()) {
-            if(mDriveControlState == DriveControlState.OPEN_LOOP) {
-                leftAdjDemand = mPeriodicIO. * maxVelTicksPer100ms;
-                rightAdjDemand = mPeriodicIO.right_demand * maxVelTicksPer100ms;
-            }
             // calculate rotation based on left/right vel differences
             gyroDrift -= (mPeriodicIO.left_velocity_ticks_per_100ms-mPeriodicIO.right_velocity_ticks_per_100ms)/robotWidthTicks;
             //mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));

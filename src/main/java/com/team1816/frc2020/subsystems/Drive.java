@@ -15,10 +15,7 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.util.CheesyDriveHelper;
-import com.team254.lib.util.DriveHelper;
-import com.team254.lib.util.DriveSignal;
-import com.team254.lib.util.SwerveCheesyDriveHelper;
+import com.team254.lib.util.*;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -358,7 +355,7 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
 
         driveHelperChooser = new SendableChooser<>();
         driveHelperChooser.addOption("Cheesy Drive", new CheesyDriveHelper());
-        driveHelperChooser.setDefaultOption("Swerve Classic", new SwerveCheesyDriveHelper());
+        driveHelperChooser.setDefaultOption("Swerve Classic", new SwerveDriveHelper());
         SmartDashboard.putData("Drive Algorithm", driveHelperChooser);
         SmartDashboard.putData("Field", fieldSim);
 

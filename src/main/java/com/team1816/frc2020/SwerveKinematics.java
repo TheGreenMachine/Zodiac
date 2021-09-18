@@ -23,7 +23,8 @@ import java.util.List;
 
 public class SwerveKinematics {
 
-    private static Drive mDrive;
+    @Inject
+    private static Drive.Factory mDriveFactory;
     private static Translation2d[] moduleRelativePositions = Constants.kModulePositions;
     private static List<Translation2d> moduleRotationDirections = updateRotationDirections();
 
@@ -138,7 +139,7 @@ public class SwerveKinematics {
         );
     }
 
-    public SwerveDriveSignal inverseKinematics(
+    public static SwerveDriveSignal inverseKinematics(
         double forward,
         double strafe,
         double rotation,
@@ -147,13 +148,14 @@ public class SwerveKinematics {
         return inverseKinematics(forward, strafe, rotation, field_relative, true);
     }
 
-    public SwerveDriveSignal inverseKinematics(
+    public static SwerveDriveSignal inverseKinematics(
         double forward,
         double strafe,
         double rotation,
         boolean field_relative,
         boolean normalize_outputs
     ) {
+        Drive mDrive = mDriveFactory.getInstance();
 
         if (field_relative) {
             Rotation2d gyroHeading = mDrive.getHeading();
