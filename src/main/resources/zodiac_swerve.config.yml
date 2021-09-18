@@ -96,6 +96,10 @@ subsystems:
             - intake
         solenoids:
             arm: 0
+    climber:
+        implemented: true
+        talons:
+            elevator: 6
 pcm: 8
 constants:
     ## Drivetrain characterization ##
@@ -118,7 +122,7 @@ constants:
     badLogEnabled: 1 # 0 or 1
     ## General ##
     teleopFieldCentric: 1 # 0 or 1
-    compressorEnabled: 0 # 0 or 1
+    compressorEnabled: 1 # 0 or 1
     kLooperDt: .030 # seconds
     useZones: 1
-    demoMode: 1
+    demoMode: 0

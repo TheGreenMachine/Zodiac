@@ -331,14 +331,25 @@ public class Robot extends TimedRobot {
                             hopper.setFeederFlap(feeding);
                         }
                     ),
-                    createScalar(
-                        mControlBoard::getClimber,
-                        power -> {
+                    createHoldAction(
+                        mControlBoard::getClimberUp,
+                        pressed -> {
                             if (
                                 (DriverStation.getInstance().getMatchTime() <= 30) ||
                                 (DriverStation.getInstance().getMatchTime() == -1)
                             ) {
-                                climber.setClimberPower(power > 0 ? power : 0);
+                                climber.setClimberPower(pressed ? -0.7 : 0);
+                            }
+                        }
+                    ),
+                    createHoldAction(
+                        mControlBoard::getClimberDown,
+                        pressed -> {
+                            if (
+                                (DriverStation.getInstance().getMatchTime() <= 30) ||
+                                    (DriverStation.getInstance().getMatchTime() == -1)
+                            ) {
+                                climber.setClimberPower(pressed ? 0.7 : 0);
                             }
                         }
                     ),

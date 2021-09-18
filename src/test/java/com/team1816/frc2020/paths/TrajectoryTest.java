@@ -218,10 +218,10 @@ public class TrajectoryTest {
 
     @Test
     public void timeTrajectories() {
-        timeTrajectory("BLUE_RED_PATHB", set.BLUE_RED_PATHB);
-
-        System.out.println("Two Path Combo: ");
-        timeTrajectory("RED_PATHA", set.RED_PATHA);
-        timeTrajectory("DIME_TURN", set.DIME_TURN);
+//        timeTrajectory("BLUE_RED_PATHB", set.BLUE_RED_PATHB);
+//
+//        System.out.println("Two Path Combo: ");
+//        timeTrajectory("RED_PATHA", set.RED_PATHA);
+//        timeTrajectory("DIME_TURN", set.DIME_TURN);
     }
 }

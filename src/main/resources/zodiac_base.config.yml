@@ -17,9 +17,7 @@ subsystems:
             encPPR: 22220.8
     climber:
         talons:
-            elevator: 12
-        solenoids:
-            deployer: 5
+            elevator: 6
     collector:
         implemented: true
         falcons:

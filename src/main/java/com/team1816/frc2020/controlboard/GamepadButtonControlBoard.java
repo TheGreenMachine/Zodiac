@@ -87,8 +87,13 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
-    public double getClimber() {
-        return -mController.getJoystick(Controller.Side.LEFT, Controller.Axis.Y);
+    public boolean getClimberUp() {
+        return mController.getDPad()==0;
+    }
+
+    @Override
+    public boolean getClimberDown(){
+        return mController.getDPad()==180;
     }
 
     @Override
