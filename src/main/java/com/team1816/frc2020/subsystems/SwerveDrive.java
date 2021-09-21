@@ -65,7 +65,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         super();
         swerveModules = new SwerveModule[4];
 
-        setOpenLoop(DriveSignal.NEUTRAL);
+        setOpenLoop(SwerveDriveSignal.NEUTRAL);
 
         // start all Talons in open loop mode
         swerveModules[SwerveModule.kFrontLeft] =
@@ -379,15 +379,15 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
             System.out.println(signal);
             mDriveControlState = DriveControlState.OPEN_LOOP;
         }
-        SwerveDriveSignal swerveSignal;
+        SwerveDriveSignal swerveSignal = (SwerveDriveSignal) signal;
 
-        if (signal instanceof SwerveDriveSignal) {
-            swerveSignal = (SwerveDriveSignal) signal;
-        } else {
-            swerveSignal = new SwerveDriveSignal(signal.getLeft(), signal.getRight());
-        }
         mPeriodicIO.wheel_speeds = swerveSignal.getWheelSpeeds();
         mPeriodicIO.wheel_azimuths = swerveSignal.getWheelAzimuths();
+
+        for(int i=0;i<4;i++) {
+            System.out.println("Wheel Speeds"+i+": "+mPeriodicIO.wheel_speeds[i]);
+            System.out.println("Wheel Azimuths"+i +": "+ mPeriodicIO.wheel_azimuths[i]);
+        }
     }
 
     @Override

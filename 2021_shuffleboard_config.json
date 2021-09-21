@@ -219,7 +219,8 @@
               "_title": "Number Slider",
               "Slider Settings/Min": -1.0,
               "Slider Settings/Max": 1.0,
-              "Slider Settings/Block increment": 0.0625
+              "Slider Settings/Block increment": 0.0625,
+              "Visuals/Display value": true
             }
           }
         }
@@ -303,7 +304,8 @@
               "_title": "HMIN",
               "Slider Settings/Min": 1.0,
               "Slider Settings/Max": 180.0,
-              "Slider Settings/Block increment": 1.0
+              "Slider Settings/Block increment": 1.0,
+              "Visuals/Display value": true
             }
           },
           "1,1": {
@@ -317,7 +319,8 @@
               "_title": "SMIN",
               "Slider Settings/Min": 0.0,
               "Slider Settings/Max": 255.0,
-              "Slider Settings/Block increment": 1.0
+              "Slider Settings/Block increment": 1.0,
+              "Visuals/Display value": true
             }
           },
           "1,2": {
@@ -331,7 +334,8 @@
               "_title": "VMIN",
               "Slider Settings/Min": 1.0,
               "Slider Settings/Max": 255.0,
-              "Slider Settings/Block increment": 1.0
+              "Slider Settings/Block increment": 1.0,
+              "Visuals/Display value": true
             }
           },
           "3,0": {
@@ -345,7 +349,8 @@
               "_title": "HMAX",
               "Slider Settings/Min": 1.0,
               "Slider Settings/Max": 180.0,
-              "Slider Settings/Block increment": 1.0
+              "Slider Settings/Block increment": 1.0,
+              "Visuals/Display value": true
             }
           },
           "3,1": {
@@ -359,7 +364,8 @@
               "_title": "SMAX",
               "Slider Settings/Min": 1.0,
               "Slider Settings/Max": 255.0,
-              "Slider Settings/Block increment": 1.0
+              "Slider Settings/Block increment": 1.0,
+              "Visuals/Display value": true
             }
           },
           "3,2": {
@@ -373,7 +379,8 @@
               "_title": "VMAX",
               "Slider Settings/Min": 1.0,
               "Slider Settings/Max": 255.0,
-              "Slider Settings/Block increment": 1.0
+              "Slider Settings/Block increment": 1.0,
+              "Visuals/Display value": true
             }
           },
           "5,0": {
@@ -417,7 +424,8 @@
               "_title": "Exposure",
               "Slider Settings/Min": 0.0,
               "Slider Settings/Max": 100.0,
-              "Slider Settings/Block increment": 1.0
+              "Slider Settings/Block increment": 1.0,
+              "Visuals/Display value": true
             }
           },
           "4,4": {
@@ -436,8 +444,8 @@
     }
   ],
   "windowGeometry": {
-    "x": 1.0,
-    "y": 25.0,
+    "x": 1.2000000476837158,
+    "y": 25.200000762939453,
     "width": 1440.0,
     "height": 804.0
   }
