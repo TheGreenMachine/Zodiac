@@ -384,10 +384,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         mPeriodicIO.wheel_speeds = swerveSignal.getWheelSpeeds();
         mPeriodicIO.wheel_azimuths = swerveSignal.getWheelAzimuths();
 
-        for(int i=0;i<4;i++) {
-            System.out.println("Wheel Speeds"+i+": "+mPeriodicIO.wheel_speeds[i]);
-            System.out.println("Wheel Azimuths"+i +": "+ mPeriodicIO.wheel_azimuths[i]);
-        }
     }
 
     @Override
