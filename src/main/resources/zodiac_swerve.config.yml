@@ -80,6 +80,10 @@ subsystems:
             shooterFollower: 15
         solenoids:
             hood: 1
+    climber:
+        implemented: true
+        talons:
+            elevator: 6
     hopper:
         implemented: true
         talons:
@@ -119,6 +123,6 @@ constants:
     badLogEnabled: 1 # 0 or 1
     ## General ##
     teleopFieldCentric: 1 # 0 or 1
-    compressorEnabled: 0 # 0 or 1
+    compressorEnabled: 1 # 0 or 1
     kLooperDt: .030 # seconds
     useZones: 1

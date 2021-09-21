@@ -85,8 +85,13 @@ public class TankDemoModeControlBoard implements IControlBoard {
     }
 
     @Override
-    public double getClimber() {
-        return 0;
+    public boolean getClimberUp() {
+        return false;
+    }
+
+    @Override
+    public boolean getClimberDown() {
+        return false;
     }
 
     @Override

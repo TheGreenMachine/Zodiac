@@ -20,7 +20,7 @@ subsystems:
         falcons:
             intake: 11
         talons:
-            elevator: 12
+            elevator: 6
         solenoids:
             arm: 0
             deployer: 5

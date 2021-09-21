@@ -138,8 +138,13 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public double getClimber() {
-        return mButtonControlBoard.getClimber();
+    public boolean getClimberUp() {
+        return mButtonControlBoard.getClimberUp();
+    }
+
+    @Override
+    public boolean getClimberDown() {
+        return mButtonControlBoard.getClimberDown();
     }
 
     @Override
