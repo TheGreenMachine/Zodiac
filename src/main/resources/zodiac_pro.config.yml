@@ -42,12 +42,13 @@ subsystems:
             shooterMain: 3
             shooterFollower: 2
     turret:
-        implemented: true
+        implemented: false
         talons:
             turret: 13
         constants:
-            minPos: -3802
+            minPos: -4182
             maxPos: -757
+            absPosTicksSouth: -3432
     ledmanager:
         implemented: true
         canifier: 18

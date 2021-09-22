@@ -222,6 +222,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         mPeriodicIO.right_demand = signal.getRight();
         mPeriodicIO.left_feedforward = 0.0;
         mPeriodicIO.right_feedforward = 0.0;
+
     }
 
     @Override
@@ -251,9 +252,12 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
                     isDoneWithTrajectory()
             ) {
                 setOpenLoop(driveSignal);
+                System.out.println(driveSignal);
             }
         } else {
             setOpenLoop(driveSignal);
+            System.out.println(driveSignal);
+
         }
 
         if (mDriveControlState != Drive.DriveControlState.OPEN_LOOP) {

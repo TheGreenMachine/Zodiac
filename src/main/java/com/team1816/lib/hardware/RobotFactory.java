@@ -88,6 +88,7 @@ public class RobotFactory {
             System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
         }
 
+
         return motor;
     }
 
@@ -100,12 +101,12 @@ public class RobotFactory {
         String name,
         IMotorController master
     ) { // TODO: optimize this method
-        IMotorController motor = null;
+        IMotorController followerMotor = null;
         var subsystem = getSubsystem(subsystemName);
         if (subsystem.isImplemented() && master != null) {
             if (isHardwareValid(subsystem.talons.get(name))) {
                 // Talons must be following another Talon, cannot follow a Victor.
-                motor =
+                followerMotor =
                     CtreMotorFactory.createPermanentSlaveTalon(
                         subsystem.talons.get(name),
                         name,
@@ -115,7 +116,7 @@ public class RobotFactory {
                         subsystem.pid
                     );
             } else if (isHardwareValid(subsystem.falcons.get(name))) {
-                motor =
+                followerMotor =
                     CtreMotorFactory.createPermanentSlaveTalon(
                         subsystem.falcons.get(name),
                         name,
@@ -126,22 +127,25 @@ public class RobotFactory {
                     );
             } else if (isHardwareValid(subsystem.victors.get(name))) {
                 // Victors can follow Talons or another Victor.
-                motor =
+                followerMotor =
                     CtreMotorFactory.createPermanentSlaveVictor(
                         subsystem.victors.get(name),
                         master
                     );
             }
         }
-        if (motor == null) {
+        if (followerMotor == null) {
             if (subsystem.isImplemented()) reportGhostWarning(
                 "Motor",
                 subsystemName,
                 name
             );
-            motor = CtreMotorFactory.createGhostTalon();
+            followerMotor = CtreMotorFactory.createGhostTalon();
         }
-        return motor;
+        if(master!=null){
+            followerMotor.setInverted(master.getInverted());
+        }
+        return followerMotor;
     }
 
     private boolean isHardwareValid(Integer hardwareId) {
