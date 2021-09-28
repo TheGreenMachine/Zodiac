@@ -40,7 +40,6 @@ public class Turret extends Subsystem implements EnhancedPidProvider {
     private final Camera camera = Camera.getInstance();
     private final RobotState robotState = RobotState.getInstance();
     private final LedManager led = LedManager.getInstance();
-    private final DistanceManager distanceManager = DistanceManager.getInstance();
 
     // State
     private double turretPos;
@@ -285,11 +284,6 @@ public class Turret extends Subsystem implements EnhancedPidProvider {
     }
 
     private void autoHome() {
-        setTurretAngleInternal(
-            getTurretPositionDegrees() +
-            camera.getDeltaXAngle() +
-            distanceManager.getTurretBias()
-        );
     }
 
     private void trackGyro() {
