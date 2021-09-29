@@ -252,12 +252,9 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
                     isDoneWithTrajectory()
             ) {
                 setOpenLoop(driveSignal);
-                System.out.println(driveSignal);
             }
         } else {
             setOpenLoop(driveSignal);
-            System.out.println(driveSignal);
-
         }
 
         if (mDriveControlState != Drive.DriveControlState.OPEN_LOOP) {

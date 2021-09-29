@@ -63,7 +63,7 @@ subsystems:
             raveEnabled: 0
             raveSpeed: 0.05
     turret:
-        implemented: true
+        implemented: false
         talons:
             turret: 9
         constants:
@@ -81,7 +81,7 @@ subsystems:
         solenoids:
             hood: 1
     climber:
-        implemented: true
+        implemented: false
         talons:
             elevator: 6
     hopper:
@@ -94,7 +94,7 @@ subsystems:
         constants:
             ballSensor: 0
     collector:
-        implemented: true
+        implemented: false
         talons:
             intake: 7
         invertMotor:

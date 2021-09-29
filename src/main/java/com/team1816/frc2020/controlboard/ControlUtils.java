@@ -6,6 +6,7 @@ import com.team1816.lib.controlboard.WasdController;
 import com.team1816.lib.controlboard.XboxController;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotBase;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -18,7 +19,7 @@ public class ControlUtils  implements Controller.Factory{
     public Controller getControllerInstance(int port) {
         var hid = new Joystick(port);
         var axisCount = hid.getAxisCount();
-        if(axisCount <= 3) {
+        if(axisCount <= 3 && RobotBase.isSimulation()) {
             System.out.println("Using Wasd Controller for port: " + port);
             return new WasdController(port);
         }
