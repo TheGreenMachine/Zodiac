@@ -9,6 +9,7 @@ import com.team1816.lib.hardware.PidConfig;
 import com.team1816.lib.subsystems.EnhancedPidProvider;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -329,7 +330,21 @@ public class Turret extends Subsystem implements EnhancedPidProvider {
 
     @Override
     public boolean checkSystem() {
-        return true;
+        boolean passed;
+        turret.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, .2);
+        Timer.delay(2);
+        var ticks = getTurretPositionTicks();
+        var diff = Math.abs(ticks - TURRET_POSITION_MAX);
+        System.out.println(" + TICKS: " + ticks + "  ERROR: " + diff);
+        passed = diff <= 50;
+        turret.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, -.2);
+        Timer.delay(2);
+        ticks = getTurretPositionTicks();
+        diff = Math.abs(ticks - TURRET_POSITION_MAX);
+        System.out.println(" - TICKS: " + ticks + "  ERROR: " + diff);
+        passed = passed & diff <= 50;
+        turret.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, 0);
+        return passed;
     }
 
     @Override

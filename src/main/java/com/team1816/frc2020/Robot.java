@@ -38,10 +38,12 @@ public class Robot extends TimedRobot {
 
     private BadLog logger;
 
+    private final Injector injector;
+
     private final Looper mEnabledLooper = new Looper();
     private final Looper mDisabledLooper = new Looper();
 
-    private final IControlBoard mControlBoard;
+    private IControlBoard mControlBoard;
 
     private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
 
@@ -81,9 +83,8 @@ public class Robot extends TimedRobot {
     Robot() {
         super();
         // initialize injector
-        Injector injector = Guice.createInjector(new LibModule(), new SeasonModule());
+        injector = Guice.createInjector(new LibModule(), new SeasonModule());
         mDrive = (injector.getInstance(Drive.Factory.class)).getInstance();
-        mControlBoard = injector.getInstance(IControlBoard.class);
         mRobotStateEstimator = injector.getInstance(RobotStateEstimator.class);
     }
 
@@ -98,6 +99,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         try {
+            mControlBoard = injector.getInstance(IControlBoard.class);
             DriverStation.getInstance().silenceJoystickConnectionWarning(true);
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             var robotName = System.getenv("ROBOT_NAME");
