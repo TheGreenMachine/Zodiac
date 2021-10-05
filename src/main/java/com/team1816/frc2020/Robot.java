@@ -14,6 +14,7 @@ import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.AsyncTimer;
 import com.team1816.lib.loops.Looper;
+import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
 import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
@@ -48,7 +49,8 @@ public class Robot extends TimedRobot {
     private final Superstructure mSuperstructure = Superstructure.getInstance();
     private final Infrastructure mInfrastructure = Infrastructure.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
-    private Drive mDrive;
+    private final Drive mDrive;
+    private final PowerDistributionPanel pdp = new PowerDistributionPanel();
     private final LedManager ledManager = LedManager.getInstance();
     private final Collector collector = Collector.getInstance();
     private final Shooter shooter = Shooter.getInstance();
@@ -185,12 +187,12 @@ public class Robot extends TimedRobot {
                     "hide"
                 );
 
-                // BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
+                BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
 
 
 
 
-
+                DrivetrainLogger.init(mDrive);
                 BadLog.createValue("Drivetrain PID", mDrive.pidToString());
                 BadLog.createValue("Shooter PID", shooter.pidToString());
                 BadLog.createValue("Turret PID", turret.pidToString());
