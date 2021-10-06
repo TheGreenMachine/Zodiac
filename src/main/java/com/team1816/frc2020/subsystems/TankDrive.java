@@ -523,11 +523,17 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public double getLeftVelocityDemand() {
+        if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+            return mPeriodicIO.left_demand * maxVelTicksPer100ms;
+        }
         return mPeriodicIO.left_demand;
     }
 
     @Override
     public double getRightVelocityDemand() {
+        if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+            return mPeriodicIO.right_demand * maxVelTicksPer100ms;
+        }
         return mPeriodicIO.right_demand;
     }
 
