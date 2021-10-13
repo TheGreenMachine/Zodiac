@@ -49,7 +49,7 @@ subsystems:
                 kD: 0
                 kF: 0 # Should be 0 for position control
         constants:
-            encPPR: 4124.6
+            encPPR: 4096
     ledmanager:
         implemented: false
     camera:

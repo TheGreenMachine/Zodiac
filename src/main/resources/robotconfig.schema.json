@@ -60,6 +60,12 @@
                             "type": "string"
                         }
                     },
+                    "invertSensorPhase": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
                     "drivePid": {
                         "$ref": "#/definitions/pid"
                     },
