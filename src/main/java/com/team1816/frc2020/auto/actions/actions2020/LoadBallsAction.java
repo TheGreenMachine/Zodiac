@@ -5,6 +5,7 @@ import com.team1816.frc2020.subsystems.Hopper;
 import com.team1816.lib.auto.actions.Action;
 
 public class LoadBallsAction implements Action {
+
     private final Collector collector;
     private final Hopper hopper;
 

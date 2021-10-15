@@ -7,12 +7,14 @@ import com.team1816.lib.controlboard.IDriveControlBoard;
 
 public class ControlBoard implements IControlBoard {
 
-
     private final IDriveControlBoard mDriveControlBoard;
     private final IButtonControlBoard mButtonControlBoard;
 
     @Inject
-    private ControlBoard(IDriveControlBoard driveControlBoard, IButtonControlBoard buttonControlBoard) {
+    private ControlBoard(
+        IDriveControlBoard driveControlBoard,
+        IButtonControlBoard buttonControlBoard
+    ) {
         mDriveControlBoard = driveControlBoard;
         mButtonControlBoard = buttonControlBoard;
     }

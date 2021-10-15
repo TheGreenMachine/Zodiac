@@ -56,9 +56,6 @@ public class PidConfig {
 
     @Override
     public String toString() {
-        return "kP = " + kP +
-            ", kI = " + kI +
-            ", kD = " + kD +
-            ", kF = " + kF;
+        return "kP = " + kP + ", kI = " + kI + ", kD = " + kD + ", kF = " + kF;
     }
 }

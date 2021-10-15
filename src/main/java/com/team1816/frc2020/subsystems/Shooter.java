@@ -121,7 +121,7 @@ public class Shooter extends Subsystem implements PidProvider {
         return hoodOut;
     }
 
-    public void setHood(boolean in){
+    public void setHood(boolean in) {
         hoodOut = in;
         this.outputsChanged = true;
     }
@@ -129,7 +129,6 @@ public class Shooter extends Subsystem implements PidProvider {
     public void autoHood() {
         setHood(distanceManager.getHoodRetracted());
     }
-
 
     public void shootFromChooser(boolean shooting) {
         setVelocity(shooting ? velocityChooser.getSelected() : 0);

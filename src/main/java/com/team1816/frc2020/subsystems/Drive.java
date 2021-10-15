@@ -21,12 +21,13 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.List;
 
-public abstract class Drive extends Subsystem implements TrackableDrivetrain, PidProvider {
+public abstract class Drive
+    extends Subsystem
+    implements TrackableDrivetrain, PidProvider {
 
-    public interface Factory{
+    public interface Factory {
         Drive getInstance();
     }
 
@@ -62,7 +63,8 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
     // Simulator
     protected final Field2d fieldSim = new Field2d();
     protected double gyroDrift;
-    protected final double robotWidthTicks = inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
+    protected final double robotWidthTicks =
+        inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
 
     // Constants
     public static final double maxVelTicksPer100ms = factory.getConstant("maxTicks");
@@ -76,7 +78,6 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
 
     protected Drive() {
         super(NAME);
-
         mPeriodicIO = new PeriodicIO();
 
         openLoopRampRate = Constants.kOpenLoopRampRate;
@@ -116,6 +117,7 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
 
     @Singleton
     public static class PeriodicIO {
+
         // INPUTS
         public double timestamp;
         public Rotation2d gyro_heading = Rotation2d.identity();
@@ -188,7 +190,7 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
                             default:
                                 System.out.println(
                                     "unexpected drive control state: " +
-                                        mDriveControlState
+                                    mDriveControlState
                                 );
                                 break;
                         }
@@ -305,8 +307,6 @@ public abstract class Drive extends Subsystem implements TrackableDrivetrain, Pi
         PATH_FOLLOWING, // velocity PID control
         TRAJECTORY_FOLLOWING,
     }
-
-
 
     @Override
     public void zeroSensors() {

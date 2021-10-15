@@ -7,23 +7,21 @@ import com.team1816.lib.controlboard.XboxController;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
-public class ControlUtils  implements Controller.Factory{
+public class ControlUtils implements Controller.Factory {
 
     @Override
     public Controller getControllerInstance(int port) {
         var hid = new Joystick(port);
         var axisCount = hid.getAxisCount();
-        if(axisCount <= 3 && RobotBase.isSimulation()) {
+        if (axisCount <= 3 && RobotBase.isSimulation()) {
             System.out.println("Using Wasd Controller for port: " + port);
             return new WasdController(port);
-        }
-        else if (axisCount == 4) {
+        } else if (axisCount == 4) {
             System.out.println("Using Logitech Controller for port: " + port);
             return new LogitechController(port);
         } else {

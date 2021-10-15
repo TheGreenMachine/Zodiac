@@ -8,10 +8,9 @@ import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.util.SwerveDriveSignal;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 
 /**
  * Provides forward and inverse kinematics equations for the robot modeling the
@@ -25,6 +24,7 @@ public class SwerveKinematics {
 
     @Inject
     private static Drive.Factory mDriveFactory;
+
     private static Translation2d[] moduleRelativePositions = Constants.kModulePositions;
     private static List<Translation2d> moduleRotationDirections = updateRotationDirections();
 
@@ -195,7 +195,8 @@ public class SwerveKinematics {
                 Rotation2d.fromRadians(Math.atan2(A, D));
             wheel_azimuths[SwerveModule.kFrontRight] =
                 Rotation2d.fromRadians(Math.atan2(A, C));
-            wheel_azimuths[SwerveModule.kBackLeft] = Rotation2d.fromRadians(Math.atan2(B, D));
+            wheel_azimuths[SwerveModule.kBackLeft] =
+                Rotation2d.fromRadians(Math.atan2(B, D));
             wheel_azimuths[SwerveModule.kBackRight] =
                 Rotation2d.fromRadians(Math.atan2(B, C));
 
@@ -223,7 +224,9 @@ public class SwerveKinematics {
             translationalVector.rotateBy(robotPose.getRotation().inverse());
         List<Translation2d> driveVectors = new ArrayList<>(4);
         for (int i = 0; i < 4; i++) {
-            var rotationalVector = moduleRotationDirections.get(i).scale(rotationalMagnitude);
+            var rotationalVector = moduleRotationDirections
+                .get(i)
+                .scale(rotationalMagnitude);
             var netVector = translationalVector.translateBy(rotationalVector);
             driveVectors.add(netVector);
         }

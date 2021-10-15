@@ -7,7 +7,6 @@ import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
 import com.team1816.lib.hardware.PidConfig;
 import com.team1816.lib.subsystems.EnhancedPidProvider;
-import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
@@ -74,7 +73,9 @@ public class Turret extends Subsystem implements EnhancedPidProvider {
     private static final boolean TURRET_SENSOR_PHASE =
         factory.getConstant("turret", "invertSensorPhase") > 0;
 
-    public static final double CARDINAL_SOUTH = convertTurretTicksToDegrees(TURRET_POSITION_SOUTH - TURRET_POSITION_MIN); // deg
+    public static final double CARDINAL_SOUTH = convertTurretTicksToDegrees(
+        TURRET_POSITION_SOUTH - TURRET_POSITION_MIN
+    ); // deg
     public static final double CARDINAL_WEST = CARDINAL_SOUTH + 90; // deg
     public static final double CARDINAL_NORTH = CARDINAL_SOUTH + 180; // deg
     public static final double MAX_ANGLE = convertTurretTicksToDegrees(
@@ -295,7 +296,8 @@ public class Turret extends Subsystem implements EnhancedPidProvider {
 
     private void trackGyro() {
         followTargetTurretSetAngle =
-            (getTurretPositionDegrees() - turretAngleRelativeToField) + FIELD_TRACKING_ANGLE;
+            (getTurretPositionDegrees() - turretAngleRelativeToField) +
+            FIELD_TRACKING_ANGLE;
         setTurretAngleInternal(followTargetTurretSetAngle);
     }
 

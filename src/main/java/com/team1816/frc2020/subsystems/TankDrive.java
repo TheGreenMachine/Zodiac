@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.List;
 
 @Singleton
@@ -48,7 +47,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     private final RobotState mRobotState = RobotState.getInstance();
 
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
-    private final double tickRatioPerLoop = Constants.kLooperDt/.1d;
+    private final double tickRatioPerLoop = Constants.kLooperDt / .1d;
 
     public static synchronized TankDrive getInstance() {
         if (INSTANCE == null) {
@@ -78,13 +77,30 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
             0,
             0
         );
-        mLeftMaster.configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
-        ((IMotorControllerEnhanced) mLeftSlaveA).configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
-        ((IMotorControllerEnhanced) mLeftSlaveB).configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
-        mRightMaster.configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
-        ((IMotorControllerEnhanced) mRightSlaveA).configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
-        ((IMotorControllerEnhanced) mRightSlaveB).configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
-
+        mLeftMaster.configSupplyCurrentLimit(
+            currentLimitConfig,
+            Constants.kLongCANTimeoutMs
+        );
+        ((IMotorControllerEnhanced) mLeftSlaveA).configSupplyCurrentLimit(
+                currentLimitConfig,
+                Constants.kLongCANTimeoutMs
+            );
+        ((IMotorControllerEnhanced) mLeftSlaveB).configSupplyCurrentLimit(
+                currentLimitConfig,
+                Constants.kLongCANTimeoutMs
+            );
+        mRightMaster.configSupplyCurrentLimit(
+            currentLimitConfig,
+            Constants.kLongCANTimeoutMs
+        );
+        ((IMotorControllerEnhanced) mRightSlaveA).configSupplyCurrentLimit(
+                currentLimitConfig,
+                Constants.kLongCANTimeoutMs
+            );
+        ((IMotorControllerEnhanced) mRightSlaveB).configSupplyCurrentLimit(
+                currentLimitConfig,
+                Constants.kLongCANTimeoutMs
+            );
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
@@ -139,36 +155,52 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public synchronized void readPeriodicInputs() {
-        if(RobotBase.isSimulation()) {
+        if (RobotBase.isSimulation()) {
             double leftAdjDemand = mPeriodicIO.left_demand;
-            double  rightAdjDemand = mPeriodicIO.right_demand;
-            if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+            double rightAdjDemand = mPeriodicIO.right_demand;
+            if (mDriveControlState == DriveControlState.OPEN_LOOP) {
                 leftAdjDemand = mPeriodicIO.left_demand * maxVelTicksPer100ms;
                 rightAdjDemand = mPeriodicIO.right_demand * maxVelTicksPer100ms;
             }
             var driveTrainErrorPercent = .05;
             mPeriodicIO.left_error = leftAdjDemand * driveTrainErrorPercent;
-            leftEncoderSimPosition += (leftAdjDemand - mPeriodicIO.left_error) * tickRatioPerLoop;
+            leftEncoderSimPosition +=
+                (leftAdjDemand - mPeriodicIO.left_error) * tickRatioPerLoop;
             rightEncoderSimPosition += rightAdjDemand * tickRatioPerLoop;
             mPeriodicIO.left_position_ticks = leftEncoderSimPosition;
             mPeriodicIO.right_position_ticks = rightEncoderSimPosition;
-            mPeriodicIO.left_velocity_ticks_per_100ms = leftAdjDemand - mPeriodicIO.left_error;
+            mPeriodicIO.left_velocity_ticks_per_100ms =
+                leftAdjDemand - mPeriodicIO.left_error;
             mPeriodicIO.right_velocity_ticks_per_100ms = rightAdjDemand;
             // calculate rotation based on left/right vel differences
-            gyroDrift -= (mPeriodicIO.left_velocity_ticks_per_100ms-mPeriodicIO.right_velocity_ticks_per_100ms)/robotWidthTicks;
-            mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
-            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
-            fieldSim.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY())+3.5, rot2d);
+            gyroDrift -=
+                (
+                    mPeriodicIO.left_velocity_ticks_per_100ms -
+                    mPeriodicIO.right_velocity_ticks_per_100ms
+                ) /
+                robotWidthTicks;
+            mPeriodicIO.gyro_heading_no_offset =
+                getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
+            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(
+                mPeriodicIO.gyro_heading_no_offset.getRadians()
+            );
+            fieldSim.setRobotPose(
+                Units.inches_to_meters(mRobotState.getEstimatedX()),
+                Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5,
+                rot2d
+            );
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
-            mPeriodicIO.left_velocity_ticks_per_100ms =+
-                mLeftMaster.getSelectedSensorVelocity(0);
+            mPeriodicIO.left_velocity_ticks_per_100ms =
+                +mLeftMaster.getSelectedSensorVelocity(0);
             mPeriodicIO.right_velocity_ticks_per_100ms =
                 mRightMaster.getSelectedSensorVelocity(0);
-            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+            mPeriodicIO.gyro_heading_no_offset =
+                Rotation2d.fromDegrees(mPigeon.getFusedHeading());
         }
-        mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
+        mPeriodicIO.gyro_heading =
+            mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             mPeriodicIO.left_error = 0;
             mPeriodicIO.right_error = 0;
@@ -182,10 +214,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     public synchronized void writePeriodicOutputs() {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             if (isSlowMode) {
-                mLeftMaster.set(
-                    ControlMode.PercentOutput,
-                    mPeriodicIO.left_demand * 0.5
-                );
+                mLeftMaster.set(ControlMode.PercentOutput, mPeriodicIO.left_demand * 0.5);
                 mRightMaster.set(
                     ControlMode.PercentOutput,
                     mPeriodicIO.right_demand * 0.5
@@ -222,7 +251,6 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         mPeriodicIO.right_demand = signal.getRight();
         mPeriodicIO.left_feedforward = 0.0;
         mPeriodicIO.right_feedforward = 0.0;
-
     }
 
     @Override
@@ -240,16 +268,14 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         boolean low_power,
         boolean use_heading_controller
     ) {
-        DriveSignal driveSignal = cheesyDriveHelper.cheesyDrive(forward, rotation, false);// quick turn temporarily eliminated
+        DriveSignal driveSignal = cheesyDriveHelper.cheesyDrive(forward, rotation, false); // quick turn temporarily eliminated
         // }
 
-        if (
-            getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING
-        ) {
+        if (getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING) {
             if (
                 driveSignal.getLeft() != 0 ||
-                    driveSignal.getRight() != 0 ||
-                    isDoneWithTrajectory()
+                driveSignal.getRight() != 0 ||
+                isDoneWithTrajectory()
             ) {
                 setOpenLoop(driveSignal);
             }
@@ -268,10 +294,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     @Override
     public void setVelocity(List<Translation2d> driveVectors) {
         setVelocity(
-            new DriveSignal(
-                driveVectors.get(0).norm(),
-                driveVectors.get(1).norm()
-            ),
+            new DriveSignal(driveVectors.get(0).norm(), driveVectors.get(1).norm()),
             DriveSignal.NEUTRAL
         );
     }
@@ -327,7 +350,10 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     }
 
     @Override
-    public void setTrajectory(TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory, Rotation2d targetHeading) {
+    public void setTrajectory(
+        TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory,
+        Rotation2d targetHeading
+    ) {
         if (mMotionPlanner != null) {
             System.out.println("Now setting trajectory");
             setBrakeMode(true);
@@ -395,7 +421,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     public double getAngularVelocity() {
         return (
             (getRightLinearVelocity() - getLeftLinearVelocity()) /
-                Constants.kDriveWheelTrackWidthInches
+            Constants.kDriveWheelTrackWidthInches
         );
     }
 
@@ -416,7 +442,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     public boolean isDoneWithTrajectory() {
         if (
             mMotionPlanner == null ||
-                mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING
+            mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING
         ) {
             return false;
         }
@@ -478,9 +504,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     }
 
     @Override
-    public void zeroSensors(Pose2d pose) {
-
-    }
+    public void zeroSensors(Pose2d pose) {}
 
     @Override
     public synchronized void stop() {
@@ -523,7 +547,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public double getLeftVelocityDemand() {
-        if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+        if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             return mPeriodicIO.left_demand * maxVelTicksPer100ms;
         }
         return mPeriodicIO.left_demand;
@@ -531,7 +555,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public double getRightVelocityDemand() {
-        if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+        if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             return mPeriodicIO.right_demand * maxVelTicksPer100ms;
         }
         return mPeriodicIO.right_demand;
@@ -557,51 +581,51 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-//        builder.addDoubleProperty(
-//            "Right Drive Distance",
-//            this::getRightEncoderDistance,
-//            null
-//        );
-//        builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
-//        builder.addDoubleProperty(
-//            "Left Drive Distance",
-//            this::getLeftEncoderDistance,
-//            null
-//        );
-//        builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
-//        builder.addStringProperty(
-//            "Drive/ControlState",
-//            () -> this.getDriveControlState().toString(),
-//            null
-//        );
-//        builder.addBooleanProperty(
-//            "Drive/PigeonIMU State",
-//            () -> this.mPigeon.getLastError() == ErrorCode.OK,
-//            null
-//        );
-//
-//        SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
-//        SmartDashboard
-//            .getEntry("Drive/OpenLoopRampRate")
-//            .addListener(
-//                notification -> {
-//                    setOpenLoopRampRate(notification.value.getDouble());
-//                },
-//                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-//            );
-//
-//        SmartDashboard.putBoolean("Drive/Zero Sensors", false);
-//        SmartDashboard
-//            .getEntry("Drive/Zero Sensors")
-//            .addListener(
-//                entryNotification -> {
-//                    if (entryNotification.value.getBoolean()) {
-//                        zeroSensors();
-//                        entryNotification.getEntry().setBoolean(false);
-//                    }
-//                },
-//                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-//            );
+        //        builder.addDoubleProperty(
+        //            "Right Drive Distance",
+        //            this::getRightEncoderDistance,
+        //            null
+        //        );
+        //        builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
+        //        builder.addDoubleProperty(
+        //            "Left Drive Distance",
+        //            this::getLeftEncoderDistance,
+        //            null
+        //        );
+        //        builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
+        //        builder.addStringProperty(
+        //            "Drive/ControlState",
+        //            () -> this.getDriveControlState().toString(),
+        //            null
+        //        );
+        //        builder.addBooleanProperty(
+        //            "Drive/PigeonIMU State",
+        //            () -> this.mPigeon.getLastError() == ErrorCode.OK,
+        //            null
+        //        );
+        //
+        //        SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
+        //        SmartDashboard
+        //            .getEntry("Drive/OpenLoopRampRate")
+        //            .addListener(
+        //                notification -> {
+        //                    setOpenLoopRampRate(notification.value.getDouble());
+        //                },
+        //                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+        //            );
+        //
+        //        SmartDashboard.putBoolean("Drive/Zero Sensors", false);
+        //        SmartDashboard
+        //            .getEntry("Drive/Zero Sensors")
+        //            .addListener(
+        //                entryNotification -> {
+        //                    if (entryNotification.value.getBoolean()) {
+        //                        zeroSensors();
+        //                        entryNotification.getEntry().setBoolean(false);
+        //                    }
+        //                },
+        //                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+        //            );
         // builder.addDoubleProperty("Drive/OpenLoopRampRateSetter", null, this::setOpenLoopRampRate);
         // builder.addDoubleProperty("Drive/OpenLoopRampRateValue", this::getOpenLoopRampRate, null);
 
@@ -623,5 +647,4 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         //     SmartDashboard.putNumber("Drive CTE", 0.0);
         // }
     }
-
 }

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TankDemoModeControlBoard implements IControlBoard {
+
     private static TankDemoModeControlBoard INSTANCE = null;
 
     public static TankDemoModeControlBoard getInstance() {
@@ -31,7 +32,8 @@ public class TankDemoModeControlBoard implements IControlBoard {
         speedChooser.addOption("Park", 0.0);
 
         SmartDashboard.putData("DemoModeDriveSpeed", speedChooser);
-        NetworkTableInstance.getDefault()
+        NetworkTableInstance
+            .getDefault()
             .getTable("SmartDashboard")
             .getSubTable("DemoModeDriveSpeed")
             .addEntryListener(
@@ -54,20 +56,14 @@ public class TankDemoModeControlBoard implements IControlBoard {
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
 
-
         drivetrainMultiplier = speedChooser.getSelected();
     }
 
+    @Override
+    public void reset() {}
 
     @Override
-    public void reset() {
-
-    }
-
-    @Override
-    public void setRumble(boolean on) {
-
-    }
+    public void setRumble(boolean on) {}
 
     @Override
     public boolean getSpinnerReset() {
@@ -141,23 +137,18 @@ public class TankDemoModeControlBoard implements IControlBoard {
 
     @Override
     public double getThrottle() {
-        return drivetrainMultiplier * mController.getJoystick(
-            Controller.Axis.LEFT_Y
-        );
+        return drivetrainMultiplier * mController.getJoystick(Controller.Axis.LEFT_Y);
     }
 
     @Override
     public double getTurn() {
-        return drivetrainMultiplier * mController.getJoystick(
-            Controller.Axis.RIGHT_X
-        );
+        return drivetrainMultiplier * mController.getJoystick(Controller.Axis.RIGHT_X);
     }
 
     @Override
     public double getStrafe() {
         return 0;
     }
-
 
     @Override
     public boolean getQuickTurn() {

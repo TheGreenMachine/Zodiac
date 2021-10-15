@@ -22,11 +22,14 @@ public interface PathContainer {
     // velocities are in/sec
     double kMaxVelocity = Robot.getFactory().getConstant("maxVel");
     double kMaxAccel = Robot.getFactory().getConstant("maxAccel");
-    double kMaxCentripetalAccel = Robot.getFactory().getConstant("maxCentripetalAccel", 100.0);
-    double kMaxDecel = (
-        Robot.getFactory().getConstant("maxDecel", -1) == -1
-            ? kMaxAccel
-            : Robot.getFactory().getConstant("maxDecel")
+    double kMaxCentripetalAccel = Robot
+        .getFactory()
+        .getConstant("maxCentripetalAccel", 100.0);
+    double kMaxDecel =
+        (
+            Robot.getFactory().getConstant("maxDecel", -1) == -1
+                ? kMaxAccel
+                : Robot.getFactory().getConstant("maxDecel")
         );
     double kMaxVoltage = 9.0;
 
@@ -48,8 +51,7 @@ public interface PathContainer {
         boolean isReversed,
         List<Pose2d> waypoints
     ) {
-        return (new SwerveMotionPlanner())
-            .generateTrajectory(
+        return (new SwerveMotionPlanner()).generateTrajectory(
                 isReversed,
                 waypoints,
                 Arrays.asList(

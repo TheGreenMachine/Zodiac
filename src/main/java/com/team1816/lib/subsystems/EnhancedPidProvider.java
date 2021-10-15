@@ -8,6 +8,7 @@ public interface EnhancedPidProvider extends PidProvider {
     default double getKP() {
         return getPidConfig().getkP();
     }
+
     default double getKI() {
         return getPidConfig().getkI();
     }
