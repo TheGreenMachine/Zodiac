@@ -22,10 +22,8 @@ import com.team254.lib.util.Util;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +38,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     // Controllers
     private final SwerveMotionPlanner motionPlanner;
     private final SwerveHeadingController headingController = SwerveHeadingController.getInstance();
-
 
     // Odometry variables
     private Pose2d pose = Pose2d.identity();
@@ -153,16 +150,29 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     @Override
     public synchronized void readPeriodicInputs() {
-        if(RobotBase.isSimulation()) {
+        if (RobotBase.isSimulation()) {
             // calculate rotation based on left/right vel differences
-            gyroDrift -= (mPeriodicIO.left_velocity_ticks_per_100ms-mPeriodicIO.right_velocity_ticks_per_100ms)/robotWidthTicks;
+            gyroDrift -=
+                (
+                    mPeriodicIO.left_velocity_ticks_per_100ms -
+                    mPeriodicIO.right_velocity_ticks_per_100ms
+                ) /
+                robotWidthTicks;
             //mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
-            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
-            fieldSim.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY())+3.5, rot2d);
+            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(
+                mPeriodicIO.gyro_heading_no_offset.getRadians()
+            );
+            fieldSim.setRobotPose(
+                Units.inches_to_meters(mRobotState.getEstimatedX()),
+                Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5,
+                rot2d
+            );
         } else {
-            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+            mPeriodicIO.gyro_heading_no_offset =
+                Rotation2d.fromDegrees(mPigeon.getFusedHeading());
         }
-        mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
+        mPeriodicIO.gyro_heading =
+            mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
         // System.out.println("control state: " + mDriveControlState + ", left: " + mPeriodicIO.left_demand + ", right: " + mPeriodicIO.right_demand);
         for (SwerveModule module : swerveModules) {
             module.readPeriodicInputs();
@@ -174,7 +184,10 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         for (int i = 0; i < swerveModules.length; i++) {
             if (swerveModules[i] != null) {
                 // change speeds to add some imperfection in tuning to cause rotation
-                if(RobotBase.isSimulation() && (i == SwerveModule.kBackRight || i == SwerveModule.kFrontRight)) {
+                if (
+                    RobotBase.isSimulation() &&
+                    (i == SwerveModule.kBackRight || i == SwerveModule.kFrontRight)
+                ) {
                     mPeriodicIO.wheel_speeds[i] *= .95;
                 }
                 if (mDriveControlState == DriveControlState.OPEN_LOOP) {
@@ -186,14 +199,16 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                         )
                     ) {
                         swerveModules[i].setOpenLoop(
-                            -mPeriodicIO.wheel_speeds[i],
-                            mPeriodicIO.wheel_azimuths[i].rotateBy(Rotation2d.fromDegrees(180))
-                        );
+                                -mPeriodicIO.wheel_speeds[i],
+                                mPeriodicIO.wheel_azimuths[i].rotateBy(
+                                        Rotation2d.fromDegrees(180)
+                                    )
+                            );
                     } else {
                         swerveModules[i].setOpenLoop(
-                            mPeriodicIO.wheel_speeds[i],
-                            mPeriodicIO.wheel_azimuths[i]
-                        );
+                                mPeriodicIO.wheel_speeds[i],
+                                mPeriodicIO.wheel_azimuths[i]
+                            );
                     }
                 } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
                     if (
@@ -203,14 +218,16 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                         )
                     ) {
                         swerveModules[i].setVelocity(
-                            -mPeriodicIO.wheel_speeds[i],
-                            mPeriodicIO.wheel_azimuths[i].rotateBy(Rotation2d.fromDegrees(180))
-                        );
+                                -mPeriodicIO.wheel_speeds[i],
+                                mPeriodicIO.wheel_azimuths[i].rotateBy(
+                                        Rotation2d.fromDegrees(180)
+                                    )
+                            );
                     } else {
                         swerveModules[i].setVelocity(
-                            mPeriodicIO.wheel_speeds[i],
-                            mPeriodicIO.wheel_azimuths[i]
-                        );
+                                mPeriodicIO.wheel_speeds[i],
+                                mPeriodicIO.wheel_azimuths[i]
+                            );
                     }
                 }
                 swerveModules[i].writePeriodicOutputs();
@@ -274,7 +291,8 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
             .translateBy(pose.getTranslation().inverse())
             .norm();
         mPeriodicIO.drive_distance_inches += deltaPos;
-        mPeriodicIO.velocity_inches_per_second = deltaPos / (timestamp - lastUpdateTimestamp);
+        mPeriodicIO.velocity_inches_per_second =
+            deltaPos / (timestamp - lastUpdateTimestamp);
         pose = updatedPose;
         for (SwerveModule module : swerveModules) {
             module.resetPose(pose);
@@ -331,7 +349,8 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         );
         double deltaPos = updatedPose.getTranslation().distance(pose.getTranslation());
         mPeriodicIO.drive_distance_inches += deltaPos;
-        mPeriodicIO.velocity_inches_per_second = deltaPos / (timestamp - lastUpdateTimestamp);
+        mPeriodicIO.velocity_inches_per_second =
+            deltaPos / (timestamp - lastUpdateTimestamp);
         pose = updatedPose;
 
         for (SwerveModule mModule : swerveModules) {
@@ -383,7 +402,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
         mPeriodicIO.wheel_speeds = swerveSignal.getWheelSpeeds();
         mPeriodicIO.wheel_azimuths = swerveSignal.getWheelAzimuths();
-
     }
 
     @Override
@@ -434,8 +452,10 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         if (RobotBase.isSimulation()) {
             mPeriodicIO.gyro_heading_no_offset.rotateBy(
                 Rotation2d.fromDegrees(
-                    SwerveKinematics
-                        .forwardKinematics(speedsNorm, mPeriodicIO.wheel_azimuths)
+                    SwerveKinematics.forwardKinematics(
+                        speedsNorm,
+                        mPeriodicIO.wheel_azimuths
+                    )
                         .dtheta
                 )
             );
@@ -504,7 +524,10 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     @Override
     public void updatePathFollower(double timestamp) {
-        double rotationCorrection = headingController.updateRotationCorrection(getHeadingDegrees(), timestamp);
+        double rotationCorrection = headingController.updateRotationCorrection(
+            getHeadingDegrees(),
+            timestamp
+        );
         updatePose(timestamp);
         // alternatePoseUpdate(timestamp);
 
@@ -519,7 +542,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                     wantReset = false;
                 }
 
-//                                System.out.println("DRIVE VECTOR" + driveVector);
+                //                                System.out.println("DRIVE VECTOR" + driveVector);
 
                 mPeriodicIO.forward = driveVector.x();
                 mPeriodicIO.strafe = driveVector.y();
@@ -537,7 +560,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                 mPeriodicIO.path_setpoint = motionPlanner.setpoint();
                 mPeriodicIO.drive_vector = driveVector;
                 if (!mOverrideTrajectory) {
-//                    System.out.println("ROTATIONINPUT==" + rotationInput);
+                    //                    System.out.println("ROTATIONINPUT==" + rotationInput);
                     setVelocity(
                         SwerveKinematics.updateDriveVectors(
                             driveVector,
@@ -573,16 +596,16 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                 module.zeroSensors();
             }
         }
-//        if (mPigeon.getLastError() != ErrorCode.OK) {
-//            // BadLog.createValue("PigeonErrorDetected", "true");
-//            System.out.println(
-//                "Error detected with Pigeon IMU - check if the sensor is present and plugged in!"
-//            );
-//            System.out.println("Defaulting to drive straight mode");
-//            AutoModeSelector.getInstance().setHardwareFailure(true);
-//        } else {
-            AutoModeSelector.getInstance().setHardwareFailure(false);
-//        }
+        //        if (mPigeon.getLastError() != ErrorCode.OK) {
+        //            // BadLog.createValue("PigeonErrorDetected", "true");
+        //            System.out.println(
+        //                "Error detected with Pigeon IMU - check if the sensor is present and plugged in!"
+        //            );
+        //            System.out.println("Defaulting to drive straight mode");
+        //            AutoModeSelector.getInstance().setHardwareFailure(true);
+        //        } else {
+        AutoModeSelector.getInstance().setHardwareFailure(false);
+        //        }
     }
 
     @Override
@@ -608,8 +631,12 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
-        SmartDashboard.putBoolean("Drive/TeleopFieldCentric", this.mPeriodicIO.field_relative);
-        SmartDashboard.getEntry("Drive/TeleopFieldCentric")
+        SmartDashboard.putBoolean(
+            "Drive/TeleopFieldCentric",
+            this.mPeriodicIO.field_relative
+        );
+        SmartDashboard
+            .getEntry("Drive/TeleopFieldCentric")
             .addListener(
                 notification -> {
                     this.mPeriodicIO.field_relative = notification.value.getBoolean();
@@ -617,5 +644,4 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
     }
-
 }

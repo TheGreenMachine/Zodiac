@@ -218,9 +218,9 @@ public class TrajectoryTest {
 
     @Test
     public void timeTrajectories() {
-//        **COPY THIS FORMAT TO TEST PATHS**
-//        System.out.println("Two Path Combo: ");
-//        timeTrajectory("RED_PATHA", set.RED_PATHA);
-//        timeTrajectory("DIME_TURN", set.DIME_TURN);
+        //        **COPY THIS FORMAT TO TEST PATHS**
+        //        System.out.println("Two Path Combo: ");
+        //        timeTrajectory("RED_PATHA", set.RED_PATHA);
+        //        timeTrajectory("DIME_TURN", set.DIME_TURN);
     }
 }

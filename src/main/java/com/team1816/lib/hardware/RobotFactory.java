@@ -88,7 +88,6 @@ public class RobotFactory {
             System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
         }
 
-
         return motor;
     }
 
@@ -142,7 +141,7 @@ public class RobotFactory {
             );
             followerMotor = CtreMotorFactory.createGhostTalon();
         }
-        if(master!=null){
+        if (master != null) {
             followerMotor.setInverted(master.getInverted());
         }
         return followerMotor;

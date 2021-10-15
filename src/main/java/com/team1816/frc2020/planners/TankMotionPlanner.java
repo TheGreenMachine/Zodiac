@@ -58,9 +58,9 @@ public class TankMotionPlanner implements CSVWritable {
         final DCMotorTransmission transmission = new DCMotorTransmission(
             1.0 / Constants.kDriveKv,
             Units.inches_to_meters(Constants.kDriveWheelRadiusInches) *
-                Units.inches_to_meters(Constants.kDriveWheelRadiusInches) *
-                Constants.kRobotLinearInertia /
-                (2.0 * Constants.kDriveKa),
+            Units.inches_to_meters(Constants.kDriveWheelRadiusInches) *
+            Constants.kRobotLinearInertia /
+            (2.0 * Constants.kDriveKa),
             Constants.kDriveVIntercept
         );
         mModel =
@@ -71,8 +71,8 @@ public class TankMotionPlanner implements CSVWritable {
                 Units.inches_to_meters(Constants.kDriveWheelDiameterInches / 2.0),
                 Units.inches_to_meters(
                     Constants.kDriveWheelTrackWidthInches /
-                        2.0 *
-                        Constants.kTrackScrubFactor
+                    2.0 *
+                    Constants.kTrackScrubFactor
                 ),
                 transmission,
                 transmission
@@ -135,8 +135,6 @@ public class TankMotionPlanner implements CSVWritable {
         double max_decel,
         double max_voltage,
         int slowdown_chunks
-
-
     ) {
         List<Pose2d> waypoints_maybe_flipped = waypoints;
         final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
@@ -213,14 +211,14 @@ public class TankMotionPlanner implements CSVWritable {
         DecimalFormat fmt = new DecimalFormat("#0.000");
         return (
             fmt.format(mOutput.left_velocity) +
-                "," +
-                fmt.format(mOutput.right_velocity) +
-                "," +
-                fmt.format(mOutput.left_feedforward_voltage) +
-                "," +
-                fmt.format(mOutput.right_feedforward_voltage) +
-                "," +
-                mSetpoint.toCSV()
+            "," +
+            fmt.format(mOutput.right_velocity) +
+            "," +
+            fmt.format(mOutput.left_feedforward_voltage) +
+            "," +
+            fmt.format(mOutput.right_feedforward_voltage) +
+            "," +
+            mSetpoint.toCSV()
         );
     }
 
@@ -279,15 +277,15 @@ public class TankMotionPlanner implements CSVWritable {
         final double kPathKTheta = 5.0;
         adjusted_velocity.linear =
             dynamics.chassis_velocity.linear +
-                kPathKX *
-                    Units.inches_to_meters(mError.getTranslation().x());
+            kPathKX *
+            Units.inches_to_meters(mError.getTranslation().x());
         adjusted_velocity.angular =
             dynamics.chassis_velocity.angular +
-                dynamics.chassis_velocity.linear *
-                    kPathKY *
-                    Units.inches_to_meters(mError.getTranslation().y()) +
-                kPathKTheta *
-                    mError.getRotation().getRadians();
+            dynamics.chassis_velocity.linear *
+            kPathKY *
+            Units.inches_to_meters(mError.getTranslation().y()) +
+            kPathKTheta *
+            mError.getRotation().getRadians();
 
         double curvature = adjusted_velocity.angular / adjusted_velocity.linear;
         if (Double.isInfinite(curvature)) {
@@ -301,12 +299,12 @@ public class TankMotionPlanner implements CSVWritable {
         );
         final double left_voltage =
             dynamics.voltage.left +
-                (wheel_velocities.left - dynamics.wheel_velocity.left) /
-                    mModel.left_transmission().speed_per_volt();
+            (wheel_velocities.left - dynamics.wheel_velocity.left) /
+            mModel.left_transmission().speed_per_volt();
         final double right_voltage =
             dynamics.voltage.right +
-                (wheel_velocities.right - dynamics.wheel_velocity.right) /
-                    mModel.right_transmission().speed_per_volt();
+            (wheel_velocities.right - dynamics.wheel_velocity.right) /
+            mModel.right_transmission().speed_per_volt();
 
         return new Output(
             wheel_velocities.left,
@@ -332,7 +330,7 @@ public class TankMotionPlanner implements CSVWritable {
             .distance(lookahead_state.state());
         while (
             actual_lookahead_distance < Constants.kPathMinLookaheadDistance &&
-                mCurrentTrajectory.getRemainingProgress() > lookahead_time
+            mCurrentTrajectory.getRemainingProgress() > lookahead_time
         ) {
             lookahead_time += kLookaheadSearchDt;
             lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
@@ -350,10 +348,10 @@ public class TankMotionPlanner implements CSVWritable {
                                 Pose2d.fromTranslation(
                                     new Translation2d(
                                         (mIsReversed ? -1.0 : 1.0) *
-                                            (
-                                                Constants.kPathMinLookaheadDistance -
-                                                    actual_lookahead_distance
-                                            ),
+                                        (
+                                            Constants.kPathMinLookaheadDistance -
+                                            actual_lookahead_distance
+                                        ),
                                         0.0
                                     )
                                 )
@@ -370,8 +368,8 @@ public class TankMotionPlanner implements CSVWritable {
         // Feedback on longitudinal error (distance).
         adjusted_velocity.linear =
             dynamics.chassis_velocity.linear +
-                Constants.kPathKX *
-                    Units.inches_to_meters(mError.getTranslation().x());
+            Constants.kPathKX *
+            Units.inches_to_meters(mError.getTranslation().x());
 
         // Use pure pursuit to peek ahead along the trajectory and generate a new curvature.
         final PurePursuitController.Arc<Pose2dWithCurvature> arc = new PurePursuitController.Arc<>(
@@ -410,14 +408,14 @@ public class TankMotionPlanner implements CSVWritable {
         // Compute gain parameter.
         final double k =
             2.0 *
-                kZeta *
-                Math.sqrt(
-                    kBeta *
-                        dynamics.chassis_velocity.linear *
-                        dynamics.chassis_velocity.linear +
-                        dynamics.chassis_velocity.angular *
-                            dynamics.chassis_velocity.angular
-                );
+            kZeta *
+            Math.sqrt(
+                kBeta *
+                dynamics.chassis_velocity.linear *
+                dynamics.chassis_velocity.linear +
+                dynamics.chassis_velocity.angular *
+                dynamics.chassis_velocity.angular
+            );
 
         // Compute error components.
         final double angle_error_rads = mError.getRotation().getRadians();
@@ -426,16 +424,16 @@ public class TankMotionPlanner implements CSVWritable {
             : mError.getRotation().sin() / angle_error_rads;
         final DifferentialDrive.ChassisState adjusted_velocity = new DifferentialDrive.ChassisState(
             dynamics.chassis_velocity.linear *
-                mError.getRotation().cos() +
-                k *
-                    Units.inches_to_meters(mError.getTranslation().x()),
+            mError.getRotation().cos() +
+            k *
+            Units.inches_to_meters(mError.getTranslation().x()),
             dynamics.chassis_velocity.angular +
-                k *
-                    angle_error_rads +
-                dynamics.chassis_velocity.linear *
-                    kBeta *
-                    sin_x_over_x *
-                    Units.inches_to_meters(mError.getTranslation().y())
+            k *
+            angle_error_rads +
+            dynamics.chassis_velocity.linear *
+            kBeta *
+            sin_x_over_x *
+            Units.inches_to_meters(mError.getTranslation().y())
         );
 
         // Compute adjusted left and right wheel velocities.
@@ -500,10 +498,10 @@ public class TankMotionPlanner implements CSVWritable {
                 new DifferentialDrive.ChassisState(
                     acceleration_m,
                     acceleration_m *
-                        curvature_m +
-                        velocity_m *
-                            velocity_m *
-                            dcurvature_ds_m
+                    curvature_m +
+                    velocity_m *
+                    velocity_m *
+                    dcurvature_ds_m
                 )
             );
             mError = current_state.inverse().transformBy(mSetpoint.state().getPose());

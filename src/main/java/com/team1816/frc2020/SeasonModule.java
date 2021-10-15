@@ -1,14 +1,13 @@
 package com.team1816.frc2020;
 
 import com.google.inject.AbstractModule;
+import com.team1816.frc2020.controlboard.ControlBoard;
+import com.team1816.frc2020.controlboard.GamepadButtonControlBoard;
+import com.team1816.frc2020.controlboard.GamepadDriveControlBoard;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.controlboard.IDriveControlBoard;
-import com.team1816.frc2020.controlboard.ControlBoard;
-import com.team1816.frc2020.controlboard.GamepadButtonControlBoard;
-import com.team1816.frc2020.controlboard.GamepadDriveControlBoard;
-import com.team1816.lib.hardware.RobotFactory;
 
 public class SeasonModule extends AbstractModule {
 

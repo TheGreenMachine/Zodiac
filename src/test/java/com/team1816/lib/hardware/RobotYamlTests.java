@@ -18,7 +18,7 @@ public class RobotYamlTests {
 
     @Test
     public void zodiacYamlTest() {
-        loadConfig("zodiac");
+        loadConfig("zodiac_swerve");
     }
 
     @Test

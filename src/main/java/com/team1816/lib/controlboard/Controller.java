@@ -3,7 +3,6 @@ package com.team1816.lib.controlboard;
 import com.team1816.frc2020.Constants;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-
 import java.util.EnumMap;
 
 public abstract class Controller {

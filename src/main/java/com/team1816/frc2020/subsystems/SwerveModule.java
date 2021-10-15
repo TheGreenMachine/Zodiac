@@ -240,10 +240,10 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         mPeriodicIO.drive_demand = speed;
         var isFront = mConstants.kName.startsWith("front");
         var sign = isFront ? 1 : -1;
-        var azimuthAdjustmentRadians = sign * Math.toRadians(AZIMUTH_ADJUSTMENT_OFFSET_DEGREES);
-        mPeriodicIO.azimuth_demand = (int) radiansToEncoderUnits(
-            azimuth.getRadians() + azimuthAdjustmentRadians
-        );
+        var azimuthAdjustmentRadians =
+            sign * Math.toRadians(AZIMUTH_ADJUSTMENT_OFFSET_DEGREES);
+        mPeriodicIO.azimuth_demand =
+            (int) radiansToEncoderUnits(azimuth.getRadians() + azimuthAdjustmentRadians);
     }
 
     @Override
@@ -264,7 +264,8 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             );
 
             mPeriodicIO.azimuth_encoder_ticks_unmasked = normalizedEncoderTicks;
-            mPeriodicIO.azimuth_encoder_ticks = normalizedEncoderTicks & AZIMUTH_TICK_MASK;
+            mPeriodicIO.azimuth_encoder_ticks =
+                normalizedEncoderTicks & AZIMUTH_TICK_MASK;
         }
     }
 

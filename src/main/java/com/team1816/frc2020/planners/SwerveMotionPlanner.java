@@ -84,14 +84,12 @@ public class SwerveMotionPlanner implements CSVWritable {
     }
 
     public SwerveMotionPlanner() {
-
         mCurrentTrajectory = null;
     }
 
     public void setTrajectory(
         final TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
     ) {
-
         mCurrentTrajectory = trajectory;
         mSetpoint = trajectory.getState();
         defaultCook = trajectory.trajectory().defaultVelocity();
@@ -321,10 +319,7 @@ public class SwerveMotionPlanner implements CSVWritable {
         //System.out.println("Steering direction " + steeringDirection.getDegrees() + " Speed: " + normalizedSpeed);
 
         //System.out.println("Pure pursuit updated, vector is: " + steeringVector.toString());
-        return Translation2d.fromPolar(
-            steeringDirection,
-            normalizedSpeed
-        );
+        return Translation2d.fromPolar(steeringDirection, normalizedSpeed);
     }
 
     public Translation2d update(double timestamp, Pose2d current_state) {

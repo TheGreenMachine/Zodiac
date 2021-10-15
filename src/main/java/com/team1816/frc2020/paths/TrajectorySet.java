@@ -80,6 +80,5 @@ public class TrajectorySet {
         this.TEN_BALL_AUTO = new TenBallOpposingPath().generateTrajectory();
 
         this.BARREL = new BarrelPath().generateTrajectory();
-
     }
 }

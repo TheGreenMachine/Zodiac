@@ -1,12 +1,13 @@
 package com.team1816.lib.subsystems;
 
-import com.team1816.frc2020.SwerveKinematics;
+import com.google.inject.Inject;
 import com.team1816.frc2020.RobotState;
+import com.team1816.frc2020.SwerveKinematics;
 import com.team1816.frc2020.TankKinematics;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.SwerveDrive;
-import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.frc2020.subsystems.TankDrive;
+import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team254.lib.geometry.Pose2d;
@@ -15,12 +16,11 @@ import com.team254.lib.geometry.Twist2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.google.inject.Inject;
-
 public class RobotStateEstimator extends Subsystem {
 
     @Inject
     private Drive.Factory mDriveFactory;
+
     private final RobotState mRobotState = RobotState.getInstance();
     private final Turret turret = Turret.getInstance();
     private double left_encoder_prev_distance_ = 0.0;
@@ -65,7 +65,10 @@ public class RobotStateEstimator extends Subsystem {
             } else if (mDrive instanceof TankDrive) {
                 estimateTankDrive((TankDrive) mDrive, timestamp, dt);
             } else {
-                DriverStation.reportError("RobotStateEstimator - Drive is not of known type", false);
+                DriverStation.reportError(
+                    "RobotStateEstimator - Drive is not of known type",
+                    false
+                );
             }
 
             prev_heading_ = gyro_angle;
@@ -73,8 +76,7 @@ public class RobotStateEstimator extends Subsystem {
         }
 
         @Override
-        public void onStop(double timestamp) {
-        }
+        public void onStop(double timestamp) {}
     }
 
     private void estimateTankDrive(TankDrive mDrive, double timestamp, double dt) {
@@ -126,7 +128,12 @@ public class RobotStateEstimator extends Subsystem {
         right_encoder_prev_distance_ = right_distance;
     }
 
-    private void estimateSwerve(SwerveDrive mDrive, double timestamp, double dt, Rotation2d gyro_angle) {
+    private void estimateSwerve(
+        SwerveDrive mDrive,
+        double timestamp,
+        double dt,
+        Rotation2d gyro_angle
+    ) {
         final double[] wheel_speeds = mDrive.getModuleVelocities();
         final Rotation2d[] wheel_azimuths = mDrive.getModuleAzimuths();
 
@@ -163,10 +170,8 @@ public class RobotStateEstimator extends Subsystem {
         //    mRobotState.addObservations(timestamp, odometry_twist, measured_velocity);
     }
 
-
     @Override
-    public void stop() {
-    }
+    public void stop() {}
 
     @Override
     public boolean checkSystem() {

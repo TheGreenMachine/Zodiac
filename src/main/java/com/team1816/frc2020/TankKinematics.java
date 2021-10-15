@@ -24,7 +24,7 @@ public class TankKinematics {
     ) {
         double delta_rotation =
             (right_wheel_delta - left_wheel_delta) /
-                (Constants.kDriveWheelTrackWidthInches * Constants.kTrackScrubFactor);
+            (Constants.kDriveWheelTrackWidthInches * Constants.kTrackScrubFactor);
         return forwardKinematics(left_wheel_delta, right_wheel_delta, delta_rotation);
     }
 
@@ -71,8 +71,8 @@ public class TankKinematics {
         }
         double delta_v =
             Constants.kDriveWheelTrackWidthInches *
-                velocity.dtheta /
-                (2 * Constants.kTrackScrubFactor);
+            velocity.dtheta /
+            (2 * Constants.kTrackScrubFactor);
         return new DriveSignal(velocity.dx - delta_v, velocity.dx + delta_v);
     }
 }

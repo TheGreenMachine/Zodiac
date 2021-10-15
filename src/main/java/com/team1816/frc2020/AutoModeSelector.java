@@ -40,7 +40,7 @@ public class AutoModeSelector {
         SIX_BALL_ALLIANCE_STRAIGHT,
 
         // 2021
-        BARREL
+        BARREL,
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -116,7 +116,6 @@ public class AutoModeSelector {
         );
 
         mModeChooser.addOption("Barrel", DesiredMode.BARREL);
-
 
         SmartDashboard.putData("Auto mode", mModeChooser);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);

@@ -1,7 +1,5 @@
 package com.team1816.lib.hardware;
 
-import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
@@ -9,7 +7,6 @@ import com.team1816.lib.hardware.components.motor.IConfigurableMotorController;
 import com.team1816.lib.hardware.components.motor.LazyTalonFX;
 import com.team1816.lib.hardware.components.motor.LazyTalonSRX;
 import edu.wpi.first.wpilibj.RobotBase;
-
 import java.util.*;
 
 /**
@@ -182,7 +179,6 @@ public class CtreMotorFactory {
         SubsystemConfig subsystem,
         List<PidConfig> pidConfigList
     ) {
-
         BaseTalonConfiguration talonConfiguration;
 
         if (motor instanceof TalonFX) {
@@ -232,17 +228,20 @@ public class CtreMotorFactory {
         talonConfiguration.peakOutputReverse = -1.0;
 
         talonConfiguration.velocityMeasurementPeriod = config.VELOCITY_MEASUREMENT_PERIOD;
-        talonConfiguration.velocityMeasurementWindow = config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW;
+        talonConfiguration.velocityMeasurementWindow =
+            config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW;
 
         talonConfiguration.openloopRamp = config.OPEN_LOOP_RAMP_RATE;
         talonConfiguration.closedloopRamp = config.CLOSED_LOOP_RAMP_RATE;
 
-        talonConfiguration.primaryPID.selectedFeedbackSensor =  isFalcon
-            ? FeedbackDevice.IntegratedSensor
-            : FeedbackDevice.CTRE_MagEncoder_Relative;
+        talonConfiguration.primaryPID.selectedFeedbackSensor =
+            isFalcon
+                ? FeedbackDevice.IntegratedSensor
+                : FeedbackDevice.CTRE_MagEncoder_Relative;
 
-        if(talonConfiguration instanceof TalonFXConfiguration) {
-            ((TalonFXConfiguration) talonConfiguration).supplyCurrLimit = new SupplyCurrentLimitConfiguration(config.ENABLE_CURRENT_LIMIT, 0, 0, 0);
+        if (talonConfiguration instanceof TalonFXConfiguration) {
+            ((TalonFXConfiguration) talonConfiguration).supplyCurrLimit =
+                new SupplyCurrentLimitConfiguration(config.ENABLE_CURRENT_LIMIT, 0, 0, 0);
         }
 
         talonConfiguration.clearPositionOnLimitF = false;

@@ -1,5 +1,7 @@
 package com.team1816.frc2020;
 
+import static com.team1816.frc2020.controlboard.ControlUtils.*;
+
 import badlog.lib.BadLog;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -20,28 +22,27 @@ import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.SwerveDriveSignal;
 import com.team254.lib.util.LatchedBoolean;
+import com.team254.lib.util.SwerveDriveSignal;
 import com.team254.lib.util.TimeDelayedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.team1816.frc2020.controlboard.ControlUtils.*;
-
 public class Robot extends TimedRobot {
 
     private BadLog logger;
 
+    private final Injector injector;
+
     private final Looper mEnabledLooper = new Looper();
     private final Looper mDisabledLooper = new Looper();
 
-    private final IControlBoard mControlBoard;
+    private IControlBoard mControlBoard;
 
     private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
 
@@ -81,9 +82,8 @@ public class Robot extends TimedRobot {
     Robot() {
         super();
         // initialize injector
-        Injector injector = Guice.createInjector(new LibModule(), new SeasonModule());
+        injector = Guice.createInjector(new LibModule(), new SeasonModule());
         mDrive = (injector.getInstance(Drive.Factory.class)).getInstance();
-        mControlBoard = injector.getInstance(IControlBoard.class);
         mRobotStateEstimator = injector.getInstance(RobotStateEstimator.class);
     }
 
@@ -98,6 +98,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         try {
+            mControlBoard = injector.getInstance(IControlBoard.class);
             DriverStation.getInstance().silenceJoystickConnectionWarning(true);
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             var robotName = System.getenv("ROBOT_NAME");
@@ -188,9 +189,6 @@ public class Robot extends TimedRobot {
                 );
 
                 BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
-
-
-
 
                 DrivetrainLogger.init(mDrive);
                 BadLog.createValue("Drivetrain PID", mDrive.pidToString());
@@ -350,7 +348,7 @@ public class Robot extends TimedRobot {
                         pressed -> {
                             if (
                                 (DriverStation.getInstance().getMatchTime() <= 30) ||
-                                    (DriverStation.getInstance().getMatchTime() == -1)
+                                (DriverStation.getInstance().getMatchTime() == -1)
                             ) {
                                 climber.setClimberPower(pressed ? 0.7 : 0);
                             }
@@ -651,55 +649,55 @@ public class Robot extends TimedRobot {
             maintainAzimuth
         );
 
-//        if (mControlBoard.getDPad() != -1) {
-//            swerveHeadingController.setState(
-//                SwerveHeadingController.State.Snap
-//            );
-//            double heading_goal = mControlBoard.getDPad();
-//            SmartDashboard.putNumber("Heading Goal", heading_goal);
-//            swerveHeadingController.setGoal(heading_goal);
-//        } else {
-//            if (!maintainAzimuth) {
-//                swerveHeadingController.setState(
-//                    SwerveHeadingController.State.Off
-//                );
-//            } else if (
-//                (
-//                    swerveHeadingController.getState() ==
-//                    SwerveHeadingController.State.Snap &&
-//                    swerveHeadingController.is()
-//                ) ||
-//                changeAzimuthSetpoint
-//            ) {
-//                swerveHeadingController.setState(
-//                    SwerveHeadingController.HeadingControllerState.MAINTAIN
-//                );
-//                swerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
-//            }
-//        }
-//
-//        if (
-//            swerveHeadingController.getHeadingControllerState() !=
-//            SwerveHeadingController.HeadingControllerState.OFF
-//        ) {
-//            mDrive.setTeleopInputs(
-//                mControlBoard.getThrottle(),
-//                mControlBoard.getStrafe(),
-//                swerveHeadingController.update(),
-//                mControlBoard.getSlowMode(),
-//                mControlBoard.getFieldRelative(),
-//                true
-//            );
-//        } else {
-            mDrive.setTeleopInputs(
-                mControlBoard.getThrottle(),
-                mControlBoard.getStrafe(),
-                mControlBoard.getTurn(),
-                mControlBoard.getSlowMode(),
-                /*mControlBoard.getFieldRelative()*/ // Field Relative override button conflicts with collector
-                false
-            );
-//        }
+        //        if (mControlBoard.getDPad() != -1) {
+        //            swerveHeadingController.setState(
+        //                SwerveHeadingController.State.Snap
+        //            );
+        //            double heading_goal = mControlBoard.getDPad();
+        //            SmartDashboard.putNumber("Heading Goal", heading_goal);
+        //            swerveHeadingController.setGoal(heading_goal);
+        //        } else {
+        //            if (!maintainAzimuth) {
+        //                swerveHeadingController.setState(
+        //                    SwerveHeadingController.State.Off
+        //                );
+        //            } else if (
+        //                (
+        //                    swerveHeadingController.getState() ==
+        //                    SwerveHeadingController.State.Snap &&
+        //                    swerveHeadingController.is()
+        //                ) ||
+        //                changeAzimuthSetpoint
+        //            ) {
+        //                swerveHeadingController.setState(
+        //                    SwerveHeadingController.HeadingControllerState.MAINTAIN
+        //                );
+        //                swerveHeadingController.setGoal(mDrive.getHeading().getDegrees());
+        //            }
+        //        }
+        //
+        //        if (
+        //            swerveHeadingController.getHeadingControllerState() !=
+        //            SwerveHeadingController.HeadingControllerState.OFF
+        //        ) {
+        //            mDrive.setTeleopInputs(
+        //                mControlBoard.getThrottle(),
+        //                mControlBoard.getStrafe(),
+        //                swerveHeadingController.update(),
+        //                mControlBoard.getSlowMode(),
+        //                mControlBoard.getFieldRelative(),
+        //                true
+        //            );
+        //        } else {
+        mDrive.setTeleopInputs(
+            mControlBoard.getThrottle(),
+            mControlBoard.getStrafe(),
+            mControlBoard.getTurn(),
+            mControlBoard.getSlowMode(),
+            /*mControlBoard.getFieldRelative()*/// Field Relative override button conflicts with collector
+            false
+        );
+        //        }
     }
 
     @Override

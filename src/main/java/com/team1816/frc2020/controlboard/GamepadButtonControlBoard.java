@@ -84,7 +84,9 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
-    public boolean getClimberDown(){return mController.getDPad() == 180; }
+    public boolean getClimberDown() {
+        return mController.getDPad() == 180;
+    }
 
     @Override
     public boolean getShoot() {
