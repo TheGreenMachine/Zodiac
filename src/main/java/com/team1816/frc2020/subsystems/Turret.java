@@ -162,6 +162,7 @@ public class Turret extends Subsystem implements PidProvider {
                     led.indicateDefaultStatus();
                 }
             }
+            System.out.println("turret controlMode == " + this.controlMode);
         }
     }
 
@@ -195,13 +196,12 @@ public class Turret extends Subsystem implements PidProvider {
 
     public synchronized void setTurretPosition(double position) {
         //Since we are using position we need ensure value stays in one rotation
-        int adjPos = (int) position & TURRET_ENCODER_MASK;
+        int adjPos = (int) position ; // & TURRET_ENCODER_MASK
         if (desiredTurretPos != adjPos) {
             desiredTurretPos = adjPos;
             outputsChanged = true;
         }
-        System.out.println(desiredTurretPos);
-
+        System.out.println("set turret position to " + desiredTurretPos);
     }
 
     public synchronized void setTurretAngle(double angle) {
@@ -278,7 +278,7 @@ public class Turret extends Subsystem implements PidProvider {
             convertTurretDegreesToTicks(turretAngleRelativeToField) - ABS_TICKS_SOUTH;
         int adj = desiredTurretPos + fieldTickOffset;
         // Valid positions are 0 to encoder max ticks if we go negative adjust
-        if (adj < 0) adj += TURRET_ENCODER_PPR;
+        //if (adj < 0) adj += TURRET_ENCODER_PPR;
         if (adj != followingTurretPos) {
             followingTurretPos = adj;
             outputsChanged = true;
@@ -287,6 +287,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     private void positionControl() {
         if (outputsChanged) {
+            System.out.println("turret ---- " + followingTurretPos);
             turret.set(
                 com.ctre.phoenix.motorcontrol.ControlMode.Position,
                 followingTurretPos
