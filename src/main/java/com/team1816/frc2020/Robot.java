@@ -390,7 +390,7 @@ public class Robot extends TimedRobot {
                             if (shooting) {
                                 shooter.autoHood();
                                 mDrive.setOpenLoop(SwerveDriveSignal.BRAKE);
-                                shooter.startShooter(); // Uses ZED distance
+                                shooter.setVelocity(5_500); // Uses ZED distance
                                 turret.lockTurret();
                             } else {
                                 //turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
