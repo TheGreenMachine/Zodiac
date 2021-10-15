@@ -69,9 +69,9 @@ subsystems:
         invertSensorPhase:
             - turret
         constants:
-            revLimit: -3989
-            absPosTicksSouth: -3361
-            fwdLimit: -800
+            revLimit: -3774
+            absPosTicksSouth: -3450
+            fwdLimit: -1147
     shooter:
         implemented: false
         invertMotor:

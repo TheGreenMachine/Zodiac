@@ -48,9 +48,9 @@ subsystems:
         invertSensorPhase:
             - turret
         constants:
-            revLimit: -3306
-            fwdLimit: 2291
-            absPosTicksSouth: -1522
+            revLimit: -1847
+            fwdLimit: 1493
+            absPosTicksSouth: 1098
     ledmanager:
         implemented: true
         canifier: 18
