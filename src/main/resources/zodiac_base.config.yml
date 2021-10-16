@@ -26,9 +26,9 @@ subsystems:
             rpmEpsilonCheck: 60
             openLoopRampRate: 0.8
     climber:
-        implemented: false
+        implemented: true
         talons:
-            elevator: 12
+            elevator: 6
         solenoids:
             deployer: 5
     collector:
@@ -54,8 +54,8 @@ subsystems:
     shooter:
         implemented: true
         falcons:
-            shooterMain: -1
-            shooterFollower: -1
+            shooterMain: 3
+            shooterFollower: 2
         constants:
             kP: 0.15 #0.30
             kI: 0
