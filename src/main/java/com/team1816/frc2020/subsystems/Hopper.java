@@ -89,23 +89,25 @@ public class Hopper extends Subsystem {
     @Override
     public void writePeriodicOutputs() {
         if (lockToShooter) {
-            if (waitForShooterLoopCounter < 10) {
-                waitForShooterLoopCounter++;
-                return;
-            }
+//            if (waitForShooterLoopCounter < 10) {
+//                waitForShooterLoopCounter++;
+//                return;
+//            }
 
-            if (!Shooter.getInstance().isVelocityNearTarget()) {
+//            if (!Shooter.getInstance().isVelocityNearTarget()) {
                 if (wantUnjam) {
                     this.spindexer.set(ControlMode.PercentOutput, -0.25);
                 }
-                // Shooter has not sped up yet, wait.
-                // if (shooterWasAtTarget) {
-                //     this.spindexer.set(ControlMode.PercentOutput, 0);
-                //     this.elevator.set(ControlMode.PercentOutput, 0);
-                //     shooterWasAtTarget = false;
-                // }
-                return;
-            }
+//                 Shooter has not sped up ye02.
+//                 +
+//                 -t, wait.
+                 if (shooterWasAtTarget) {
+                     this.spindexer.set(ControlMode.PercentOutput, 0);
+                     this.elevator.set(ControlMode.PercentOutput, 0);
+                     shooterWasAtTarget = false;
+                 }
+
+//            }
             lockToShooter = false;
             shooterWasAtTarget = true;
         }

@@ -73,7 +73,7 @@ subsystems:
             absPosTicksSouth: -3450
             fwdLimit: -1147
     shooter:
-        implemented: false
+        implemented: true
         invertMotor:
             - shooterMain
         falcons:
@@ -82,7 +82,7 @@ subsystems:
         solenoids:
             hood: 1
     climber:
-        implemented: false
+        implemented: true
         talons:
             elevator: 6
     hopper:
@@ -95,7 +95,7 @@ subsystems:
         constants:
             ballSensor: 0
     collector:
-        implemented: false
+        implemented: true
         talons:
             intake: 7
         invertMotor:

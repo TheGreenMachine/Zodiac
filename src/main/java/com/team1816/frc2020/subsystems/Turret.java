@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Turret extends Subsystem implements PidProvider {
 
-    public static final double TURRET_JOG_SPEED = 0.15;
+    public static final double TURRET_JOG_SPEED = 0.25;
     public static final double CARDINAL_SOUTH = 0; // deg
     public static final double CARDINAL_WEST = 90; // deg
     public static final double CARDINAL_NORTH = 180; // deg
