@@ -158,6 +158,10 @@ public class QuinticHermiteSpline extends Spline {
     }
 
     /**
+     *
+     *
+     *
+     *
      * @return integral of dCurvature^2 over the length of the spline
      */
     private double sumDCurvature2() {

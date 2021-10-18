@@ -28,7 +28,7 @@ subsystems:
     climber:
         implemented: true
         talons:
-            elevator: 6
+            elevator: 12
         solenoids:
             deployer: 5
     collector:

@@ -264,16 +264,19 @@ public class Robot extends TimedRobot {
                             hopper.setSpindexer(collecting ? -1 : 0);
                         }
                     ),
-                    createScalar(
-                        mControlBoard::getDriverClimber,
-                        climber::setClimberPower
+                    createHoldAction(
+                        mControlBoard::getFeederFlapIn,
+                        pressed -> {
+                                climber.setClimberPower(pressed ? 0.7 : 0);
+
+                        }
                     ),
                     createHoldAction(
                         mControlBoard::getClimberDeploy,
                         pressed -> {
                             if (
                                 (DriverStation.getInstance().getMatchTime() <= 30) ||
-                                (DriverStation.getInstance().getMatchTime() == -1)
+                                    (DriverStation.getInstance().getMatchTime() == -1)
                             ) {
                                 climber.setDeployed(pressed);
                             }

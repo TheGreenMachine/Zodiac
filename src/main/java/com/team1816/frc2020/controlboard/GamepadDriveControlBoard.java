@@ -4,6 +4,7 @@ import com.team1816.frc2020.Constants;
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IDriveControlBoard;
 import com.team1816.lib.controlboard.LogitechController;
+import com.team1816.lib.controlboard.XboxController;
 
 public class GamepadDriveControlBoard implements IDriveControlBoard {
 
@@ -20,63 +21,65 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     private final Controller mController;
 
     private GamepadDriveControlBoard() {
-        mController = new LogitechController(Constants.kDriveGamepadPort);
+        mController = new XboxController(Constants.kDriveGamepadPort);
     }
 
     @Override
     public double getThrottle() {
+        System.out.println("Left Joystick: "+ mController.getJoystick(XboxController.Side.LEFT, XboxController.Axis.X));
         return mController.getJoystick(
-            LogitechController.Side.LEFT,
-            LogitechController.Axis.Y
+            XboxController.Side.LEFT,
+            XboxController.Axis.Y
         );
     }
 
     @Override
     public double getTurn() {
+        System.out.println("Right Joystick: "+ mController.getJoystick(XboxController.Side.RIGHT, XboxController.Axis.X));
         return mController.getJoystick(
-            LogitechController.Side.RIGHT,
-            LogitechController.Axis.X
+            XboxController.Side.RIGHT,
+            XboxController.Axis.X
         );
     }
 
     @Override
     public boolean getSlowMode() {
-        return mController.getTrigger(LogitechController.Side.RIGHT);
+        return mController.getTrigger(XboxController.Side.RIGHT);
     }
 
     @Override
     public boolean getDrivetrainFlipped() {
-        return mController.getButton(LogitechController.Button.Y);
+        return mController.getButton(XboxController.Button.Y);
     }
 
     @Override
     public boolean getQuickTurn() {
-        return mController.getButton(LogitechController.Button.R_JOYSTICK);
+        return mController.getButton(XboxController.Button.R_JOYSTICK);
     }
 
     @Override
     public boolean getCollectorToggle() {
-        return mController.getButton(LogitechController.Button.LB);
+        return mController.getButton(XboxController.Button.LB);
     }
 
     @Override
     public boolean getCollectorUp() {
-        return mController.getButton(LogitechController.Button.RB);
+        return mController.getButton(XboxController.Button.RB);
     }
 
     @Override
     public boolean getFeederToTrenchSpline() {
-        return mController.getButton(LogitechController.Button.X);
+        return mController.getButton(XboxController.Button.X);
     }
 
     @Override
     public boolean getTrenchToFeederSpline() {
-        return mController.getButton(LogitechController.Button.B);
+        return mController.getButton(XboxController.Button.B);
     }
 
     @Override
     public boolean getBrakeMode() {
-        return mController.getButton(LogitechController.Button.A);
+        return mController.getButton(XboxController.Button.A);
     }
 
     @Override
