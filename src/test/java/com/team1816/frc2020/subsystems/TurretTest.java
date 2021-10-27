@@ -11,7 +11,7 @@ public class TurretTest extends TestCase {
     }
 
     public void testSetTurretPosition() {
-        target.setTurretPosition(Turret.CARDINAL_SOUTH);
+        target.setTurretAngle(Turret.CARDINAL_SOUTH);
     }
 
     public void testLockTurret() {
