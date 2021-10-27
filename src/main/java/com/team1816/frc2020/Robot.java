@@ -206,7 +206,7 @@ public class Robot extends TimedRobot {
                 BadLog.createTopic(
                     "Turret/ActPos",
                     "NativeUnits",
-                    turret::getActualTurretPositionDegrees,
+                    turret::getActualTurretPositionTicks,
                     "hide",
                     "join:Turret/Positions"
                 );
