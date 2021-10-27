@@ -48,7 +48,7 @@ public interface PathContainer {
         boolean isReversed,
         List<Pose2d> waypoints
     ) {
-        return (new SwerveMotionPlanner())
+        return (new SwerveMotionPlanner()) // ummm wat this seems scuffed - why specifically swerve? -ginget
             .generateTrajectory(
                 isReversed,
                 waypoints,

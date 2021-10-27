@@ -207,7 +207,7 @@ public class RobotState {
         return fieldToTurret.getDegrees();
     }
 
-    public synchronized void addObservations(
+    public synchronized void addObservations( // only used by estimateTank and not Swerve in robotStateEstimator. Why? -ginget
         double timestamp,
         Twist2d displacement,
         Twist2d measured_velocity,

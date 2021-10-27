@@ -34,7 +34,7 @@ public class TankMotionPlanner implements CSVWritable {
         NONLINEAR_FEEDBACK,
     }
 
-    FollowerType mFollowerType = FollowerType.NONLINEAR_FEEDBACK;
+    FollowerType mFollowerType = FollowerType.NONLINEAR_FEEDBACK; // followertype == purepursuit in swervemotionplanner - why difference? -ginget
 
     public void setFollowerType(FollowerType type) {
         mFollowerType = type;
