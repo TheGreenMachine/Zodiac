@@ -37,18 +37,20 @@ subsystems:
             - elevator
             - spindexer
     shooter:
-        implemented: true
+        implemented: false
         falcons:
             shooterMain: 3
             shooterFollower: 2
     turret:
-        implemented: false
+        implemented: true
         talons:
             turret: 13
+        invertSensorPhase:
+            - turret
         constants:
-            minPos: -4182
-            maxPos: -757
-            absPosTicksSouth: -3432
+            revLimit: -1847
+            fwdLimit: 1493
+            absPosTicksSouth: 1098
     ledmanager:
         implemented: true
         canifier: 18

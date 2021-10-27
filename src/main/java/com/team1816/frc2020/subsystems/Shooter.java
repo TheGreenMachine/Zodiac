@@ -65,6 +65,7 @@ public class Shooter extends Subsystem implements PidProvider {
                 shooterMain
             );
 
+        this.shooterFollower.setInverted(false);
         this.hood = factory.getSolenoid(NAME, "hood");
 
         this.kP = factory.getConstant(NAME, "kP");

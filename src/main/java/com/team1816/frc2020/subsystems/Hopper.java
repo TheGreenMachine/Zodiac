@@ -59,7 +59,7 @@ public class Hopper extends Subsystem {
     }
 
     public void startSpindexerBasedOnDistance() {
-        setSpindexer(distanceManager.getSpindexerOutput());
+        setSpindexer(distanceManager.getSpindexerOutput(0));
     }
 
     public void setElevator(double elevatorOutput) {
@@ -98,13 +98,16 @@ public class Hopper extends Subsystem {
                 if (wantUnjam) {
                     this.spindexer.set(ControlMode.PercentOutput, -0.25);
                 }
-                // Shooter has not sped up yet, wait.
-                // if (shooterWasAtTarget) {
-                //     this.spindexer.set(ControlMode.PercentOutput, 0);
-                //     this.elevator.set(ControlMode.PercentOutput, 0);
-                //     shooterWasAtTarget = false;
-                // }
                 return;
+//                 Shooter has not sped up ye02.
+//                 +
+//                 -t, wait.
+//                 if (shooterWasAtTarget) {
+//                     this.spindexer.set(ControlMode.PercentOutput, 0);
+//                     this.elevator.set(ControlMode.PercentOutput, 0);
+//                     shooterWasAtTarget = false;
+//                 }
+//
             }
             lockToShooter = false;
             shooterWasAtTarget = true;

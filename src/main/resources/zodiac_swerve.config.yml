@@ -63,14 +63,15 @@ subsystems:
             raveEnabled: 0
             raveSpeed: 0.05
     turret:
-        implemented: false
+        implemented: true
         talons:
             turret: 9
+        invertSensorPhase:
+            - turret
         constants:
-            minPos: -3989
-            absPosTicksSouth: -3461
-            maxPos: -1204
-            invertSensorPhase: 1
+            revLimit: -3774
+            absPosTicksSouth: -3450
+            fwdLimit: -1147
     shooter:
         implemented: true
         invertMotor:
@@ -81,7 +82,7 @@ subsystems:
         solenoids:
             hood: 1
     climber:
-        implemented: false
+        implemented: true
         talons:
             elevator: 6
     hopper:
@@ -94,7 +95,7 @@ subsystems:
         constants:
             ballSensor: 0
     collector:
-        implemented: false
+        implemented: true
         talons:
             intake: 7
         invertMotor:

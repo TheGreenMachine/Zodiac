@@ -206,7 +206,7 @@ public class Robot extends TimedRobot {
                 BadLog.createTopic(
                     "Turret/ActPos",
                     "NativeUnits",
-                    turret::getTurretPositionTicks,
+                    turret::getActualTurretPositionTicks,
                     "hide",
                     "join:Turret/Positions"
                 );
@@ -386,10 +386,10 @@ public class Robot extends TimedRobot {
                             if (shooting) {
                                 shooter.autoHood();
                                 mDrive.setOpenLoop(SwerveDriveSignal.BRAKE);
-                                shooter.setVelocity(Shooter.MAX_VELOCITY); // Uses ZED distance
+                                shooter.setVelocity(Shooter.MID_VELOCITY); // Uses ZED distance
                                 turret.lockTurret();
                             } else {
-                                // turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+                                //turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
                                 shooter.stopShooter();
                                 shooter.setHood(false);
                             }
