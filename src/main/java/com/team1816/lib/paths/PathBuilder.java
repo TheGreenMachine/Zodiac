@@ -49,7 +49,7 @@ public class PathBuilder {
      * that is used by the WaitForPathMarkerAction.
      *
      * @see PathBuilder
-     * @see WaitForPathMarkerAction
+     *
      */
     public static class Waypoint {
 

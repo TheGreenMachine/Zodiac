@@ -22,7 +22,7 @@ public class RobotStateEstimator extends Subsystem {
     private Drive.Factory mDriveFactory;
 
     private final RobotState mRobotState = RobotState.getInstance();
-    private final Turret turret = Turret.getInstance();
+    //private final Turret turret = Turret.getInstance();
     private double left_encoder_prev_distance_ = 0.0;
     private double right_encoder_prev_distance_ = 0.0;
 
@@ -88,9 +88,9 @@ public class RobotStateEstimator extends Subsystem {
         final Rotation2d gyro_angle_relative_to_initial = mDrive.getHeadingRelativeToInitial();
 
         Twist2d odometry_twist;
-        /* final */Rotation2d turret_angle = Rotation2d.fromDegrees(
-            turret.getActualTurretPositionDegrees() - Turret.CARDINAL_SOUTH
-        ); // - Turret.CARDINAL_NORTH);
+//        /* final */Rotation2d turret_angle = Rotation2d.fromDegrees(
+//            turret.getActualTurretPositionDegrees() - Turret.CARDINAL_SOUTH
+//        ); // - Turret.CARDINAL_NORTH);
         synchronized (mRobotState) {
             final Pose2d last_measurement = mRobotState
                 .getLatestFieldToVehicle()
@@ -122,8 +122,8 @@ public class RobotStateEstimator extends Subsystem {
             measured_velocity,
             predicted_velocity
         );
-        mRobotState.setHeadingRelativeToInitial(gyro_angle_relative_to_initial);
-        mRobotState.addVehicleToTurretObservation(timestamp, turret_angle);
+        mRobotState.setHeadingRelativeToInitial(gyro_angle_relative_to_initial); // different from what estimateSwerve calls? -ginget
+        //mRobotState.addVehicleToTurretObservation(timestamp, turret_angle);
         left_encoder_prev_distance_ = left_distance;
         right_encoder_prev_distance_ = right_distance;
     }
@@ -166,7 +166,7 @@ public class RobotStateEstimator extends Subsystem {
             dt
         );
         mRobotState.addFieldToVehicleObservation(timestamp, mDrive.getPose());
-        mRobotState.setHeadingRelativeToInitial(mDrive.getHeadingRelativeToInitial());
+        mRobotState.setHeadingRelativeToInitial(mDrive.getHeadingRelativeToInitial()); // diff call from estimateTank -ginget
         //    mRobotState.addObservations(timestamp, odometry_twist, measured_velocity);
     }
 
