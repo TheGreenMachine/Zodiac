@@ -59,7 +59,7 @@ public class Hopper extends Subsystem {
     }
 
     public void startSpindexerBasedOnDistance() {
-        setSpindexer(distanceManager.getSpindexerOutput());
+        setSpindexer(distanceManager.getSpindexerOutput(0));
     }
 
     public void setElevator(double elevatorOutput) {

@@ -11,6 +11,7 @@ public class SubsystemConfig {
     Map<String, Integer> falcons = new HashMap<>();
     Map<String, Integer> victors = new HashMap<>();
     List<String> invertMotor = new ArrayList<>();
+    List<String> invertSensorPhase = new ArrayList<>();
     List<PidConfig> pid = new ArrayList<>();
     Map<String, SwerveModuleConfig> swerveModules = new HashMap<>();
     PidConfig drivePid;
@@ -54,7 +55,9 @@ public class SubsystemConfig {
             Objects.equals(azimuthPid, subsystemConfig.azimuthPid) &&
             Objects.equals(drivePid, subsystemConfig.drivePid) &&
             Objects.equals(canifier, subsystemConfig.canifier) &&
-            invertMotor.equals(subsystemConfig.invertMotor)
+            invertMotor.equals(subsystemConfig.invertMotor) &&
+                invertSensorPhase.equals(subsystemConfig.invertSensorPhase)
+
         );
     }
 
@@ -73,7 +76,8 @@ public class SubsystemConfig {
             azimuthPid,
             drivePid,
             canifier,
-            invertMotor
+            invertMotor,
+            invertSensorPhase
         );
     }
 
@@ -109,6 +113,8 @@ public class SubsystemConfig {
         );
         result.invertMotor.addAll(base.invertMotor);
         result.invertMotor.addAll(active.invertMotor);
+        result.invertSensorPhase.addAll(base.invertSensorPhase);
+        result.invertSensorPhase.addAll(active.invertSensorPhase);
         if (active.pid.size() != 0) {
             result.pid = active.pid;
         } else {

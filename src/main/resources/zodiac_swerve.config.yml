@@ -1,7 +1,7 @@
 $extends: base
 subsystems:
     drivetrain:
-        implemented: true
+        implemented: false
         falcons:
             flDrive: 2
             blDrive: 1
@@ -63,16 +63,17 @@ subsystems:
             raveEnabled: 0
             raveSpeed: 0.05
     turret:
-        implemented: false
+        implemented: true
         talons:
             turret: 9
+        invertSensorPhase:
+            - turret
         constants:
-            minPos: -3989
-            absPosTicksSouth: -3461
-            maxPos: -1204
-            invertSensorPhase: 1
+            revLimit: -3989
+            absPosTicksSouth: -3361
+            fwdLimit: -800
     shooter:
-        implemented: true
+        implemented: false
         invertMotor:
             - shooterMain
         falcons:
