@@ -153,7 +153,7 @@ public class Turret extends Subsystem implements PidProvider {
                     led.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
                 }
             } else {
-                turret.selectProfileSlot(kPIDGyroIDx, 0);
+                turret.selectProfileSlot(kPIDGyroIDx, 0); // what are profile slots? - ginget
                 this.controlMode = controlMode;
                 camera.setEnabled(false);
                 if (controlMode == ControlMode.MANUAL) {
@@ -218,7 +218,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public double getActualTurretPositionTicks() {
-        return turret.getSelectedSensorPosition(kPrimaryCloseLoop);
+        return turret.getSelectedSensorPosition(kPrimaryCloseLoop); //what does kPrimaryCloseLoop do? - ginget - doesn't seem to be setting the act turret position ticks correctly
     }
 
     public double getTargetPosition() {

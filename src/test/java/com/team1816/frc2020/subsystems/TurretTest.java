@@ -12,8 +12,12 @@ public class TurretTest extends TestCase {
 
     public void testSetTurretPosition() {
         target.setTurretAngle(Turret.CARDINAL_SOUTH);
+        target.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+        assertEquals((double)Turret.ABS_TICKS_SOUTH, target.getActualTurretPositionTicks());
+        assertEquals(Turret.ControlMode.FIELD_FOLLOWING, target.getControlMode());
     }
 
     public void testLockTurret() {
     }
 }
+

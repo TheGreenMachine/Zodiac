@@ -389,7 +389,7 @@ public class Robot extends TimedRobot {
                                 shooter.setVelocity(Shooter.MID_VELOCITY); // Uses ZED distance
                                 turret.lockTurret();
                             } else {
-                                //turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+                                turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
                                 shooter.stopShooter();
                                 shooter.setHood(false);
                             }
@@ -503,6 +503,7 @@ public class Robot extends TimedRobot {
 
             turret.setTurretAngle(Turret.CARDINAL_SOUTH);
             turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+            System.out.println(turret.getActualTurretPositionTicks() + "+++++++"); // for debugging whether or not getActTicks works. doesn't seem to - ginget
 
             mDrive.setOpenLoop(SwerveDriveSignal.NEUTRAL);
 
