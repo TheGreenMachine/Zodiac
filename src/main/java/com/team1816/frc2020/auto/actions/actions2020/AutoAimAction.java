@@ -4,13 +4,15 @@ import com.team1816.frc2020.subsystems.Camera;
 import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.actions.Action;
 
-public class AutoAimAction implements Action {
+import javax.inject.Inject;
 
+public class AutoAimAction implements Action {
+    @Inject
     private Turret turret;
     private Camera camera;
 
+
     public AutoAimAction() {
-        turret = Turret.getInstance();
         camera = Camera.getInstance();
     }
 

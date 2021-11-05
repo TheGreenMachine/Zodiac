@@ -1,7 +1,7 @@
 $extends: base
 subsystems:
     drivetrain:
-        implemented: true
+        implemented: false
         falcons:
             leftMain: 17
             leftFollower: 1
@@ -16,7 +16,7 @@ subsystems:
             encPPR: 22220.8
             isSwerve: 0
     climber:
-        implemented: true
+        implemented: false
         falcons:
             intake: 11
         talons:
@@ -27,7 +27,7 @@ subsystems:
         invertMotor:
             - elevator
     hopper:
-        implemented: true
+        implemented: false
         talons:
             spindexer: 4
             elevator: 5
@@ -48,9 +48,10 @@ subsystems:
         invertSensorPhase:
             - turret
         constants:
-            revLimit: -1847
-            fwdLimit: 1493
-            absPosTicksSouth: 1098
+            revLimit: -3632
+            fwdLimit: -818
+            absPosTicksSouth: -3280
+
     ledmanager:
         implemented: true
         canifier: 18

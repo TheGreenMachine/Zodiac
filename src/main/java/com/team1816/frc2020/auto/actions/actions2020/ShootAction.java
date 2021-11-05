@@ -4,6 +4,8 @@ import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.actions.Action;
 import com.team1816.lib.loops.AsyncTimer;
 
+import javax.inject.Inject;
+
 public class ShootAction implements Action {
 
     private Shooter shooter;
@@ -11,6 +13,7 @@ public class ShootAction implements Action {
     private LedManager ledManager;
     private AsyncTimer shooterTimer;
     private Collector collector;
+    @Inject
     private Turret turret;
 
     private boolean unjam;
@@ -28,7 +31,6 @@ public class ShootAction implements Action {
     public ShootAction(double duration, boolean unjam) {
         this.shooter = Shooter.getInstance();
         this.hopper = Hopper.getInstance();
-        this.turret = Turret.getInstance();
         this.ledManager = LedManager.getInstance();
         this.collector = Collector.getInstance();
         this.shooterTimer =

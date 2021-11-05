@@ -1,11 +1,14 @@
 package com.team1816.lib.subsystems;
 
+import badlog.lib.BadLog;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.ILooper;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
+
+import java.util.function.Supplier;
 
 /**
  * The Subsystem abstract class, which serves as a basic framework for all robot subsystems. Each subsystem outputs
@@ -42,6 +45,23 @@ public abstract class Subsystem implements Sendable {
     public abstract void stop();
 
     public abstract boolean checkSystem();
+
+    public void CreateBadLogTopic(
+        String topicName,
+        String unit,
+        Supplier<Double> supplier,
+        String... attrs
+    ) {
+        if (factory.isImplemented(name)) {
+            BadLog.createTopic(topicName, unit, supplier, attrs);
+        }
+    }
+
+    public void CreateBadLogValue(String badLogName, String value) {
+        if (factory.isImplemented(name)) {
+            BadLog.createValue(badLogName, value);
+        }
+    }
 
     @Deprecated
     public void outputTelemetry() {}

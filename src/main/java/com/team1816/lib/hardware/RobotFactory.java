@@ -151,6 +151,11 @@ public class RobotFactory {
         return hardwareId != null && hardwareId > -1;
     }
 
+    public boolean isImplemented(String subsystemName) {
+        var subsystem = getSubsystem(subsystemName);
+        return subsystem.implemented;
+    }
+
     public SwerveModule getSwerveModule(
         String subsystemName,
         String name,

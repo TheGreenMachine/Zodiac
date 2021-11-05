@@ -13,6 +13,16 @@ subsystems:
             - leftMain
         constants:
             encPPR: 22220.8
+    turret:
+        implemented: true
+        talons:
+            turret: -1
+        invertSensorPhase:
+            - turret
+        constants:
+            revLimit: -3774
+            absPosTicksSouth: -2000
+            fwdLimit: -1147
 pcm: -1
 constants:
     wheelDiameter: 6.3

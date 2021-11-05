@@ -1,7 +1,10 @@
-package com.team254.lib.geometry;
+package com.team1816.lib.geometry;
 
+// This is based from 254 class got rid of some weird system out prints
+
+import com.team254.lib.geometry.IRotation2d;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.util.Util;
-import edu.wpi.first.wpilibj.DriverStation;
 
 import java.text.DecimalFormat;
 
@@ -13,7 +16,8 @@ import static com.team254.lib.util.Util.kEpsilon;
  * <p>
  * Inspired by Sophus (https://github.com/strasdat/Sophus/tree/master/sophus)
  */
-public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implements IRotation2d<Rotation2d> {
+public class Rotation2d implements IRotation2d<Rotation2d> {
+
     protected static final Rotation2d kIdentity = new Rotation2d();
 
     public static Rotation2d identity() {
@@ -23,8 +27,6 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
     protected double cos_angle_ = Double.NaN;
     protected double sin_angle_ = Double.NaN;
     protected double radians_ = Double.NaN;
-    protected double theta_degrees = 0;
-    protected double theta_radians = 0;
 
     protected Rotation2d(double x, double y, double radians) {
         cos_angle_ = x;
@@ -60,20 +62,12 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
             cos_angle_ = x;
             sin_angle_ = y;
         }
-        theta_degrees = Math.toDegrees(Math.atan2(sin_angle_, cos_angle_));
     }
 
     public Rotation2d(final Rotation2d other) {
         cos_angle_ = other.cos_angle_;
         sin_angle_ = other.sin_angle_;
         radians_ = other.radians_;
-        theta_degrees = Math.toDegrees(Math.atan2(sin_angle_, cos_angle_));
-    }
-
-    public Rotation2d(double theta_degrees){
-        cos_angle_ = Math.cos(Math.toRadians(theta_degrees));
-        sin_angle_ = Math.sin(Math.toRadians(theta_degrees));
-        this.theta_degrees = theta_degrees;
     }
 
     public Rotation2d(final Translation2d direction, boolean normalize) {
@@ -85,7 +79,7 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
     }
 
     public static Rotation2d fromDegrees(double angle_degrees) {
-        return new Rotation2d(angle_degrees);
+        return fromRadians(Math.toRadians(angle_degrees));
     }
 
     public double cos() {
@@ -110,19 +104,13 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
         return sin_angle_ / cos_angle_;
     }
 
-    @Override
     public double getRadians() {
         ensureRadiansComputed();
         return radians_;
     }
 
-    @Override
     public double getDegrees() {
         return Math.toDegrees(getRadians());
-    }
-
-    public double getUnboundedDegrees() {
-        return theta_degrees;
     }
 
     /**
@@ -135,8 +123,11 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
      */
     public Rotation2d rotateBy(final Rotation2d other) {
         if (hasTrig() && other.hasTrig()) {
-            return new Rotation2d(cos_angle_ * other.cos_angle_ - sin_angle_ * other.sin_angle_,
-                    cos_angle_ * other.sin_angle_ + sin_angle_ * other.cos_angle_, true);
+            return new Rotation2d(
+                cos_angle_ * other.cos_angle_ - sin_angle_ * other.sin_angle_,
+                cos_angle_ * other.sin_angle_ + sin_angle_ * other.cos_angle_,
+                true
+            );
         } else {
             return fromRadians(getRadians() + other.getRadians());
         }
@@ -148,24 +139,6 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
         } else {
             return fromRadians(getRadians() - Math.PI / 2.0);
         }
-    }
-
-    /**
-     * Based on Team 1323's method of the same name.
-     *
-     * @return Rotation2d representing the angle of the nearest axis to the angle in standard position
-     */
-    public Rotation2d nearestPole() {
-        double pole_sin = 0.0;
-        double pole_cos = 0.0;
-        if (Math.abs(cos_angle_) > Math.abs(sin_angle_)) {
-            pole_cos = Math.signum(cos_angle_);
-            pole_sin = 0.0;
-        } else {
-            pole_cos = 0.0;
-            pole_sin = Math.signum(sin_angle_);
-        }
-        return new Rotation2d(pole_cos, pole_sin, false);
     }
 
     /**
@@ -183,14 +156,21 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
 
     public boolean isParallel(final Rotation2d other) {
         if (hasRadians() && other.hasRadians()) {
-            return Util.epsilonEquals(radians_, other.radians_)
-                    || Util.epsilonEquals(radians_, WrapRadians(other.radians_ + Math.PI));
+            return (
+                Util.epsilonEquals(radians_, other.radians_) ||
+                Util.epsilonEquals(radians_, WrapRadians(other.radians_ + Math.PI))
+            );
         } else if (hasTrig() && other.hasTrig()) {
-            return Util.epsilonEquals(sin_angle_, other.sin_angle_) && Util.epsilonEquals(cos_angle_, other.cos_angle_);
+            return (
+                Util.epsilonEquals(sin_angle_, other.sin_angle_) &&
+                Util.epsilonEquals(cos_angle_, other.cos_angle_)
+            );
         } else {
             // Use public, checked version.
-            return Util.epsilonEquals(getRadians(), other.getRadians())
-                    || Util.epsilonEquals(radians_, WrapRadians(other.radians_ + Math.PI));
+            return (
+                Util.epsilonEquals(getRadians(), other.getRadians()) ||
+                Util.epsilonEquals(radians_, WrapRadians(other.radians_ + Math.PI))
+            );
         }
     }
 
@@ -203,8 +183,7 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
         final double k2Pi = 2.0 * Math.PI;
         radians = radians % k2Pi;
         radians = (radians + k2Pi) % k2Pi;
-        if (radians > Math.PI)
-            radians -= k2Pi;
+        if (radians > Math.PI) radians -= k2Pi;
         return radians;
     }
 
@@ -218,9 +197,6 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
 
     private void ensureTrigComputed() {
         if (!hasTrig()) {
-            if (Double.isNaN(radians_)) {
-//                DriverStation.reportError("Ensure hasTrig", true);
-            }
             sin_angle_ = Math.sin(radians_);
             cos_angle_ = Math.cos(radians_);
         }
@@ -228,9 +204,6 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
 
     private void ensureRadiansComputed() {
         if (!hasRadians()) {
-//            if (Double.isNaN(cos_angle_) || Double.isNaN(sin_angle_)) {
-//                DriverStation.reportError("Ensure hasRadians", true);
-//            }
             radians_ = Math.atan2(sin_angle_, cos_angle_);
         }
     }
@@ -271,7 +244,7 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
     }
 
     @Override
-    public Rotation2d getRotation() {
-        return this;
+    public com.team254.lib.geometry.Rotation2d getRotation() {
+        return null;
     }
 }

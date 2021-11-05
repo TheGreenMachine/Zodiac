@@ -83,7 +83,7 @@ public class RobotState {
 
     private Rotation2d headingRelativeToInitial = Rotation2d.identity();
 
-    private RobotState() {
+    public RobotState() {
         reset(0.0, Pose2d.identity(), Rotation2d.identity());
     }
 

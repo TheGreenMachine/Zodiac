@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import javax.inject.Inject;
+
 public class Turret extends Subsystem implements PidProvider {
 
     public static final double TURRET_JOG_SPEED = 0.25;
@@ -42,7 +44,7 @@ public class Turret extends Subsystem implements PidProvider {
     // Components
     private final IMotorControllerEnhanced turret;
     private final Camera camera = Camera.getInstance();
-    private final RobotState robotState = RobotState.getInstance();
+    private final RobotState robotState;
     private final LedManager led = LedManager.getInstance();
     private final double kP;
     private final double kI;
@@ -56,8 +58,10 @@ public class Turret extends Subsystem implements PidProvider {
     private double turretAngleRelativeToField;
     private ControlMode controlMode = ControlMode.MANUAL;
 
-    public Turret() {
+    @Inject
+    public Turret(RobotState robotState) {
         super(NAME);
+        this.robotState = robotState;
         this.turret = factory.getMotor(NAME, "turret");
 
         turret.setNeutralMode(NeutralMode.Brake);
@@ -110,12 +114,6 @@ public class Turret extends Subsystem implements PidProvider {
         }
     }
 
-    public static Turret getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Turret();
-        }
-        return INSTANCE;
-    }
 
     public static int convertTurretDegreesToTicks(double degrees) {
         return (int) (((degrees) / 360.0) * TURRET_ENCODER_PPR) + ABS_TICKS_SOUTH;
@@ -218,7 +216,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public double getActualTurretPositionTicks() {
-        return turret.getSelectedSensorPosition(kPrimaryCloseLoop); //what does kPrimaryCloseLoop do? - ginget - doesn't seem to be setting the act turret position ticks correctly
+        return turret.getSelectedSensorPosition(kPrimaryCloseLoop);
     }
 
     public double getTargetPosition() {
@@ -240,15 +238,14 @@ public class Turret extends Subsystem implements PidProvider {
         switch (controlMode) {
             case CAMERA_FOLLOWING:
                 autoHome();
-                positionControl();
+                positionControl(followingTurretPos);
                 break;
             case FIELD_FOLLOWING:
                 trackGyro();
-                positionControl();
+                positionControl(followingTurretPos);
                 break;
             case POSITION:
-                followingTurretPos = 0;
-                positionControl();
+                positionControl(desiredTurretPos);
                 break;
             case MANUAL:
                 manualControl();
@@ -281,12 +278,12 @@ public class Turret extends Subsystem implements PidProvider {
         }
     }
 
-    private void positionControl() {
+    private void positionControl(double rawPos) {
         if (outputsChanged) {
-            System.out.println("turret ---- " + followingTurretPos);
+            System.out.println("turret ---- " + rawPos);
             turret.set(
                 com.ctre.phoenix.motorcontrol.ControlMode.Position,
-                followingTurretPos
+                rawPos
             );
             outputsChanged = false;
         }

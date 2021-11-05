@@ -10,12 +10,16 @@ import com.ctre.phoenix.sensors.CANCoder;
 
 public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
+    private double encoderTicks;
+
     private final SensorCollection sensorCollection = new SensorCollection(
         new BaseTalon(0, "Talon SRX") {}
     );
 
     @Override
-    public void set(ControlMode Mode, double demand) {}
+    public void set(ControlMode Mode, double demand) {
+        encoderTicks = demand; //TODO: implement other controlmodes
+    }
 
     @Override
     public void set(
@@ -169,7 +173,7 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
     @Override
     public double getSelectedSensorPosition(int pidIdx) {
-        return 0;
+        return encoderTicks;
     }
 
     @Override

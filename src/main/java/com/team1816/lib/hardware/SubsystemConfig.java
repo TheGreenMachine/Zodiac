@@ -4,7 +4,7 @@ import java.util.*;
 
 public class SubsystemConfig {
 
-    private Boolean implemented;
+    Boolean implemented;
 
     // Motors
     Map<String, Integer> talons = new HashMap<>();

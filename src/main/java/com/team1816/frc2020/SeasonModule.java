@@ -5,6 +5,7 @@ import com.team1816.frc2020.controlboard.ControlBoard;
 import com.team1816.frc2020.controlboard.GamepadButtonControlBoard;
 import com.team1816.frc2020.controlboard.GamepadDriveControlBoard;
 import com.team1816.frc2020.subsystems.Drive;
+import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.controlboard.IDriveControlBoard;
@@ -18,5 +19,6 @@ public class SeasonModule extends AbstractModule {
         bind(IDriveControlBoard.class).to(GamepadDriveControlBoard.class);
         bind(IButtonControlBoard.class).to(GamepadButtonControlBoard.class);
         requestStaticInjection(SwerveKinematics.class);
+        requestStaticInjection(Turret.class);
     }
 }
