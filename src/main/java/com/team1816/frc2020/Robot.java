@@ -491,10 +491,6 @@ public class Robot extends TimedRobot {
 
             mTurret.zeroSensors();
 
-            if (DistanceManager.USE_ZONES) {
-                DistanceManager.getInstance().setZone(4);
-            }
-
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
             }

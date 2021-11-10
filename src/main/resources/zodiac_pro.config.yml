@@ -1,7 +1,7 @@
 $extends: base
 subsystems:
     drivetrain:
-        implemented: false
+        implemented: true
         falcons:
             leftMain: 17
             leftFollower: 1
@@ -43,6 +43,11 @@ subsystems:
             shooterFollower: 2
     turret:
         implemented: true
+        pid:
+            -   kP: 4 # 1.981 # 1.645
+                kI: 0
+                kD: 40
+                kF: 0 # Should be 0 for position control
         talons:
             turret: 13
         invertSensorPhase:
@@ -51,7 +56,6 @@ subsystems:
             revLimit: -3632
             fwdLimit: -818
             absPosTicksSouth: -3280
-
     ledmanager:
         implemented: true
         canifier: 18
@@ -63,6 +67,6 @@ constants:
     trackWidth: 25 #inches
     compressorEnabled: 1 # 0 or 1
     wheelDiameter: 6.32 #inches
-    logTeleop: 1
+    logTeleOp: 1
     logAuto: 1
     badLogEnabled: 1

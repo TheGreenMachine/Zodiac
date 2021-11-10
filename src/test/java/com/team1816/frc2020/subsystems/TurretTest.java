@@ -50,8 +50,5 @@ public class TurretTest extends TestCase {
         assertEquals((double)Turret.ABS_TICKS_SOUTH, turret.getActualTurretPositionTicks());
         assertEquals(Turret.ControlMode.FIELD_FOLLOWING, turret.getControlMode());
     }
-
-    public void testLockTurret() {
-    }
 }
 

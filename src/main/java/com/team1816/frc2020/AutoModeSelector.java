@@ -1,6 +1,7 @@
 package com.team1816.frc2020;
 
 import com.team1816.frc2020.auto.modes.modes2020.*;
+import com.team1816.frc2020.paths.paths2020.AutoTrenchTurnRightPath;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -80,10 +81,6 @@ public class AutoModeSelector {
         //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
         mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
-        mModeChooser.addOption(
-            "Auto Trench Turn Right",
-            DesiredMode.AUTO_TRENCH_TURN_RIGHT
-        );
         mModeChooser.addOption(
             "Auto Trench Turn Right",
             DesiredMode.AUTO_TRENCH_TURN_RIGHT
@@ -199,6 +196,8 @@ public class AutoModeSelector {
                 return (Optional.of(new DriveStraightShootMode()));
             case SIX_BALL_ALLIANCE_STRAIGHT:
                 return (Optional.of(new SixBallAllianceStraightMode()));
+            case AUTO_TRENCH_TURN_RIGHT:
+                return (Optional.of(new AutoTrenchTurnRightMode()));
             case BARREL:
                 return (Optional.of(new BarrelMode()));
             default:

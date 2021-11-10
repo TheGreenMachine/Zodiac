@@ -1,7 +1,5 @@
 package com.team1816.frc2020.subsystems;
 
-import com.team1816.frc2020.Robot;
-
 public class DistanceManager {
 
     private static DistanceManager INSTANCE;
@@ -21,15 +19,8 @@ public class DistanceManager {
     private int zone;
 
     // Constants
-    public static final boolean USE_ZONES =
-        Robot.getFactory().getConstant("useZones") > 0;
-
     private DistanceManager() {
-        if (USE_ZONES) {
-            buckets = zone_buckets;
-        } else {
-            buckets = distance_buckets;
-        }
+        buckets = distance_buckets;
     }
 
     static class Entry {
@@ -78,22 +69,6 @@ public class DistanceManager {
         new Entry(400, 10_600, 1, 2.1, false),
     };
 
-    private final Entry[] zone_buckets = new Entry[] {
-        new Entry(1, 7_000, 1, 1.5, false), //1.7),/* 167, 198 were 1.5 */
-        new Entry(2, 10_500, 1, 1.8, false), //1.7),
-        new Entry(3, 8_700, 1, 1.45, false), //1.6),
-        new Entry(4, 10_400, 2, 0.5, false),
-        new Entry(5, 9_100, 2, 1.45, true), //1.5),
-    };
-
-    public int getZone() {
-        return zone;
-    }
-
-    public void setZone(int zone) {
-        this.zone = zone;
-    }
-
     public double getShooterVelocity(double distance) {
         for (Entry bucket : buckets) {
             if (distance <= bucket.distance) {
@@ -104,9 +79,6 @@ public class DistanceManager {
     }
 
     public double getShooterVelocity() {
-        if (USE_ZONES) {
-            return getShooterVelocity(zone);
-        }
         return getShooterVelocity(camera.getDistance());
     }
 
@@ -120,9 +92,6 @@ public class DistanceManager {
     }
 
     public double getTurretBias() {
-        if (USE_ZONES) {
-            return getTurretBias(zone);
-        }
         return getTurretBias(camera.getDistance());
     }
 
@@ -136,9 +105,6 @@ public class DistanceManager {
     }
 
     public double getSpindexerOutput() {
-        if (USE_ZONES) {
-            return getSpindexerOutput(zone);
-        }
         return getSpindexerOutput(camera.getDistance());
     }
 
@@ -152,9 +118,6 @@ public class DistanceManager {
     }
 
     public boolean getHoodRetracted() {
-        if (USE_ZONES) {
-            return getHoodRetracted(zone);
-        }
         return getHoodRetracted(camera.getDistance());
     }
 }
