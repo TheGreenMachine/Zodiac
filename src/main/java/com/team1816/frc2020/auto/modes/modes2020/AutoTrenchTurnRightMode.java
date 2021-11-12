@@ -10,7 +10,8 @@ public class AutoTrenchTurnRightMode extends AutoModeBase {
     private DriveTrajectory trajectory;
 
     public AutoTrenchTurnRightMode() {
-        this.trajectory = new DriveTrajectory(TrajectorySet.getInstance().AUTO_TRENCH_TURN_RIGHT, true);
+        this.trajectory =
+            new DriveTrajectory(TrajectorySet.getInstance().AUTO_TRENCH_TURN_RIGHT, true);
     }
 
     @Override

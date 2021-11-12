@@ -1,11 +1,13 @@
 package com.team1816.lib.auto.actions;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.RobotState;
 import com.team254.lib.geometry.Translation2d;
 
 public class WaitUntilInsideRegion implements Action {
 
-    private static final RobotState mRobotState = RobotState.getInstance();
+    @Inject
+    private static RobotState mRobotState;
 
     private final Translation2d mBottomLeft;
     private final Translation2d mTopRight;

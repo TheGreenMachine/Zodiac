@@ -292,5 +292,4 @@ public class CtreMotorFactory {
         motor.setInverted(subsystem.invertMotor.contains(name));
         motor.setSensorPhase(subsystem.invertSensorPhase.contains(name));
     }
-
 }

@@ -2,13 +2,12 @@ package com.team1816.lib.geometry;
 
 // This is based from 254 class got rid of some weird system out prints
 
+import static com.team254.lib.util.Util.kEpsilon;
+
 import com.team254.lib.geometry.IRotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.util.Util;
-
 import java.text.DecimalFormat;
-
-import static com.team254.lib.util.Util.kEpsilon;
 
 /**
  * A rotation in a 2d coordinate frame represented a point on the unit circle

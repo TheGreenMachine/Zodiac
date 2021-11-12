@@ -1,7 +1,6 @@
 package com.team1816.frc2020;
 
 import com.team1816.frc2020.auto.modes.modes2020.*;
-import com.team1816.frc2020.paths.paths2020.AutoTrenchTurnRightPath;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.RobotBase;

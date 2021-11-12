@@ -27,7 +27,6 @@ import com.team254.lib.util.SwerveDriveSignal;
 import com.team254.lib.util.TimeDelayedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -50,7 +49,7 @@ public class Robot extends TimedRobot {
     // subsystems
     private final Superstructure mSuperstructure = Superstructure.getInstance();
     private final Infrastructure mInfrastructure = Infrastructure.getInstance();
-    private final RobotState mRobotState = RobotState.getInstance();
+    private final RobotState mRobotState;
     private final Drive mDrive;
     private final PowerDistributionPanel pdp = new PowerDistributionPanel();
     private final LedManager ledManager = LedManager.getInstance();
@@ -87,6 +86,7 @@ public class Robot extends TimedRobot {
         mDrive = (injector.getInstance(Drive.Factory.class)).getInstance();
         mRobotStateEstimator = injector.getInstance(RobotStateEstimator.class);
         mTurret = injector.getInstance(Turret.class);
+        mRobotState = injector.getInstance(RobotState.class);
     }
 
     public static RobotFactory getFactory() {
@@ -262,7 +262,7 @@ public class Robot extends TimedRobot {
                 climber
             );
 
-//            mDrive.zeroSensors();
+            //            mDrive.zeroSensors();
             mTurret.zeroSensors();
 
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
@@ -412,7 +412,9 @@ public class Robot extends TimedRobot {
                                 shooter.setVelocity(Shooter.MID_VELOCITY); // Uses ZED distance
                                 mTurret.lockTurret();
                             } else {
-                                mTurret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+                                mTurret.setControlMode(
+                                    Turret.ControlMode.FIELD_FOLLOWING
+                                );
                                 shooter.stopShooter();
                                 shooter.setHood(false);
                             }

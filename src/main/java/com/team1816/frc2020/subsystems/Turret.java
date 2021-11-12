@@ -9,9 +9,7 @@ import com.team1816.lib.hardware.PidConfig;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import javax.inject.Inject;
 
 public class Turret extends Subsystem implements PidProvider {
@@ -114,7 +112,6 @@ public class Turret extends Subsystem implements PidProvider {
         }
     }
 
-
     public static int convertTurretDegreesToTicks(double degrees) {
         return (int) (((degrees) / 360.0) * TURRET_ENCODER_PPR) + ABS_TICKS_SOUTH;
     }
@@ -129,10 +126,7 @@ public class Turret extends Subsystem implements PidProvider {
         if (turret instanceof TalonSRX) {
             var sensors = ((TalonSRX) turret).getSensorCollection();
             var sensorVal = sensors.getPulseWidthPosition() & TURRET_ENCODER_MASK;
-            sensors.setQuadraturePosition(
-                sensorVal,
-                Constants.kLongCANTimeoutMs
-            );
+            sensors.setQuadraturePosition(sensorVal, Constants.kLongCANTimeoutMs);
             System.out.println("zeroing turret at " + sensorVal);
         }
     }
@@ -194,12 +188,12 @@ public class Turret extends Subsystem implements PidProvider {
 
     private synchronized void setTurretPosition(double position) {
         //Since we are using position we need ensure value stays in one rotation
-        int adjPos = (int) position ; // & TURRET_ENCODER_MASK
+        int adjPos = (int) position; // & TURRET_ENCODER_MASK
         if (desiredTurretPos != adjPos) {
             desiredTurretPos = adjPos;
             outputsChanged = true;
         }
-//        System.out.println("set turret position to " + desiredTurretPos);
+        //        System.out.println("set turret position to " + desiredTurretPos);
     }
 
     public synchronized void setTurretAngle(double angle) {
@@ -231,8 +225,6 @@ public class Turret extends Subsystem implements PidProvider {
     public void readPeriodicInputs() {
         turretAngleRelativeToField =
             robotState.getHeadingRelativeToInitial().getDegrees();
-//        System.out.println("Turret Relative to field degrees: "+turretAngleRelativeToField);
-//        System.out.println("Turret Relative to field"+robotState.getHeadingRelativeToInitial());
     }
 
     @Override
@@ -259,8 +251,8 @@ public class Turret extends Subsystem implements PidProvider {
         var angle = camera.getDeltaXAngle();
         int adj =
             convertTurretDegreesToTicks(angle * .14) +
-                followingTurretPos -
-                ABS_TICKS_SOUTH;
+            followingTurretPos -
+            ABS_TICKS_SOUTH;
         System.out.println(angle + " " + adj + " " + followingTurretPos);
         if (adj != followingTurretPos) {
             followingTurretPos = adj;
@@ -278,16 +270,11 @@ public class Turret extends Subsystem implements PidProvider {
             followingTurretPos = adj;
             outputsChanged = true;
         }
-        System.out.println("Following Turret Pos: "+followingTurretPos);
     }
 
     private void positionControl(double rawPos) {
         if (outputsChanged) {
-            System.out.println("turret ---- " + rawPos);
-            turret.set(
-                com.ctre.phoenix.motorcontrol.ControlMode.Position,
-                rawPos
-            );
+            turret.set(com.ctre.phoenix.motorcontrol.ControlMode.Position, rawPos);
             outputsChanged = false;
         }
     }

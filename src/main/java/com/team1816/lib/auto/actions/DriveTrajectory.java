@@ -17,7 +17,9 @@ public class DriveTrajectory implements Action {
     @Inject
     private static Drive.Factory mDriveFactory;
 
-    private static final RobotState mRobotState = RobotState.getInstance();
+    @Inject
+    private static RobotState mRobotState;
+
     private static Drive mDrive;
 
     private final TrajectoryIterator<TimedState<Pose2dWithCurvature>> mTrajectory;

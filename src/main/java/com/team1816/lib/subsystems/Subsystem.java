@@ -7,7 +7,6 @@ import com.team1816.lib.loops.ILooper;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
-
 import java.util.function.Supplier;
 
 /**

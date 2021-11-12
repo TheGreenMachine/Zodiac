@@ -1,5 +1,6 @@
 package com.team1816.frc2020;
 
+import com.google.inject.Singleton;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -17,17 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Singleton
 public class RobotState {
-
-    private static RobotState mInstance;
-
-    public static RobotState getInstance() {
-        if (mInstance == null) {
-            mInstance = new RobotState();
-        }
-
-        return mInstance;
-    }
 
     private static final int kObservationBufferSize = 100;
 
@@ -83,8 +75,7 @@ public class RobotState {
 
     private Rotation2d headingRelativeToInitial = Rotation2d.identity();
 
-
-    private RobotState() {
+    public RobotState() {
         reset(0.0, Pose2d.identity(), Rotation2d.identity());
     }
 
@@ -193,13 +184,11 @@ public class RobotState {
      * unaffected by calls to {@link #reset()}
      */
     public Rotation2d getHeadingRelativeToInitial() {
-        System.out.println("Getting Heading relative "+headingRelativeToInitial);
         return headingRelativeToInitial;
     }
 
     public void setHeadingRelativeToInitial(Rotation2d heading) {
         this.headingRelativeToInitial = heading;
-        System.out.println("Set heading relative "+ heading);
     }
 
     public double getLatestFieldToTurret() {

@@ -8,9 +8,8 @@ import com.team1816.lib.LibModule;
 import com.team254.lib.geometry.Rotation2d;
 import junit.framework.TestCase;
 
-import javax.inject.Inject;
-
 public class TurretTest extends TestCase {
+
     private Turret target;
     private Injector injector;
 
@@ -19,16 +18,18 @@ public class TurretTest extends TestCase {
         target = injector.getInstance(Turret.class);
     }
 
-    public TurretTest(){
+    public TurretTest() {
         injector = Guice.createInjector(new LibModule(), new SeasonModule());
-
     }
 
     public void testSetTurretFieldFollowing() {
         target.setTurretAngle(Turret.CARDINAL_SOUTH);
         target.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
         target.writePeriodicOutputs();
-        assertEquals((double)Turret.ABS_TICKS_SOUTH, target.getActualTurretPositionTicks());
+        assertEquals(
+            (double) Turret.ABS_TICKS_SOUTH,
+            target.getActualTurretPositionTicks()
+        );
         assertEquals(Turret.ControlMode.FIELD_FOLLOWING, target.getControlMode());
     }
 
@@ -36,19 +37,24 @@ public class TurretTest extends TestCase {
         target.setTurretAngle(Turret.CARDINAL_SOUTH);
         target.setControlMode(Turret.ControlMode.POSITION);
         target.writePeriodicOutputs();
-        assertEquals((double)Turret.ABS_TICKS_SOUTH, target.getActualTurretPositionTicks());
+        assertEquals(
+            (double) Turret.ABS_TICKS_SOUTH,
+            target.getActualTurretPositionTicks()
+        );
         assertEquals(Turret.ControlMode.POSITION, target.getControlMode());
     }
 
     public void testSetTurretFieldFollowingRobotTwist() {
-        RobotState state = RobotState.getInstance();
+        RobotState state = new RobotState();
         state.setHeadingRelativeToInitial(new Rotation2d(20));
         Turret turret = new Turret(state);
         turret.setTurretAngle(Turret.CARDINAL_SOUTH);
         turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
         turret.writePeriodicOutputs();
-        assertEquals((double)Turret.ABS_TICKS_SOUTH, turret.getActualTurretPositionTicks());
+        assertEquals(
+            (double) Turret.ABS_TICKS_SOUTH,
+            turret.getActualTurretPositionTicks()
+        );
         assertEquals(Turret.ControlMode.FIELD_FOLLOWING, turret.getControlMode());
     }
 }
-

@@ -3,7 +3,6 @@ package com.team1816.frc2020.auto.actions.actions2020;
 import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.actions.Action;
 import com.team1816.lib.loops.AsyncTimer;
-
 import javax.inject.Inject;
 
 public class ShootAction implements Action {
@@ -13,6 +12,7 @@ public class ShootAction implements Action {
     private LedManager ledManager;
     private AsyncTimer shooterTimer;
     private Collector collector;
+
     @Inject
     private Turret turret;
 

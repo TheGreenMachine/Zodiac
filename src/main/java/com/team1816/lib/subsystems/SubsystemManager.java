@@ -27,8 +27,7 @@ public class SubsystemManager implements ILooper {
         return mInstance;
     }
 
-    public void outputToSmartDashboard() {
-    }
+    public void outputToSmartDashboard() {}
 
     public boolean checkSubsystems() {
         boolean ret_val = true;

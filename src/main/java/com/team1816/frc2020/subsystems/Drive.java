@@ -1,6 +1,7 @@
 package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
@@ -40,7 +41,9 @@ public abstract class Drive
 
     // control states
     protected DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
-    protected final RobotState mRobotState = RobotState.getInstance();
+
+    @Inject
+    protected static RobotState mRobotState;
 
     // Odometry variables
     protected Pose2d pose = Pose2d.identity();

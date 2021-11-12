@@ -8,7 +8,6 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
-import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.planners.TankMotionPlanner;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.subsystems.DifferentialDrivetrain;
@@ -43,8 +42,6 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     private BadLog mLogger;
 
     private final TankMotionPlanner mMotionPlanner;
-
-    private final RobotState mRobotState = RobotState.getInstance();
 
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
     private final double tickRatioPerLoop = Constants.kLooperDt / .1d;
@@ -454,7 +451,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             TankMotionPlanner.Output output = mMotionPlanner.update(
                 timestamp,
-                RobotState.getInstance().getFieldToVehicle(timestamp)
+                mRobotState.getFieldToVehicle(timestamp)
             );
 
             mPeriodicIO.error = mMotionPlanner.error();

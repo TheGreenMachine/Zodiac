@@ -56,8 +56,7 @@ public class SubsystemConfig {
             Objects.equals(drivePid, subsystemConfig.drivePid) &&
             Objects.equals(canifier, subsystemConfig.canifier) &&
             invertMotor.equals(subsystemConfig.invertMotor) &&
-                invertSensorPhase.equals(subsystemConfig.invertSensorPhase)
-
+            invertSensorPhase.equals(subsystemConfig.invertSensorPhase)
         );
     }
 
