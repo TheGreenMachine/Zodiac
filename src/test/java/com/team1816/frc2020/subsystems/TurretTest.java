@@ -41,7 +41,7 @@ public class TurretTest extends TestCase {
     }
 
     public void testSetTurretFieldFollowingRobotTwist() {
-        RobotState state = new RobotState();
+        RobotState state = RobotState.getInstance();
         state.setHeadingRelativeToInitial(new Rotation2d(20));
         Turret turret = new Turret(state);
         turret.setTurretAngle(Turret.CARDINAL_SOUTH);

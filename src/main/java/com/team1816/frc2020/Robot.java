@@ -224,6 +224,27 @@ public class Robot extends TimedRobot {
                     "NativeUnits",
                     mTurret::getPositionError
                 );
+                mTurret.CreateBadLogTopic(
+                    "Turret/FieldToTurret",
+                    "Degrees",
+                    mRobotState::getLatestFieldToTurret,
+                    "hide",
+                    "join:Tracking/Angles"
+                );
+                mTurret.CreateBadLogTopic(
+                    "Drive/HeadingRelativeToInitial",
+                    "Degrees",
+                    () -> mDrive.getHeadingRelativeToInitial().getDegrees(),
+                    "hide",
+                    "join:Tracking/Angles"
+                );
+                mTurret.CreateBadLogTopic(
+                    "Turret/TurretAngle",
+                    "Degrees",
+                    mTurret::getActualTurretPositionDegrees,
+                    "hide",
+                    "join:Tracking/Angles"
+                );
             }
 
             logger.finishInitialization();

@@ -199,7 +199,7 @@ public class Turret extends Subsystem implements PidProvider {
             desiredTurretPos = adjPos;
             outputsChanged = true;
         }
-        System.out.println("set turret position to " + desiredTurretPos);
+//        System.out.println("set turret position to " + desiredTurretPos);
     }
 
     public synchronized void setTurretAngle(double angle) {
@@ -231,6 +231,8 @@ public class Turret extends Subsystem implements PidProvider {
     public void readPeriodicInputs() {
         turretAngleRelativeToField =
             robotState.getHeadingRelativeToInitial().getDegrees();
+//        System.out.println("Turret Relative to field degrees: "+turretAngleRelativeToField);
+//        System.out.println("Turret Relative to field"+robotState.getHeadingRelativeToInitial());
     }
 
     @Override
@@ -276,6 +278,7 @@ public class Turret extends Subsystem implements PidProvider {
             followingTurretPos = adj;
             outputsChanged = true;
         }
+        System.out.println("Following Turret Pos: "+followingTurretPos);
     }
 
     private void positionControl(double rawPos) {

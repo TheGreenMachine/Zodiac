@@ -83,7 +83,8 @@ public class RobotState {
 
     private Rotation2d headingRelativeToInitial = Rotation2d.identity();
 
-    public RobotState() {
+
+    private RobotState() {
         reset(0.0, Pose2d.identity(), Rotation2d.identity());
     }
 
@@ -192,11 +193,13 @@ public class RobotState {
      * unaffected by calls to {@link #reset()}
      */
     public Rotation2d getHeadingRelativeToInitial() {
+        System.out.println("Getting Heading relative "+headingRelativeToInitial);
         return headingRelativeToInitial;
     }
 
     public void setHeadingRelativeToInitial(Rotation2d heading) {
         this.headingRelativeToInitial = heading;
+        System.out.println("Set heading relative "+ heading);
     }
 
     public double getLatestFieldToTurret() {
