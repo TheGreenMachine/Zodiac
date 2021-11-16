@@ -291,7 +291,9 @@ public abstract class Drive
     }
 
     public synchronized void resetPigeon() {
+        mPigeon.setYaw(0);
         mPigeon.setFusedHeading(0);
+        mPigeon.setAccumZAngle(0);
     }
 
     public DriveControlState getDriveControlState() {
