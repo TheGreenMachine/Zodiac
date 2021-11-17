@@ -433,6 +433,8 @@ public class Robot extends TimedRobot {
                     )
                 );
 
+
+
             blinkTimer =
                 new AsyncTimer(
                     3, // (3 s)
@@ -521,7 +523,6 @@ public class Robot extends TimedRobot {
             mHasBeenEnabled = true;
 
             mEnabledLooper.start();
-
             mTurret.setTurretAngle(Turret.CARDINAL_SOUTH);
             mTurret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
             System.out.println(mTurret.getActualTurretPositionTicks() + "+++++++"); // for debugging whether or not getActTicks works. doesn't seem to - ginget

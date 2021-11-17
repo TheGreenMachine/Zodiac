@@ -9,7 +9,10 @@ public class ActionManager {
 
     public ActionManager(ControlUtils.ButtonAction... actions) {
         this.actions = Arrays.asList(actions);
+        this.update(); //Used to insured actions are in intialized state and doesn't get triggered on enabling
     }
+
+
 
     public void update() {
         actions.forEach(ControlUtils.ButtonAction::update);

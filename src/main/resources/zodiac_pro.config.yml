@@ -55,7 +55,7 @@ subsystems:
         constants:
             revLimit: -3632
             fwdLimit: -818
-            absPosTicksSouth: -3280
+            absPosTicksSouth: -3277
     ledmanager:
         implemented: true
         canifier: 18
