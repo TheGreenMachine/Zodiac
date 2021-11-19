@@ -3,9 +3,9 @@ subsystems:
     drivetrain:
         implemented: true
         falcons:
-            flDrive: 2
-            blDrive: -1 #1
-            frDrive: -1 #13
+            flDrive: 13
+            blDrive: 1 #1
+            frDrive: 2 #13
             brDrive: 14
         talons:
             flAzimuth: 4
@@ -45,7 +45,7 @@ subsystems:
             kD: 4.0
             kF: 0.0499
         azimuthPid:
-            kP: 10.0 # 6.0
+            kP: 9.0 # 6.0
             kI: 0.0005
             kD: 30
             kF: 0
@@ -53,7 +53,7 @@ subsystems:
             isSwerve: 1
             encPPR: 12275.7
             azimuthEncPPR: 4096
-            azimuthAllowableErrorTicks: 10
+            azimuthAllowableErrorTicks: 20
             pigeonId: 32
             azimuthHomeAdjustmentDegrees: 1
     ledmanager:

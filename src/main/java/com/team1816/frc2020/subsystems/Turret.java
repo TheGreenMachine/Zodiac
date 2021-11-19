@@ -1,5 +1,6 @@
 package com.team1816.frc2020.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -11,6 +12,7 @@ import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 public class Turret extends Subsystem implements PidProvider {
 
@@ -32,7 +34,7 @@ public class Turret extends Subsystem implements PidProvider {
     // Constants
     private static final int kPrimaryCloseLoop = 0;
     private static final int kPIDGyroIDx = 0;
-    private static final int kPIDVisionIDx = 1;
+    private static final int kPIDVisionIDx = 0;
     private static final int TURRET_ENCODER_PPR = (int) factory.getConstant(
         NAME,
         "encPPR"
@@ -57,6 +59,7 @@ public class Turret extends Subsystem implements PidProvider {
     private double turretAngleRelativeToField;
     private ControlMode controlMode = ControlMode.MANUAL;
 
+    @Singleton
     @Inject
     public Turret(RobotState robotState) {
         super(NAME);
@@ -154,7 +157,6 @@ public class Turret extends Subsystem implements PidProvider {
                     led.indicateDefaultStatus();
                 }
             }
-            System.out.println("turret controlMode == " + this.controlMode);
         }
     }
 
@@ -193,7 +195,6 @@ public class Turret extends Subsystem implements PidProvider {
             desiredTurretPos = adjPos;
             outputsChanged = true;
         }
-        //        System.out.println("set turret position to " + desiredTurretPos);
     }
 
     public synchronized void setTurretAngle(double angle) {
@@ -258,9 +259,7 @@ public class Turret extends Subsystem implements PidProvider {
             followingTurretPos = adj;
             outputsChanged = true;
         }
-        System.out.println("Adj: "+adj);
-        System.out.println("Angle: "+angle);
-        System.out.println("Delta: "+ convertTurretDegreesToTicks(angle*0.14));
+
     }
 
     private void trackGyro() {
@@ -279,7 +278,9 @@ public class Turret extends Subsystem implements PidProvider {
     private void positionControl(double rawPos) {
         if (outputsChanged) {
             turret.set(com.ctre.phoenix.motorcontrol.ControlMode.Position, rawPos);
+            double result = turret.getClosedLoopTarget(0);
             outputsChanged = false;
+
         }
     }
 
