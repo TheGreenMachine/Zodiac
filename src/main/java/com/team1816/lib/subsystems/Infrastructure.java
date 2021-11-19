@@ -24,6 +24,9 @@ public class Infrastructure extends Subsystem {
     private Infrastructure() {
         super("Infrastructure");
         mCompressor = factory.getCompressor();
+        if( factory.getConstant("compressorEnabled")>0) {
+            mCompressor.stop();
+        }
     }
 
     @Override
@@ -50,17 +53,22 @@ public class Infrastructure extends Subsystem {
                 public void onLoop(double timestamp) {
                     synchronized (Infrastructure.this) {
                         boolean superstructureMoving = !mSuperstructure.isAtDesiredState();
+                        if (!(factory.getConstant("compressorEnabled") > 0)) {
+                            if (superstructureMoving || !mIsManualControl) {
+                                if (lastCompressorOn) {
+                                    stopCompressor();
+                                    lastCompressorOn = false;
+                                }
+                            } else {
+                                if (!lastCompressorOn) {
+                                    startCompressor();
+                                    lastCompressorOn = true;
+                                }
+                            }
+                        }
+                        else{
+                            stopCompressor();
 
-                        if (superstructureMoving || !mIsManualControl) {
-                            if (lastCompressorOn) {
-                                stopCompressor();
-                                lastCompressorOn = false;
-                            }
-                        } else {
-                            if (!lastCompressorOn) {
-                                startCompressor();
-                                lastCompressorOn = true;
-                            }
                         }
                     }
                 }

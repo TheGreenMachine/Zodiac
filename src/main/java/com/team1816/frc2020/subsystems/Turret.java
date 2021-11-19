@@ -37,7 +37,7 @@ public class Turret extends Subsystem implements PidProvider {
         NAME,
         "encPPR"
     );
-    private static final int TURRET_ENCODER_MASK = TURRET_ENCODER_PPR - 1;
+    private static final int TURRET_ENCODER_MASK = TURRET_ENCODER_PPR-1;
     private static final int ALLOWABLE_ERROR_TICKS = 5;
     private static Turret INSTANCE;
     // Components
@@ -188,7 +188,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     private synchronized void setTurretPosition(double position) {
         //Since we are using position we need ensure value stays in one rotation
-        int adjPos = (int) position; // & TURRET_ENCODER_MASK
+        int adjPos = -(int) (Math.abs(position) % Math.abs(TURRET_ENCODER_MASK));
         if (desiredTurretPos != adjPos) {
             desiredTurretPos = adjPos;
             outputsChanged = true;
@@ -253,11 +253,14 @@ public class Turret extends Subsystem implements PidProvider {
             convertTurretDegreesToTicks(angle * .14) +
             followingTurretPos -
             ABS_TICKS_SOUTH;
-        System.out.println(angle + " " + adj + " " + followingTurretPos);
+//        System.out.println(angle + " " + adj + " " + followingTurretPos);
         if (adj != followingTurretPos) {
             followingTurretPos = adj;
             outputsChanged = true;
         }
+        System.out.println("Adj: "+adj);
+        System.out.println("Angle: "+angle);
+        System.out.println("Delta: "+ convertTurretDegreesToTicks(angle*0.14));
     }
 
     private void trackGyro() {
@@ -266,6 +269,7 @@ public class Turret extends Subsystem implements PidProvider {
         int adj = desiredTurretPos + fieldTickOffset;
         // Valid positions are 0 to encoder max ticks if we go negative adjust
         //if (adj < 0) adj += TURRET_ENCODER_PPR;
+        adj = -(int) (Math.abs(adj) % Math.abs(TURRET_ENCODER_MASK));
         if (adj != followingTurretPos) {
             followingTurretPos = adj;
             outputsChanged = true;

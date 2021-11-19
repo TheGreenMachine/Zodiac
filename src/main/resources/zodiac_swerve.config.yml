@@ -4,8 +4,8 @@ subsystems:
         implemented: true
         falcons:
             flDrive: 2
-            blDrive: 1
-            frDrive: 13
+            blDrive: -1 #1
+            frDrive: -1 #13
             brDrive: 14
         talons:
             flAzimuth: 4
@@ -62,6 +62,7 @@ subsystems:
         constants:
             raveEnabled: 0
             raveSpeed: 0.05
+            cameraLed: 1
     turret:
         implemented: true
         pid:
@@ -74,8 +75,8 @@ subsystems:
         invertSensorPhase:
             - turret
         constants:
-            revLimit: -3774
-            absPosTicksSouth: -3450
+            revLimit: -3762
+            absPosTicksSouth: -3451
             fwdLimit: -1147
     shooter:
         implemented: true
@@ -90,6 +91,8 @@ subsystems:
         implemented: true
         talons:
             elevator: 6
+        solenoids:
+            deployer: 5
     hopper:
         implemented: true
         talons:
@@ -129,5 +132,5 @@ constants:
     badLogEnabled: 1 # 0 or 1
     ## General ##
     teleopFieldCentric: 1 # 0 or 1
-    compressorEnabled: 1 # 0 or 1
+    compressorEnabled: 0 # 0 or 1
     kLooperDt: .030 # seconds

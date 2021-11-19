@@ -1,9 +1,6 @@
 package com.team1816.frc2020.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.PidConfig;
@@ -136,7 +133,14 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                 constants.kAzimuthMotorName,
                 List.of(constants.kAzimuthPid)
             );
+        var currentLimitConfig = new SupplyCurrentLimitConfiguration(
+            true,
+            25,
+            0,
+            0
+        );
 
+        mAzimuthMotor.configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
         mAzimuthMotor.setSensorPhase(constants.kInvertAzimuthSensorPhase);
         mAzimuthMotor.configPeakOutputForward(.4, Constants.kLongCANTimeoutMs);
         mAzimuthMotor.configPeakOutputReverse(-.4, Constants.kLongCANTimeoutMs);

@@ -6,6 +6,8 @@ import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import java.awt.*;
@@ -25,6 +27,7 @@ public class LedManager extends Subsystem {
     // Components
     private final ICanifier canifier;
     private final ICanifier cameraCanifier;
+    private final DigitalOutput cameraLed;
 
     // State
     private LedControlState controlState = LedControlState.STANDARD;
@@ -52,6 +55,7 @@ public class LedManager extends Subsystem {
         super(NAME);
         this.canifier = factory.getCanifier(NAME);
         this.cameraCanifier = factory.getCanifier("camera");
+        this.cameraLed = new DigitalOutput((int) factory.getConstant(NAME, "cameraLed"));
 
         configureCanifier(canifier);
         configureCanifier(cameraCanifier);
@@ -163,12 +167,13 @@ public class LedManager extends Subsystem {
 
     @Override
     public void writePeriodicOutputs() {
-        if (cameraCanifier != null) {
+        if (cameraLed != null) {
             if (outputsChanged) {
-                cameraCanifier.setLEDOutput(
-                    cameraLedOn ? 1 : 0,
-                    CANifier.LEDChannel.LEDChannelB
-                );
+                cameraLed.set(cameraLedOn);
+//                cameraCanifier.setLEDOutput(
+//                    cameraLedOn ? 1 : 0,
+//                    CANifier.LEDChannel.LEDChannelB
+//                );
             }
         }
         if (canifier != null) {

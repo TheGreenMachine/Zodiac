@@ -41,7 +41,7 @@ public class Collector extends Subsystem {
         this.intake = factory.getMotor(NAME, "intake");
 
         intake.configSupplyCurrentLimit(
-            new SupplyCurrentLimitConfiguration(true, 25, 0, 0),
+                new SupplyCurrentLimitConfiguration(true, 25, 0, 0),
             Constants.kCANTimeoutMs
         );
     }

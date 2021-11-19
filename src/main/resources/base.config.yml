@@ -34,7 +34,7 @@ subsystems:
             -   kP: 0.15 #0.30
                 kI: 0
                 kD: 2.5 #4.5
-                kF: 0.053 #0.00953253
+                kF: 0.05671 #0.00953253
         constants:
             currentFloorCheck: .12
             currentEpsilonCheck: .2

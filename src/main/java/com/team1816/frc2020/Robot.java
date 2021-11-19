@@ -262,7 +262,7 @@ public class Robot extends TimedRobot {
                 climber
             );
 
-            //            mDrive.zeroSensors();
+            mDrive.zeroSensors();
             mTurret.zeroSensors();
 
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
@@ -270,6 +270,7 @@ public class Robot extends TimedRobot {
 
             ledManager.registerEnabledLoops(mEnabledLooper);
             ledManager.registerEnabledLoops(mDisabledLooper);
+
 
             // Robot starts forwards.
             mRobotState.reset(
@@ -362,7 +363,7 @@ public class Robot extends TimedRobot {
                                 (DriverStation.getInstance().getMatchTime() <= 30) ||
                                 (DriverStation.getInstance().getMatchTime() == -1)
                             ) {
-                                climber.setClimberPower(pressed ? -0.7 : 0);
+                                climber.setDeployed(true);
                             }
                         }
                     ),
@@ -405,7 +406,6 @@ public class Robot extends TimedRobot {
                     createHoldAction(
                         mControlBoard::getShoot,
                         shooting -> {
-                            // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                             if (shooting) {
                                 shooter.autoHood();
                                 mDrive.setOpenLoop(SwerveDriveSignal.BRAKE);
