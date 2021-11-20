@@ -291,7 +291,7 @@ public class Robot extends TimedRobot {
                         mControlBoard::getCollectorToggle,
                         collecting -> {
                             System.out.println("Collector toggled!");
-                            collector.setDeployed(collecting);
+                            collector.setDeployed(collecting, false);
                             hopper.setSpindexer(collecting ? -1 : 0);
                         }
                     ),
@@ -299,14 +299,14 @@ public class Robot extends TimedRobot {
                         mControlBoard::getDriverClimber,
                         climber::setClimberPower
                     ),
-                    createHoldAction(
+                    createAction(
                         mControlBoard::getClimberDeploy,
-                        pressed -> {
+                        () -> {
                             if (
                                 (DriverStation.getInstance().getMatchTime() <= 30) ||
                                 (DriverStation.getInstance().getMatchTime() == -1)
                             ) {
-                                climber.setDeployed(pressed);
+                                climber.setDeployed(!climber.getDeployed());
                             }
                         }
                     ),
@@ -350,9 +350,9 @@ public class Robot extends TimedRobot {
                     createHoldAction(
                         mControlBoard::getFeederFlapOut,
                         feeding -> {
-                            if (mDrive.hasPigeonResetOccurred() && !feeding) {
-                                mDrive.zeroSensors();
-                            }
+//                            if (mDrive.hasPigeonResetOccurred() && !feeding) {
+//                                mDrive.zeroSensors();
+//                            }
                             hopper.setFeederFlap(feeding);
                         }
                     ),
@@ -396,7 +396,6 @@ public class Robot extends TimedRobot {
                                 mTurret.setControlMode(
                                     Turret.ControlMode.CAMERA_FOLLOWING
                                 );
-                                shooter.autoHood();
                                 shooter.startShooter();
                             } else {
                                 mTurret.setControlMode(prevTurretControlMode);
@@ -407,9 +406,8 @@ public class Robot extends TimedRobot {
                         mControlBoard::getShoot,
                         shooting -> {
                             if (shooting) {
-                                shooter.autoHood();
                                 mDrive.setOpenLoop(SwerveDriveSignal.BRAKE);
-                                shooter.setVelocity(Shooter.MID_VELOCITY); // Uses ZED distance
+                                shooter.startShooter(); // Uses ZED distance
                                 mTurret.lockTurret();
                             } else {
                                 mTurret.setControlMode(
@@ -424,16 +422,20 @@ public class Robot extends TimedRobot {
                         }
                     ),
                     createHoldAction(
-                        mControlBoard::getCollectorBackSpin,
-                        pressed -> collector.setIntakePow(pressed ? 0.2 : 0)
+                        mControlBoard::getCollectorBackspin,
+                        pressed -> {
+                            collector.setDeployed(pressed, true);
+                            hopper.setSpindexer(pressed ? -1 : 0);
+                        }
                     ),
                     createAction(
-                        mControlBoard::getFeederFlapOut,
+                        mControlBoard::getFeederFlapIn,
                         () -> shooter.setHood(!shooter.isHoodOut())
                     )
                 );
 
 
+            climber.setDeployed(false);
 
             blinkTimer =
                 new AsyncTimer(
@@ -455,6 +457,8 @@ public class Robot extends TimedRobot {
 
             // shooter
             shooter.setVelocity(0);
+
+            climber.setDeployed(false);
 
             // Reset all auto mode state.
             if (mAutoModeExecutor != null) {
@@ -496,6 +500,9 @@ public class Robot extends TimedRobot {
 
             mDrive.zeroSensors();
             mTurret.zeroSensors();
+
+            mTurret.setTurretAngle(Turret.CARDINAL_SOUTH);
+            mTurret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
 
             System.out.println("Auto init - " + mDriveByCameraInAuto);
             if (!mDriveByCameraInAuto) {

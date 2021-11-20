@@ -97,6 +97,17 @@
               "_source0": "network_table:///SmartDashboard/Heading Relative to Initial",
               "_title": "/SmartDashboard/Heading Relative to Initial"
             }
+          },
+          "5,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/distance",
+              "_title": "/SmartDashboard/distance"
+            }
           }
         }
       }

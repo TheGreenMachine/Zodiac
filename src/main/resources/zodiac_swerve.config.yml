@@ -92,14 +92,14 @@ subsystems:
         talons:
             elevator: 6
         solenoids:
-            deployer: 5
+            deployer: 2
     hopper:
         implemented: true
         talons:
             spindexer: 10
             elevator: 5
         solenoids:
-            feederFlap: -4
+            feederFlap: -1
         constants:
             ballSensor: 0
     collector:

@@ -45,7 +45,7 @@ public class TrajectorySet {
 
     private TrajectorySet() {
         // 2020
-        this.DRIVE_STRAIGHT = new DriveStraight(12).generateTrajectory();
+        this.DRIVE_STRAIGHT = new DriveStraight(36).generateTrajectory();
         this.DRIVE_STRAIGHT_TRENCH = new DriveStraight(178, 100).generateTrajectory();
         this.DRIVE_STRAIGHT_TRENCH_REVERSE =
             new DriveStraight(100).generateReversedTrajectory();

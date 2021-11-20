@@ -59,8 +59,8 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getCollectorUp() {
-        return mDriveControlBoard.getCollectorUp();
+    public boolean getCollectorBackspin() {
+        return mDriveControlBoard.getCollectorBackspin();
     }
 
     @Override
@@ -150,8 +150,8 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getCollectorBackSpin() {
-        return mButtonControlBoard.getCollectorBackSpin();
+    public boolean getUnusedButton() {
+        return mButtonControlBoard.getUnusedButton();
     }
 
     @Override

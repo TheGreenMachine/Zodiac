@@ -15,7 +15,7 @@ public interface IDriveControlBoard {
 
     boolean getCollectorToggle();
 
-    boolean getCollectorUp();
+    boolean getCollectorBackspin();
 
     boolean getFeederToTrenchSpline();
 

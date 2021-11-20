@@ -80,7 +80,7 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     @Override
     public boolean getClimberUp() {
-        return mController.getDPad() == 0;
+        return false;
     }
 
     @Override
@@ -99,12 +99,12 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
-    public boolean getCollectorBackSpin() {
+    public boolean getUnusedButton() {
         return mController.getButton(Controller.Button.RIGHT_BUMPER);
     }
 
     @Override
     public boolean getClimberDeploy() {
-        return mController.getDPad() == 0;
+        return mController.getButton(Controller.Button.Y);
     }
 }

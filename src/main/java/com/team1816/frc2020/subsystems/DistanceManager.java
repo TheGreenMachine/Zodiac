@@ -59,14 +59,10 @@ public class DistanceManager {
         //        new Entry(315, 10_200, 1, 1.25),
         //        new Entry(360, 10_400, 1, 1.25),
         //        new Entry(400, 10_600, 1, 1.25)\
-        new Entry(120, 11_400, 2, 1.7, true),
-        new Entry(198, 6_500, 1, 1.7, true),
-        new Entry(225, 7_400, 1, 1.6, true),
-        new Entry(250, 9_600, 1, 1.5, false),
-        new Entry(285, 10_000, 1, 1.8, false),
-        new Entry(315, 10_100, 1, 1.875, false),
-        new Entry(360, 10_400, 1, 1.95, false),
-        new Entry(400, 10_600, 1, 2.1, false),
+        new Entry(180, 10700, 2, 1.7, false),
+        new Entry(250, 10100, 1, 1.7, false),
+        new Entry(280, 10300, 1, 1.6, false),
+        new Entry(340, 10700, 1, 1.5, false),
     };
 
     public double getShooterVelocity(double distance) {

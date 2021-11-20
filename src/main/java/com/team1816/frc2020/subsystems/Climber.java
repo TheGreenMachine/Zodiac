@@ -43,6 +43,10 @@ public class Climber extends Subsystem {
         outputsChanged = true;
     }
 
+    public boolean getDeployed(){
+        return isDeployed;
+    }
+
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {

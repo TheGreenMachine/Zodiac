@@ -121,7 +121,7 @@ public class TankDemoModeControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getCollectorBackSpin() {
+    public boolean getUnusedButton() {
         return false;
     }
 
@@ -171,7 +171,7 @@ public class TankDemoModeControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getCollectorUp() {
+    public boolean getCollectorBackspin() {
         return false;
     }
 
