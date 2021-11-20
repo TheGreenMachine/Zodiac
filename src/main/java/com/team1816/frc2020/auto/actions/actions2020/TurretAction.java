@@ -6,13 +6,13 @@ import javax.inject.Inject;
 
 public class TurretAction implements Action {
 
-    @Inject
     private Turret turret;
 
     private double turretAngle;
 
-    public TurretAction(double turretAngle) {
+    public TurretAction(double turretAngle, Turret turret) {
         this.turretAngle = turretAngle;
+        this.turret = turret;
     }
 
     @Override
@@ -26,6 +26,7 @@ public class TurretAction implements Action {
 
     @Override
     public boolean isFinished() {
+        System.out.println("Has met Turret action conditions");
         return turret.getPositionError() < 10;
     }
 

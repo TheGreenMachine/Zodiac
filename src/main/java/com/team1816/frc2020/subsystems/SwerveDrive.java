@@ -607,7 +607,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         //            System.out.println("Defaulting to drive straight mode");
         //            AutoModeSelector.getInstance().setHardwareFailure(true);
         //        } else {
-        AutoModeSelector.getInstance().setHardwareFailure(false);
+//        AutoModeSelector.getInstance().setHardwareFailure(false);
         //        }
     }
 

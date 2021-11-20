@@ -7,18 +7,20 @@ import javax.inject.Inject;
 
 public class AutoAimAction implements Action {
 
-    @Inject
+
     private Turret turret;
 
     private Camera camera;
 
-    public AutoAimAction() {
+    public AutoAimAction(Turret turret) {
+        this.turret = turret;
         camera = Camera.getInstance();
     }
 
     @Override
     public void start() {
         turret.setControlMode(Turret.ControlMode.CAMERA_FOLLOWING);
+        System.out.println("Starting Aim Action");
     }
 
     @Override
@@ -26,7 +28,11 @@ public class AutoAimAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return camera.getDeltaXAngle() < Camera.ALLOWABLE_AIM_ERROR;
+        System.out.println("Delta: "+camera.getDeltaXAngle());
+        System.out.println(Math.abs(camera.getDeltaXAngle()) <
+            Camera.ALLOWABLE_AIM_ERROR);
+        return Math.abs(camera.getDeltaXAngle()) <
+            Camera.ALLOWABLE_AIM_ERROR;
     }
 
     @Override

@@ -17,8 +17,9 @@ public class EightBallAllianceMode extends AutoModeBase {
     private DriveTrajectory mDriveTrajectoryB;
     private DriveTrajectory mDriveTrajectoryC;
     private DriveTrajectory mDriveTrajectoryD;
+    private Turret turret;
 
-    public EightBallAllianceMode() {
+    public EightBallAllianceMode(Turret turret) {
         var trajectoryA = TrajectorySet.getInstance().DRIVE_STRAIGHT_TRENCH;
         var trajectoryB = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCEA;
         var trajectoryC = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCEB;
@@ -27,6 +28,7 @@ public class EightBallAllianceMode extends AutoModeBase {
         mDriveTrajectoryB = new DriveTrajectory(trajectoryB, true);
         mDriveTrajectoryC = new DriveTrajectory(trajectoryC, true);
         mDriveTrajectoryD = new DriveTrajectory(trajectoryD, true);
+        this.turret = turret;
     }
 
     @Override
@@ -34,8 +36,8 @@ public class EightBallAllianceMode extends AutoModeBase {
         System.out.println("Running 8 Ball Alliance Side Auto Trench Mode");
         runAction(
             new SeriesAction(
-                new PrepareToShootAction(Turret.CARDINAL_NORTH),
-                new ShootAction(2.5, false),
+                new PrepareToShootAction(Turret.CARDINAL_NORTH, turret),
+                new ShootAction(2.5, false, turret),
                 new ParallelAction(
                     new CollectAction(true),
                     new SeriesAction(
@@ -45,11 +47,11 @@ public class EightBallAllianceMode extends AutoModeBase {
                         new ParallelAction(
                             mDriveTrajectoryD,
                             new CollectAction(false),
-                            new PrepareToShootAction(Turret.CARDINAL_SOUTH)
+                            new PrepareToShootAction(Turret.CARDINAL_SOUTH, turret)
                         )
                     )
                 ),
-                new ShootAction(true)
+                new ShootAction(true, turret)
             )
         );
     }

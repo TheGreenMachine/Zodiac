@@ -12,10 +12,11 @@ import com.team1816.lib.auto.modes.AutoModeBase;
 public class DriveStraightShootMode extends AutoModeBase {
 
     private DriveTrajectory mDriveTrajectory;
-
-    public DriveStraightShootMode() {
+    private Turret turret;
+    public DriveStraightShootMode(Turret turret) {
         var trajectory = TrajectorySet.getInstance().DRIVE_STRAIGHT;
         mDriveTrajectory = new DriveTrajectory(trajectory, true);
+        this.turret = turret;
     }
 
     @Override
@@ -23,8 +24,8 @@ public class DriveStraightShootMode extends AutoModeBase {
         runAction(
             new SeriesAction(
                 mDriveTrajectory,
-                new PrepareToShootAction(Turret.CARDINAL_SOUTH),
-                new ShootAction(false)
+                new PrepareToShootAction(Turret.CARDINAL_SOUTH, turret),
+                new ShootAction(false, turret)
             )
         );
     }

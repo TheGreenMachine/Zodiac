@@ -11,14 +11,14 @@ public class TurretTestMode extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        runAction(
-            new SeriesAction(
-                new TurretAction(Turret.CARDINAL_SOUTH),
-                new WaitAction(3),
-                new TurretAction(Turret.CARDINAL_WEST),
-                new WaitAction(3),
-                new TurretAction(Turret.CARDINAL_NORTH)
-            )
-        );
+//        runAction(
+//            new SeriesAction(
+//                new TurretAction(Turret.CARDINAL_SOUTH, ),
+//                new WaitAction(3),
+//                new TurretAction(Turret.CARDINAL_WEST),
+//                new WaitAction(3),
+//                new TurretAction(Turret.CARDINAL_NORTH)
+//            )
+//        );
     }
 }

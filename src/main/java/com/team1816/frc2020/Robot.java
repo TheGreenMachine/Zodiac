@@ -67,7 +67,7 @@ public class Robot extends TimedRobot {
     private LatchedBoolean mWantsAutoExecution = new LatchedBoolean();
     private LatchedBoolean mWantsAutoInterrupt = new LatchedBoolean();
 
-    private AutoModeSelector mAutoModeSelector = AutoModeSelector.getInstance();
+    private AutoModeSelector mAutoModeSelector;
     private AutoModeExecutor mAutoModeExecutor;
 
     private boolean mDriveByCameraInAuto = false;
@@ -87,7 +87,9 @@ public class Robot extends TimedRobot {
         mRobotStateEstimator = injector.getInstance(RobotStateEstimator.class);
         mTurret = injector.getInstance(Turret.class);
         mRobotState = injector.getInstance(RobotState.class);
+        mAutoModeSelector = AutoModeSelector.getInstance(mTurret);
     }
+
 
     public static RobotFactory getFactory() {
         return RobotFactory.getInstance();

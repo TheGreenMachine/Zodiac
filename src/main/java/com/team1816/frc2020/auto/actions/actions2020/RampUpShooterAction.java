@@ -16,6 +16,7 @@ public class RampUpShooterAction implements Action {
 
     @Override
     public boolean isFinished() {
+        System.out.println("Has met Autoaim conditions");
         return true;
     }
 

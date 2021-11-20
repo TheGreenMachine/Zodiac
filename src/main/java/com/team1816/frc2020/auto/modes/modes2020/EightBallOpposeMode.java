@@ -17,12 +17,14 @@ public class EightBallOpposeMode extends AutoModeBase {
 
     private DriveTrajectory mDriveTrajectoryA;
     private DriveTrajectory mDriveTrajectoryB;
+    private Turret turret;
 
-    public EightBallOpposeMode() {
+    public EightBallOpposeMode(Turret turret) {
         var trajectoryA = TrajectorySet.getInstance().EIGHT_BALL_AUTO_OPPOSEA;
         var trajectoryB = TrajectorySet.getInstance().EIGHT_BALL_AUTO_OPPOSEB;
         mDriveTrajectoryA = new DriveTrajectory(trajectoryA, true);
         mDriveTrajectoryB = new DriveTrajectory(trajectoryB, true);
+        this.turret = turret;
     }
 
     @Override
@@ -45,12 +47,12 @@ public class EightBallOpposeMode extends AutoModeBase {
                         new CollectAction(false)
                     )
                 ),
-                new PrepareToShootAction(Turret.MAX_ANGLE),
-                new ShootAction(true),
+                new PrepareToShootAction(Turret.MAX_ANGLE, turret),
+                new ShootAction(true, turret),
                 new ParallelAction(mDriveTrajectoryB, new CollectAction(true)),
                 new CollectAction(false),
-                new PrepareToShootAction(Turret.MAX_ANGLE),
-                new ShootAction(true)
+                new PrepareToShootAction(Turret.MAX_ANGLE, turret),
+                new ShootAction(true, turret)
             )
         );
     }

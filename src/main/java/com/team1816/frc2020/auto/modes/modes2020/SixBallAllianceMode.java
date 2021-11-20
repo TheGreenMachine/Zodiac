@@ -14,10 +14,12 @@ import com.team254.lib.geometry.Translation2d;
 public class SixBallAllianceMode extends AutoModeBase {
 
     private DriveTrajectory mDriveTrajectory;
+    private Turret turret;
 
-    public SixBallAllianceMode() {
+    public SixBallAllianceMode(Turret turret) {
         var trajectory = TrajectorySet.getInstance().SIX_BALL_ALLIANCE;
         mDriveTrajectory = new DriveTrajectory(trajectory, true);
+        this.turret = turret;
     }
 
     @Override
@@ -25,12 +27,12 @@ public class SixBallAllianceMode extends AutoModeBase {
         System.out.println("Running Six Ball Alliance Auto Trench Mode");
         runAction(
             new SeriesAction(
-                new PrepareToShootAction(Turret.CARDINAL_SOUTH),
-                new ShootAction(true),
+                new PrepareToShootAction(Turret.CARDINAL_SOUTH, turret),
+                new ShootAction(true, turret),
                 new ParallelAction(
                     new CollectAction(true),
                     mDriveTrajectory,
-                    new TurretAction(15.2),
+                    new TurretAction(15.2, turret),
                     new SeriesAction(
                         new WaitUntilInsideRegion(
                             new Translation2d(78, 68),
@@ -40,8 +42,8 @@ public class SixBallAllianceMode extends AutoModeBase {
                     )
                 ),
                 new CollectAction(false),
-                new PrepareToShootAction(15.2),
-                new ShootAction(true)
+                new PrepareToShootAction(15.2, turret),
+                new ShootAction(true, turret)
             )
         );
     }

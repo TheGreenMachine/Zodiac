@@ -89,13 +89,11 @@ public class Hopper extends Subsystem {
     @Override
     public void writePeriodicOutputs() {
         if (lockToShooter) {
-            System.out.println("Shooter Loop: "+waitForShooterLoopCounter);
             if (waitForShooterLoopCounter < 10) {
                 waitForShooterLoopCounter++;
                 return;
             }
-            System.out.println("Near Velocity: "+ Shooter.getInstance().isVelocityNearTarget());
-            System.out.println("Has Ball: "+ hasBall());
+
             if ((!Shooter.getInstance().isVelocityNearTarget() || hasBall())&& !(Shooter.getInstance().isVelocityNearTarget() && hasBall())) {
                 if (wantUnjam) {
                     this.spindexer.set(ControlMode.PercentOutput, -0.25);

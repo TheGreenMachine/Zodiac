@@ -494,9 +494,9 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
                 "Error detected with Pigeon IMU - check if the sensor is present and plugged in!"
             );
             System.out.println("Defaulting to drive straight mode");
-            AutoModeSelector.getInstance().setHardwareFailure(true);
+//            AutoModeSelector.getInstance().setHardwareFailure(true);
         } else {
-            AutoModeSelector.getInstance().setHardwareFailure(false);
+//            AutoModeSelector.getInstance().setHardwareFailure(false);
         }
     }
 

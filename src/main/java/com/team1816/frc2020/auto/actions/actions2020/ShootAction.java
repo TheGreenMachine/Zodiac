@@ -13,13 +13,12 @@ public class ShootAction implements Action {
     private AsyncTimer shooterTimer;
     private Collector collector;
 
-    @Inject
-    private Turret turret;
+    private static Turret turret;
 
     private boolean unjam;
 
-    public ShootAction(double duration, boolean unjam, double velocity) {
-        this(duration, unjam);
+    public ShootAction(double duration, boolean unjam, double velocity, Turret turret) {
+        this(duration, unjam, turret);
         this.shooterTimer =
             new AsyncTimer(
                 duration,
@@ -28,18 +27,19 @@ public class ShootAction implements Action {
             );
     }
 
-    public ShootAction(double duration, boolean unjam) {
+    public ShootAction(double duration, boolean unjam, Turret turret) {
         this.shooter = Shooter.getInstance();
         this.hopper = Hopper.getInstance();
         this.ledManager = LedManager.getInstance();
         this.collector = Collector.getInstance();
+        this.turret = turret;
         this.shooterTimer =
             new AsyncTimer(duration, shooter::startShooter, shooter::stopShooter);
         this.unjam = unjam;
     }
 
-    public ShootAction(boolean unjam) {
-        this(4, unjam);
+    public ShootAction(boolean unjam, Turret turret) {
+        this(4, unjam, turret);
     }
 
     @Override

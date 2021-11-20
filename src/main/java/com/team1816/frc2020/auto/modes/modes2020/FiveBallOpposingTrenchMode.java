@@ -15,12 +15,14 @@ public class FiveBallOpposingTrenchMode extends AutoModeBase {
 
     private DriveTrajectory mDriveTrajectoryA;
     private DriveTrajectory mDriveTrajectoryB;
+    private Turret turret;
 
-    public FiveBallOpposingTrenchMode() {
+    public FiveBallOpposingTrenchMode(Turret turret) {
         var trajectoryA = TrajectorySet.getInstance().FIVE_BALL_AUTO_OPPOSEA;
         var trajectoryB = TrajectorySet.getInstance().FIVE_BALL_AUTO_OPPOSEB;
         mDriveTrajectoryA = new DriveTrajectory(trajectoryA, true);
         mDriveTrajectoryB = new DriveTrajectory(trajectoryB, true);
+        this.turret = turret;
     }
 
     @Override
@@ -32,9 +34,9 @@ public class FiveBallOpposingTrenchMode extends AutoModeBase {
                 new CollectAction(false),
                 new ParallelAction(
                     mDriveTrajectoryB,
-                    new PrepareToShootAction(Turret.CARDINAL_SOUTH)
+                    new PrepareToShootAction(Turret.CARDINAL_SOUTH, turret)
                 ),
-                new ShootAction(true)
+                new ShootAction(true, turret)
             )
         );
     }

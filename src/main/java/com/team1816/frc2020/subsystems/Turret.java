@@ -140,6 +140,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     public void setControlMode(ControlMode controlMode) {
         if (this.controlMode != controlMode) {
+            System.out.println("Turret changing to "+controlMode);
             if (controlMode == ControlMode.CAMERA_FOLLOWING) {
                 if (Constants.kUseAutoAim) {
                     turret.selectProfileSlot(kPIDVisionIDx, 0);

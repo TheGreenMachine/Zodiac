@@ -1,6 +1,7 @@
 package com.team1816.frc2020;
 
 import com.team1816.frc2020.auto.modes.modes2020.*;
+import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -11,7 +12,7 @@ import java.util.Optional;
 public class AutoModeSelector {
 
     private boolean hardwareFailure = false;
-
+    private static Turret turret;
     enum StartingPosition {
         LEFT_HAB_2,
         RIGHT_HAB_2,
@@ -51,7 +52,8 @@ public class AutoModeSelector {
 
     private Optional<AutoModeBase> mAutoMode = Optional.empty();
 
-    private AutoModeSelector() {
+    private AutoModeSelector(Turret turret) {
+        this.turret = turret;
         mStartPositionChooser = new SendableChooser<>();
 
         mStartPositionChooser.setDefaultOption(
@@ -180,21 +182,21 @@ public class AutoModeSelector {
             case LIVING_ROOM:
                 return (Optional.of(new LivingRoomMode()));
             case SIX_BALL_ALLIANCE:
-                return (Optional.of(new SixBallAllianceMode()));
+                return (Optional.of(new SixBallAllianceMode(turret)));
             case FIVE_BALL_OPPOSING:
-                return (Optional.of(new FiveBallOpposingTrenchMode()));
+                return (Optional.of(new FiveBallOpposingTrenchMode(turret)));
             case EIGHT_BALL_ALLIANCE:
-                return (Optional.of(new EightBallAllianceMode()));
+                return (Optional.of(new EightBallAllianceMode(turret)));
             case EIGHT_BALL_ALLIANCE_ALT:
-                return (Optional.of(new EightBallAllianceAltMode()));
+                return (Optional.of(new EightBallAllianceAltMode(turret)));
             case EIGHT_BALL_OPPOSE:
-                return (Optional.of(new EightBallOpposeMode()));
+                return (Optional.of(new EightBallOpposeMode(turret)));
             case TEN_BALL_AUTO:
                 return (Optional.of(new TenBallMode()));
             case DRIVE_STRAIGHT_SHOOT:
-                return (Optional.of(new DriveStraightShootMode()));
+                return (Optional.of(new DriveStraightShootMode(turret)));
             case SIX_BALL_ALLIANCE_STRAIGHT:
-                return (Optional.of(new SixBallAllianceStraightMode()));
+                return (Optional.of(new SixBallAllianceStraightMode(turret)));
             case AUTO_TRENCH_TURN_RIGHT:
                 return (Optional.of(new AutoTrenchTurnRightMode()));
             case BARREL:
@@ -230,9 +232,9 @@ public class AutoModeSelector {
 
     private static AutoModeSelector INSTANCE;
 
-    public static AutoModeSelector getInstance() {
+    public static AutoModeSelector getInstance(Turret turret) {
         if (INSTANCE == null) {
-            INSTANCE = new AutoModeSelector();
+            INSTANCE = new AutoModeSelector(turret);
         }
         return INSTANCE;
     }
