@@ -59,6 +59,10 @@ subsystems:
     ledmanager:
         implemented: true
         canifier: 18
+        constants:
+            raveEnabled: 0
+            raveSpeed: 0.05
+            cameraLed: 1
     camera:
         implemented: true
         canifier: 19
