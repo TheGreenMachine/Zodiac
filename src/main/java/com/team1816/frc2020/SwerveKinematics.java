@@ -1,5 +1,6 @@
 package com.team1816.frc2020;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.SwerveModule;
 import com.team254.lib.geometry.Pose2d;
@@ -10,7 +11,6 @@ import com.team254.lib.util.SwerveDriveSignal;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Inject;
 
 /**
  * Provides forward and inverse kinematics equations for the robot modeling the

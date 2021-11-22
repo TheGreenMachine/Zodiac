@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
 import com.team1816.lib.hardware.PidConfig;
@@ -11,9 +13,8 @@ import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
+@Singleton
 public class Turret extends Subsystem implements PidProvider {
 
     public static final double TURRET_JOG_SPEED = 0.25;
@@ -45,7 +46,9 @@ public class Turret extends Subsystem implements PidProvider {
     // Components
     private final IMotorControllerEnhanced turret;
     private final Camera camera = Camera.getInstance();
-    private final RobotState robotState;
+    @Inject
+    private static RobotState robotState;
+
     private final LedManager led = LedManager.getInstance();
     private final double kP;
     private final double kI;
@@ -59,11 +62,8 @@ public class Turret extends Subsystem implements PidProvider {
     private double turretAngleRelativeToField;
     private ControlMode controlMode = ControlMode.MANUAL;
 
-    @Singleton
-    @Inject
-    public Turret(RobotState robotState) {
+    public Turret() {
         super(NAME);
-        this.robotState = robotState;
         this.turret = factory.getMotor(NAME, "turret");
 
         turret.setNeutralMode(NeutralMode.Brake);

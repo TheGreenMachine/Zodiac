@@ -1,13 +1,13 @@
 package com.team1816.frc2020.auto.actions.actions2020;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.auto.actions.Action;
-import javax.inject.Inject;
 
 public class TurretAction implements Action {
 
     @Inject
-    private Turret turret;
+    private static Turret turret;
 
     private double turretAngle;
 
