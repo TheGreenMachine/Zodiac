@@ -23,7 +23,7 @@ public class CtreMotorFactory {
         // This is factory default.
         public double NEUTRAL_DEADBAND = 0.04;
 
-        public boolean ENABLE_CURRENT_LIMIT = false;
+        public boolean ENABLE_CURRENT_LIMIT = true;
         public boolean ENABLE_SOFT_LIMIT = false;
         public boolean ENABLE_LIMIT_SWITCH = false;
         public int FORWARD_SOFT_LIMIT = 0;
@@ -46,6 +46,13 @@ public class CtreMotorFactory {
 
         public double OPEN_LOOP_RAMP_RATE = 0.0;
         public double CLOSED_LOOP_RAMP_RATE = 0.0;
+
+        public SupplyCurrentLimitConfiguration DEFAULT_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(
+            true,
+            40,
+            0,
+            0
+        );
     }
 
     private static final Configuration kDefaultConfiguration = new Configuration();
@@ -243,6 +250,7 @@ public class CtreMotorFactory {
             ((TalonFXConfiguration) talonConfiguration).supplyCurrLimit =
                 new SupplyCurrentLimitConfiguration(config.ENABLE_CURRENT_LIMIT, 0, 0, 0);
         }
+        motor.configSupplyCurrentLimit(config.DEFAULT_CURRENT_LIMIT, kTimeoutMs);
 
         talonConfiguration.clearPositionOnLimitF = false;
         talonConfiguration.clearPositionOnLimitR = false;

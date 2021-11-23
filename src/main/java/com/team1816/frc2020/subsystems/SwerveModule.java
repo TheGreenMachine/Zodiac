@@ -126,21 +126,30 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
                 constants.kDriveMotorName,
                 List.of(constants.kDrivePid)
             );
+        var driveCurrentLimitConfig = new SupplyCurrentLimitConfiguration(
+            true,
+            40,
+            0,
+            0
+        );
+        mDriveMotor.configSupplyCurrentLimit(driveCurrentLimitConfig, Constants.kLongCANTimeoutMs);
         driveMotorIsInverted = mDriveMotor.getInverted();
+
+
         mAzimuthMotor =
             factory.getMotor(
                 subsystemName,
                 constants.kAzimuthMotorName,
                 List.of(constants.kAzimuthPid)
             );
-        var currentLimitConfig = new SupplyCurrentLimitConfiguration(
+        var azimuthCurrentLimitConfig = new SupplyCurrentLimitConfiguration(
             true,
             25,
             0,
             0
         );
 
-        mAzimuthMotor.configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
+        mAzimuthMotor.configSupplyCurrentLimit(azimuthCurrentLimitConfig, Constants.kLongCANTimeoutMs);
         mAzimuthMotor.setSensorPhase(constants.kInvertAzimuthSensorPhase);
         mAzimuthMotor.configPeakOutputForward(.4, Constants.kLongCANTimeoutMs);
         mAzimuthMotor.configPeakOutputReverse(-.4, Constants.kLongCANTimeoutMs);

@@ -2,12 +2,14 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifierStatusFrame;
+import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import java.awt.*;
@@ -170,37 +172,40 @@ public class LedManager extends Subsystem {
         if (cameraLed != null) {
             if (outputsChanged) {
                 cameraLed.set(cameraLedOn);
-//                cameraCanifier.setLEDOutput(
-//                    cameraLedOn ? 1 : 0,
-//                    CANifier.LEDChannel.LEDChannelB
-//                );
+
+//                if (cameraLedOn) {
+//                    cameraLed.set(Relay.Value.kOn);
+//                }
+//                else {
+//                    cameraLed.set(Relay.Value.kOff);
+//                }
             }
-        }
-        if (canifier != null) {
-            switch (controlState) {
-                case RAVE:
-                    var color = Color.getHSBColor(raveHue, 1.0f, 1.0f);
-                    writeLedHardware(color.getRed(), color.getGreen(), color.getBlue());
-                    raveHue += RAVE_SPEED;
-                    break;
-                case BLINK:
-                    if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
-                        if (blinkLedOn) {
-                            writeLedHardware(0, 0, 0);
-                            blinkLedOn = false;
-                        } else {
-                            writeLedHardware(ledR, ledG, ledB);
-                            blinkLedOn = true;
+            if (canifier != null) {
+                switch (controlState) {
+                    case RAVE:
+                        var color = Color.getHSBColor(raveHue, 1.0f, 1.0f);
+                        writeLedHardware(color.getRed(), color.getGreen(), color.getBlue());
+                        raveHue += RAVE_SPEED;
+                        break;
+                    case BLINK:
+                        if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
+                            if (blinkLedOn) {
+                                writeLedHardware(0, 0, 0);
+                                blinkLedOn = false;
+                            } else {
+                                writeLedHardware(ledR, ledG, ledB);
+                                blinkLedOn = true;
+                            }
+                            lastWriteTime = System.currentTimeMillis();
                         }
-                        lastWriteTime = System.currentTimeMillis();
-                    }
-                    break;
-                case STANDARD:
-                    if (outputsChanged) {
-                        writeLedHardware(ledR, ledG, ledB);
-                        outputsChanged = false;
-                    }
-                    break;
+                        break;
+                    case STANDARD:
+                        if (outputsChanged) {
+                            writeLedHardware(ledR, ledG, ledB);
+                            outputsChanged = false;
+                        }
+                        break;
+                }
             }
         }
     }
