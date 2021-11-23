@@ -22,15 +22,7 @@ public class Superstructure extends Subsystem {
     private static Superstructure mInstance;
     private Optional<AimingParameters> mLatestAimingParameters = Optional.empty();
 
-    public static synchronized Superstructure getInstance() {
-        if (mInstance == null) {
-            mInstance = new Superstructure();
-        }
-
-        return mInstance;
-    }
-
-    private Superstructure() {
+    public Superstructure() {
         super("superstructure");
     }
 

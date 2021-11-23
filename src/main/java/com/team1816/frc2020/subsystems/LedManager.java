@@ -51,7 +51,7 @@ public class LedManager extends Subsystem {
     private static final double RAVE_SPEED = factory.getConstant(NAME, "raveSpeed", 0.01);
     private static final int MAX = (int) factory.getConstant(NAME, "maxLevel", 255);
 
-    private LedManager() {
+    public LedManager() {
         super(NAME);
         this.canifier = factory.getCanifier(NAME);
         this.cameraCanifier = factory.getCanifier("camera");
@@ -65,13 +65,6 @@ public class LedManager extends Subsystem {
         this.ledB = 0;
 
         this.cameraLedOn = false;
-    }
-
-    public static LedManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new LedManager();
-        }
-        return INSTANCE;
     }
 
     private void configureCanifier(ICanifier canifier) {

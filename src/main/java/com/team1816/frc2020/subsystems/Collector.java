@@ -27,15 +27,7 @@ public class Collector extends Subsystem {
 
     private double actualVelocity;
 
-    public static Collector getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Collector();
-        }
-
-        return INSTANCE;
-    }
-
-    private Collector() {
+    public Collector() {
         super(NAME);
         this.armPiston = factory.getSolenoid(NAME, "arm");
         this.intake = factory.getMotor(NAME, "intake");

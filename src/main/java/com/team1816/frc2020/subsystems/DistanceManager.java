@@ -1,25 +1,21 @@
 package com.team1816.frc2020.subsystems;
 
+import com.google.inject.Inject;
+
 public class DistanceManager {
 
     private static DistanceManager INSTANCE;
 
-    public static DistanceManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new DistanceManager();
-        }
-        return INSTANCE;
-    }
-
     // Components
-    private final Camera camera = Camera.getInstance();
+    @Inject
+    private static Camera camera;
 
     // State
     private final Entry[] buckets;
     private int zone;
 
     // Constants
-    private DistanceManager() {
+    public DistanceManager() {
         buckets = distance_buckets;
     }
 

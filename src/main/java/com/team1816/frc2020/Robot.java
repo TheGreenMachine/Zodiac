@@ -44,22 +44,22 @@ public class Robot extends TimedRobot {
 
     private IControlBoard mControlBoard;
 
-    private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
+    private final SubsystemManager mSubsystemManager;
 
     // subsystems
-    private final Superstructure mSuperstructure = Superstructure.getInstance();
-    private final Infrastructure mInfrastructure = Infrastructure.getInstance();
+    private final Superstructure mSuperstructure;
+    private final Infrastructure mInfrastructure;
     private final RobotState mRobotState;
     private final Drive mDrive;
     private final PowerDistributionPanel pdp = new PowerDistributionPanel();
-    private final LedManager ledManager = LedManager.getInstance();
-    private final Collector collector = Collector.getInstance();
-    private final Shooter shooter = Shooter.getInstance();
-    private Turret mTurret;
+    private final LedManager ledManager;
+    private final Collector collector;
+    private final Shooter shooter;
+    private final Turret mTurret;
     // private final Spinner spinner = Spinner.getInstance();
-    private final Hopper hopper = Hopper.getInstance();
-    private final Climber climber = Climber.getInstance();
-    private final Camera camera = Camera.getInstance();
+    private final Hopper hopper;
+    private final Climber climber;
+    private final Camera camera;
     private final RobotStateEstimator mRobotStateEstimator;
 
     private boolean mHasBeenEnabled = false;
@@ -87,6 +87,15 @@ public class Robot extends TimedRobot {
         mRobotStateEstimator = injector.getInstance(RobotStateEstimator.class);
         mTurret = injector.getInstance(Turret.class);
         mRobotState = injector.getInstance(RobotState.class);
+        collector = injector.getInstance(Collector.class);
+        mSuperstructure = injector.getInstance(Superstructure.class);
+        mInfrastructure = injector.getInstance(Infrastructure.class);
+        ledManager = injector.getInstance(LedManager.class);
+        shooter = injector.getInstance(Shooter.class);
+        hopper = injector.getInstance(Hopper.class);
+        climber = injector.getInstance(Climber.class);
+        camera = injector.getInstance(Camera.class);
+        mSubsystemManager = injector.getInstance(SubsystemManager.class);
         mAutoModeSelector = AutoModeSelector.getInstance();
     }
 

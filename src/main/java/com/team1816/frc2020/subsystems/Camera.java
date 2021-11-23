@@ -1,5 +1,6 @@
 package com.team1816.frc2020.subsystems;
 
+import com.google.inject.Inject;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -9,16 +10,10 @@ public class Camera {
 
     private static Camera INSTANCE;
 
-    public static Camera getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Camera();
-        }
-        return INSTANCE;
-    }
-
     // Components
     private final NetworkTable networkTable;
-    private final LedManager led = LedManager.getInstance();
+    @Inject
+    private static LedManager led;
 
     // State
     private double deltaXAngle;
@@ -33,7 +28,7 @@ public class Camera {
     private static final double VIDEO_WIDTH = 672.0; // px
     public static final double ALLOWABLE_AIM_ERROR = 1; // deg
 
-    private Camera() {
+    public Camera() {
         networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         usingVision = networkTable.getSubTable("Calibration").getEntry("VISION");
         networkTable.addEntryListener(

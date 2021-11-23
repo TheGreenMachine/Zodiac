@@ -1,5 +1,7 @@
 package com.team1816.lib.hardware;
 
+import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
+
 import java.util.Objects;
 
 public class PidConfig {
@@ -57,5 +59,15 @@ public class PidConfig {
     @Override
     public String toString() {
         return "kP = " + kP + ", kI = " + kI + ", kD = " + kD + ", kF = " + kF;
+    }
+
+    public SlotConfiguration toSlotConfig(){
+        SlotConfiguration slotConfig = new SlotConfiguration();
+        slotConfig.kP = kP;
+        slotConfig.kI = kI;
+        slotConfig.kD = kD;
+        slotConfig.kF = kF;
+
+        return slotConfig;
     }
 }

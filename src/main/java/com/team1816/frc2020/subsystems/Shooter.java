@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.google.inject.Inject;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.hardware.components.pcm.ISolenoid;
@@ -18,18 +19,11 @@ public class Shooter extends Subsystem implements PidProvider {
     private static final String NAME = "shooter";
     private static Shooter INSTANCE;
 
-    public static Shooter getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Shooter();
-        }
-
-        return INSTANCE;
-    }
-
     // Components
     private final IMotorControllerEnhanced shooterMain;
     private final IMotorControllerEnhanced shooterFollower;
-    private final LedManager ledManager = LedManager.getInstance();
+    @Inject
+    private static LedManager ledManager;
     private final ISolenoid hood;
     // State
     private boolean outputsChanged;
@@ -53,9 +47,10 @@ public class Shooter extends Subsystem implements PidProvider {
     );
 
     private SendableChooser<Integer> velocityChooser = new SendableChooser<>();
-    private DistanceManager distanceManager = DistanceManager.getInstance();
+    @Inject
+    private static DistanceManager distanceManager;
 
-    private Shooter() {
+    public Shooter() {
         super(NAME);
         this.shooterMain = factory.getMotor(NAME, "shooterMain");
         this.shooterFollower =

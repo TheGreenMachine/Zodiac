@@ -2,6 +2,7 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.google.inject.Inject;
 import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -12,20 +13,16 @@ public class Hopper extends Subsystem {
     private static final String NAME = "hopper";
     private static Hopper INSTANCE;
 
-    public static Hopper getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Hopper();
-        }
-
-        return INSTANCE;
-    }
-
     // Components
     private final ISolenoid feederFlap;
     private final IMotorControllerEnhanced spindexer;
     private final IMotorControllerEnhanced elevator;
-    private final DistanceManager distanceManager = DistanceManager.getInstance();
-    private final Camera camera = Camera.getInstance();
+    @Inject
+    private static Shooter shooter;
+    @Inject
+    private static DistanceManager distanceManager;
+    @Inject
+    private static Camera camera;
     private final DigitalInput ballSensor;
 
     // State
@@ -40,7 +37,7 @@ public class Hopper extends Subsystem {
 
     private boolean wantUnjam;
 
-    private Hopper() {
+    public Hopper() {
         super(NAME);
         this.feederFlap = factory.getSolenoid(NAME, "feederFlap");
         this.spindexer = factory.getMotor(NAME, "spindexer");
@@ -94,9 +91,9 @@ public class Hopper extends Subsystem {
                 waitForShooterLoopCounter++;
                 return;
             }
-            System.out.println("Near Velocity: "+ Shooter.getInstance().isVelocityNearTarget());
+            System.out.println("Near Velocity: "+ shooter.isVelocityNearTarget());
             System.out.println("Has Ball: "+ hasBall());
-            if ((!Shooter.getInstance().isVelocityNearTarget() || hasBall())&& !(Shooter.getInstance().isVelocityNearTarget() && hasBall())) {
+            if ((!shooter.isVelocityNearTarget() || hasBall())&& !(shooter.isVelocityNearTarget() && hasBall())) {
                 if (wantUnjam) {
                     this.spindexer.set(ControlMode.PercentOutput, -0.25);
                 }

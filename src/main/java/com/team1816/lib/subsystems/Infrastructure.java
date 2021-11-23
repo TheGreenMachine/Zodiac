@@ -1,5 +1,6 @@
 package com.team1816.lib.subsystems;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.subsystems.Superstructure;
 import com.team1816.lib.hardware.components.pcm.ICompressor;
 import com.team1816.lib.loops.ILooper;
@@ -13,7 +14,9 @@ public class Infrastructure extends Subsystem {
 
     private static Infrastructure mInstance;
 
-    private Superstructure mSuperstructure = Superstructure.getInstance();
+    @Inject
+    private Superstructure mSuperstructure;
+
     private ICompressor mCompressor;
 
     private boolean mIsManualControl = false;
@@ -21,7 +24,7 @@ public class Infrastructure extends Subsystem {
         factory.getConstant("compressorEnabled") > 0;
     private boolean lastCompressorOn = true;
 
-    private Infrastructure() {
+    public Infrastructure() {
         super("Infrastructure");
         mCompressor = factory.getCompressor();
         if( factory.getConstant("compressorEnabled")>0) {
@@ -32,14 +35,6 @@ public class Infrastructure extends Subsystem {
     @Override
     public boolean isImplemented() {
         return true;
-    }
-
-    public static Infrastructure getInstance() {
-        if (mInstance == null) {
-            mInstance = new Infrastructure();
-        }
-
-        return mInstance;
     }
 
     @Override

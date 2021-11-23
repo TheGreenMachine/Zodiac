@@ -35,7 +35,8 @@ public abstract class Drive
     public static final String NAME = "drivetrain";
 
     // Components
-    protected final LedManager ledManager = LedManager.getInstance();
+    @Inject
+    protected static LedManager ledManager;
     protected PigeonIMU mPigeon;
     protected SwerveModule[] swerveModules;
 

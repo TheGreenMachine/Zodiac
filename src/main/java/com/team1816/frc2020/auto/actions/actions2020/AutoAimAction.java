@@ -10,10 +10,10 @@ public class AutoAimAction implements Action {
     @Inject
     private static Turret turret;
 
-    private Camera camera;
+    @Inject
+    private static Camera camera;
 
     public AutoAimAction() {
-        camera = Camera.getInstance();
     }
 
     @Override

@@ -196,28 +196,16 @@ public class CtreMotorFactory {
         talonConfiguration.reverseSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
 
         if (pidConfigList.size() > 0) {
-            talonConfiguration.slot0.kP = pidConfigList.get(0).kP;
-            talonConfiguration.slot0.kI = pidConfigList.get(0).kI;
-            talonConfiguration.slot0.kD = pidConfigList.get(0).kD;
-            talonConfiguration.slot0.kF = pidConfigList.get(0).kF;
-        }
-        if (pidConfigList.size() > 1) {
-            talonConfiguration.slot1.kP = pidConfigList.get(1).kP;
-            talonConfiguration.slot1.kI = pidConfigList.get(1).kI;
-            talonConfiguration.slot1.kD = pidConfigList.get(1).kD;
-            talonConfiguration.slot1.kF = pidConfigList.get(1).kF;
-        }
-        if (pidConfigList.size() > 2) {
-            talonConfiguration.slot2.kP = pidConfigList.get(2).kP;
-            talonConfiguration.slot2.kI = pidConfigList.get(2).kI;
-            talonConfiguration.slot2.kD = pidConfigList.get(2).kD;
-            talonConfiguration.slot2.kF = pidConfigList.get(2).kF;
-        }
-        if (pidConfigList.size() > 3) {
-            talonConfiguration.slot3.kP = pidConfigList.get(3).kP;
-            talonConfiguration.slot3.kI = pidConfigList.get(3).kI;
-            talonConfiguration.slot3.kD = pidConfigList.get(3).kD;
-            talonConfiguration.slot3.kF = pidConfigList.get(3).kF;
+            talonConfiguration.slot0 = pidConfigList.get(0).toSlotConfig();
+            if (pidConfigList.size() > 1) {
+                talonConfiguration.slot1 = pidConfigList.get(1).toSlotConfig();
+                if (pidConfigList.size() > 2) {
+                    talonConfiguration.slot2 = pidConfigList.get(2).toSlotConfig();
+                    if (pidConfigList.size() > 3) {
+                        talonConfiguration.slot3 = pidConfigList.get(3).toSlotConfig();
+                    }
+                }
+            }
         }
 
         talonConfiguration.nominalOutputForward = 0;

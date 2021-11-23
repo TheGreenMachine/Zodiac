@@ -45,11 +45,12 @@ public class Turret extends Subsystem implements PidProvider {
     private static Turret INSTANCE;
     // Components
     private final IMotorControllerEnhanced turret;
-    private final Camera camera = Camera.getInstance();
+    @Inject
+    private static Camera camera;
     @Inject
     private static RobotState robotState;
-
-    private final LedManager led = LedManager.getInstance();
+    @Inject
+    private static LedManager led;
     private final double kP;
     private final double kI;
     private final double kD;
