@@ -5,6 +5,7 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
@@ -34,6 +35,9 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     private static TankDrive INSTANCE;
     private static final String NAME = "drivetrain";
 
+    @Inject
+    private static AutoModeSelector autoModeSelector;
+
     // hardware
     private final IMotorControllerEnhanced mLeftMaster, mRightMaster;
     private final IMotorController mLeftSlaveA, mRightSlaveA, mLeftSlaveB, mRightSlaveB;
@@ -45,14 +49,6 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
     private final double tickRatioPerLoop = Constants.kLooperDt / .1d;
-
-    public static synchronized TankDrive getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TankDrive();
-        }
-
-        return INSTANCE;
-    }
 
     public TankDrive() {
         super();
@@ -494,9 +490,9 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
                 "Error detected with Pigeon IMU - check if the sensor is present and plugged in!"
             );
             System.out.println("Defaulting to drive straight mode");
-            AutoModeSelector.getInstance().setHardwareFailure(true);
+            autoModeSelector.setHardwareFailure(true);
         } else {
-            AutoModeSelector.getInstance().setHardwareFailure(false);
+            autoModeSelector.setHardwareFailure(false);
         }
     }
 

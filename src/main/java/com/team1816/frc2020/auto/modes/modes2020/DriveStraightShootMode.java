@@ -1,5 +1,6 @@
 package com.team1816.frc2020.auto.modes.modes2020;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.auto.actions.actions2020.PrepareToShootAction;
 import com.team1816.frc2020.auto.actions.actions2020.ShootAction;
 import com.team1816.frc2020.paths.TrajectorySet;
@@ -12,9 +13,11 @@ import com.team1816.lib.auto.modes.AutoModeBase;
 public class DriveStraightShootMode extends AutoModeBase {
 
     private DriveTrajectory mDriveTrajectory;
+    @Inject
+    private static TrajectorySet trajectorySet;
 
     public DriveStraightShootMode() {
-        var trajectory = TrajectorySet.getInstance().DRIVE_STRAIGHT;
+        var trajectory = trajectorySet.DRIVE_STRAIGHT;
         mDriveTrajectory = new DriveTrajectory(trajectory, true);
     }
 

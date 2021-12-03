@@ -2,9 +2,12 @@ package com.team1816.lib.auto;
 
 import com.team1816.lib.auto.modes.AutoModeBase;
 
+import javax.inject.Singleton;
+
 /**
  * This class selects, runs, and (if necessary) stops a specified autonomous mode.
  */
+@Singleton
 public class AutoModeExecutor {
 
     private static AutoModeExecutor mInstance = null;
@@ -13,14 +16,6 @@ public class AutoModeExecutor {
     private Thread mThread = null;
 
     public AutoModeExecutor() {}
-
-    public static AutoModeExecutor getInstance() {
-        if (mInstance == null) {
-            mInstance = new AutoModeExecutor();
-        }
-
-        return mInstance;
-    }
 
     public void setAutoMode(AutoModeBase new_auto_mode) {
         mAutoMode = new_auto_mode;

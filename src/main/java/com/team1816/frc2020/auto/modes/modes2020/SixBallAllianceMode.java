@@ -1,5 +1,6 @@
 package com.team1816.frc2020.auto.modes.modes2020;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.auto.actions.actions2020.*;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.frc2020.subsystems.Turret;
@@ -14,9 +15,11 @@ import com.team254.lib.geometry.Translation2d;
 public class SixBallAllianceMode extends AutoModeBase {
 
     private DriveTrajectory mDriveTrajectory;
+    @Inject
+    private static TrajectorySet trajectorySet;
 
     public SixBallAllianceMode() {
-        var trajectory = TrajectorySet.getInstance().SIX_BALL_ALLIANCE;
+        var trajectory = trajectorySet.SIX_BALL_ALLIANCE;
         mDriveTrajectory = new DriveTrajectory(trajectory, true);
     }
 

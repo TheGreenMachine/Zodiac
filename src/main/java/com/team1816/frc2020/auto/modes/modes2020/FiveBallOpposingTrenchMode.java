@@ -1,5 +1,6 @@
 package com.team1816.frc2020.auto.modes.modes2020;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.auto.actions.actions2020.CollectAction;
 import com.team1816.frc2020.auto.actions.actions2020.PrepareToShootAction;
 import com.team1816.frc2020.auto.actions.actions2020.ShootAction;
@@ -15,10 +16,12 @@ public class FiveBallOpposingTrenchMode extends AutoModeBase {
 
     private DriveTrajectory mDriveTrajectoryA;
     private DriveTrajectory mDriveTrajectoryB;
+    @Inject
+    private static TrajectorySet trajectorySet;
 
     public FiveBallOpposingTrenchMode() {
-        var trajectoryA = TrajectorySet.getInstance().FIVE_BALL_AUTO_OPPOSEA;
-        var trajectoryB = TrajectorySet.getInstance().FIVE_BALL_AUTO_OPPOSEB;
+        var trajectoryA = trajectorySet.FIVE_BALL_AUTO_OPPOSEA;
+        var trajectoryB = trajectorySet.FIVE_BALL_AUTO_OPPOSEB;
         mDriveTrajectoryA = new DriveTrajectory(trajectoryA, true);
         mDriveTrajectoryB = new DriveTrajectory(trajectoryB, true);
     }

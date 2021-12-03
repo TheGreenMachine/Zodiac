@@ -15,10 +15,13 @@ import com.team254.lib.trajectory.timing.TimingUtil;
 import com.team254.lib.util.CSVWritable;
 import com.team254.lib.util.Units;
 import com.team254.lib.util.Util;
+
+import javax.inject.Singleton;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class TankMotionPlanner implements CSVWritable {
 
     private static final TankMotionPlanner INSTANCE = new TankMotionPlanner();
@@ -540,9 +543,5 @@ public class TankMotionPlanner implements CSVWritable {
 
     public TimedState<Pose2dWithCurvature> setpoint() {
         return mSetpoint;
-    }
-
-    public static TankMotionPlanner getInstance() {
-        return INSTANCE;
     }
 }

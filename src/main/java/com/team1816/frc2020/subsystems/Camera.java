@@ -1,11 +1,13 @@
 package com.team1816.frc2020.subsystems;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+@Singleton
 public class Camera {
 
     private static Camera INSTANCE;

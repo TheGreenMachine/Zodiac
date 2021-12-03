@@ -69,6 +69,7 @@ public class Robot extends TimedRobot {
 
     private AutoModeSelector mAutoModeSelector;
     private AutoModeExecutor mAutoModeExecutor;
+    private TrajectorySet trajectorySet;
 
     private boolean mDriveByCameraInAuto = false;
     private double loopStart;
@@ -96,7 +97,8 @@ public class Robot extends TimedRobot {
         climber = injector.getInstance(Climber.class);
         camera = injector.getInstance(Camera.class);
         mSubsystemManager = injector.getInstance(SubsystemManager.class);
-        mAutoModeSelector = AutoModeSelector.getInstance();
+        mAutoModeSelector = injector.getInstance(AutoModeSelector.class);
+        trajectorySet = injector.getInstance(TrajectorySet.class);
     }
 
     public static RobotFactory getFactory() {
@@ -290,8 +292,6 @@ public class Robot extends TimedRobot {
             );
             mDrive.setHeading(Rotation2d.identity());
 
-            TrajectorySet.getInstance();
-
             mAutoModeSelector.updateModeCreator();
 
             actionManager =
@@ -326,7 +326,7 @@ public class Robot extends TimedRobot {
                             System.out.println("STARTING TRENCH TO FEEDER");
                             SmartDashboard.putString("Teleop Spline", "TRENCH TO FEEDER");
                             var trajectory = new DriveTrajectory(
-                                TrajectorySet.getInstance().TRENCH_TO_FEEDER,
+                                trajectorySet.TRENCH_TO_FEEDER,
                                 true
                             );
                             trajectory.start();
@@ -339,7 +339,7 @@ public class Robot extends TimedRobot {
                             SmartDashboard.putString("Teleop Spline", "FEEDER TO TRENCH");
                             mTurret.setTurretAngle(Turret.CARDINAL_SOUTH);
                             var trajectory = new DriveTrajectory(
-                                TrajectorySet.getInstance().FEEDER_TO_TRENCH,
+                                trajectorySet.FEEDER_TO_TRENCH,
                                 true
                             );
                             trajectory.start();

@@ -2,6 +2,7 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
@@ -38,7 +39,10 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     // Controllers
     private final SwerveMotionPlanner motionPlanner;
-    private final SwerveHeadingController headingController = SwerveHeadingController.getInstance();
+    @Inject
+    private static SwerveHeadingController headingController;
+    @Inject
+    private static AutoModeSelector autoModeSelector;
 
     // Odometry variables
     private Pose2d pose = Pose2d.identity();
@@ -51,13 +55,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     boolean alwaysConfigureModules = false;
     boolean moduleConfigRequested = false;
     private boolean wantReset = false;
-
-    public static synchronized Drive getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new SwerveDrive();
-        }
-        return INSTANCE;
-    }
 
     public SwerveDrive() {
         super();
@@ -607,7 +604,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         //            System.out.println("Defaulting to drive straight mode");
         //            AutoModeSelector.getInstance().setHardwareFailure(true);
         //        } else {
-        AutoModeSelector.getInstance().setHardwareFailure(false);
+        autoModeSelector.setHardwareFailure(false);
         //        }
     }
 

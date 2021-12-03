@@ -1,5 +1,6 @@
 package com.team1816.frc2020.auto.modes.modes2020;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.auto.actions.actions2020.CollectAction;
 import com.team1816.frc2020.auto.actions.actions2020.PrepareToShootAction;
 import com.team1816.frc2020.auto.actions.actions2020.ShootAction;
@@ -17,12 +18,14 @@ public class EightBallAllianceMode extends AutoModeBase {
     private DriveTrajectory mDriveTrajectoryB;
     private DriveTrajectory mDriveTrajectoryC;
     private DriveTrajectory mDriveTrajectoryD;
+    @Inject
+    private static TrajectorySet trajectorySet;
 
     public EightBallAllianceMode() {
-        var trajectoryA = TrajectorySet.getInstance().DRIVE_STRAIGHT_TRENCH;
-        var trajectoryB = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCEA;
-        var trajectoryC = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCEB;
-        var trajectoryD = TrajectorySet.getInstance().EIGHT_BALL_AUTO_ALLIANCEC;
+        var trajectoryA = trajectorySet.DRIVE_STRAIGHT_TRENCH;
+        var trajectoryB = trajectorySet.EIGHT_BALL_AUTO_ALLIANCEA;
+        var trajectoryC = trajectorySet.EIGHT_BALL_AUTO_ALLIANCEB;
+        var trajectoryD = trajectorySet.EIGHT_BALL_AUTO_ALLIANCEC;
         mDriveTrajectoryA = new DriveTrajectory(trajectoryA, true);
         mDriveTrajectoryB = new DriveTrajectory(trajectoryB, true);
         mDriveTrajectoryC = new DriveTrajectory(trajectoryC, true);

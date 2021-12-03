@@ -10,8 +10,11 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+
+import javax.inject.Singleton;
 import java.awt.*;
 
+@Singleton
 public class LedManager extends Subsystem {
 
     public static final String NAME = "ledmanager";

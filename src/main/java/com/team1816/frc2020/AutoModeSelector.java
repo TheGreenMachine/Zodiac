@@ -6,8 +6,11 @@ import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import javax.inject.Singleton;
 import java.util.Optional;
 
+@Singleton
 public class AutoModeSelector {
 
     private boolean hardwareFailure = false;
@@ -51,7 +54,7 @@ public class AutoModeSelector {
 
     private Optional<AutoModeBase> mAutoMode = Optional.empty();
 
-    private AutoModeSelector() {
+    public AutoModeSelector() {
         mStartPositionChooser = new SendableChooser<>();
 
         mStartPositionChooser.setDefaultOption(
@@ -229,11 +232,4 @@ public class AutoModeSelector {
     }
 
     private static AutoModeSelector INSTANCE;
-
-    public static AutoModeSelector getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new AutoModeSelector();
-        }
-        return INSTANCE;
-    }
 }

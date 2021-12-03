@@ -5,16 +5,11 @@ import com.team1816.lib.hardware.RobotFactory;
 import com.team254.lib.util.SynchronousPIDF;
 import edu.wpi.first.wpilibj.Timer;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class SwerveHeadingController {
     private static SwerveHeadingController INSTANCE;
-
-    public static SwerveHeadingController getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new SwerveHeadingController();
-        }
-
-        return INSTANCE;
-    }
 
     // State
     private double mError;
@@ -39,7 +34,7 @@ public class SwerveHeadingController {
     public static final double SNAP_kF = factory.getConstant("heading_kF");
     private static final double DISABLE_TIME_LENGTH = 0.2;
 
-    private SwerveHeadingController(){
+    public SwerveHeadingController(){
         if (true){
             stabilizationPID = new SynchronousPIDF(0.005, 0.0, 0.0005, 0.0);
             snapPID = new SynchronousPIDF(SNAP_kP, SNAP_kI, SNAP_kD, SNAP_kF);
