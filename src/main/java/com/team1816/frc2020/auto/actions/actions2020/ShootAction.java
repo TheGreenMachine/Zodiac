@@ -8,18 +8,17 @@ import com.team1816.lib.loops.AsyncTimer;
 public class ShootAction implements Action {
 
     @Inject
+    private static Turret turret;
+    @Inject
     private static Shooter shooter;
     @Inject
     private static Hopper hopper;
     @Inject
     private static LedManager ledManager;
     @Inject
-    private Collector collector;
+    private static Collector collector;
 
     private AsyncTimer shooterTimer;
-
-    @Inject
-    private static Turret turret;
 
     private boolean unjam;
 
