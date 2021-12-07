@@ -4,9 +4,9 @@ import badlog.lib.BadLog;
 import com.team1816.frc2020.Robot;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.ILooper;
-import edu.wpi.first.wpilibj.Sendable;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import java.util.function.Supplier;
 
 /**

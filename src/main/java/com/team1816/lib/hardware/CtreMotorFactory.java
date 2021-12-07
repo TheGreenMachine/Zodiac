@@ -1,5 +1,6 @@
 package com.team1816.lib.hardware;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
@@ -215,7 +216,7 @@ public class CtreMotorFactory {
         talonConfiguration.peakOutputForward = 1.0;
         talonConfiguration.peakOutputReverse = -1.0;
 
-        talonConfiguration.velocityMeasurementPeriod = config.VELOCITY_MEASUREMENT_PERIOD;
+        //talonConfiguration.velocityMeasurementPeriod = config.VELOCITY_MEASUREMENT_PERIOD;
         talonConfiguration.velocityMeasurementWindow =
             config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW;
 
@@ -231,6 +232,11 @@ public class CtreMotorFactory {
             ((TalonFXConfiguration) talonConfiguration).supplyCurrLimit =
                 new SupplyCurrentLimitConfiguration(config.ENABLE_CURRENT_LIMIT, 0, 0, 0);
         }
+
+        ErrorCode code = motor.configVelocityMeasurementPeriod(
+            config.VELOCITY_MEASUREMENT_PERIOD,
+            kTimeoutMs
+        );
 
         talonConfiguration.clearPositionOnLimitF = false;
         talonConfiguration.clearPositionOnLimitR = false;

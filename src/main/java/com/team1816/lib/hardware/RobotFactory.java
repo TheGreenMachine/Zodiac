@@ -9,6 +9,7 @@ import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.hardware.components.pcm.*;
 import com.team254.lib.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -188,7 +189,7 @@ public class RobotFactory {
         var subsystem = getSubsystem(subsystemName);
         Integer solenoidId = subsystem.solenoids.get(name);
         if (subsystem.isImplemented() && isHardwareValid(solenoidId) && isPcmEnabled()) {
-            return new SolenoidImpl(config.pcm, solenoidId);
+            return new SolenoidImpl(config.pcm, PneumaticsModuleType.CTREPCM, solenoidId);
         }
         if (subsystem.isImplemented()) {
             reportGhostWarning("Solenoid", subsystemName, name);
@@ -210,6 +211,7 @@ public class RobotFactory {
         ) {
             return new DoubleSolenoidImpl(
                 config.pcm,
+                PneumaticsModuleType.CTREPCM,
                 solenoidConfig.forward,
                 solenoidConfig.reverse
             );
@@ -230,7 +232,7 @@ public class RobotFactory {
 
     public ICompressor getCompressor() {
         if (isPcmEnabled()) {
-            return new CompressorImpl(getPcmId());
+            return new CompressorImpl(getPcmId(), PneumaticsModuleType.CTREPCM);
         }
         reportGhostWarning("Compressor", "ROOT", "on PCM ID " + getPcmId());
         return new GhostCompressor();

@@ -7,7 +7,7 @@ subsystems:
             leftFollower: -1
             rightMain: 13
             rightFollower: -1
-            flAzimuth: 1
+            flAzimuth: -1
             blAzimuth: -1
             frAzimuth: -1
             brAzimuth: -1
@@ -41,6 +41,7 @@ subsystems:
         invertMotor:
             - rightMain
         constants:
+            isSwerve: 0
             pigeonId: 9
             encPPR: 999
             azimuthEncPPR: 4096
@@ -50,7 +51,9 @@ constants:
     maxVel: 120 # inches/s
     maxAccel: 60 # inches/s^2
     trackWidth: 23 # inches
+    wheelbaseLength: 21.5 #inches
     wheelDiameter: 6.122 #inches
     logTeleop: 1
     logAuto: 1
+    teleopFieldCentric: 0
     badLogEnabled: 1

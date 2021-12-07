@@ -24,7 +24,7 @@ import com.team254.lib.util.Util;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -159,7 +159,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                 ) /
                 robotWidthTicks;
             //mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
-            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(
+            var rot2d = new edu.wpi.first.math.geometry.Rotation2d(
                 mPeriodicIO.gyro_heading_no_offset.getRadians()
             );
             fieldSim.setRobotPose(

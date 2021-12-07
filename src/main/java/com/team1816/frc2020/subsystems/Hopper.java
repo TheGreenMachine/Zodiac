@@ -7,7 +7,7 @@ import com.google.inject.Singleton;
 import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
 
 @Singleton
 public class Hopper extends Subsystem {
@@ -44,7 +44,7 @@ public class Hopper extends Subsystem {
         this.feederFlap = factory.getSolenoid(NAME, "feederFlap");
         this.spindexer = factory.getMotor(NAME, "spindexer");
         this.elevator = factory.getMotor(NAME, "elevator");
-        this.ballSensor = new DigitalInput((int) factory.getConstant(NAME, "ballSensor"));
+        this.ballSensor = new DigitalInput((int) factory.getConstant(NAME, "ballSensor", 0));
     }
 
     public void setFeederFlap(boolean feederFlapOut) {

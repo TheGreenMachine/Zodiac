@@ -1,49 +1,55 @@
+import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 plugins {
     id "java"
-    id "idea"
-    id "eclipse"
-    id "edu.wpi.first.GradleRIO" version "2021.3.1"
-    id "com.diffplug.spotless" version "5.8.2"
+    id "edu.wpi.first.GradleRIO" version "2022.1.1-beta-3"
 }
 
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 def ROBOT_MAIN_CLASS = "com.team1816.frc2020.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
-// This is added by GradleRIO's backing project EmbeddedTools.
+// This is added by GradleRIO's backing project DeployUtils.
 deploy {
     targets {
-        roboRIO("roborio") {
+        roborio(getTargetTypeClass('RoboRIO')) {
             // Team number is loaded either from the .wpilib/wpilib_preferences.json
             // or from command line. If not found an exception will be thrown.
             // You can use getTeamOrDefault(team) instead of getTeamNumber if you
             // want to store a team number in this file.
-            team = frc.getTeamNumber()
-        }
-    }
-    artifacts {
-        frcJavaArtifact('frcJava') {
-            targets << "roborio"
-            // Debug can be overridden by command line, for use with VSCode
-            debug = frc.getDebugOrDefault(false)
-        }
-        // Built in artifact to deploy arbitrary files to the roboRIO.
-        fileTreeArtifact('frcStaticFileDeploy') {
-            // The directory below is the local directory to deploy
-            files = fileTree(dir: 'src/main/deploy')
-            // Deploy to RoboRIO target, into /home/lvuser/deploy
-            targets << "roborio"
-            directory = '/home/lvuser/deploy'
+            team = project.frc.getTeamNumber()
+            debug = project.frc.getDebugOrDefault(false)
+            checkImage = false
+            artifacts {
+                // First part is artifact name, 2nd is artifact type
+                // getTargetTypeClass is a shortcut to get the class type using a string
+
+                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+                }
+
+                // Static files artifact
+                frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                    files = project.fileTree('src/main/deploy')
+                    directory = '/home/lvuser/deploy'
+                }
+            }
         }
     }
 }
 
-// Set this to true to enable desktop support.
-def includeDesktopSupport = false
+def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 
-// Maven central needed for JUnit
+// Set to true to use debug for JNI.
+wpi.java.debugJni = false
+
+// Set this to true to enable desktop support.
+def includeDesktopSupport = true
+
 repositories {
+    mavenLocal()
     mavenCentral()
     maven { url "https://www.jitpack.io" }
 }
@@ -51,14 +57,22 @@ repositories {
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 4.
 dependencies {
-    implementation wpi.deps.wpilib()
-    implementation wpi.deps.vendor.java()
+    implementation wpi.java.deps.wpilib()
+    implementation wpi.java.vendor.java()
 
-    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
-    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
+    roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
+    roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
 
-    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
-    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+    roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
+    roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
+
+    nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
+    nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
+    simulationDebug wpi.sim.enableDebug()
+
+    nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
+    nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
+    simulationRelease wpi.sim.enableRelease()
 
     implementation "com.github.dominikwin:badlog:v0.1.1"
     implementation 'org.yaml:snakeyaml:1.23'
@@ -66,33 +80,14 @@ dependencies {
     implementation 'com.google.inject:guice:5.0.1'
     implementation 'com.google.inject.extensions:guice-assistedinject:5.0.1'
 
-    simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
-    simulation wpi.deps.sim.driverstation(wpi.platforms.desktop, false)
-
-    testImplementation 'org.mockito:mockito-core:3.6.0'
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:3.6.0'
     testImplementation 'org.hamcrest:hamcrest:2.1'
 }
 
-spotless {
-    java {
-        target 'src/*/java/com/team1816/**/*.java'
-        importOrder()
-        removeUnusedImports()
-        prettier(['prettier': '2.2.1', 'prettier-plugin-java': '1.0.1'])
-            .config([
-                'parser': 'java',
-                'tabWidth': 4,
-                'printWidth': 90
-            ])
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-}
-
-test {
-    useJUnit() // Use JUnit for ./gradlew test task
-}
+// Simulation configuration (e.g. environment variables).
+wpi.sim.addGui().defaultEnabled = true
+wpi.sim.addDriverstation()
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
@@ -100,24 +95,13 @@ test {
 jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
-
-processResources {
-    include '**/*.config.yml'
-    eachFile { fileCopyDetails ->
-
-    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 task runSwerve(type: JavaExec) {
-    String jniDir = "${project.buildDir}/tmp/jniExtractDir"
+    String jniDir = "${project.buildDir}/jni/debug"
     environment "PATH", jniDir
-    String hal = fileTree(dir: "${project.buildDir}/tmp/expandedArchives", include: 'halsim*/**/*.*').asPath
+    String hal = fileTree(dir: "${project.buildDir}/jni/debug", include: 'halsim_*.*').asPath
     if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
         environment "LD_LIBRARY_PATH", jniDir
         environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
@@ -125,15 +109,15 @@ task runSwerve(type: JavaExec) {
     }
     environment "HALSIM_EXTENSIONS", hal
     environment "ROBOT_NAME", "zodiac_swerve"
-    dependsOn(jar, simulateExternalJava)
+    dependsOn(jar, simulateExternalJavaDebug)
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"
 }
 
 task runTank(type: JavaExec) {
-    String jniDir = "${project.buildDir}/tmp/jniExtractDir"
+    String jniDir = "${project.buildDir}/jni/debug"
     environment "PATH", jniDir
-    String hal = fileTree(dir: "${project.buildDir}/tmp/expandedArchives", include: 'halsim*/**/*.*').asPath
+    String hal = fileTree(dir: "${project.buildDir}/jni/debug", include: 'halsim_*.*').asPath
     if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
         environment "LD_LIBRARY_PATH", jniDir
         environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
@@ -141,14 +125,32 @@ task runTank(type: JavaExec) {
     }
     environment "HALSIM_EXTENSIONS", hal
     environment "ROBOT_NAME", "zodiac_pro"
-    dependsOn(jar, simulateExternalJava)
+    dependsOn(jar, simulateExternalJavaDebug)
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"
 }
 
-wrapper {
-    gradleVersion = '6.7.1'
+processResources {
+    include '**/*.config.yml'
+    eachFile { fileCopyDetails ->
+    }
 }
+
+wrapper {
+    gradleVersion = '7.2'
+}
+
+// Configure jar and deploy tasks
+deployArtifact.jarTask = jar
+wpi.java.configureExecutableTasks(jar)
+wpi.java.configureTestTasks(test)
+
+
+
+
+
+
+
 
 //tasks.create('deployVision') {
 //    println "Deploying ZodiacVision..."

@@ -5,7 +5,7 @@ import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.vision.AimingParameters;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import java.util.Optional;
 
 /**

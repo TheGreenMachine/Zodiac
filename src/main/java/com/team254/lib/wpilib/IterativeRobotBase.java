@@ -229,7 +229,7 @@ public abstract class IterativeRobotBase extends RobotBase {
             HAL.observeUserProgramAutonomous();
             autonomousPeriodic();
             m_watchdog.addEpoch("autonomousPeriodic()");
-        } else if (isOperatorControl()) {
+        } else if (isTeleop()) {
             // Call TeleopInit() if we are now just entering teleop mode from either a different mode or
             // from power-on.
             if (m_lastMode != Mode.kTeleop) {

@@ -9,7 +9,7 @@ import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
 
 import javax.inject.Singleton;
 import java.awt.*;
@@ -58,7 +58,7 @@ public class LedManager extends Subsystem {
         super(NAME);
         this.canifier = factory.getCanifier(NAME);
         this.cameraCanifier = factory.getCanifier("camera");
-        this.cameraLed = new DigitalOutput((int) factory.getConstant(NAME, "cameraLed"));
+        this.cameraLed = new DigitalOutput((int) factory.getConstant(NAME, "cameraLed", 1));
 
         configureCanifier(canifier);
         configureCanifier(cameraCanifier);
