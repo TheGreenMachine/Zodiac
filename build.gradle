@@ -99,9 +99,9 @@ jar {
 }
 
 task runSwerve(type: JavaExec) {
-    String jniDir = "${project.buildDir}/jni/debug"
+    String jniDir = "${project.buildDir}/jni/release"
     environment "PATH", jniDir
-    String hal = fileTree(dir: "${project.buildDir}/jni/debug", include: 'halsim_*.*').asPath
+    String hal = fileTree(dir: "${project.buildDir}/jni/release", include: 'halsim_*.*').asPath
     if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
         environment "LD_LIBRARY_PATH", jniDir
         environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
@@ -109,15 +109,15 @@ task runSwerve(type: JavaExec) {
     }
     environment "HALSIM_EXTENSIONS", hal
     environment "ROBOT_NAME", "zodiac_swerve"
-    dependsOn(jar, simulateExternalJavaDebug)
+    dependsOn(jar, simulateExternalJavaRelease)
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"
 }
 
 task runTank(type: JavaExec) {
-    String jniDir = "${project.buildDir}/jni/debug"
+    String jniDir = "${project.buildDir}/jni/release"
     environment "PATH", jniDir
-    String hal = fileTree(dir: "${project.buildDir}/jni/debug", include: 'halsim_*.*').asPath
+    String hal = fileTree(dir: "${project.buildDir}/jni/release", include: 'halsim_*.*').asPath
     if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
         environment "LD_LIBRARY_PATH", jniDir
         environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
@@ -125,7 +125,7 @@ task runTank(type: JavaExec) {
     }
     environment "HALSIM_EXTENSIONS", hal
     environment "ROBOT_NAME", "zodiac_pro"
-    dependsOn(jar, simulateExternalJavaDebug)
+    dependsOn(jar, simulateExternalJavaRelease)
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"
 }
