@@ -1,4 +1,3 @@
-$extends: base
 subsystems:
     drivetrain:
         implemented: true
@@ -50,11 +49,22 @@ subsystems:
             kD: 30
             kF: 0
         constants:
+            pigeonId: 32
+            pigeonOnTalon: -1
+            kP: 0.1 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
+            kI: 0.0001 # 0.018
+            kD: 4.0 # 3.6
+            kF: 0.0475813
+            iZone: 0
+            currentFloorCheck: .12
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 2000
+            rpmEpsilonCheck: 60
+            openLoopRampRate: 0.8
             isSwerve: 1
             encPPR: 12275.7
             azimuthEncPPR: 4096
             azimuthAllowableErrorTicks: 20
-            pigeonId: 32
             azimuthHomeAdjustmentDegrees: 1
     ledmanager:
         implemented: true
@@ -78,6 +88,7 @@ subsystems:
             revLimit: -3762
             absPosTicksSouth: -3451
             fwdLimit: -1147
+            encPPR: 4096
     shooter:
         implemented: true
         invertMotor:
@@ -87,6 +98,17 @@ subsystems:
             shooterFollower: 15
         solenoids:
             hood: 1
+        pid:
+            -   kP: 0.15 #0.30
+                kI: 0
+                kD: 2.5 #4.5
+                kF: 0.05671 #0.00953253
+        constants:
+            currentFloorCheck: .12
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 2000
+            rpmEpsilonCheck: 60
+            velocityThreshold: 500
     climber:
         implemented: true
         talons:
@@ -112,6 +134,11 @@ subsystems:
             arm: 0
 pcm: 8
 constants:
+    sensorPhase: 0
+    kTrackScrubFactor: 1.0
+    pathKs: 2
+    verbose: 0 # 0 or 1
+    useAutoAim: 1
     ## Drivetrain characterization ##
     trackWidth: 21 #inches
     wheelbaseLength: 21.5 #inches
