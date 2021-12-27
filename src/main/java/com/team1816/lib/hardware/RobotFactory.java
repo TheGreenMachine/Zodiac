@@ -11,11 +11,12 @@ import com.team254.lib.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nonnull;
 
 public class RobotFactory {
 
-    private YamlConfig config;
+    private RobotConfiguration config;
     private static boolean verbose;
     private static RobotFactory factory;
 
@@ -36,42 +37,38 @@ public class RobotFactory {
 
     public RobotFactory(String configName) {
         System.out.println("Loading Config for " + configName);
-        try {
             config =
                 YamlConfig.loadFrom(
                     this.getClass()
                         .getClassLoader()
                         .getResourceAsStream(configName + ".config.yml")
                 );
-        } catch (ConfigIsAbstractException e) {
-            DriverStation.reportError("Yaml Config was abstract!", e.getStackTrace());
-        }
         verbose = getConstant("verbose") >= 1;
     }
 
     public IMotorControllerEnhanced getMotor(
         String subsystemName,
         String name,
-        List<PidConfig> pidConfigs
+        List<PIDConfiguration> pidConfigs
     ) {
         IMotorControllerEnhanced motor = null;
         var subsystem = getSubsystem(subsystemName);
 
         // Motor creation
-        if (subsystem.isImplemented()) {
-            if (isHardwareValid(subsystem.talons.get(name))) {
+        if (subsystem.getImplemented()) {
+            if (isHardwareValid(subsystem.getTalons().getAdditionalProperties().get(name))) {
                 motor =
                     CtreMotorFactory.createDefaultTalon(
-                        subsystem.talons.get(name),
+                        subsystem.getTalons().getAdditionalProperties().get(name),
                         name,
                         false,
                         subsystem,
                         pidConfigs
                     );
-            } else if (isHardwareValid(subsystem.falcons.get(name))) {
+            } else if (isHardwareValid(subsystem.getFalcons().getAdditionalProperties().get(name))) {
                 motor =
                     CtreMotorFactory.createDefaultTalon(
-                        subsystem.falcons.get(name),
+                        subsystem.getFalcons().getAdditionalProperties().get(name),
                         name,
                         true,
                         subsystem,
@@ -85,15 +82,20 @@ public class RobotFactory {
         }
 
         // Motor configuration
-        if (subsystem.isImplemented() && subsystem.invertMotor.contains(name)) {
+        if (subsystem.getImplemented() && subsystem.getInvertMotor().contains(name)) {
             System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
+            motor.setInverted(true);
+        }
+        if (subsystem.getImplemented() && subsystem.getInvertSensorPhase().contains(name)) {
+            System.out.println("Inverting sensor phase of " + name + " with ID " + motor.getDeviceID());
+            motor.setSensorPhase(true);
         }
 
         return motor;
     }
 
     public IMotorControllerEnhanced getMotor(String subsystemName, String name) {
-        return getMotor(subsystemName, name, getSubsystem(subsystemName).pid);
+        return getMotor(subsystemName, name, getSubsystem(subsystemName).getPid());
     }
 
     public IMotorController getMotor(
@@ -103,39 +105,39 @@ public class RobotFactory {
     ) { // TODO: optimize this method
         IMotorController followerMotor = null;
         var subsystem = getSubsystem(subsystemName);
-        if (subsystem.isImplemented() && master != null) {
-            if (isHardwareValid(subsystem.talons.get(name))) {
+        if (subsystem.getImplemented() && master != null) {
+            if (isHardwareValid(subsystem.getTalons().getAdditionalProperties().get(name))) {
                 // Talons must be following another Talon, cannot follow a Victor.
                 followerMotor =
                     CtreMotorFactory.createPermanentSlaveTalon(
-                        subsystem.talons.get(name),
+                        subsystem.getFalcons().getAdditionalProperties().get(name),
                         name,
                         false,
                         master,
                         subsystem,
-                        subsystem.pid
+                        subsystem.getPid()
                     );
-            } else if (isHardwareValid(subsystem.falcons.get(name))) {
+            } else if (isHardwareValid(subsystem.getFalcons().getAdditionalProperties().get(name))) {
                 followerMotor =
                     CtreMotorFactory.createPermanentSlaveTalon(
-                        subsystem.falcons.get(name),
+                        subsystem.getFalcons().getAdditionalProperties().get(name),
                         name,
                         true,
                         master,
                         subsystem,
-                        subsystem.pid
+                        subsystem.getPid()
                     );
-            } else if (isHardwareValid(subsystem.victors.get(name))) {
+            } else if (isHardwareValid(subsystem.getVictors().getAdditionalProperties().get(name))) {
                 // Victors can follow Talons or another Victor.
                 followerMotor =
                     CtreMotorFactory.createPermanentSlaveVictor(
-                        subsystem.victors.get(name),
+                        subsystem.getVictors().getAdditionalProperties().get(name),
                         master
                     );
             }
         }
         if (followerMotor == null) {
-            if (subsystem.isImplemented()) reportGhostWarning(
+            if (subsystem.getImplemented()) reportGhostWarning(
                 "Motor",
                 subsystemName,
                 name
@@ -152,18 +154,13 @@ public class RobotFactory {
         return hardwareId != null && hardwareId > -1;
     }
 
-    public boolean isImplemented(String subsystemName) {
-        var subsystem = getSubsystem(subsystemName);
-        return subsystem.implemented;
-    }
-
     public SwerveModule getSwerveModule(
         String subsystemName,
         String name,
         Translation2d startPos
     ) {
         var subsystem = getSubsystem(subsystemName);
-        SwerveModuleConfig module = subsystem.swerveModules.get(name);
+        SwerveModuleConfiguration module = subsystem.getSwerveModules().getAdditionalProperties().get(name);
         if (module == null) {
             DriverStation.reportError(
                 "No swerve module with name " + name + " subsystem " + subsystemName,
@@ -174,12 +171,12 @@ public class RobotFactory {
 
         var swerveConstants = new SwerveModule.SwerveModuleConstants();
         swerveConstants.kName = name;
-        swerveConstants.kAzimuthMotorName = module.azimuth;
-        swerveConstants.kAzimuthPid = subsystem.azimuthPid;
-        swerveConstants.kDriveMotorName = module.drive;
-        swerveConstants.kDrivePid = subsystem.drivePid;
-        swerveConstants.kAzimuthEncoderHomeOffset = module.encoderOffset;
-        swerveConstants.kInvertAzimuthSensorPhase = module.invertSensorPhase;
+        swerveConstants.kAzimuthMotorName = module.getAzimuth(); //getAzimuth and drive give ID i think - not the module name (ex: leftRear)
+        swerveConstants.kAzimuthPid = subsystem.getAzimuthPid();
+        swerveConstants.kDriveMotorName = module.getDrive();
+        swerveConstants.kDrivePid = subsystem.getDrivePid();
+        swerveConstants.kAzimuthEncoderHomeOffset = module.getEncoderOffset();
+        swerveConstants.kInvertAzimuthSensorPhase = module.getInvertSensorPhase();
 
         return new SwerveModule(subsystemName, swerveConstants, startPos);
     }
@@ -187,11 +184,11 @@ public class RobotFactory {
     @Nonnull
     public ISolenoid getSolenoid(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
-        Integer solenoidId = subsystem.solenoids.get(name);
-        if (subsystem.isImplemented() && isHardwareValid(solenoidId) && isPcmEnabled()) {
-            return new SolenoidImpl(config.pcm, PneumaticsModuleType.CTREPCM, solenoidId);
+        Integer solenoidId = subsystem.getSolenoids().getAdditionalProperties().get(name);
+        if (subsystem.getImplemented() && isHardwareValid(solenoidId) && isPcmEnabled()) {
+            return new SolenoidImpl(config.getPcm(), PneumaticsModuleType.CTREPCM, solenoidId);
         }
-        if (subsystem.isImplemented()) {
+        if (subsystem.getImplemented()) {
             reportGhostWarning("Solenoid", subsystemName, name);
         }
         return new GhostSolenoid();
@@ -200,20 +197,20 @@ public class RobotFactory {
     @Nonnull
     public IDoubleSolenoid getDoubleSolenoid(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
-        DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName)
-            .doubleSolenoids.get(name);
+        DoubleSolenoidsConfiguration solenoidConfig = getSubsystem(subsystemName)
+            .getDoubleSolenoids().getAdditionalProperties().get(name);
         if (
-            subsystem.isImplemented() &&
+            subsystem.getImplemented() &&
             solenoidConfig != null &&
-            isHardwareValid(solenoidConfig.forward) &&
-            isHardwareValid(solenoidConfig.reverse) &&
+            isHardwareValid(solenoidConfig.getForward()) &&
+            isHardwareValid(solenoidConfig.getForward()) &&
             isPcmEnabled()
         ) {
             return new DoubleSolenoidImpl(
-                config.pcm,
+                config.getPcm(),
                 PneumaticsModuleType.CTREPCM,
-                solenoidConfig.forward,
-                solenoidConfig.reverse
+                solenoidConfig.getForward(),
+                solenoidConfig.getReverse()
             );
         }
         reportGhostWarning("DoubleSolenoid", subsystemName, name);
@@ -223,8 +220,8 @@ public class RobotFactory {
     @Nonnull
     public ICanifier getCanifier(String subsystemName) {
         var subsystem = getSubsystem(subsystemName);
-        if (subsystem.isImplemented() && isHardwareValid(subsystem.canifier)) {
-            return new CanifierImpl(subsystem.canifier);
+        if (subsystem.getImplemented() && isHardwareValid(subsystem.getCanifier())) {
+            return new CanifierImpl(subsystem.getCanifier());
         }
         reportGhostWarning("CANifier", subsystemName, "canifier");
         return new GhostCanifier();
@@ -242,12 +239,20 @@ public class RobotFactory {
         return getConstant(name, 0.0);
     }
 
+    public Map<String, Double> getConstants() {
+        return config.getConstants().getAdditionalProperties();
+    }
+
+    public SubsystemConfiguration getSubsystem(String key){
+        return config.getSubsystems().getAdditionalProperties().get(key);
+    }
+
     public Double getConstant(String name, double defaultVal) {
-        if (!config.constants.containsKey(name)) {
+        if (!getConstants().containsKey(name)) {
             DriverStation.reportError("Yaml constants:" + name + " missing", false);
             return defaultVal;
         }
-        return config.constants.get(name);
+        return getConstants().get(name);
     }
 
     public double getConstant(String subsystemName, String name) {
@@ -255,38 +260,30 @@ public class RobotFactory {
     }
 
     public double getConstant(String subsystemName, String name, double defaultVal) {
-        if (!getSubsystem(subsystemName).isImplemented()) {
+        if (!getSubsystem(subsystemName).getImplemented()) {
             return defaultVal;
         }
-        if (!getSubsystem(subsystemName).constants.containsKey(name)) {
+        if (!getSubsystem(subsystemName).getConstants().getAdditionalProperties().containsKey(name)) {
             DriverStation.reportError(
                 "Yaml " + subsystemName + " constants:" + name + " missing",
                 false
             );
             return defaultVal;
         }
-        return getSubsystem(subsystemName).constants.get(name);
+        return getSubsystem(subsystemName).getConstants().getAdditionalProperties().get(name);
     }
 
-    public PidConfig getPidConfig(String subsystemName, int slot) {
-        return getSubsystem(subsystemName).pid.get(slot);
+    public PIDConfiguration getPidConfig(String subsystemName, int slot) {
+        return getSubsystem(subsystemName).getPid().get(slot);
     }
 
     public int getPcmId() {
-        if (config.pcm == null) return -1;
-        return config.pcm;
+        if (config.getPcm() == null) return -1;
+        return config.getPcm();
     }
 
     public boolean isPcmEnabled() {
         return getPcmId() > -1;
-    }
-
-    public SubsystemConfig getSubsystem(String subsystemName) {
-        var subsystem = config.subsystems.get(subsystemName);
-        if (subsystem == null) {
-            subsystem = new SubsystemConfig(false);
-        }
-        return subsystem;
     }
 
     public static boolean isVerbose() {

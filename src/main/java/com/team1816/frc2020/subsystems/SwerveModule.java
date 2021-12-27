@@ -3,7 +3,7 @@ package com.team1816.frc2020.subsystems;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
-import com.team1816.lib.hardware.PidConfig;
+import com.team1816.lib.hardware.PIDConfiguration;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.ISwerveModule;
@@ -52,7 +52,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         public double kAzimuthAdjustmentOffset;
 
         // azimuth motion
-        public PidConfig kAzimuthPid = PidConfig.EMPTY;
+        public PIDConfiguration kAzimuthPid;
         public int kAzimuthClosedLoopAllowableError = (int) factory.getConstant(
             "drivetrain",
             "azimuthAllowableErrorTicks"
@@ -63,7 +63,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             VelocityMeasPeriod.Period_100Ms; // dt for velocity measurements, ms
 
         // general drive
-        public PidConfig kDrivePid = PidConfig.EMPTY;
+        public PIDConfiguration kDrivePid;
         public double kWheelDiameter = Constants.kDriveWheelDiameterInches; // Probably should tune for each individual wheel maybe
         public double kDriveTicksPerUnitDistance =
             (1 / Drive.DRIVE_ENCODER_PPR) * (Math.PI * kWheelDiameter);

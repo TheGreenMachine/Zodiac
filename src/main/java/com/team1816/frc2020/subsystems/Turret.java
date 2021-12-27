@@ -1,6 +1,5 @@
 package com.team1816.frc2020.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -8,7 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
-import com.team1816.lib.hardware.PidConfig;
+import com.team1816.lib.hardware.PIDConfiguration;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -71,7 +70,7 @@ public class Turret extends Subsystem implements PidProvider {
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_LIMIT_REVERSE);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_LIMIT_FORWARD);
-        PidConfig pidConfig = factory.getPidConfig(NAME, 0);
+        PIDConfiguration pidConfig = factory.getPidConfig(NAME, 0);
         this.kP = pidConfig.getkP();
         this.kI = pidConfig.getkI();
         this.kD = pidConfig.getkD();

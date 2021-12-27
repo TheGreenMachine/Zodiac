@@ -51,13 +51,13 @@ public abstract class Subsystem implements Sendable {
         Supplier<Double> supplier,
         String... attrs
     ) {
-        if (factory.isImplemented(name)) {
+        if (factory.getSubsystem(name).getImplemented()) {
             BadLog.createTopic(topicName, unit, supplier, attrs);
         }
     }
 
     public void CreateBadLogValue(String badLogName, String value) {
-        if (factory.isImplemented(name)) {
+        if (factory.getSubsystem(name).getImplemented()) {
             BadLog.createValue(badLogName, value);
         }
     }
@@ -73,6 +73,6 @@ public abstract class Subsystem implements Sendable {
     }
 
     public boolean isImplemented() {
-        return factory.getSubsystem(name).isImplemented();
+        return factory.getSubsystem(name).getImplemented();
     }
 }

@@ -2,6 +2,7 @@
     "definitions": {
         "hardwareMap": {
             "type": "object",
+            "title": "HardwareConfiguration",
             "propertyNames": {
                 "pattern": "^[a-z]+([A-Z][a-z]*)*$"
             },
@@ -11,7 +12,7 @@
         },
         "constants": {
             "type": "object",
-            "title": "The Constants Schema",
+            "title": "Hardware Constants",
             "additionalProperties": {
                 "type": "number"
             }
@@ -31,24 +32,16 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "http://edinarobotics.com/robotconfig.json",
     "type": "object",
-    "title": "The Robot Configuration Schema",
+    "title": "Robot Configuration",
     "properties": {
-        "$abstract": {
-            "type": "boolean"
-        },
-        "$extends": {
-            "type": "string",
-            "$id": "#/properties/extends",
-            "pattern": "\\w.+"
-        },
         "subsystems": {
             "$id": "#/properties/subsystems",
             "type": "object",
-            "title": "The Subsystems Schema",
+            "title": "SubsystemMap",
             "additionalProperties": {
                 "$id": "#/properties/subsystems/subsystem",
                 "type": "object",
-                "title": "The Subsystem Schema",
+                "title": "Subsystem Configuration",
                 "properties": {
                     "implemented": { "type": "boolean" },
                     "talons": { "$ref": "#/definitions/hardwareMap" },
@@ -80,20 +73,20 @@
                     },
                     "swerveModules": {
                         "type": "object",
-                        "title": "Swerve Module Map",
+                        "title": "Swerve Modules",
                         "propertyNames": {
                             "pattern": "^[a-z]+([A-Z][a-z]*)*$"
                         },
                         "additionalProperties": {
                             "type": "object",
-                            "title": "Swerve Module",
+                            "title": "Swerve Module Configuration",
                             "required": ["drive", "azimuth", "encoderOffset"],
                             "properties": {
                                 "drive": {
-                                    "type": "integer"
+                                    "type": "string"
                                 },
                                 "azimuth": {
-                                    "type": "integer"
+                                    "type": "string"
                                 },
                                 "encoderOffset": {
                                     "type": "number"
@@ -108,11 +101,13 @@
                     "solenoids": { "$ref": "#/definitions/hardwareMap" },
                     "doubleSolenoids": {
                         "type": "object",
+                        "title": "Double Solenoid Map",
                         "propertyNames": {
                             "pattern": "^[a-z]+([A-Z][a-z]*)*$"
                         },
                         "additionalProperties": {
                             "type": "object",
+                            "title": "Double Solenoids Configuration",
                             "required": ["forward", "reverse"],
                             "properties": {
                                 "forward": {
@@ -139,9 +134,6 @@
         }
     },
     "anyOf": [
-        {
-            "required": ["$extends"]
-        },
         {
             "properties": {
                 "subsystems": {
