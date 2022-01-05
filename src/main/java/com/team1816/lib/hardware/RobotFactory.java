@@ -244,7 +244,9 @@ public class RobotFactory {
     }
 
     public SubsystemConfiguration getSubsystem(String key){
-        return config.getSubsystems().getAdditionalProperties().get(key);
+        var subsystem = config.getSubsystems().getAdditionalProperties().get(key);
+        if(subsystem == null) System.out.println("Subsystem not defined: " + key);
+        return subsystem;
     }
 
     public Double getConstant(String name, double defaultVal) {
