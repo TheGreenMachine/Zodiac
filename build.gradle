@@ -104,6 +104,7 @@ jsonSchema2Pojo {
     useTitleAsClassname = true
     includeGetters = true
     includeSetters = true
+    includeToString = true
     removeOldOutput = true
     includeAdditionalProperties = true
     source.setFrom files("${project.rootDir}/src/main/resources/robotconfig.schema.json")

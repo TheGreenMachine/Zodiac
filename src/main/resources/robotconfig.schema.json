@@ -1,13 +1,66 @@
 {
     "definitions": {
-        "hardwareMap": {
-            "type": "object",
-            "title": "HardwareConfiguration",
+        "motor": {
+            "type": "array",
+            "title": "motorConfiguration",
             "propertyNames": {
                 "pattern": "^[a-z]+([A-Z][a-z]*)*$"
             },
             "additionalProperties": {
                 "type": "integer"
+            }
+        },
+        "PIDConfig": {
+            "type": "array",
+            "title": "PIDConfiguration",
+            "items": {
+                "$ref": "#/definitions/PIDSlot"
+            }
+        },
+        "PIDSlot" : {
+            "type": "array",
+            "title": "PIDSlotConfiguration",
+            "additionalProperties": {
+                "type": "integer"
+            }
+        },
+        "Subsystem" : {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "implemented" : {
+                    "type": "boolean"
+                },
+                "Falcons" : {
+                    "type": "array",
+                    "$ref" : "#/definitions/motor"
+                },
+                "Talons" :  {
+                    "type" : "array",
+                    "$ref": "#/definitions/motor"
+                },
+                "Victors" :  {
+                    "type": "array",
+                    "$ref": "#/definitions/motor"
+                },
+                "invertMotor": {
+                    "type" : "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "pidConfig": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PIDConfig"
+                    }
+                },
+                "constants": {
+                    "type": "array",
+                    "additionalProperties": {
+                        "type": "number"
+                    }
+                }
             }
         },
         "constants": {
@@ -38,91 +91,8 @@
             "$id": "#/properties/subsystems",
             "type": "object",
             "title": "SubsystemMap",
-            "additionalProperties": {
-                "$id": "#/properties/subsystems/subsystem",
-                "type": "object",
-                "title": "Subsystem Configuration",
-                "properties": {
-                    "implemented": { "type": "boolean" },
-                    "talons": { "$ref": "#/definitions/hardwareMap" },
-                    "victors": { "$ref": "#/definitions/hardwareMap" },
-                    "falcons": { "$ref": "#/definitions/hardwareMap" },
-                    "invertMotor": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "invertSensorPhase": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "drivePid": {
-                        "$ref": "#/definitions/pid"
-                    },
-                    "azimuthPid": {
-                        "$ref": "#/definitions/pid"
-                    },
-                    "pid": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/pid"
-                        }
-                    },
-                    "swerveModules": {
-                        "type": "object",
-                        "title": "Swerve Modules",
-                        "propertyNames": {
-                            "pattern": "^[a-z]+([A-Z][a-z]*)*$"
-                        },
-                        "additionalProperties": {
-                            "type": "object",
-                            "title": "Swerve Module Configuration",
-                            "required": ["drive", "azimuth", "encoderOffset"],
-                            "properties": {
-                                "drive": {
-                                    "type": "string"
-                                },
-                                "azimuth": {
-                                    "type": "string"
-                                },
-                                "encoderOffset": {
-                                    "type": "number"
-                                },
-                                "invertSensorPhase": {
-                                    "type": "boolean",
-                                    "default": false
-                                }
-                            }
-                        }
-                    },
-                    "solenoids": { "$ref": "#/definitions/hardwareMap" },
-                    "doubleSolenoids": {
-                        "type": "object",
-                        "title": "Double Solenoid Map",
-                        "propertyNames": {
-                            "pattern": "^[a-z]+([A-Z][a-z]*)*$"
-                        },
-                        "additionalProperties": {
-                            "type": "object",
-                            "title": "Double Solenoids Configuration",
-                            "required": ["forward", "reverse"],
-                            "properties": {
-                                "forward": {
-                                    "type": "integer"
-                                },
-                                "reverse": {
-                                    "type": "integer"
-                                }
-                            }
-                        }
-                    },
-                    "canifier": { "type": "integer" },
-                    "constants": { "$ref": "#/definitions/constants" }
-                },
-                "additionalProperties": false
+            "items": {
+                "$ref": "#/definitions/Subsystem"
             }
         },
         "pcm": {
