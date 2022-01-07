@@ -1,8 +1,8 @@
 {
     "definitions": {
         "motor": {
-            "type": "array",
             "title": "motorConfiguration",
+            "type": "array",
             "propertyNames": {
                 "pattern": "^[a-z]+([A-Z][a-z]*)*$"
             },
@@ -14,19 +14,31 @@
             "type": "array",
             "title": "PIDConfiguration",
             "items": {
+                "type": "object",
                 "$ref": "#/definitions/PIDSlot"
             }
         },
         "PIDSlot" : {
             "type": "array",
             "title": "PIDSlotConfiguration",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "kP": { "type": "number" },
+                    "kI": { "type": "number" },
+                    "kD": { "type": "number" },
+                    "kF": { "type": "number" },
+                    "iZone" : { "type":  "integer"}
+                }
+            },
             "additionalProperties": {
                 "type": "integer"
             }
         },
         "Subsystem" : {
+            "javaType": "SubsystemConfig",
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "implemented" : {
                     "type": "boolean"
@@ -45,6 +57,12 @@
                 },
                 "invertMotor": {
                     "type" : "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "invertSensorPhase": {
+                    "type": "array",
                     "items": {
                         "type": "string"
                     }
@@ -69,28 +87,20 @@
             "additionalProperties": {
                 "type": "number"
             }
-        },
-        "pid": {
-            "type": "object",
-            "title": "PID Configuration",
-            "required": ["kP", "kI", "kD", "kF"],
-            "properties": {
-                "kP": { "type": "number" },
-                "kI": { "type": "number" },
-                "kD": { "type": "number" },
-                "kF": { "type": "number" }
-            }
         }
     },
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "http://edinarobotics.com/robotconfig.json",
     "type": "object",
     "title": "Robot Configuration",
+    "additionalProperties": true,
     "properties": {
         "subsystems": {
-            "$id": "#/properties/subsystems",
             "type": "object",
-            "title": "SubsystemMap",
+            "existingJavaType": "java.util.Map<String, SubsystemConfig>",
+            "additionalItems": false,
+            "title": "Subsystems",
+            "uniqueItems": true,
             "items": {
                 "$ref": "#/definitions/Subsystem"
             }

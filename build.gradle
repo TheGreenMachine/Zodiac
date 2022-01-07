@@ -103,9 +103,11 @@ jsonSchema2Pojo {
     targetPackage = 'com.team1816.lib.hardware'
     useTitleAsClassname = true
     includeGetters = true
+    serializable = true
     includeSetters = true
     includeToString = true
     removeOldOutput = true
+    includeDynamicAccessors = true
     includeAdditionalProperties = true
     source.setFrom files("${project.rootDir}/src/main/resources/robotconfig.schema.json")
 }
