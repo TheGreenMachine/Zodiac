@@ -13,7 +13,7 @@ import static com.team254.lib.util.Util.kEpsilon;
  * <p>
  * Inspired by Sophus (https://github.com/strasdat/Sophus/tree/master/sophus)
  */
-public class Rotation2d extends edu.wpi.first.math.geometry.Rotation2d implements IRotation2d<Rotation2d> {
+public class Rotation2d implements IRotation2d<Rotation2d> {
     protected static final Rotation2d kIdentity = new Rotation2d();
 
     public static Rotation2d identity() {
@@ -110,13 +110,11 @@ public class Rotation2d extends edu.wpi.first.math.geometry.Rotation2d implement
         return sin_angle_ / cos_angle_;
     }
 
-    @Override
     public double getRadians() {
         ensureRadiansComputed();
         return radians_;
     }
 
-    @Override
     public double getDegrees() {
         return Math.toDegrees(getRadians());
     }

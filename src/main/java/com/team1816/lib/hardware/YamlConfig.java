@@ -18,20 +18,12 @@ public class YamlConfig {
         FORMATTER.setBeanAccess(BeanAccess.FIELD);
     }
 
-    SubsystemMap subsystems;
-    HardwareConstants constants;
-    Integer pcm;
-
-    public static RobotConfiguration loadFrom(InputStream input){
-        RobotConfiguration loadedConfig = loadInternal(input);
-
-        return loadedConfig;
+    public static RobotConfiguration loadFrom(InputStream input) {
+        return loadInternal(input);
     }
 
     static RobotConfiguration loadInternal(InputStream input) {
-        RobotConfiguration loadedConfig = loadRaw(input);
-
-        return loadedConfig;
+        return loadRaw(input);
     }
 
     static RobotConfiguration loadRaw(InputStream input) {
@@ -41,11 +33,6 @@ public class YamlConfig {
         yaml.setBeanAccess(BeanAccess.FIELD);
 
         return yaml.load(input);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(subsystems, constants, pcm);
     }
 
     @Override

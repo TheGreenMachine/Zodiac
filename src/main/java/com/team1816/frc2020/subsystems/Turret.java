@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
-import com.team1816.lib.hardware.PIDConfiguration;
+import com.team1816.lib.hardware.PIDSlotConfiguration;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -70,7 +70,7 @@ public class Turret extends Subsystem implements PidProvider {
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_LIMIT_REVERSE);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_LIMIT_FORWARD);
-        PIDConfiguration pidConfig = factory.getPidConfig(NAME, 0);
+        PIDSlotConfiguration pidConfig = factory.getSubsystem("turret").getPidConfig().get(0);
         this.kP = pidConfig.getkP();
         this.kI = pidConfig.getkI();
         this.kD = pidConfig.getkD();

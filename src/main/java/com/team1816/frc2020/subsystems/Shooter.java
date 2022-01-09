@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
+import com.team1816.lib.hardware.PIDSlotConfiguration;
 import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
@@ -65,10 +66,12 @@ public class Shooter extends Subsystem implements PidProvider {
         this.shooterFollower.setInverted(false);
         this.hood = factory.getSolenoid(NAME, "hood");
 
-        this.kP = factory.getConstant(NAME, "kP");
-        this.kI = factory.getConstant(NAME, "kI");
-        this.kD = factory.getConstant(NAME, "kD");
-        this.kF = factory.getConstant(NAME, "kF");
+        PIDSlotConfiguration pidConfig = factory.getSubsystem("turret").getPidConfig().get(0);
+
+        this.kP = pidConfig.getkP();
+        this.kI = pidConfig.getkI();
+        this.kD = pidConfig.getkD();
+        this.kF = pidConfig.getkF();
 
         shooterMain.setNeutralMode(NeutralMode.Coast);
         shooterFollower.setNeutralMode(NeutralMode.Coast);

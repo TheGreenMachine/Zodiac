@@ -1,94 +1,4 @@
 {
-    "definitions": {
-        "motor": {
-            "title": "motorConfiguration",
-            "type": "array",
-            "propertyNames": {
-                "pattern": "^[a-z]+([A-Z][a-z]*)*$"
-            },
-            "additionalProperties": {
-                "type": "integer"
-            }
-        },
-        "PIDConfig": {
-            "type": "array",
-            "title": "PIDConfiguration",
-            "items": {
-                "type": "object",
-                "$ref": "#/definitions/PIDSlot"
-            }
-        },
-        "PIDSlot" : {
-            "type": "array",
-            "title": "PIDSlotConfiguration",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "kP": { "type": "number" },
-                    "kI": { "type": "number" },
-                    "kD": { "type": "number" },
-                    "kF": { "type": "number" },
-                    "iZone" : { "type":  "integer"}
-                }
-            },
-            "additionalProperties": {
-                "type": "integer"
-            }
-        },
-        "Subsystem" : {
-            "javaType": "SubsystemConfig",
-            "type": "object",
-            "additionalProperties": true,
-            "properties": {
-                "implemented" : {
-                    "type": "boolean"
-                },
-                "Falcons" : {
-                    "type": "array",
-                    "$ref" : "#/definitions/motor"
-                },
-                "Talons" :  {
-                    "type" : "array",
-                    "$ref": "#/definitions/motor"
-                },
-                "Victors" :  {
-                    "type": "array",
-                    "$ref": "#/definitions/motor"
-                },
-                "invertMotor": {
-                    "type" : "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "invertSensorPhase": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "pidConfig": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/PIDConfig"
-                    }
-                },
-                "constants": {
-                    "type": "array",
-                    "additionalProperties": {
-                        "type": "number"
-                    }
-                }
-            }
-        },
-        "constants": {
-            "type": "object",
-            "title": "Hardware Constants",
-            "additionalProperties": {
-                "type": "number"
-            }
-        }
-    },
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "http://edinarobotics.com/robotconfig.json",
     "type": "object",
@@ -97,27 +7,21 @@
     "properties": {
         "subsystems": {
             "type": "object",
-            "existingJavaType": "java.util.Map<String, SubsystemConfig>",
-            "additionalItems": false,
-            "title": "Subsystems",
-            "uniqueItems": true,
-            "items": {
-                "$ref": "#/definitions/Subsystem"
-            }
+            "existingJavaType": "java.util.Map<String,SubsystemConfig>"
         },
         "pcm": {
-            "$id": "#/properties/pcm",
             "type": "integer"
         },
         "constants": {
-            "$ref": "#/definitions/constants"
+            "$ref": "double.map.schema.json"
         }
     },
+    "additionalProperties": false,
     "anyOf": [
         {
             "properties": {
                 "subsystems": {
-                    "additionalProperties": {
+                    "properties": {
                         "required": ["implemented"]
                     }
                 }

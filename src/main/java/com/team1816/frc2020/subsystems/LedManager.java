@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.*;
 

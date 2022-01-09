@@ -101,22 +101,22 @@ public abstract class Drive
 
     @Override
     public double getKP() {
-        return factory.getConstant(NAME, "kP");
+        return factory.getSubsystem("drivetrain").getPidConfig().get(0).getkP();
     }
 
     @Override
     public double getKI() {
-        return factory.getConstant(NAME, "kI");
+        return factory.getSubsystem("drivetrain").getPidConfig().get(0).getkI();
     }
 
     @Override
     public double getKD() {
-        return factory.getConstant(NAME, "kD");
+        return factory.getSubsystem("drivetrain").getPidConfig().get(0).getkD();
     }
 
     @Override
     public double getKF() {
-        return factory.getConstant(NAME, "kF");
+        return factory.getSubsystem("drivetrain").getPidConfig().get(0).getkF();
     }
 
     @Singleton

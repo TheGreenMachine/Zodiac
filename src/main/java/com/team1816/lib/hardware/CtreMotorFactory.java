@@ -71,8 +71,8 @@ public class CtreMotorFactory {
         int id,
         String name,
         boolean isFalcon,
-        SubsystemConfiguration subsystems,
-        List<PIDConfiguration> pidConfigList
+        SubsystemConfig subsystems,
+        List<PIDSlotConfiguration> pidConfigList
     ) {
         return createTalon(
             id,
@@ -89,8 +89,8 @@ public class CtreMotorFactory {
         String name,
         boolean isFalcon,
         IMotorController master,
-        SubsystemConfiguration subsystem,
-        List<PIDConfiguration> pidConfigList
+        SubsystemConfig subsystem,
+        List<PIDSlotConfiguration> pidConfigList
     ) {
         final IMotorControllerEnhanced talon = createTalon(
             id,
@@ -112,8 +112,8 @@ public class CtreMotorFactory {
         String name,
         Configuration config,
         boolean isFalcon,
-        SubsystemConfiguration subsystem,
-        List<PIDConfiguration> pidConfigList
+        SubsystemConfig subsystem,
+        List<PIDSlotConfiguration> pidConfigList
     ) {
         IConfigurableMotorController talon = isFalcon
             ? new LazyTalonFX(id)
@@ -172,12 +172,12 @@ public class CtreMotorFactory {
         return victor;
     }
 
-    private static SlotConfiguration toSlotConfiguration(PIDConfiguration pidConfiguration){
+    private static SlotConfiguration toSlotConfiguration(List<PIDSlotConfiguration> pidConfiguration, int slot){
         SlotConfiguration slotConfig = new SlotConfiguration();
-        slotConfig.kP = pidConfiguration.getkP();
-        slotConfig.kI = pidConfiguration.getkI();
-        slotConfig.kD = pidConfiguration.getkD();
-        slotConfig.kF = pidConfiguration.getkF();
+        slotConfig.kP = pidConfiguration.get(slot).getkP();
+        slotConfig.kI = pidConfiguration.get(slot).getkI();
+        slotConfig.kD = pidConfiguration.get(slot).getkD();
+        slotConfig.kF = pidConfiguration.get(slot).getkF();
 
         return slotConfig;
     }
@@ -187,8 +187,8 @@ public class CtreMotorFactory {
         String name,
         Configuration config,
         boolean isFalcon,
-        SubsystemConfiguration subsystem,
-        List<PIDConfiguration> pidConfigList
+        SubsystemConfig subsystem,
+        List<PIDSlotConfiguration> pidConfigList
     ) {
         BaseTalonConfiguration talonConfiguration;
 
@@ -207,13 +207,13 @@ public class CtreMotorFactory {
         talonConfiguration.reverseSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
 
         if (pidConfigList.size() > 0) {
-            talonConfiguration.slot0 = toSlotConfiguration(pidConfigList.get(0));
+            talonConfiguration.slot0 = toSlotConfiguration(pidConfigList, 0);
             if (pidConfigList.size() > 1) {
-                talonConfiguration.slot1 = toSlotConfiguration(pidConfigList.get(1));
+                talonConfiguration.slot1 = toSlotConfiguration(pidConfigList, 1);
                 if (pidConfigList.size() > 2) {
-                    talonConfiguration.slot2 = toSlotConfiguration(pidConfigList.get(2));
+                    talonConfiguration.slot2 = toSlotConfiguration(pidConfigList, 2);
                     if (pidConfigList.size() > 3) {
-                        talonConfiguration.slot3 = toSlotConfiguration(pidConfigList.get(3));
+                        talonConfiguration.slot3 = toSlotConfiguration(pidConfigList, 3);
                     }
                 }
             }

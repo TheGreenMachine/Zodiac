@@ -1,0 +1,24 @@
+{
+    "type": "object",
+    "title": "Swerve Module Configuration",
+    "properties": {
+        "modules": {
+            "existingJavaType": "java.util.Map<String, ModuleConfiguration>"
+        },
+        "azimuthPID": {
+            "type": "array",
+            "items": {
+                "$ref": "pidconfig.schema.json"
+            }
+        },
+        "drivePID": {
+            "type": "array",
+            "items": {
+                "$ref": "pidconfig.schema.json"
+            }
+        },
+        "constants": {
+            "$ref": "double.map.schema.json"
+        }
+    }
+}

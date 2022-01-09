@@ -3,7 +3,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2022.1.1-beta-3"
+    id "edu.wpi.first.GradleRIO" version "2022.1.1"
     id 'org.jsonschema2dataclass' version '4.0.1'
 }
 
@@ -109,7 +109,29 @@ jsonSchema2Pojo {
     removeOldOutput = true
     includeDynamicAccessors = true
     includeAdditionalProperties = true
-    source.setFrom files("${project.rootDir}/src/main/resources/robotconfig.schema.json")
+    source.setFrom files(
+        "${project.rootDir}/src/main/resources/subsystemconfig.schema.json",
+        "${project.rootDir}/src/main/resources/pidconfig.schema.json",
+        "${project.rootDir}/src/main/resources/swervemoduleconfig.schema.json",
+        "${project.rootDir}/src/main/resources/moduleconfig.schema.json",
+        "${project.rootDir}/src/main/resources/double.solenoid.schema.json",
+        "${project.rootDir}/src/main/resources/robotconfig.schema.json"
+    )}
+
+task runAlpha(type: JavaExec) {
+    String jniDir = "${project.buildDir}/jni/release"
+    environment "PATH", jniDir
+    String hal = fileTree(dir: "${project.buildDir}/jni/release", include: 'halsim_*.*').asPath
+    if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
+        environment "LD_LIBRARY_PATH", jniDir
+        environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
+        environment "DYLD_LIBRARY_PATH", jniDir
+    }
+    environment "HALSIM_EXTENSIONS", hal
+    environment "ROBOT_NAME", "alpha"
+    dependsOn(jar, simulateExternalJavaRelease)
+    classpath = files(jar)
+    jvmArgs "-Djava.library.path=${jniDir}"
 }
 
 task runSwerve(type: JavaExec) {
