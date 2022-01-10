@@ -50,6 +50,7 @@ public class Turret extends Subsystem implements PidProvider {
     private static RobotState robotState;
     @Inject
     private static LedManager led;
+    private final int pidSlot = 0;
     private final double kP;
     private final double kI;
     private final double kD;
@@ -70,11 +71,11 @@ public class Turret extends Subsystem implements PidProvider {
 
         SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_LIMIT_REVERSE);
         SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_LIMIT_FORWARD);
-        PIDSlotConfiguration pidConfig = factory.getSubsystem("turret").getPidConfig().get(0);
-        this.kP = pidConfig.getkP();
-        this.kI = pidConfig.getkI();
-        this.kD = pidConfig.getkD();
-        this.kF = pidConfig.getkF();
+        PIDSlotConfiguration pidConfig = factory.getPidSlotConfig(NAME, pidSlot);
+        this.kP = pidConfig.kP;
+        this.kI = pidConfig.kI;
+        this.kD = pidConfig.kD;
+        this.kF = pidConfig.kF;
         synchronized (this) {
             this.zeroSensors();
 

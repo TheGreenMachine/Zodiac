@@ -172,13 +172,18 @@ public class CtreMotorFactory {
         return victor;
     }
 
-    private static SlotConfiguration toSlotConfiguration(List<PIDSlotConfiguration> pidConfiguration, int slot){
+    private static SlotConfiguration toSlotConfiguration(PIDSlotConfiguration pidConfiguration){
         SlotConfiguration slotConfig = new SlotConfiguration();
-        slotConfig.kP = pidConfiguration.get(slot).getkP();
-        slotConfig.kI = pidConfiguration.get(slot).getkI();
-        slotConfig.kD = pidConfiguration.get(slot).getkD();
-        slotConfig.kF = pidConfiguration.get(slot).getkF();
-
+        if(pidConfiguration!=null) {
+            if(pidConfiguration.kP!=null)
+                slotConfig.kP = pidConfiguration.kP;
+            if(pidConfiguration.kI!=null)
+                slotConfig.kI = pidConfiguration.kI;
+            if(pidConfiguration.kD!=null)
+                slotConfig.kD = pidConfiguration.kD;
+            if(pidConfiguration.kP!=null)
+                slotConfig.kF = pidConfiguration.kF;
+        }
         return slotConfig;
     }
 
@@ -207,13 +212,13 @@ public class CtreMotorFactory {
         talonConfiguration.reverseSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
 
         if (pidConfigList.size() > 0) {
-            talonConfiguration.slot0 = toSlotConfiguration(pidConfigList, 0);
+            talonConfiguration.slot0 = toSlotConfiguration(pidConfigList.get(0));
             if (pidConfigList.size() > 1) {
-                talonConfiguration.slot1 = toSlotConfiguration(pidConfigList, 1);
+                talonConfiguration.slot1 = toSlotConfiguration(pidConfigList.get(1));
                 if (pidConfigList.size() > 2) {
-                    talonConfiguration.slot2 = toSlotConfiguration(pidConfigList, 2);
+                    talonConfiguration.slot2 = toSlotConfiguration(pidConfigList.get(2));
                     if (pidConfigList.size() > 3) {
-                        talonConfiguration.slot3 = toSlotConfiguration(pidConfigList, 3);
+                        talonConfiguration.slot3 = toSlotConfiguration(pidConfigList.get(3));
                     }
                 }
             }
@@ -293,7 +298,7 @@ public class CtreMotorFactory {
         );
 
         motor.configAllSettings(talonConfiguration, kTimeoutMs);
-        motor.setInverted(subsystem.getInvertMotor().contains(name));
-        motor.setSensorPhase(subsystem.getInvertSensorPhase().contains(name));
+        motor.setInverted(subsystem.invertMotor.contains(name));
+        motor.setSensorPhase(subsystem.invertSensorPhase.contains(name));
     }
 }

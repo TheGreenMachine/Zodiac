@@ -102,13 +102,12 @@ jar {
 jsonSchema2Pojo {
     targetPackage = 'com.team1816.lib.hardware'
     useTitleAsClassname = true
-    includeGetters = true
-    serializable = true
-    includeSetters = true
-    includeToString = true
+    includeGetters = false
+    includeSetters = false
     removeOldOutput = true
-    includeDynamicAccessors = true
-    includeAdditionalProperties = true
+    includeAdditionalProperties = false
+    includeToString = true
+    includeHashcodeAndEquals = false
     source.setFrom files(
         "${project.rootDir}/src/main/resources/subsystemconfig.schema.json",
         "${project.rootDir}/src/main/resources/pidconfig.schema.json",

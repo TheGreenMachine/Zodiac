@@ -54,9 +54,7 @@
     },
     "anyOf": [
         {
-            "properties": {
-                "required": ["implemented"]
-            }
+            "required": ["implemented"]
         }
     ]
 }

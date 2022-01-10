@@ -19,13 +19,6 @@
     "additionalProperties": false,
     "anyOf": [
         {
-            "properties": {
-                "subsystems": {
-                    "properties": {
-                        "required": ["implemented"]
-                    }
-                }
-            },
             "required": ["subsystems", "pcm", "constants"]
         }
     ]

@@ -35,6 +35,7 @@ public class Shooter extends Subsystem implements PidProvider {
     private PeriodicIO mPeriodicIO = new PeriodicIO();
 
     // Constants
+    private final int pidSlot = 0;
     private final double kP;
     private final double kI;
     private final double kD;
@@ -66,12 +67,12 @@ public class Shooter extends Subsystem implements PidProvider {
         this.shooterFollower.setInverted(false);
         this.hood = factory.getSolenoid(NAME, "hood");
 
-        PIDSlotConfiguration pidConfig = factory.getSubsystem("turret").getPidConfig().get(0);
+        PIDSlotConfiguration pidConfig = factory.getPidSlotConfig(NAME, pidSlot);
 
-        this.kP = pidConfig.getkP();
-        this.kI = pidConfig.getkI();
-        this.kD = pidConfig.getkD();
-        this.kF = pidConfig.getkF();
+        this.kP = pidConfig.kP;
+        this.kI = pidConfig.kI;
+        this.kD = pidConfig.kD;
+        this.kF = pidConfig.kF;
 
         shooterMain.setNeutralMode(NeutralMode.Coast);
         shooterFollower.setNeutralMode(NeutralMode.Coast);

@@ -3,9 +3,9 @@ subsystems:
         implemented: true
         talons:
             leftMain: 15
-            leftFollower: -1
+            leftFollower: 1
             rightMain: 13
-            rightFollower: -1
+            rightFollower: 2
             flAzimuth: -1
             blAzimuth: -1
             frAzimuth: -1
@@ -60,12 +60,6 @@ subsystems:
             encPPR: 999
             azimuthEncPPR: 4096
             azimuthAllowableErrorTicks: 10
-    shooter:
-        implemented: false
-    turret:
-        implemented: false
-    hopper:
-        implemented: false
 pcm: 8
 constants:
     maxTicks: 14000 # ticks per 100ms TODO test actual maxTicks value
