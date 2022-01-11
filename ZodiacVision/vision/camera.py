@@ -31,6 +31,7 @@ class Camera:
             runtime_parameters = sl.RuntimeParameters()
         else:
             self.cap = cv2.VideoCapture(0)
+            print(self.cap.get(cv2.CAP_PROP_FPS))
     def read(self):
         if self.isZed:
             import pyzed.sl as sl

@@ -37,5 +37,5 @@ def putIterationsPerSec(frame, iterations_per_sec):
     """
 
     cv2.putText(frame, "{:.0f} FPS".format(iterations_per_sec),
-                (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0))
+                (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 0), thickness=3)
     return frame
