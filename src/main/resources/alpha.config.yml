@@ -3,49 +3,20 @@ subsystems:
         implemented: true
         talons:
             leftMain: 15
-            leftFollower: 1
+            leftFollower: -1
             rightMain: 13
-            rightFollower: 2
-            flAzimuth: -1
-            blAzimuth: -1
-            frAzimuth: -1
-            brAzimuth: -1
-        swerveModulesConfig:
-            modules:
-                frontLeft:
-                    drive: leftMain
-                    azimuth: flAzimuth
-                    encoderOffset: 2837
-                frontRight:
-                    drive: rightMain
-                    azimuth: frAzimuth
-                    encoderOffset: 3335
-                backLeft:
-                    drive: leftFollower
-                    azimuth: blAzimuth
-                    encoderOffset: 5
-                backRight:
-                    drive: rightFollower
-                    azimuth: brAzimuth
-                    encoderOffset: 2582
-            drivePid:
-                - slot0:
-                    kP: 3.0 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
-                    kI: 0.03 # 0.018
-                    kD: 36 # 3.6
-                    kF: 0.96
-            azimuthPid:
-                - slot0:
-                    kP: 1.0
-                    kI: 0.001
-                    kD: 10
-                    kF: 0
+            rightFollower: -1
         pidConfig:
-            - slot0:
-                  kP: 3.0 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
-                  kI: 0.03 # 0.018
-                  kD: 36 # 3.6
-                  kF: 0.96
+            slot0:
+                kP: 0.1 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
+                kI: 0.0001 # 0.018
+                kD: 4.0 # 3.6
+                kF: 0.0475813
+            slot1:
+                kP: 3.0
+                kI: 0.018
+                kD: 4.2
+                kF: 0.042
         invertMotor:
             - rightMain
         constants:
@@ -53,6 +24,10 @@ subsystems:
             pigeonOnTalon: -1
             currentFloorCheck: .12
             currentEpsilonCheck: .2
+            kP: 3.0 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
+            kI: 0.03 # 0.018
+            kD: 36 # 3.6
+            kF: 0.96
             rpmFloorCheck: 2000
             rpmEpsilonCheck: 60
             openLoopRampRate: 0.8

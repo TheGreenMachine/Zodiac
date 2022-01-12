@@ -52,7 +52,7 @@ public abstract class Drive
     protected double lastUpdateTimestamp = 0;
 
     // hardware states
-    protected int pidSlot = 0;
+    protected String pidSlot = "slot0";
     protected boolean mIsBrakeMode;
     protected Rotation2d mGyroOffset = Rotation2d.identity();
     protected double openLoopRampRate;
@@ -102,20 +102,40 @@ public abstract class Drive
 
     @Override
     public double getKP() {
-        return (factory.getSubsystem(NAME).pidConfig.get(pidSlot).kP!=null)?factory.getSubsystem(NAME).pidConfig.get(pidSlot).kP:0.0;
+        return (!factory.getSubsystem(NAME).implemented
+                && factory.getSubsystem(NAME).pidConfig != null
+                && factory.getSubsystem(NAME).pidConfig.containsKey(pidSlot)
+                && factory.getSubsystem(NAME).pidConfig.get(pidSlot)!=null
+                && factory.getSubsystem(NAME).pidConfig.get(pidSlot).kP!=null)?
+        factory.getSubsystem(NAME).pidConfig.get(pidSlot).kP:0.0;
     }
 
     @Override
     public double getKI() {
-        return (factory.getSubsystem(NAME).pidConfig.get(pidSlot).kI!=null)?factory.getSubsystem(NAME).pidConfig.get(pidSlot).kI:0.0;    }
+        return (!factory.getSubsystem(NAME).implemented
+            && factory.getSubsystem(NAME).pidConfig != null
+            && factory.getSubsystem(NAME).pidConfig.containsKey(pidSlot)
+            && factory.getSubsystem(NAME).pidConfig.get(pidSlot)!=null
+            && factory.getSubsystem(NAME).pidConfig.get(pidSlot).kI!=null)?
+            factory.getSubsystem(NAME).pidConfig.get(pidSlot).kI:0.0;    }
 
     @Override
     public double getKD() {
-        return (factory.getSubsystem(NAME).pidConfig.get(pidSlot).kD!=null)?factory.getSubsystem(NAME).pidConfig.get(pidSlot).kD:0.0;    }
+        return (!factory.getSubsystem(NAME).implemented
+            && factory.getSubsystem(NAME).pidConfig != null
+            && factory.getSubsystem(NAME).pidConfig.containsKey(pidSlot)
+            && factory.getSubsystem(NAME).pidConfig.get(pidSlot)!=null
+            && factory.getSubsystem(NAME).pidConfig.get(pidSlot).kD!=null)?
+            factory.getSubsystem(NAME).pidConfig.get(pidSlot).kD:0.0;    }
 
     @Override
     public double getKF() {
-        return (factory.getSubsystem(NAME).pidConfig.get(pidSlot).kF!=null)?factory.getSubsystem(NAME).pidConfig.get(pidSlot).kF:0.0;    }
+        return (!factory.getSubsystem(NAME).implemented
+            && factory.getSubsystem(NAME).pidConfig != null
+            && factory.getSubsystem(NAME).pidConfig.containsKey(pidSlot)
+            && factory.getSubsystem(NAME).pidConfig.get(pidSlot)!=null
+            && factory.getSubsystem(NAME).pidConfig.get(pidSlot).kF!=null)?
+            factory.getSubsystem(NAME).pidConfig.get(pidSlot).kF:0.0;    }
 
     @Singleton
     public static class PeriodicIO {

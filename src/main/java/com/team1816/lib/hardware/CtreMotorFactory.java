@@ -72,7 +72,7 @@ public class CtreMotorFactory {
         String name,
         boolean isFalcon,
         SubsystemConfig subsystems,
-        List<PIDSlotConfiguration> pidConfigList
+        Map<String, PIDSlotConfiguration> pidConfigList
     ) {
         return createTalon(
             id,
@@ -90,7 +90,7 @@ public class CtreMotorFactory {
         boolean isFalcon,
         IMotorController master,
         SubsystemConfig subsystem,
-        List<PIDSlotConfiguration> pidConfigList
+        Map<String, PIDSlotConfiguration> pidConfigList
     ) {
         final IMotorControllerEnhanced talon = createTalon(
             id,
@@ -113,7 +113,7 @@ public class CtreMotorFactory {
         Configuration config,
         boolean isFalcon,
         SubsystemConfig subsystem,
-        List<PIDSlotConfiguration> pidConfigList
+        Map<String, PIDSlotConfiguration> pidConfigList
     ) {
         IConfigurableMotorController talon = isFalcon
             ? new LazyTalonFX(id)
@@ -193,7 +193,7 @@ public class CtreMotorFactory {
         Configuration config,
         boolean isFalcon,
         SubsystemConfig subsystem,
-        List<PIDSlotConfiguration> pidConfigList
+        Map<String, PIDSlotConfiguration> pidConfigList
     ) {
         BaseTalonConfiguration talonConfiguration;
 
@@ -212,13 +212,13 @@ public class CtreMotorFactory {
         talonConfiguration.reverseSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
 
         if (pidConfigList.size() > 0) {
-            talonConfiguration.slot0 = toSlotConfiguration(pidConfigList.get(0));
+            talonConfiguration.slot0 = toSlotConfiguration(pidConfigList.get("slot0"));
             if (pidConfigList.size() > 1) {
-                talonConfiguration.slot1 = toSlotConfiguration(pidConfigList.get(1));
+                talonConfiguration.slot1 = toSlotConfiguration(pidConfigList.get("slot1"));
                 if (pidConfigList.size() > 2) {
-                    talonConfiguration.slot2 = toSlotConfiguration(pidConfigList.get(2));
+                    talonConfiguration.slot2 = toSlotConfiguration(pidConfigList.get("slot2"));
                     if (pidConfigList.size() > 3) {
-                        talonConfiguration.slot3 = toSlotConfiguration(pidConfigList.get(3));
+                        talonConfiguration.slot3 = toSlotConfiguration(pidConfigList.get("slot3"));
                     }
                 }
             }

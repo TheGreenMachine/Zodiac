@@ -208,6 +208,14 @@ public class SwerveKinematics {
         return new SwerveDriveSignal(wheel_speeds, wheel_azimuths, false);
     }
 
+    public static List<Translation2d> updateDriveVectors(Translation2d curPosition, Pose2d pose, double maxRotationSpeed) {
+        List<Translation2d> driveVectors = new ArrayList<>(4);
+        var mDrive = mDriveFactory.getInstance();
+        var curRot = mDrive.getHeading();
+
+        return driveVectors;
+    }
+
     public static List<Translation2d> updateDriveVectors(
         Translation2d translationalVector,
         double rotationalMagnitude,

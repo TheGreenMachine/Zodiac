@@ -50,7 +50,7 @@ public class Turret extends Subsystem implements PidProvider {
     private static RobotState robotState;
     @Inject
     private static LedManager led;
-    private final int pidSlot = 0;
+    private final String pidSlot = "slot0";
     private final double kP;
     private final double kI;
     private final double kD;
