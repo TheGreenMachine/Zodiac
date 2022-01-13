@@ -55,7 +55,7 @@ public class RobotFactory {
     public IMotorControllerEnhanced getMotor(
         String subsystemName,
         String name,
-        List<PIDSlotConfiguration> pidConfigs
+        Map<String, PIDSlotConfiguration> pidConfigs
     ) {
         IMotorControllerEnhanced motor = null;
         var subsystem = getSubsystem(subsystemName);
@@ -256,12 +256,17 @@ public class RobotFactory {
     }
 
     public SubsystemConfig getSubsystem(String subsystemName) {
-        var subsystem = config.subsystems.get(subsystemName);
-        if (subsystem == null) {
-            subsystem = new SubsystemConfig();
-            subsystem.implemented = false;
-            System.out.println("Subsystem not defined: " + subsystemName);
+        if(config.subsystems.containsKey(subsystemName)) {
+            var subsystem = config.subsystems.get(subsystemName);
+            if (subsystem == null) {
+                subsystem = new SubsystemConfig();
+                subsystem.implemented = false;
+                System.out.println("Subsystem not defined: " + subsystemName);
+            }
+            return subsystem;
         }
+        SubsystemConfig subsystem = new SubsystemConfig();
+        subsystem.implemented = false;
         return subsystem;
     }
 
@@ -291,8 +296,8 @@ public class RobotFactory {
         return getSubsystem(subsystemName).constants.get(name);
     }
 
-    public PIDSlotConfiguration getPidSlotConfig(String subsystemName, int slot) {
-        if (getSubsystem(subsystemName).pidConfig.size() > 0)
+    public PIDSlotConfiguration getPidSlotConfig(String subsystemName, String slot) {
+        if (!getSubsystem(subsystemName).implemented && getSubsystem(subsystemName).pidConfig!=null && getSubsystem(subsystemName).pidConfig.get(slot)!=null)
             return getSubsystem(subsystemName).pidConfig.get(slot);
         else { //default empty config
             PIDSlotConfiguration pidSlotConfiguration = new PIDSlotConfiguration();

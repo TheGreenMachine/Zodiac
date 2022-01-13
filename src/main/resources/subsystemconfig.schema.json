@@ -46,10 +46,9 @@
             }
         },
         "pidConfig": {
-            "type": "array",
-            "items": {
-                "$ref": "pidconfig.schema.json"
-            }
+            "type": "object",
+            "existingJavaType": "java.util.Map<String, PIDSlotConfiguration>",
+            "additionalProperties": false
         }
     },
     "anyOf": [

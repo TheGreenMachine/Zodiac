@@ -6,16 +6,14 @@
             "existingJavaType": "java.util.Map<String, ModuleConfiguration>"
         },
         "azimuthPID": {
-            "type": "array",
-            "items": {
-                "$ref": "pidconfig.schema.json"
-            }
+            "type": "object",
+            "existingJavaType": "java.util.Map<String, PIDSlotConfiguration>",
+            "additionalProperties": false
         },
         "drivePID": {
-            "type": "array",
-            "items": {
-                "$ref": "pidconfig.schema.json"
-            }
+            "type": "object",
+            "existingJavaType": "java.util.Map<String, PIDSlotConfiguration>",
+            "additionalProperties": false
         },
         "constants": {
             "$ref": "double.map.schema.json"
