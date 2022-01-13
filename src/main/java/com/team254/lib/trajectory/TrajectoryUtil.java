@@ -58,13 +58,13 @@ public class TrajectoryUtil {
         return new Trajectory<S>(states);
     }
 
-    public static Trajectory<Pose2dWithCurvature> trajectoryFromPathFollower(IPathFollower path_follower,
-                                                                             Pose2dWithCurvature start_state, double
+    public static Trajectory<Pose2dWithCurvature<Pose2d>> trajectoryFromPathFollower(IPathFollower path_follower,
+                                                                                     Pose2dWithCurvature<Pose2d> start_state, double
                                                                                      step_size, double
                                                                                      dcurvature_limit) {
-        List<Pose2dWithCurvature> samples = new ArrayList<Pose2dWithCurvature>();
+        List<Pose2dWithCurvature<Pose2d>> samples = new ArrayList<Pose2dWithCurvature<Pose2d>>();
         samples.add(start_state);
-        Pose2dWithCurvature current_state = start_state;
+        Pose2dWithCurvature<Pose2d> current_state = start_state;
         while (!path_follower.isDone()) {
             // Get the desired steering command.
             final Twist2d raw_steering_command = path_follower.steer(current_state.getPose());
@@ -97,7 +97,7 @@ public class TrajectoryUtil {
                     : new Twist2d(steering_command.dx, steering_command.dy,
                     (current_state.getCurvature() + 0.5 * dcurvature * steering_command.norm())
                             * steering_command.norm());
-            current_state = new Pose2dWithCurvature(
+            current_state = new Pose2dWithCurvature<Pose2d>(
                     current_state.getPose().transformBy(Pose2d.exp(average_steering_command)),
                     steering_command.curvature());
             if (!path_follower.isDone()) {
@@ -105,10 +105,10 @@ public class TrajectoryUtil {
             }
         }
 
-        return new Trajectory<Pose2dWithCurvature>(samples);
+        return new Trajectory<Pose2dWithCurvature<Pose2d>>(samples);
     }
 
-    public static Trajectory<Pose2dWithCurvature> trajectoryFromSplineWaypoints(final List<Pose2d> waypoints, double
+    public static Trajectory<Pose2dWithCurvature<Pose2d>> trajectoryFromSplineWaypoints(final List<Pose2d> waypoints, double
             maxDx, double maxDy, double maxDTheta) {
         List<QuinticHermiteSpline> splines = new ArrayList<>(waypoints.size() - 1);
         for (int i = 1; i < waypoints.size(); ++i) {
@@ -118,9 +118,9 @@ public class TrajectoryUtil {
         return trajectoryFromSplines(splines, maxDx, maxDy, maxDTheta);
     }
 
-    public static Trajectory<Pose2dWithCurvature> trajectoryFromSplines(final List<? extends Spline> splines, double
+    public static Trajectory<Pose2dWithCurvature<Pose2d>> trajectoryFromSplines(final List<? extends Spline> splines, double
             maxDx,
-                                                                        double maxDy, double maxDTheta) {
+                                                                                double maxDy, double maxDTheta) {
         return new Trajectory<>(SplineGenerator.parameterizeSplines(splines, maxDx, maxDy,
                 maxDTheta));
     }

@@ -25,19 +25,19 @@ public class TrajectoryTest {
         boolean shouldBeReversed
     ) {
         assertEquals(mirrored.left.length(), mirrored.right.length());
-        TrajectoryIterator<TimedState<Pose2dWithCurvature>> left_iterator = new TrajectoryIterator<>(
+        TrajectoryIterator<TimedState<Pose2dWithCurvature<Pose2d>>> left_iterator = new TrajectoryIterator<>(
             new TimedView<>(mirrored.left)
         );
-        TrajectoryIterator<TimedState<Pose2dWithCurvature>> right_iterator = new TrajectoryIterator<>(
+        TrajectoryIterator<TimedState<Pose2dWithCurvature<Pose2d>>> right_iterator = new TrajectoryIterator<>(
             new TimedView<>(mirrored.right)
         );
 
         final double dt = 0.05;
-        TimedState<Pose2dWithCurvature> prev_left = null;
-        TimedState<Pose2dWithCurvature> prev_right = null;
+        TimedState<Pose2dWithCurvature<Pose2d>> prev_left = null;
+        TimedState<Pose2dWithCurvature<Pose2d>> prev_right = null;
         while (!left_iterator.isDone() && !right_iterator.isDone()) {
-            TimedState<Pose2dWithCurvature> left_state = left_iterator.getState();
-            TimedState<Pose2dWithCurvature> right_state = right_iterator.getState();
+            TimedState<Pose2dWithCurvature<Pose2d>> left_state = left_iterator.getState();
+            TimedState<Pose2dWithCurvature<Pose2d>> right_state = right_iterator.getState();
 
             assertEquals(left_state.t(), right_state.t(), kTestEpsilon);
             assertEquals(left_state.velocity(), right_state.velocity(), kTestEpsilon);
@@ -149,15 +149,15 @@ public class TrajectoryTest {
     }
 
     private void verifyTrajectory(
-        Trajectory<TimedState<Pose2dWithCurvature>> trajectory,
+        Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> trajectory,
         boolean shouldBeReversed
     ) {
         var iterator = new TrajectoryIterator<>(new TimedView<>(trajectory));
 
         final double dt = 0.05;
-        TimedState<Pose2dWithCurvature> prev_left = null;
+        TimedState<Pose2dWithCurvature<Pose2d>> prev_left = null;
         while (!iterator.isDone()) {
-            TimedState<Pose2dWithCurvature> left_state = iterator.getState();
+            TimedState<Pose2dWithCurvature<Pose2d>> left_state = iterator.getState();
 
             assertTrue(
                 (shouldBeReversed ? -1.0 : 1.0) * left_state.velocity() >= -kTestEpsilon
@@ -204,7 +204,7 @@ public class TrajectoryTest {
 
     private void timeTrajectory(
         String name,
-        Trajectory<TimedState<Pose2dWithCurvature>> trajectory
+        Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> trajectory
     ) {
         verifyTrajectory(trajectory, false);
         System.out.println(name + ": ");

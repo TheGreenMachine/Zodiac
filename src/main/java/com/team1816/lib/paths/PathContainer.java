@@ -37,17 +37,17 @@ public interface PathContainer {
 
     List<Pose2d> buildWaypoints();
 
-    default Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory() {
+    default Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> generateTrajectory() {
         return generateBaseTrajectory(isReversed(), buildWaypoints());
     }
 
-    default Trajectory<TimedState<Pose2dWithCurvature>> generateReversedTrajectory() {
+    default Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> generateReversedTrajectory() {
         return TrajectoryUtil.mirrorTimed(
             generateBaseTrajectory(!isReversed(), reverseWaypoints(buildWaypoints()))
         );
     }
 
-    private Trajectory<TimedState<Pose2dWithCurvature>> generateBaseTrajectory(
+    private Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> generateBaseTrajectory(
         boolean isReversed,
         List<Pose2d> waypoints
     ) {

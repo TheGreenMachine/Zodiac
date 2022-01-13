@@ -97,8 +97,17 @@ public abstract class Drive
         return mPeriodicIO.gyro_heading.getDegrees();
     }
 
+    public Rotation2d getDesiredRotation2d() {
+        if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
+            return mPeriodicIO.path_setpoint.state().getRotation();
+        }
+        return mPeriodicIO.desired_heading;
+    }
+
     @Override
-    public abstract double getDesiredHeading();
+    public double getDesiredHeading() {
+        return getDesiredRotation2d().getDegrees();
+    }
 
     @Override
     public double getKP() {
@@ -159,7 +168,7 @@ public abstract class Drive
             Rotation2d.identity(),
         };
         public Rotation2d desired_heading = Rotation2d.identity();
-        TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(
+        TimedState<Pose2dWithCurvature<Pose2d>> path_setpoint = new TimedState<>(
             Pose2dWithCurvature.identity()
         );
         public Translation2d drive_vector = Translation2d.identity();
@@ -300,7 +309,7 @@ public abstract class Drive
     }
 
     public abstract void setTrajectory(
-        TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory,
+        TrajectoryIterator<TimedState<Pose2dWithCurvature<Pose2d>>> trajectory,
         Rotation2d targetHeading
     );
 

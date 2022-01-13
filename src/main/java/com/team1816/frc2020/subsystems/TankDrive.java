@@ -135,18 +135,6 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     }
 
     @Override
-    public double getDesiredHeading() {
-        return getDesiredRotation2d().getDegrees();
-    }
-
-    public Rotation2d getDesiredRotation2d() {
-        if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-            return mPeriodicIO.path_setpoint.state().getRotation();
-        }
-        return mPeriodicIO.desired_heading;
-    }
-
-    @Override
     public synchronized void readPeriodicInputs() {
         if (RobotBase.isSimulation()) {
             double leftAdjDemand = mPeriodicIO.left_demand;
@@ -344,7 +332,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public void setTrajectory(
-        TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory,
+        TrajectoryIterator<TimedState<Pose2dWithCurvature<Pose2d>>> trajectory,
         Rotation2d targetHeading
     ) {
         if (mMotionPlanner != null) {
@@ -419,7 +407,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     }
 
     public synchronized void setTrajectory(
-        TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
+        TrajectoryIterator<TimedState<Pose2dWithCurvature<Pose2d>>> trajectory
     ) {
         if (mMotionPlanner != null) {
             System.out.println("Now setting trajectory");

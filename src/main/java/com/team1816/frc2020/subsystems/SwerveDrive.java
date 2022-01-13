@@ -1,6 +1,5 @@
 package com.team1816.frc2020.subsystems;
 
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -498,7 +497,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     @Override
     public synchronized void setTrajectory(
-        TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory,
+        TrajectoryIterator<TimedState<Pose2dWithCurvature<Pose2d>>> trajectory,
         Rotation2d targetHeading
     ) {
         if (motionPlanner != null) {
@@ -525,7 +524,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     @Override
     public void updatePathFollower(double timestamp) {
         double rotationCorrection = headingController.updateRotationCorrection(
-            getHeadingDegrees(),
+            getDesiredHeading(), //alright we gotta see how to make this work - ginget
             timestamp
         );
         updatePose(timestamp);

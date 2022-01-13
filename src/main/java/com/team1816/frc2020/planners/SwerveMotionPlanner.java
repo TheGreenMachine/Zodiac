@@ -38,9 +38,9 @@ public class SwerveMotionPlanner implements CSVWritable {
         mFollowerType = type;
     }
 
-    static TrajectoryIterator<TimedState<Pose2dWithCurvature>> mCurrentTrajectory;
+    static TrajectoryIterator<TimedState<Pose2dWithCurvature<Pose2d>>> mCurrentTrajectory;
 
-    public Trajectory<TimedState<Pose2dWithCurvature>> getTrajectory() {
+    public Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> getTrajectory() {
         return mCurrentTrajectory.trajectory();
     }
 
@@ -53,7 +53,7 @@ public class SwerveMotionPlanner implements CSVWritable {
 
     boolean mIsReversed = false;
     double mLastTime = Double.POSITIVE_INFINITY;
-    public TimedState<Pose2dWithCurvature> mSetpoint = new TimedState<>(
+    public TimedState<Pose2dWithCurvature<Pose2d>> mSetpoint = new TimedState<>(
         Pose2dWithCurvature.identity()
     );
     Pose2d mError = Pose2d.identity();
@@ -88,7 +88,7 @@ public class SwerveMotionPlanner implements CSVWritable {
     }
 
     public void setTrajectory(
-        final TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
+        final TrajectoryIterator<TimedState<Pose2dWithCurvature<Pose2d>>> trajectory
     ) {
         mCurrentTrajectory = trajectory;
         mSetpoint = trajectory.getState();
@@ -113,10 +113,10 @@ public class SwerveMotionPlanner implements CSVWritable {
         useDefaultCook = true;
     }
 
-    public Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory(
+    public Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> generateTrajectory(
         boolean reversed,
         final List<Pose2d> waypoints,
-        final List<TimingConstraint<Pose2dWithCurvature>> constraints,
+        final List<TimingConstraint<Pose2dWithCurvature<Pose2d>>> constraints,
         double max_vel, // inches/s
         double max_accel, // inches/s^2
         double max_decel, // inches/s^2
@@ -137,10 +137,10 @@ public class SwerveMotionPlanner implements CSVWritable {
         );
     }
 
-    public Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory(
+    public Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> generateTrajectory(
         boolean reversed,
         final List<Pose2d> waypoints,
-        final List<TimingConstraint<Pose2dWithCurvature>> constraints,
+        final List<TimingConstraint<Pose2dWithCurvature<Pose2d>>> constraints,
         double max_vel, // inches/s
         double max_accel, // inches/s^2
         double max_voltage,
@@ -162,10 +162,10 @@ public class SwerveMotionPlanner implements CSVWritable {
         );
     }
 
-    public Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory(
+    public Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> generateTrajectory(
         boolean reversed,
         final List<Pose2d> waypoints,
-        final List<TimingConstraint<Pose2dWithCurvature>> constraints,
+        final List<TimingConstraint<Pose2dWithCurvature<Pose2d>>> constraints,
         double start_vel,
         double end_vel,
         double max_vel, // inches/s
@@ -186,7 +186,7 @@ public class SwerveMotionPlanner implements CSVWritable {
         }
 
         // Create a trajectory from splines.
-        Trajectory<Pose2dWithCurvature> trajectory = TrajectoryUtil.trajectoryFromSplineWaypoints(
+        Trajectory<Pose2dWithCurvature<Pose2d>> trajectory = TrajectoryUtil.trajectoryFromSplineWaypoints(
             waypoints_maybe_flipped,
             kMaxDx,
             kMaxDy,
@@ -194,10 +194,10 @@ public class SwerveMotionPlanner implements CSVWritable {
         );
 
         if (reversed) {
-            List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
+            List<Pose2dWithCurvature<Pose2d>> flipped = new ArrayList<>(trajectory.length());
             for (int i = 0; i < trajectory.length(); ++i) {
                 flipped.add(
-                    new Pose2dWithCurvature(
+                    new Pose2dWithCurvature<Pose2d>(
                         trajectory.getState(i).getPose().transformBy(flip),
                         -trajectory.getState(i).getCurvature(),
                         trajectory.getState(i).getDCurvatureDs()
@@ -209,13 +209,13 @@ public class SwerveMotionPlanner implements CSVWritable {
         // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
         // than the specified voltage.
         //final CurvatureVelocityConstraint velocity_constraints = new CurvatureVelocityConstraint();
-        List<TimingConstraint<Pose2dWithCurvature>> all_constraints = new ArrayList<>();
+        List<TimingConstraint<Pose2dWithCurvature<Pose2d>>> all_constraints = new ArrayList<>();
         //all_constraints.add(velocity_constraints);
         if (constraints != null) {
             all_constraints.addAll(constraints);
         }
         // Generate the timed trajectory.
-        Trajectory<TimedState<Pose2dWithCurvature>> timed_trajectory = TimingUtil.timeParameterizeTrajectory(
+        Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> timed_trajectory = TimingUtil.timeParameterizeTrajectory(
             reversed,
             new DistanceView<>(trajectory),
             kMaxDx,
@@ -246,7 +246,7 @@ public class SwerveMotionPlanner implements CSVWritable {
     protected Translation2d updatePurePursuit(Pose2d current_state) {
         double lookahead_time = Constants.kPathLookaheadTime;
         final double kLookaheadSearchDt = 0.01;
-        TimedState<Pose2dWithCurvature> lookahead_state = mCurrentTrajectory
+        TimedState<Pose2dWithCurvature<Pose2d>> lookahead_state = mCurrentTrajectory
             .preview(lookahead_time)
             .state();
         double actual_lookahead_distance = mSetpoint
@@ -264,7 +264,7 @@ public class SwerveMotionPlanner implements CSVWritable {
         if (actual_lookahead_distance < Constants.kPathMinLookaheadDistance) {
             lookahead_state =
                 new TimedState<>(
-                    new Pose2dWithCurvature(
+                    new Pose2dWithCurvature<Pose2d>(
                         lookahead_state
                             .state()
                             .getPose()
@@ -367,7 +367,7 @@ public class SwerveMotionPlanner implements CSVWritable {
             searchDirection *= -1;
         }
 
-        TrajectorySamplePoint<TimedState<Pose2dWithCurvature>> sample_point = mCurrentTrajectory.advance(
+        TrajectorySamplePoint<TimedState<Pose2dWithCurvature<Pose2d>>> sample_point = mCurrentTrajectory.advance(
             previewQuantity
         );
         mSetpoint = sample_point.state();
@@ -407,7 +407,7 @@ public class SwerveMotionPlanner implements CSVWritable {
         return mError;
     }
 
-    public TimedState<Pose2dWithCurvature> setpoint() {
+    public TimedState<Pose2dWithCurvature<Pose2d>> setpoint() {
         return mSetpoint;
     }
 }

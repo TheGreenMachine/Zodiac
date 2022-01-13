@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.SwerveDrive;
+import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.TimedView;
@@ -22,13 +23,13 @@ public class DriveTrajectory implements Action {
 
     private static Drive mDrive;
 
-    private final TrajectoryIterator<TimedState<Pose2dWithCurvature>> mTrajectory;
+    private final TrajectoryIterator<TimedState<Pose2dWithCurvature<Pose2d>>> mTrajectory;
     private final Rotation2d targetHeading;
     private final boolean mResetPose;
     private boolean done;
 
     public DriveTrajectory(
-        Trajectory<TimedState<Pose2dWithCurvature>> trajectory,
+        Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> trajectory,
         Rotation2d targetHeading,
         boolean resetPose
     ) {
@@ -39,7 +40,7 @@ public class DriveTrajectory implements Action {
     }
 
     public DriveTrajectory(
-        Trajectory<TimedState<Pose2dWithCurvature>> trajectory,
+        Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> trajectory,
         boolean resetPose
     ) {
         this(trajectory, Rotation2d.identity(), resetPose);
