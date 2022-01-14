@@ -524,7 +524,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     @Override
     public void updatePathFollower(double timestamp) {
         double rotationCorrection = headingController.updateRotationCorrection(
-            getDesiredHeading(), //alright we gotta see how to make this work - ginget
+            getHeadingDegrees(), //alright we gotta see how to make this work - ginget
             timestamp
         );
         updatePose(timestamp);

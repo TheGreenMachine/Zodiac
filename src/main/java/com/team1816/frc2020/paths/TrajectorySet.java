@@ -2,6 +2,7 @@ package com.team1816.frc2020.paths;
 
 import com.team1816.frc2020.paths.paths2020.*;
 import com.team1816.frc2020.paths.paths2021.*;
+import com.team1816.lib.geometry.SwervePose;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
@@ -39,6 +40,9 @@ public class TrajectorySet {
     public static Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> TEN_BALL_AUTO;
 
     public static Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> BARREL;
+
+    //2022
+    public static Trajectory<TimedState<Pose2dWithCurvature<SwervePose>>> TEST;
 
     public TrajectorySet() {
         // 2020

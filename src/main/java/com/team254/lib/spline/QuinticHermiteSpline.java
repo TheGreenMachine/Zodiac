@@ -1,12 +1,13 @@
 package com.team254.lib.spline;
 
+import com.team254.lib.geometry.IPose2d;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
 import java.util.List;
 
-public class QuinticHermiteSpline extends Spline {
+public class QuinticHermiteSpline<S extends IPose2d<S>> extends Spline {
     private static final double kEpsilon = 1e-5;
     private static final double kStepSize = 1.0;
     private static final double kMinDelta = 0.001;
@@ -20,7 +21,7 @@ public class QuinticHermiteSpline extends Spline {
      * @param p0 The starting pose of the spline
      * @param p1 The ending pose of the spline
      */
-    public QuinticHermiteSpline(Pose2d p0, Pose2d p1) {
+    public QuinticHermiteSpline(S p0, S p1) {
         double scale = 1.2 * p0.getTranslation().distance(p1.getTranslation());
         x0 = p0.getTranslation().x();
         x1 = p1.getTranslation().x();

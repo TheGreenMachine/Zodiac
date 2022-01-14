@@ -1,10 +1,7 @@
 package com.team1816.frc2020.planners;
 
 import com.team1816.frc2020.Constants;
-import com.team254.lib.geometry.Pose2d;
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
+import com.team254.lib.geometry.*;
 import com.team254.lib.trajectory.*;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
@@ -15,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SwerveMotionPlanner implements CSVWritable {
+public class SwerveMotionPlanner<T extends IPose2d<T>> implements CSVWritable {
 
     // Should not be a singleton
 
@@ -113,10 +110,10 @@ public class SwerveMotionPlanner implements CSVWritable {
         useDefaultCook = true;
     }
 
-    public Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> generateTrajectory(
+    public Trajectory<TimedState<Pose2dWithCurvature<T>>> generateTrajectory(
         boolean reversed,
-        final List<Pose2d> waypoints,
-        final List<TimingConstraint<Pose2dWithCurvature<Pose2d>>> constraints,
+        final List<T> waypoints,
+        final List<TimingConstraint<Pose2dWithCurvature<T>>> constraints,
         double max_vel, // inches/s
         double max_accel, // inches/s^2
         double max_decel, // inches/s^2
@@ -162,10 +159,10 @@ public class SwerveMotionPlanner implements CSVWritable {
         );
     }
 
-    public Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> generateTrajectory(
+    public Trajectory<TimedState<Pose2dWithCurvature<T>>> generateTrajectory(
         boolean reversed,
-        final List<Pose2d> waypoints,
-        final List<TimingConstraint<Pose2dWithCurvature<Pose2d>>> constraints,
+        final List<T> waypoints,
+        final List<TimingConstraint<Pose2dWithCurvature<T>>> constraints,
         double start_vel,
         double end_vel,
         double max_vel, // inches/s
@@ -175,18 +172,18 @@ public class SwerveMotionPlanner implements CSVWritable {
         double default_vel,
         int slowdown_chunks
     ) {
-        List<Pose2d> waypoints_maybe_flipped = waypoints;
-        final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
+        List<T> waypoints_maybe_flipped = waypoints;
+        final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0, false)); // flipping prob scuffed because not using T generic
         // TODO re-architect the spline generator to support reverse.
         if (reversed) {
             waypoints_maybe_flipped = new ArrayList<>(waypoints.size());
-            for (Pose2d waypoint : waypoints) {
+            for (T waypoint : waypoints) {
                 waypoints_maybe_flipped.add(waypoint.transformBy(flip));
             }
         }
 
         // Create a trajectory from splines.
-        Trajectory<Pose2dWithCurvature<Pose2d>> trajectory = TrajectoryUtil.trajectoryFromSplineWaypoints(
+        Trajectory<Pose2dWithCurvature<T>> trajectory = TrajectoryUtil.trajectoryFromSplineWaypoints(
             waypoints_maybe_flipped,
             kMaxDx,
             kMaxDy,

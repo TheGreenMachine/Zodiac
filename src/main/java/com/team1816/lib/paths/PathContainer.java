@@ -2,7 +2,9 @@ package com.team1816.lib.paths;
 
 import com.team1816.frc2020.Robot;
 import com.team1816.frc2020.planners.SwerveMotionPlanner;
+import com.team1816.lib.geometry.SwervePose;
 import com.team254.lib.control.Path;
+import com.team254.lib.geometry.IPose2d;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
  * Interface containing all information necessary for a path including the Path itself, the Path's starting pose, and
  * whether or not the robot should drive in reverse along the path.
  */
-public interface PathContainer {
+public interface PathContainer<T extends IPose2d<T>> {
     // velocities are in/sec
     double kMaxVelocity = Robot.getFactory().getConstant("maxVel");
     double kMaxAccel = Robot.getFactory().getConstant("maxAccel");
@@ -35,21 +37,21 @@ public interface PathContainer {
 
     Path buildPath();
 
-    List<Pose2d> buildWaypoints();
+    List<T> buildWaypoints();
 
-    default Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> generateTrajectory() {
+    default Trajectory<TimedState<Pose2dWithCurvature<T>>> generateTrajectory() {
         return generateBaseTrajectory(isReversed(), buildWaypoints());
     }
 
-    default Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> generateReversedTrajectory() {
+    default Trajectory<TimedState<Pose2dWithCurvature<T>>> generateReversedTrajectory() {
         return TrajectoryUtil.mirrorTimed(
             generateBaseTrajectory(!isReversed(), reverseWaypoints(buildWaypoints()))
         );
     }
 
-    private Trajectory<TimedState<Pose2dWithCurvature<Pose2d>>> generateBaseTrajectory(
+    private Trajectory<TimedState<Pose2dWithCurvature<T>>> generateBaseTrajectory(
         boolean isReversed,
-        List<Pose2d> waypoints
+        List<T> waypoints
     ) {
         return (new SwerveMotionPlanner()).generateTrajectory(
                 isReversed,
@@ -64,11 +66,11 @@ public interface PathContainer {
             );
     }
 
-    private List<Pose2d> reverseWaypoints(List<Pose2d> waypoints) {
+    private List<T> reverseWaypoints(List<T> waypoints) {
         return waypoints
             .stream()
             .map(
-                pose ->
+                pose -> // can't use lambda expressions on generics
                     new Pose2d(
                         -pose.getTranslation().x(),
                         pose.getTranslation().y(),

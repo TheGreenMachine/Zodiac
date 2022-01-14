@@ -108,7 +108,7 @@ public class TrajectoryUtil {
         return new Trajectory<Pose2dWithCurvature<Pose2d>>(samples);
     }
 
-    public static Trajectory<Pose2dWithCurvature<Pose2d>> trajectoryFromSplineWaypoints(final List<Pose2d> waypoints, double
+    public static <S extends IPose2d<S>> Trajectory<Pose2dWithCurvature<S>> trajectoryFromSplineWaypoints(final List<S> waypoints, double
             maxDx, double maxDy, double maxDTheta) {
         List<QuinticHermiteSpline> splines = new ArrayList<>(waypoints.size() - 1);
         for (int i = 1; i < waypoints.size(); ++i) {
@@ -118,10 +118,9 @@ public class TrajectoryUtil {
         return trajectoryFromSplines(splines, maxDx, maxDy, maxDTheta);
     }
 
-    public static Trajectory<Pose2dWithCurvature<Pose2d>> trajectoryFromSplines(final List<? extends Spline> splines, double
-            maxDx,
-                                                                                double maxDy, double maxDTheta) {
-        return new Trajectory<>(SplineGenerator.parameterizeSplines(splines, maxDx, maxDy,
+    public static <S extends IPose2d<S>> Trajectory<Pose2dWithCurvature<S>> trajectoryFromSplines(final List<? extends Spline> splines, double
+            maxDx, double maxDy, double maxDTheta) {
+        return new Trajectory<Pose2dWithCurvature<S>>(SplineGenerator.parameterizeSplines(splines, maxDx, maxDy,
                 maxDTheta));
     }
 
