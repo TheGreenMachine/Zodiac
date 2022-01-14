@@ -124,14 +124,14 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             factory.getMotor(
                 subsystemName,
                 constants.kDriveMotorName,
-                List.of(constants.kDrivePid)
+                factory.getSubsystem(subsystemName).swerveModules.get(constants.kName).azimuthPID
             );
         driveMotorIsInverted = mDriveMotor.getInverted();
         mAzimuthMotor =
             factory.getMotor(
                 subsystemName,
                 constants.kAzimuthMotorName,
-                List.of(constants.kAzimuthPid)
+                factory.getSubsystem(subsystemName).swerveModules.get(constants.kName).drivePID
             );
         var currentLimitConfig = new SupplyCurrentLimitConfiguration(
             true,

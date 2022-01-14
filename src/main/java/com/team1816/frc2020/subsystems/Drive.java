@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
+import com.team1816.lib.hardware.PIDSlotConfiguration;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
@@ -52,7 +53,7 @@ public abstract class Drive
     protected double lastUpdateTimestamp = 0;
 
     // hardware states
-    protected int pidSlot = 0;
+    protected String pidSlot = "slot0";
     protected boolean mIsBrakeMode;
     protected Rotation2d mGyroOffset = Rotation2d.identity();
     protected double openLoopRampRate;
@@ -111,20 +112,32 @@ public abstract class Drive
 
     @Override
     public double getKP() {
-        return (factory.getSubsystem(NAME).pidConfig.get(pidSlot).kP!=null)?factory.getSubsystem(NAME).pidConfig.get(pidSlot).kP:0.0;
+        PIDSlotConfiguration defaultPIDConfig = new PIDSlotConfiguration();
+        defaultPIDConfig.kP = 0.0;
+        return (!factory.getSubsystem(NAME).implemented)?
+            factory.getSubsystem(NAME).pidConfig.getOrDefault(pidSlot, defaultPIDConfig).kP:0.0;
     }
 
     @Override
     public double getKI() {
-        return (factory.getSubsystem(NAME).pidConfig.get(pidSlot).kI!=null)?factory.getSubsystem(NAME).pidConfig.get(pidSlot).kI:0.0;    }
+        PIDSlotConfiguration defaultPIDConfig = new PIDSlotConfiguration();
+        defaultPIDConfig.kI = 0.0;
+        return (!factory.getSubsystem(NAME).implemented)?
+            factory.getSubsystem(NAME).pidConfig.getOrDefault(pidSlot, defaultPIDConfig).kI:0.0;    }
 
     @Override
     public double getKD() {
-        return (factory.getSubsystem(NAME).pidConfig.get(pidSlot).kD!=null)?factory.getSubsystem(NAME).pidConfig.get(pidSlot).kD:0.0;    }
+        PIDSlotConfiguration defaultPIDConfig = new PIDSlotConfiguration();
+        defaultPIDConfig.kD = 0.0;
+        return (!factory.getSubsystem(NAME).implemented)?
+            factory.getSubsystem(NAME).pidConfig.getOrDefault(pidSlot, defaultPIDConfig).kD:0.0;    }
 
     @Override
     public double getKF() {
-        return (factory.getSubsystem(NAME).pidConfig.get(pidSlot).kF!=null)?factory.getSubsystem(NAME).pidConfig.get(pidSlot).kF:0.0;    }
+        PIDSlotConfiguration defaultPIDConfig = new PIDSlotConfiguration();
+        defaultPIDConfig.kF = 0.0;
+        return (!factory.getSubsystem(NAME).implemented)?
+            factory.getSubsystem(NAME).pidConfig.getOrDefault(pidSlot, defaultPIDConfig).kF:0.0;    }
 
     @Singleton
     public static class PeriodicIO {
