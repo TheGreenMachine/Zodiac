@@ -183,6 +183,10 @@ public class CtreMotorFactory {
                 slotConfig.kD = pidConfiguration.kD;
             if(pidConfiguration.kP!=null)
                 slotConfig.kF = pidConfiguration.kF;
+            if(pidConfiguration.iZone!=null)
+                slotConfig.integralZone = pidConfiguration.iZone;
+            if(pidConfiguration.allowableError!=null)
+                slotConfig.allowableClosedloopError = pidConfiguration.allowableError;
         }
         return slotConfig;
     }

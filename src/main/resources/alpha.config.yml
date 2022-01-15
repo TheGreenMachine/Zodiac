@@ -8,10 +8,11 @@ subsystems:
             rightFollower: -1
         pidConfig:
             slot0:
-                kP: 0.1 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
-                kI: 0.0001 # 0.018
-                kD: 4.0 # 3.6
-                kF: 0.0475813
+                kP: 1.6 #/ 0.18 # TODO: tune PID, these are temporary PID values from Zeta
+                kI: 0.001 # 0.018
+                kD: 15 # 3.6
+                kF: 0.538
+                iZone: 30
             slot1:
                 kP: 3.0
                 kI: 0.018
@@ -40,13 +41,9 @@ constants:
     maxTicks: 14000 # ticks per 100ms TODO test actual maxTicks value
     sensorPhase: 0
     kLooperDt: .010
-    kP: 3.0 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
-    kI: 0.03 # 0.018
-    kD: 36 # 3.6
-    kF: 0.96
-    iZone: 0
     kTrackScrubFactor: 1.0
     pathKs: 2
+    isSwerve: 0
     verbose: 0 # 0 or 1
     compressorEnabled: 0 # 0 or 1
     useAutoAim: 1

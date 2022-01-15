@@ -16,6 +16,9 @@
         },
         "iZone": {
             "type": "integer"
+        },
+        "allowableError": {
+            "type": "number"
         }
     }
 }

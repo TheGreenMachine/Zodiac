@@ -306,6 +306,7 @@ public class RobotFactory {
             pidSlotConfiguration.kD = 0.0;
             pidSlotConfiguration.kF = 0.0;
             pidSlotConfiguration.iZone = 0;
+            pidSlotConfiguration.allowableError = 0.0;
             return pidSlotConfiguration;
         }
     }
