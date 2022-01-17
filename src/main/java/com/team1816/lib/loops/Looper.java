@@ -1,8 +1,8 @@
 package com.team1816.lib.loops;
 
-import com.team1816.frc2020.Constants;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+
 import java.util.ArrayList;
 import java.util.List;
 

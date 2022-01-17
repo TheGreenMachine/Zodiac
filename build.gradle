@@ -77,7 +77,7 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 
     implementation "com.github.dominikwin:badlog:v0.1.1"
-    implementation 'org.yaml:snakeyaml:1.23'
+    implementation 'org.yaml:snakeyaml:1.29'
     implementation 'gov.nist.math:jama:1.0.3'
     implementation 'com.google.inject:guice:5.0.1'
     implementation 'com.google.inject.extensions:guice-assistedinject:5.0.1'
@@ -145,7 +145,7 @@ task runAlpha(type: JavaExec) {
     }
     environment "HALSIM_EXTENSIONS", hal
     environment "ROBOT_NAME", "alpha"
-    dependsOn(jar, simulateJavaRelease)
+    dependsOn(jar, simulateExternalJavaRelease)
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"
 }
@@ -161,7 +161,7 @@ task runSwerve(type: JavaExec) {
     }
     environment "HALSIM_EXTENSIONS", hal
     environment "ROBOT_NAME", "zodiac_swerve"
-    dependsOn(jar, simulateJavaRelease)
+    dependsOn(jar, simulateExternalJavaRelease)
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"
 }
@@ -176,8 +176,8 @@ task runTank(type: JavaExec) {
         environment "DYLD_LIBRARY_PATH", jniDir
     }
     environment "HALSIM_EXTENSIONS", hal
-    environment "ROBOT_NAME", "alpha"
-    dependsOn(jar, simulateJavaRelease)
+    environment "ROBOT_NAME", "zodiac_pro"
+    dependsOn(jar, simulateExternalJavaRelease)
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"
 }
