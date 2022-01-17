@@ -94,7 +94,7 @@ constants:
     maxTicks: 14000 # ticks per 100ms TODO test actual maxTicks value
     maxAccel: 20 #inch/s^2
     sensorPhase: 0
-    kLooperDt: .010
+    kLooperDt: .020
     kTrackScrubFactor: 1.0
     pathKs: 2
     verbose: 0 # 0 or 1

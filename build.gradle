@@ -3,8 +3,9 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2022.1.1"
+    id "edu.wpi.first.GradleRIO" version "2022.2.1"
     id 'org.jsonschema2dataclass' version '4.0.1'
+    id "com.diffplug.spotless" version "5.8.2"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -117,6 +118,22 @@ jsonSchema2Pojo {
         "${project.rootDir}/src/main/resources/robotconfig.schema.json"
     )}
 
+spotless {
+    java {
+        target 'src/*/java/com/team1816/**/*.java'
+        importOrder()
+        removeUnusedImports()
+        prettier(['prettier': '2.2.1', 'prettier-plugin-java': '1.0.1'])
+            .config([
+                'parser': 'java',
+                'tabWidth': 4,
+                'printWidth': 90
+            ])
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
 task runAlpha(type: JavaExec) {
     String jniDir = "${project.buildDir}/jni/release"
     environment "PATH", jniDir
@@ -159,7 +176,7 @@ task runTank(type: JavaExec) {
         environment "DYLD_LIBRARY_PATH", jniDir
     }
     environment "HALSIM_EXTENSIONS", hal
-    environment "ROBOT_NAME", "zodiac_pro"
+    environment "ROBOT_NAME", "alpha"
     dependsOn(jar, simulateJavaRelease)
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"
