@@ -236,17 +236,11 @@ public class Turret extends Subsystem implements PidProvider {
             // show turret
             var turret = robotState.field.getObject("turret");
             //TODO get turret to work in simulator and double check if math/whatever variable it's using is correct
-            double currentTurretPos = 0; //<-- THIS IS WHAT NEEDS TO BE CHANGED TO TURRET POSITION RELATIVE TO THE FIELD
-            currentTurretPos = getActualTurretPositionDegrees() - robotState.getHeadingRelativeToInitial().getDegrees();
             turret.setPose(
                 xPos,
                 yPos,
-                Rotation2d.fromDegrees(currentTurretPos) //I'm not sure if this is right
+                Rotation2d.fromDegrees(getActualTurretPositionDegrees()) //I'm not sure if this is right
             );
-//            System.out.println("@#*@)$*E)(@ " + getControlMode());
-//            System.out.println("+++++++++++ " + getActualTurretPositionDegrees());
-//            System.out.println("/////////// " + robotState.getHeadingRelativeToInitial().getDegrees());
-//            System.out.println("########### " + currentTurretPos);
         }
     }
 
