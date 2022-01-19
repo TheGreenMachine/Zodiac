@@ -3,87 +3,79 @@ subsystems:
         implemented: true
         talons:
             leftMain: 2
-            leftFollower: -1
-            rightFollower: -1
+            leftSlaveOne: -1
+            leftSlaveTwo: -1
             rightMain: 1
-            flAzimuth: -1
-            frAzimuth: 3
-            blAzimuth: -1
-            brAzimuth: -1
-        swerveModules:
-            frontLeft:
-                drive: leftMain
-                azimuth: flAzimuth
-                encoderOffset: 4035
-            frontRight:
-                drive: rightMain
-                azimuth: frAzimuth
-                encoderOffset: 3335
-            backLeft:
-                drive: leftFollower
-                azimuth: blAzimuth
-                encoderOffset: 5
-            backRight:
-                drive: rightFollower
-                azimuth: brAzimuth
-                encoderOffset: 2582
-        drivePid:
-            kP: 1.6
-            kI: 0.001
-            kD: 15.0
-            kF: 0.5383998
-        azimuthPid:
-            kP: 2.0
-            kI: 0
-            kD: 10.0
-            kF: 0
+            rightSlaveOne: -1
+            rightSlaveTwo: -1
+        invertMotor:
+            - leftMain
+        pidConfig:
+            slot0:
+                kP: 1.6
+                kI: .001
+                kD: 15
+                kF: 0.5383998
+                iZone: 30
         constants:
             pigeonId: 13
-            pigeonOnTalon: -1
-            kP: 0.1 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
-            kI: 0.0001 # 0.018
-            kD: 4.0 # 3.6
-            kF: 0.0475813
-            iZone: 0
-            currentFloorCheck: .12
-            currentEpsilonCheck: .2
-            rpmFloorCheck: 2000
-            rpmEpsilonCheck: 60
-            openLoopRampRate: 0.8
+            pigeonOnTalon: 0
             encPPR: 4096 # CTRE mag encoder
-            azimuthEncPPR: 4096
-            azimuthAllowableErrorTicks: 5
-    turret:
-        implemented: false
-        talons:
-            turret: 3
-        pid:
-            -   kP: 4 # 1.981 # 1.645
-                kI: 0
-                kD: 40
-                kF: 0 # Should be 0 for position control
-        constants:
-            encPPR: 4096 # CTRE MagEncoder
+            kShifterSolenoidId: 0
+            currentFloorCheck: .1
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 250
+            rpmEpsilonCheck: 60
+            openLoopRampRate: 1
     ledmanager:
         implemented: true
         canifier: 12
         constants:
             maxLevel: 25
+            raveEnabled: 0
+            raveSpeed: .05
+    turret:
+        implemented: true
+        talons:
+            turret: 3
+        pidConfig:
+            slot0:
+                kP: 2
+                kI: 0
+                kD: 10
+                kF: 0 # Should be 0 for position control
+                iZone: 200
+            slot1:
+                kP: 1
+                kI: 0
+                kD: 20
+                kF: 0 # Should be 0 for position control
+                iZone: 200
+        constants:
+            encPPR: 4096
+            revLimit: 960
+            fwdLimit: 2990
+            currentFloorCheck: 0
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 0
+            absPosTicksSouth: 4035
+            invert_sensor_phase: 0
+            rpmEpsilonCheck: 60
 pcm: -1
 constants:
-    maxTicks: 14000 # ticks per 100ms TODO test actual maxTicks value
+    wheelDiameter: 4.058
+    trackWidth: 15.75
+    maxVel: 30
+    maxTicks: 2000 # ticks per 100ms
+    maxAccel: 50
     sensorPhase: 0
-    kLooperDt: .010
-    kTrackScrubFactor: 1.0
-    logTeleOp: 0
-    useAutoAim: 1
-    wheelDiameter: 4.058 # inches
-    trackWidth: 15.75 # inches
-    maxVel: 30 # inches/s
-    maxAccel: 50 # inches/s^2
-    compressorEnabled: 1
+    kLooperDt: .020
+    kTrackScrubFactor: 2
+    kPCMId: 0
     pathKs: .0125
     verbose: 0
-    logTeleop: 1
     logAuto: 1
+    logTeleOp: 1
     badLogEnabled: 1
+    useAutoAim: 1
+    compressorEnabled: 0

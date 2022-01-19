@@ -67,7 +67,7 @@ pcm: 8
 constants:
     maxTicks: 14000 # ticks per 100ms TODO test actual maxTicks value
     sensorPhase: 0
-    kLooperDt: .020
+    kLooperDt: .010
     kTrackScrubFactor: 1.0
     pathKs: 2
     isSwerve: 0

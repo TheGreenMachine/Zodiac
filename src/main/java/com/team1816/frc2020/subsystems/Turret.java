@@ -243,10 +243,10 @@ public class Turret extends Subsystem implements PidProvider {
                 yPos,
                 Rotation2d.fromDegrees(currentTurretPos) //I'm not sure if this is right
             );
-            System.out.println("@#*@)$*E)(@ " + getControlMode());
-            System.out.println("+++++++++++ " + getActualTurretPositionDegrees());
-            System.out.println("/////////// " + robotState.getHeadingRelativeToInitial().getDegrees());
-            System.out.println("########### " + currentTurretPos);
+//            System.out.println("@#*@)$*E)(@ " + getControlMode());
+//            System.out.println("+++++++++++ " + getActualTurretPositionDegrees());
+//            System.out.println("/////////// " + robotState.getHeadingRelativeToInitial().getDegrees());
+//            System.out.println("########### " + currentTurretPos);
         }
     }
 

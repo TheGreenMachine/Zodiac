@@ -27,10 +27,8 @@ import com.team254.lib.util.SwerveDriveSignal;
 import com.team254.lib.util.TimeDelayedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -41,8 +39,8 @@ public class Robot extends TimedRobot {
 
     private final Injector injector;
 
-    private final Looper mEnabledLooper = new Looper();
-    private final Looper mDisabledLooper = new Looper();
+    private final Looper mEnabledLooper = new Looper(this);
+    private final Looper mDisabledLooper = new Looper(this);
 
     private IControlBoard mControlBoard;
 
@@ -83,7 +81,7 @@ public class Robot extends TimedRobot {
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     Robot() {
-        super();
+        super(Constants.kLooperDt);
         // initialize injector
         injector = Guice.createInjector(new LibModule(), new SeasonModule());
         mDrive = (injector.getInstance(Drive.Factory.class)).getInstance();
@@ -115,7 +113,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         try {
             mControlBoard = injector.getInstance(IControlBoard.class);
-            DriverStation.getInstance().silenceJoystickConnectionWarning(true);
+            DriverStation.silenceJoystickConnectionWarning(true);
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             var robotName = System.getenv("ROBOT_NAME");
             if (robotName == null) robotName = "default";

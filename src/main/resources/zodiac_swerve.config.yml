@@ -160,4 +160,4 @@ constants:
     ## General ##
     teleopFieldCentric: 1 # 0 or 1
     compressorEnabled: 0 # 0 or 1
-    kLooperDt: .030 # seconds
+    kLooperDt: .020 # seconds
