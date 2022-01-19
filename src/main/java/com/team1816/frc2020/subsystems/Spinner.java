@@ -7,17 +7,13 @@ import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class Spinner extends Subsystem {
 
     private static final String NAME = "spinner";
     private static Spinner INSTANCE;
-
-    public static Spinner getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Spinner();
-        }
-        return INSTANCE;
-    }
 
     // Components
     private final IMotorControllerEnhanced spinnerMotor;
@@ -53,7 +49,7 @@ public class Spinner extends Subsystem {
         }
     }
 
-    private Spinner() {
+    public Spinner() {
         super(NAME);
         spinnerMotor = factory.getMotor(NAME, "spinner");
     }

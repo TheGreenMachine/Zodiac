@@ -17,19 +17,9 @@ public class SubsystemManager implements ILooper {
     private List<Subsystem> mAllSubsystems;
     private List<Loop> mLoops = new ArrayList<>();
 
-    private SubsystemManager() {}
+    public SubsystemManager() {}
 
-    public static SubsystemManager getInstance() {
-        if (mInstance == null) {
-            mInstance = new SubsystemManager();
-        }
-
-        return mInstance;
-    }
-
-    public void outputToSmartDashboard() {
-        mAllSubsystems.forEach(Subsystem::outputTelemetry);
-    }
+    public void outputToSmartDashboard() {}
 
     public boolean checkSubsystems() {
         boolean ret_val = true;

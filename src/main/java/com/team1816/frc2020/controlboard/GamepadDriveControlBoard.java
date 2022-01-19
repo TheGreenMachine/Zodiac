@@ -21,12 +21,12 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public double getStrafe() {
-        return mController.getJoystick(Controller.Axis.LEFT_X);
+        return -mController.getJoystick(Controller.Axis.LEFT_X);
     }
 
     @Override
     public double getThrottle() {
-        return -mController.getJoystick(Controller.Axis.LEFT_Y);
+        return mController.getJoystick(Controller.Axis.LEFT_Y);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     }
 
     @Override
-    public boolean getCollectorUp() {
+    public boolean getCollectorBackspin() {
         return mController.getButton(Controller.Button.RIGHT_BUMPER);
     }
 

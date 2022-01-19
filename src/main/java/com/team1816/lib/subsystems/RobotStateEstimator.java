@@ -7,21 +7,21 @@ import com.team1816.frc2020.TankKinematics;
 import com.team1816.frc2020.subsystems.Drive;
 import com.team1816.frc2020.subsystems.SwerveDrive;
 import com.team1816.frc2020.subsystems.TankDrive;
-import com.team1816.frc2020.subsystems.Turret;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Twist2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotStateEstimator extends Subsystem {
 
     @Inject
     private Drive.Factory mDriveFactory;
 
-    private final RobotState mRobotState = RobotState.getInstance();
+    @Inject
+    private static RobotState mRobotState;
+
     //private final Turret turret = Turret.getInstance();
     private double left_encoder_prev_distance_ = 0.0;
     private double right_encoder_prev_distance_ = 0.0;
@@ -88,9 +88,9 @@ public class RobotStateEstimator extends Subsystem {
         final Rotation2d gyro_angle_relative_to_initial = mDrive.getHeadingRelativeToInitial();
 
         Twist2d odometry_twist;
-//        /* final */Rotation2d turret_angle = Rotation2d.fromDegrees(
-//            turret.getActualTurretPositionDegrees() - Turret.CARDINAL_SOUTH
-//        ); // - Turret.CARDINAL_NORTH);
+        //        /* final */Rotation2d turret_angle = Rotation2d.fromDegrees(
+        //            turret.getActualTurretPositionDegrees() - Turret.CARDINAL_SOUTH
+        //        ); // - Turret.CARDINAL_NORTH);
         synchronized (mRobotState) {
             final Pose2d last_measurement = mRobotState
                 .getLatestFieldToVehicle()
@@ -184,13 +184,13 @@ public class RobotStateEstimator extends Subsystem {
     }
 
     public synchronized void outputToSmartDashboard() {
-//        SmartDashboard.putNumber(
-//            "turret angle",
-//            (turret.getTurretPositionDegrees() - Turret.CARDINAL_SOUTH)
-//        ); // - Turret.CARDINAL_NORTH);
-//        SmartDashboard.putNumber(
-//            "test num",
-//            Rotation2d.fromDegrees(turret.getTurretPositionDegrees()).getDegrees()
-//        );
+        //        SmartDashboard.putNumber(
+        //            "turret angle",
+        //            (turret.getTurretPositionDegrees() - Turret.CARDINAL_SOUTH)
+        //        ); // - Turret.CARDINAL_NORTH);
+        //        SmartDashboard.putNumber(
+        //            "test num",
+        //            Rotation2d.fromDegrees(turret.getTurretPositionDegrees()).getDegrees()
+        //        );
     }
 }

@@ -1,17 +1,24 @@
 package com.team1816.frc2020.auto.actions.actions2020;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.subsystems.*;
 import com.team1816.lib.auto.actions.Action;
 import com.team1816.lib.loops.AsyncTimer;
 
 public class ShootAction implements Action {
 
-    private Shooter shooter;
-    private Hopper hopper;
-    private LedManager ledManager;
+    @Inject
+    private static Turret turret;
+    @Inject
+    private static Shooter shooter;
+    @Inject
+    private static Hopper hopper;
+    @Inject
+    private static LedManager ledManager;
+    @Inject
+    private static Collector collector;
+
     private AsyncTimer shooterTimer;
-    private Collector collector;
-    private Turret turret;
 
     private boolean unjam;
 
@@ -26,11 +33,6 @@ public class ShootAction implements Action {
     }
 
     public ShootAction(double duration, boolean unjam) {
-        this.shooter = Shooter.getInstance();
-        this.hopper = Hopper.getInstance();
-        this.turret = Turret.getInstance();
-        this.ledManager = LedManager.getInstance();
-        this.collector = Collector.getInstance();
         this.shooterTimer =
             new AsyncTimer(duration, shooter::startShooter, shooter::stopShooter);
         this.unjam = unjam;

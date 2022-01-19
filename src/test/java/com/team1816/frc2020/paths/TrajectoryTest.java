@@ -3,6 +3,7 @@ package com.team1816.frc2020.paths;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.google.inject.Inject;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Twist2d;
@@ -16,7 +17,8 @@ import org.junit.Test;
 public class TrajectoryTest {
 
     public static final double kTestEpsilon = 1e-5;
-    private static final TrajectorySet set = TrajectorySet.getInstance();
+    @Inject
+    private static TrajectorySet set;
 
     public void verifyMirroredTrajectories(
         final Trajectory.Mirrored mirrored,

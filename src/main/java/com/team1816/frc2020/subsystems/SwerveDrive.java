@@ -1,6 +1,8 @@
 package com.team1816.frc2020.subsystems;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
@@ -22,7 +24,7 @@ import com.team254.lib.util.Util;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +39,10 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     // Controllers
     private final SwerveMotionPlanner motionPlanner;
-    private final SwerveHeadingController headingController = SwerveHeadingController.getInstance();
+    @Inject
+    private static SwerveHeadingController headingController;
+    @Inject
+    private static AutoModeSelector autoModeSelector;
 
     // Odometry variables
     private Pose2d pose = Pose2d.identity();
@@ -50,13 +55,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
     boolean alwaysConfigureModules = false;
     boolean moduleConfigRequested = false;
     private boolean wantReset = false;
-
-    public static synchronized Drive getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new SwerveDrive();
-        }
-        return INSTANCE;
-    }
 
     public SwerveDrive() {
         super();
@@ -86,6 +84,8 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                 Constants.kBackRightModulePosition
             );
 
+
+
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
         mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId", -1));
@@ -99,7 +99,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         setBrakeMode(mIsBrakeMode);
 
         motionPlanner = new SwerveMotionPlanner();
-        SmartDashboard.putData("Field", fieldSim);
     }
 
     @Override
@@ -159,14 +158,12 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                 ) /
                 robotWidthTicks;
             //mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
-            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(
+            var rot2d = new edu.wpi.first.math.geometry.Rotation2d(
                 mPeriodicIO.gyro_heading_no_offset.getRadians()
             );
-            fieldSim.setRobotPose(
-                Units.inches_to_meters(mRobotState.getEstimatedX()),
-                Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5,
-                rot2d
-            );
+            var xPos = Units.inches_to_meters(mRobotState.getEstimatedX());
+            var yPos = Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5;
+            mRobotState.field.setRobotPose(xPos, yPos, rot2d);
         } else {
             mPeriodicIO.gyro_heading_no_offset =
                 Rotation2d.fromDegrees(mPigeon.getFusedHeading());
@@ -604,7 +601,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         //            System.out.println("Defaulting to drive straight mode");
         //            AutoModeSelector.getInstance().setHardwareFailure(true);
         //        } else {
-        AutoModeSelector.getInstance().setHardwareFailure(false);
+        autoModeSelector.setHardwareFailure(false);
         //        }
     }
 

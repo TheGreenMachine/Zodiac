@@ -1,5 +1,6 @@
 package com.team1816.frc2020;
 
+import com.google.inject.Singleton;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -11,23 +12,15 @@ import com.team254.lib.vision.AimingParameters;
 import com.team254.lib.vision.GoalTracker;
 import com.team254.lib.vision.GoalTracker.TrackReportComparator;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Singleton
 public class RobotState {
-
-    private static RobotState mInstance;
-
-    public static RobotState getInstance() {
-        if (mInstance == null) {
-            mInstance = new RobotState();
-        }
-
-        return mInstance;
-    }
 
     private static final int kObservationBufferSize = 100;
 
@@ -83,7 +76,10 @@ public class RobotState {
 
     private Rotation2d headingRelativeToInitial = Rotation2d.identity();
 
-    private RobotState() {
+    public final Field2d field = new Field2d();
+
+    public RobotState() {
+        SmartDashboard.putData("Field", field);
         reset(0.0, Pose2d.identity(), Rotation2d.identity());
     }
 
@@ -380,8 +376,8 @@ public class RobotState {
 
     public synchronized void outputToSmartDashboard() {
         SmartDashboard.putString("Robot Velocity", getMeasuredVelocity().toString());
-        //    SmartDashboard.putNumber("Estimated Pose X", getEstimatedX());
-        //    SmartDashboard.putNumber("Estimated Pose Y", getEstimatedY());
+            SmartDashboard.putNumber("Estimated Pose X", getEstimatedX());
+            SmartDashboard.putNumber("Estimated Pose Y", getEstimatedY());
 
         SmartDashboard.putNumber("Field to Turret", getLatestFieldToTurret());
         SmartDashboard.putNumber(

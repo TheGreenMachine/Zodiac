@@ -10,14 +10,6 @@ public class Climber extends Subsystem {
     private static final String NAME = "climber";
     private static Climber INSTANCE;
 
-    public static Climber getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Climber();
-        }
-
-        return INSTANCE;
-    }
-
     // Components
     private final IMotorControllerEnhanced elevator;
     private final ISolenoid deployer;
@@ -41,6 +33,10 @@ public class Climber extends Subsystem {
     public void setDeployed(boolean deployed) {
         this.isDeployed = deployed;
         outputsChanged = true;
+    }
+
+    public boolean getDeployed(){
+        return isDeployed;
     }
 
     @Override

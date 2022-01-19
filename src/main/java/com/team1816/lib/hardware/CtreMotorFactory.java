@@ -1,5 +1,6 @@
 package com.team1816.lib.hardware;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.*;
 import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
@@ -71,7 +72,7 @@ public class CtreMotorFactory {
         String name,
         boolean isFalcon,
         SubsystemConfig subsystems,
-        List<PidConfig> pidConfigList
+        Map<String, PIDSlotConfiguration> pidConfigList
     ) {
         return createTalon(
             id,
@@ -89,7 +90,7 @@ public class CtreMotorFactory {
         boolean isFalcon,
         IMotorController master,
         SubsystemConfig subsystem,
-        List<PidConfig> pidConfigList
+        Map<String, PIDSlotConfiguration> pidConfigList
     ) {
         final IMotorControllerEnhanced talon = createTalon(
             id,
@@ -112,7 +113,7 @@ public class CtreMotorFactory {
         Configuration config,
         boolean isFalcon,
         SubsystemConfig subsystem,
-        List<PidConfig> pidConfigList
+        Map<String, PIDSlotConfiguration> pidConfigList
     ) {
         IConfigurableMotorController talon = isFalcon
             ? new LazyTalonFX(id)
@@ -171,13 +172,32 @@ public class CtreMotorFactory {
         return victor;
     }
 
+    private static SlotConfiguration toSlotConfiguration(PIDSlotConfiguration pidConfiguration){
+        SlotConfiguration slotConfig = new SlotConfiguration();
+        if(pidConfiguration!=null) {
+            if(pidConfiguration.kP!=null)
+                slotConfig.kP = pidConfiguration.kP;
+            if(pidConfiguration.kI!=null)
+                slotConfig.kI = pidConfiguration.kI;
+            if(pidConfiguration.kD!=null)
+                slotConfig.kD = pidConfiguration.kD;
+            if(pidConfiguration.kP!=null)
+                slotConfig.kF = pidConfiguration.kF;
+            if(pidConfiguration.iZone!=null)
+                slotConfig.integralZone = pidConfiguration.iZone;
+            if(pidConfiguration.allowableError!=null)
+                slotConfig.allowableClosedloopError = pidConfiguration.allowableError;
+        }
+        return slotConfig;
+    }
+
     private static void configureMotorController(
         IConfigurableMotorController motor,
         String name,
         Configuration config,
         boolean isFalcon,
         SubsystemConfig subsystem,
-        List<PidConfig> pidConfigList
+        Map<String, PIDSlotConfiguration> pidConfigList
     ) {
         BaseTalonConfiguration talonConfiguration;
 
@@ -195,29 +215,25 @@ public class CtreMotorFactory {
         talonConfiguration.reverseSoftLimitThreshold = config.REVERSE_SOFT_LIMIT;
         talonConfiguration.reverseSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
 
-        if (pidConfigList.size() > 0) {
-            talonConfiguration.slot0.kP = pidConfigList.get(0).kP;
-            talonConfiguration.slot0.kI = pidConfigList.get(0).kI;
-            talonConfiguration.slot0.kD = pidConfigList.get(0).kD;
-            talonConfiguration.slot0.kF = pidConfigList.get(0).kF;
-        }
-        if (pidConfigList.size() > 1) {
-            talonConfiguration.slot1.kP = pidConfigList.get(1).kP;
-            talonConfiguration.slot1.kI = pidConfigList.get(1).kI;
-            talonConfiguration.slot1.kD = pidConfigList.get(1).kD;
-            talonConfiguration.slot1.kF = pidConfigList.get(1).kF;
-        }
-        if (pidConfigList.size() > 2) {
-            talonConfiguration.slot2.kP = pidConfigList.get(2).kP;
-            talonConfiguration.slot2.kI = pidConfigList.get(2).kI;
-            talonConfiguration.slot2.kD = pidConfigList.get(2).kD;
-            talonConfiguration.slot2.kF = pidConfigList.get(2).kF;
-        }
-        if (pidConfigList.size() > 3) {
-            talonConfiguration.slot3.kP = pidConfigList.get(3).kP;
-            talonConfiguration.slot3.kI = pidConfigList.get(3).kI;
-            talonConfiguration.slot3.kD = pidConfigList.get(3).kD;
-            talonConfiguration.slot3.kF = pidConfigList.get(3).kF;
+        if (pidConfigList != null) {
+            pidConfigList.forEach(
+                (slot, slotConfig) -> {
+                    switch (slot.toLowerCase()) {
+                        case "slot0":
+                            talonConfiguration.slot0 = toSlotConfiguration(slotConfig);
+                            break;
+                        case "slot1":
+                            talonConfiguration.slot1 = toSlotConfiguration(slotConfig);
+                            break;
+                        case "slot2":
+                            talonConfiguration.slot2 = toSlotConfiguration(slotConfig);
+                            break;
+                        case "slot3":
+                            talonConfiguration.slot3 = toSlotConfiguration(slotConfig);
+                            break;
+                    }
+                }
+            );
         }
 
         talonConfiguration.nominalOutputForward = 0;
@@ -227,7 +243,7 @@ public class CtreMotorFactory {
         talonConfiguration.peakOutputForward = 1.0;
         talonConfiguration.peakOutputReverse = -1.0;
 
-        talonConfiguration.velocityMeasurementPeriod = config.VELOCITY_MEASUREMENT_PERIOD;
+        //talonConfiguration.velocityMeasurementPeriod = config.VELOCITY_MEASUREMENT_PERIOD;
         talonConfiguration.velocityMeasurementWindow =
             config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW;
 
@@ -243,6 +259,11 @@ public class CtreMotorFactory {
             ((TalonFXConfiguration) talonConfiguration).supplyCurrLimit =
                 new SupplyCurrentLimitConfiguration(config.ENABLE_CURRENT_LIMIT, 0, 0, 0);
         }
+
+        ErrorCode code = motor.configVelocityMeasurementPeriod(
+            config.VELOCITY_MEASUREMENT_PERIOD,
+            kTimeoutMs
+        );
 
         talonConfiguration.clearPositionOnLimitF = false;
         talonConfiguration.clearPositionOnLimitR = false;

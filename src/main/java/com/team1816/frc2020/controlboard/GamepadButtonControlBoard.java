@@ -38,17 +38,17 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     // Spinner
     @Override
     public boolean getSpinnerReset() {
-        return mController.getButton(LogitechController.Button.START);
+        return mController.getButton(Controller.Button.START);
     }
 
     @Override
     public boolean getSpinnerColor() {
-        return mController.getButton(LogitechController.Button.X);
+        return mController.getButton(Controller.Button.X);
     }
 
     @Override
     public boolean getSpinnerThreeTimes() {
-        return mController.getButton(LogitechController.Button.B);
+        return mController.getButton(Controller.Button.B);
     }
 
     // Turret
@@ -70,17 +70,17 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     // Feeder Flap
     @Override
     public boolean getFeederFlapOut() {
-        return mController.getButton(LogitechController.Button.Y);
+        return mController.getButton(Controller.Button.Y);
     }
 
     @Override
     public boolean getFeederFlapIn() {
-        return mController.getButton(LogitechController.Button.A);
+        return mController.getButton(Controller.Button.A);
     }
 
     @Override
     public boolean getClimberUp() {
-        return mController.getDPad() == 0;
+        return false;
     }
 
     @Override
@@ -95,16 +95,16 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     @Override
     public boolean getAutoAim() {
-        return mController.getButton(LogitechController.Button.LEFT_BUMPER);
+        return mController.getButton(Controller.Button.LEFT_BUMPER);
     }
 
     @Override
-    public boolean getCollectorBackSpin() {
-        return mController.getButton(LogitechController.Button.RIGHT_BUMPER);
+    public boolean getUnusedButton() {
+        return mController.getButton(Controller.Button.RIGHT_BUMPER);
     }
 
     @Override
     public boolean getClimberDeploy() {
-        return mController.getDPad() == 0;
+        return mController.getButton(Controller.Button.Y);
     }
 }

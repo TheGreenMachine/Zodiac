@@ -5,10 +5,10 @@ import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.AutoModeSelector;
 import com.team1816.frc2020.Constants;
-import com.team1816.frc2020.RobotState;
 import com.team1816.frc2020.planners.TankMotionPlanner;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.subsystems.DifferentialDrivetrain;
@@ -23,7 +23,7 @@ import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
 
@@ -35,6 +35,9 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     private static TankDrive INSTANCE;
     private static final String NAME = "drivetrain";
 
+    @Inject
+    private static AutoModeSelector autoModeSelector;
+
     // hardware
     private final IMotorControllerEnhanced mLeftMaster, mRightMaster;
     private final IMotorController mLeftSlaveA, mRightSlaveA, mLeftSlaveB, mRightSlaveB;
@@ -44,18 +47,8 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     private final TankMotionPlanner mMotionPlanner;
 
-    private final RobotState mRobotState = RobotState.getInstance();
-
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
     private final double tickRatioPerLoop = Constants.kLooperDt / .1d;
-
-    public static synchronized TankDrive getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TankDrive();
-        }
-
-        return INSTANCE;
-    }
 
     public TankDrive() {
         super();
@@ -138,7 +131,6 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
         mMotionPlanner = new TankMotionPlanner();
 
-        SmartDashboard.putData("Field", fieldSim);
     }
 
     @Override
@@ -181,14 +173,12 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
                 robotWidthTicks;
             mPeriodicIO.gyro_heading_no_offset =
                 getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
-            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(
+            var rot2d = new edu.wpi.first.math.geometry.Rotation2d(
                 mPeriodicIO.gyro_heading_no_offset.getRadians()
             );
-            fieldSim.setRobotPose(
-                Units.inches_to_meters(mRobotState.getEstimatedX()),
-                Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5,
-                rot2d
-            );
+            var xPos = Units.inches_to_meters(mRobotState.getEstimatedX());
+            var yPos = Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5;
+            mRobotState.field.setRobotPose(xPos, yPos, rot2d);
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
@@ -454,7 +444,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             TankMotionPlanner.Output output = mMotionPlanner.update(
                 timestamp,
-                RobotState.getInstance().getFieldToVehicle(timestamp)
+                mRobotState.getFieldToVehicle(timestamp)
             );
 
             mPeriodicIO.error = mMotionPlanner.error();
@@ -497,9 +487,9 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
                 "Error detected with Pigeon IMU - check if the sensor is present and plugged in!"
             );
             System.out.println("Defaulting to drive straight mode");
-            AutoModeSelector.getInstance().setHardwareFailure(true);
+            autoModeSelector.setHardwareFailure(true);
         } else {
-            AutoModeSelector.getInstance().setHardwareFailure(false);
+            autoModeSelector.setHardwareFailure(false);
         }
     }
 

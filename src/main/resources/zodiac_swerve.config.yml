@@ -1,11 +1,10 @@
-$extends: base
 subsystems:
     drivetrain:
         implemented: true
         falcons:
-            flDrive: 2
-            blDrive: 1
-            frDrive: 13
+            flDrive: 13
+            blDrive: 1 #1
+            frDrive: 2 #13
             brDrive: 14
         talons:
             flAzimuth: 4
@@ -45,16 +44,27 @@ subsystems:
             kD: 4.0
             kF: 0.0499
         azimuthPid:
-            kP: 10.0 # 6.0
+            kP: 9.0 # 6.0
             kI: 0.0005
             kD: 30
             kF: 0
         constants:
+            pigeonId: 32
+            pigeonOnTalon: -1
+            kP: 0.1 # 0.18 # TODO: tune PID, these are temporary PID values from Zeta
+            kI: 0.0001 # 0.018
+            kD: 4.0 # 3.6
+            kF: 0.0475813
+            iZone: 0
+            currentFloorCheck: .12
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 2000
+            rpmEpsilonCheck: 60
+            openLoopRampRate: 0.8
             isSwerve: 1
             encPPR: 12275.7
             azimuthEncPPR: 4096
-            azimuthAllowableErrorTicks: 10
-            pigeonId: 32
+            azimuthAllowableErrorTicks: 20
             azimuthHomeAdjustmentDegrees: 1
     ledmanager:
         implemented: true
@@ -62,16 +72,23 @@ subsystems:
         constants:
             raveEnabled: 0
             raveSpeed: 0.05
+            cameraLed: 1
     turret:
         implemented: true
+        pid:
+            -   kP: 4 # 1.981 # 1.645
+                kI: 0
+                kD: 40
+                kF: 0 # Should be 0 for position control
         talons:
             turret: 9
         invertSensorPhase:
             - turret
         constants:
-            revLimit: -3774
-            absPosTicksSouth: -3450
+            revLimit: -3762
+            absPosTicksSouth: -3451
             fwdLimit: -1147
+            encPPR: 4096
     shooter:
         implemented: true
         invertMotor:
@@ -81,17 +98,30 @@ subsystems:
             shooterFollower: 15
         solenoids:
             hood: 1
+        pid:
+            -   kP: 0.15 #0.30
+                kI: 0
+                kD: 2.5 #4.5
+                kF: 0.05671 #0.00953253
+        constants:
+            currentFloorCheck: .12
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 2000
+            rpmEpsilonCheck: 60
+            velocityThreshold: 500
     climber:
         implemented: true
         talons:
             elevator: 6
+        solenoids:
+            deployer: 2
     hopper:
         implemented: true
         talons:
             spindexer: 10
             elevator: 5
         solenoids:
-            feederFlap: -4
+            feederFlap: -1
         constants:
             ballSensor: 0
     collector:
@@ -104,6 +134,11 @@ subsystems:
             arm: 0
 pcm: 8
 constants:
+    sensorPhase: 0
+    kTrackScrubFactor: 1.0
+    pathKs: 2
+    verbose: 0 # 0 or 1
+    useAutoAim: 1
     ## Drivetrain characterization ##
     trackWidth: 21 #inches
     wheelbaseLength: 21.5 #inches
@@ -124,6 +159,5 @@ constants:
     badLogEnabled: 1 # 0 or 1
     ## General ##
     teleopFieldCentric: 1 # 0 or 1
-    compressorEnabled: 1 # 0 or 1
-    kLooperDt: .030 # seconds
-    useZones: 1
+    compressorEnabled: 0 # 0 or 1
+    kLooperDt: .020 # seconds

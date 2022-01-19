@@ -1,9 +1,11 @@
 package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.frc2020.Constants;
 import com.team1816.frc2020.RobotState;
+import com.team1816.lib.hardware.PIDSlotConfiguration;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
@@ -17,8 +19,7 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.*;
 import edu.wpi.first.networktables.EntryListenerFlags;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
@@ -34,13 +35,16 @@ public abstract class Drive
     public static final String NAME = "drivetrain";
 
     // Components
-    protected final LedManager ledManager = LedManager.getInstance();
+    @Inject
+    protected static LedManager ledManager;
     protected PigeonIMU mPigeon;
     protected SwerveModule[] swerveModules;
 
     // control states
     protected DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
-    protected final RobotState mRobotState = RobotState.getInstance();
+
+    @Inject
+    protected static RobotState mRobotState;
 
     // Odometry variables
     protected Pose2d pose = Pose2d.identity();
@@ -48,6 +52,7 @@ public abstract class Drive
     protected double lastUpdateTimestamp = 0;
 
     // hardware states
+    protected String pidSlot = "slot0";
     protected boolean mIsBrakeMode;
     protected Rotation2d mGyroOffset = Rotation2d.identity();
     protected double openLoopRampRate;
@@ -61,7 +66,6 @@ public abstract class Drive
     protected SendableChooser<DriveHelper> driveHelperChooser;
 
     // Simulator
-    protected final Field2d fieldSim = new Field2d();
     protected double gyroDrift;
     protected final double robotWidthTicks =
         inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
@@ -97,23 +101,32 @@ public abstract class Drive
 
     @Override
     public double getKP() {
-        return factory.getConstant(NAME, "kP");
+        PIDSlotConfiguration defaultPIDConfig = new PIDSlotConfiguration();
+        defaultPIDConfig.kP = 0.0;
+        return (!factory.getSubsystem(NAME).implemented)?
+            factory.getSubsystem(NAME).pidConfig.getOrDefault(pidSlot, defaultPIDConfig).kP:0.0;
     }
 
     @Override
     public double getKI() {
-        return factory.getConstant(NAME, "kI");
-    }
+        PIDSlotConfiguration defaultPIDConfig = new PIDSlotConfiguration();
+        defaultPIDConfig.kI = 0.0;
+        return (!factory.getSubsystem(NAME).implemented)?
+            factory.getSubsystem(NAME).pidConfig.getOrDefault(pidSlot, defaultPIDConfig).kI:0.0;    }
 
     @Override
     public double getKD() {
-        return factory.getConstant(NAME, "kD");
-    }
+        PIDSlotConfiguration defaultPIDConfig = new PIDSlotConfiguration();
+        defaultPIDConfig.kD = 0.0;
+        return (!factory.getSubsystem(NAME).implemented)?
+            factory.getSubsystem(NAME).pidConfig.getOrDefault(pidSlot, defaultPIDConfig).kD:0.0;    }
 
     @Override
     public double getKF() {
-        return factory.getConstant(NAME, "kF");
-    }
+        PIDSlotConfiguration defaultPIDConfig = new PIDSlotConfiguration();
+        defaultPIDConfig.kF = 0.0;
+        return (!factory.getSubsystem(NAME).implemented)?
+            factory.getSubsystem(NAME).pidConfig.getOrDefault(pidSlot, defaultPIDConfig).kF:0.0;    }
 
     @Singleton
     public static class PeriodicIO {
@@ -161,6 +174,11 @@ public abstract class Drive
             Pose2dWithCurvature.identity()
         );
         public Translation2d drive_vector = Translation2d.identity();
+    }
+
+    @Override
+    public void writePeriodicOutputs() {
+        super.writePeriodicOutputs();
     }
 
     @Override
@@ -288,7 +306,9 @@ public abstract class Drive
     }
 
     public synchronized void resetPigeon() {
+        mPigeon.setYaw(0);
         mPigeon.setFusedHeading(0);
+        mPigeon.setAccumZAngle(0);
     }
 
     public DriveControlState getDriveControlState() {
@@ -357,7 +377,6 @@ public abstract class Drive
         driveHelperChooser.addOption("Cheesy Drive", new CheesyDriveHelper());
         driveHelperChooser.setDefaultOption("Swerve Classic", new SwerveDriveHelper());
         SmartDashboard.putData("Drive Algorithm", driveHelperChooser);
-        SmartDashboard.putData("Field", fieldSim);
 
         SmartDashboard.putNumber("Drive/Vector Direction", 0);
         SmartDashboard.putNumber("Drive/Robot Velocity", 0);

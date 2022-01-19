@@ -27,7 +27,7 @@ public interface IButtonControlBoard {
 
     boolean getAutoAim();
 
-    boolean getCollectorBackSpin();
+    boolean getUnusedButton();
 
     boolean getClimberDeploy();
 

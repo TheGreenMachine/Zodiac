@@ -1,7 +1,6 @@
 package com.team254.lib.geometry;
 
 import com.team254.lib.util.Util;
-import edu.wpi.first.wpilibj.DriverStation;
 
 import java.text.DecimalFormat;
 
@@ -13,7 +12,7 @@ import static com.team254.lib.util.Util.kEpsilon;
  * <p>
  * Inspired by Sophus (https://github.com/strasdat/Sophus/tree/master/sophus)
  */
-public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implements IRotation2d<Rotation2d> {
+public class Rotation2d implements IRotation2d<Rotation2d> {
     protected static final Rotation2d kIdentity = new Rotation2d();
 
     public static Rotation2d identity() {
@@ -110,13 +109,11 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
         return sin_angle_ / cos_angle_;
     }
 
-    @Override
     public double getRadians() {
         ensureRadiansComputed();
         return radians_;
     }
 
-    @Override
     public double getDegrees() {
         return Math.toDegrees(getRadians());
     }
@@ -219,7 +216,7 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
     private void ensureTrigComputed() {
         if (!hasTrig()) {
             if (Double.isNaN(radians_)) {
-                DriverStation.reportError("Ensure hasTrig", true);
+//                DriverStation.reportError("Ensure hasTrig", true);
             }
             sin_angle_ = Math.sin(radians_);
             cos_angle_ = Math.cos(radians_);
@@ -228,9 +225,9 @@ public class Rotation2d extends edu.wpi.first.wpilibj.geometry.Rotation2d implem
 
     private void ensureRadiansComputed() {
         if (!hasRadians()) {
-            if (Double.isNaN(cos_angle_) || Double.isNaN(sin_angle_)) {
-                DriverStation.reportError("Ensure hasRadians", true);
-            }
+//            if (Double.isNaN(cos_angle_) || Double.isNaN(sin_angle_)) {
+//                DriverStation.reportError("Ensure hasRadians", true);
+//            }
             radians_ = Math.atan2(sin_angle_, cos_angle_);
         }
     }

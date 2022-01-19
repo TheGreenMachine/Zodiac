@@ -1,12 +1,9 @@
 package com.team1816.frc2020.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1816.frc2020.Constants;
-import com.team1816.lib.hardware.PidConfig;
+import com.team1816.lib.hardware.PIDSlotConfiguration;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.ISwerveModule;
@@ -55,7 +52,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
         public double kAzimuthAdjustmentOffset;
 
         // azimuth motion
-        public PidConfig kAzimuthPid = PidConfig.EMPTY;
+        public PIDSlotConfiguration kAzimuthPid;
         public int kAzimuthClosedLoopAllowableError = (int) factory.getConstant(
             "drivetrain",
             "azimuthAllowableErrorTicks"
@@ -66,7 +63,7 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             VelocityMeasPeriod.Period_100Ms; // dt for velocity measurements, ms
 
         // general drive
-        public PidConfig kDrivePid = PidConfig.EMPTY;
+        public PIDSlotConfiguration kDrivePid;
         public double kWheelDiameter = Constants.kDriveWheelDiameterInches; // Probably should tune for each individual wheel maybe
         public double kDriveTicksPerUnitDistance =
             (1 / Drive.DRIVE_ENCODER_PPR) * (Math.PI * kWheelDiameter);
@@ -127,16 +124,23 @@ public class SwerveModule extends Subsystem implements ISwerveModule {
             factory.getMotor(
                 subsystemName,
                 constants.kDriveMotorName,
-                List.of(constants.kDrivePid)
+                factory.getSubsystem(subsystemName).swerveModules.get(constants.kName).azimuthPID
             );
         driveMotorIsInverted = mDriveMotor.getInverted();
         mAzimuthMotor =
             factory.getMotor(
                 subsystemName,
                 constants.kAzimuthMotorName,
-                List.of(constants.kAzimuthPid)
+                factory.getSubsystem(subsystemName).swerveModules.get(constants.kName).drivePID
             );
+        var currentLimitConfig = new SupplyCurrentLimitConfiguration(
+            true,
+            25,
+            0,
+            0
+        );
 
+        mAzimuthMotor.configSupplyCurrentLimit(currentLimitConfig, Constants.kLongCANTimeoutMs);
         mAzimuthMotor.setSensorPhase(constants.kInvertAzimuthSensorPhase);
         mAzimuthMotor.configPeakOutputForward(.4, Constants.kLongCANTimeoutMs);
         mAzimuthMotor.configPeakOutputReverse(-.4, Constants.kLongCANTimeoutMs);

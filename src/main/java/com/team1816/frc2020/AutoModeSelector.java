@@ -6,8 +6,11 @@ import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import javax.inject.Singleton;
 import java.util.Optional;
 
+@Singleton
 public class AutoModeSelector {
 
     private boolean hardwareFailure = false;
@@ -51,7 +54,7 @@ public class AutoModeSelector {
 
     private Optional<AutoModeBase> mAutoMode = Optional.empty();
 
-    private AutoModeSelector() {
+    public AutoModeSelector() {
         mStartPositionChooser = new SendableChooser<>();
 
         mStartPositionChooser.setDefaultOption(
@@ -80,10 +83,6 @@ public class AutoModeSelector {
         //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
         mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
-        mModeChooser.addOption(
-            "Auto Trench Turn Right",
-            DesiredMode.AUTO_TRENCH_TURN_RIGHT
-        );
         mModeChooser.addOption(
             "Auto Trench Turn Right",
             DesiredMode.AUTO_TRENCH_TURN_RIGHT
@@ -199,6 +198,8 @@ public class AutoModeSelector {
                 return (Optional.of(new DriveStraightShootMode()));
             case SIX_BALL_ALLIANCE_STRAIGHT:
                 return (Optional.of(new SixBallAllianceStraightMode()));
+            case AUTO_TRENCH_TURN_RIGHT:
+                return (Optional.of(new AutoTrenchTurnRightMode()));
             case BARREL:
                 return (Optional.of(new BarrelMode()));
             default:
@@ -231,11 +232,4 @@ public class AutoModeSelector {
     }
 
     private static AutoModeSelector INSTANCE;
-
-    public static AutoModeSelector getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new AutoModeSelector();
-        }
-        return INSTANCE;
-    }
 }

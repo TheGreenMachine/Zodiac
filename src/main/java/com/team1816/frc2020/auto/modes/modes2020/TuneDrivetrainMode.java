@@ -1,5 +1,6 @@
 package com.team1816.frc2020.auto.modes.modes2020;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.paths.TrajectorySet;
 import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.DriveTrajectory;
@@ -10,11 +11,13 @@ import com.team254.lib.geometry.Rotation2d;
 public class TuneDrivetrainMode extends AutoModeBase {
 
     private DriveTrajectory trajectory;
+    @Inject
+    private static TrajectorySet trajectorySet;
 
     public TuneDrivetrainMode(boolean isReversed) {
         var traj = isReversed
-            ? TrajectorySet.getInstance().TUNE_DRIVETRAIN_REVERSE
-            : TrajectorySet.getInstance().TUNE_DRIVETRAIN;
+            ? trajectorySet.TUNE_DRIVETRAIN_REVERSE
+            : trajectorySet.TUNE_DRIVETRAIN;
         trajectory = new DriveTrajectory(traj, Rotation2d.fromDegrees(90), true);
     }
 

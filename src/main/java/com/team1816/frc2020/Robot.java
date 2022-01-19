@@ -39,27 +39,27 @@ public class Robot extends TimedRobot {
 
     private final Injector injector;
 
-    private final Looper mEnabledLooper = new Looper();
-    private final Looper mDisabledLooper = new Looper();
+    private final Looper mEnabledLooper = new Looper(this);
+    private final Looper mDisabledLooper = new Looper(this);
 
     private IControlBoard mControlBoard;
 
-    private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
+    private final SubsystemManager mSubsystemManager;
 
     // subsystems
-    private final Superstructure mSuperstructure = Superstructure.getInstance();
-    private final Infrastructure mInfrastructure = Infrastructure.getInstance();
-    private final RobotState mRobotState = RobotState.getInstance();
+    private final Superstructure mSuperstructure;
+    private final Infrastructure mInfrastructure;
+    private final RobotState mRobotState;
     private final Drive mDrive;
-    private final PowerDistributionPanel pdp = new PowerDistributionPanel();
-    private final LedManager ledManager = LedManager.getInstance();
-    private final Collector collector = Collector.getInstance();
-    private final Shooter shooter = Shooter.getInstance();
-    private final Turret turret = Turret.getInstance();
+    private final PowerDistribution pdp = new PowerDistribution();
+    private final LedManager ledManager;
+    private final Collector collector;
+    private final Shooter shooter;
+    private final Turret mTurret;
     // private final Spinner spinner = Spinner.getInstance();
-    private final Hopper hopper = Hopper.getInstance();
-    private final Climber climber = Climber.getInstance();
-    private final Camera camera = Camera.getInstance();
+    private final Hopper hopper;
+    private final Climber climber;
+    private final Camera camera;
     private final RobotStateEstimator mRobotStateEstimator;
 
     private boolean mHasBeenEnabled = false;
@@ -67,8 +67,9 @@ public class Robot extends TimedRobot {
     private LatchedBoolean mWantsAutoExecution = new LatchedBoolean();
     private LatchedBoolean mWantsAutoInterrupt = new LatchedBoolean();
 
-    private AutoModeSelector mAutoModeSelector = AutoModeSelector.getInstance();
+    private AutoModeSelector mAutoModeSelector;
     private AutoModeExecutor mAutoModeExecutor;
+    private TrajectorySet trajectorySet;
 
     private boolean mDriveByCameraInAuto = false;
     private double loopStart;
@@ -80,11 +81,24 @@ public class Robot extends TimedRobot {
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     Robot() {
-        super();
+        super(Constants.kLooperDt);
         // initialize injector
         injector = Guice.createInjector(new LibModule(), new SeasonModule());
         mDrive = (injector.getInstance(Drive.Factory.class)).getInstance();
         mRobotStateEstimator = injector.getInstance(RobotStateEstimator.class);
+        mTurret = injector.getInstance(Turret.class);
+        mRobotState = injector.getInstance(RobotState.class);
+        collector = injector.getInstance(Collector.class);
+        mSuperstructure = injector.getInstance(Superstructure.class);
+        mInfrastructure = injector.getInstance(Infrastructure.class);
+        ledManager = injector.getInstance(LedManager.class);
+        shooter = injector.getInstance(Shooter.class);
+        hopper = injector.getInstance(Hopper.class);
+        climber = injector.getInstance(Climber.class);
+        camera = injector.getInstance(Camera.class);
+        mSubsystemManager = injector.getInstance(SubsystemManager.class);
+        mAutoModeSelector = injector.getInstance(AutoModeSelector.class);
+        trajectorySet = injector.getInstance(TrajectorySet.class);
     }
 
     public static RobotFactory getFactory() {
@@ -99,7 +113,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         try {
             mControlBoard = injector.getInstance(IControlBoard.class);
-            DriverStation.getInstance().silenceJoystickConnectionWarning(true);
+            DriverStation.silenceJoystickConnectionWarning(true);
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             var robotName = System.getenv("ROBOT_NAME");
             if (robotName == null) robotName = "default";
@@ -127,21 +141,21 @@ public class Robot extends TimedRobot {
                 String.valueOf(Constants.kPathFollowingMaxAccel)
             );
 
-            BadLog.createTopic(
+            shooter.CreateBadLogTopic(
                 "Shooter/ActVel",
                 "NativeUnits",
                 shooter::getActualVelocity,
                 "hide",
                 "join:Shooter/Velocities"
             );
-            BadLog.createTopic(
+            shooter.CreateBadLogTopic(
                 "Shooter/TargetVel",
                 "NativeUnits",
                 shooter::getTargetVelocity,
                 "hide",
                 "join:Shooter/Velocities"
             );
-            BadLog.createTopic(
+            shooter.CreateBadLogTopic(
                 "Shooter/Error",
                 "NativeUnits",
                 shooter::getError,
@@ -149,7 +163,7 @@ public class Robot extends TimedRobot {
                 "join:Shooter/Velocities"
             );
 
-            BadLog.createTopic(
+            collector.CreateBadLogTopic(
                 "Collector/TargetVel",
                 "NativeUnits",
                 collector::getIntakePow,
@@ -157,7 +171,7 @@ public class Robot extends TimedRobot {
                 "join:Collector/Velocities"
             );
 
-            BadLog.createTopic(
+            collector.CreateBadLogTopic(
                 "Collector/ActVel",
                 "NativeUnits",
                 collector::getActualVelocity,
@@ -191,9 +205,9 @@ public class Robot extends TimedRobot {
                 BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
 
                 DrivetrainLogger.init(mDrive);
-                BadLog.createValue("Drivetrain PID", mDrive.pidToString());
-                BadLog.createValue("Shooter PID", shooter.pidToString());
-                BadLog.createValue("Turret PID", turret.pidToString());
+                mDrive.CreateBadLogValue("Drivetrain PID", mDrive.pidToString());
+                shooter.CreateBadLogValue("Shooter PID", shooter.pidToString());
+                mTurret.CreateBadLogValue("Turret PID", mTurret.pidToString());
 
                 BadLog.createTopic(
                     "Vision/DeltaXAngle",
@@ -203,24 +217,45 @@ public class Robot extends TimedRobot {
                 BadLog.createTopic("Vision/Distance", "inches", camera::getDistance);
                 BadLog.createTopic("Vision/CenterX", "pixels", camera::getRawCenterX);
 
-                BadLog.createTopic(
+                mTurret.CreateBadLogTopic(
                     "Turret/ActPos",
                     "NativeUnits",
-                    turret::getActualTurretPositionTicks,
+                    mTurret::getActualTurretPositionTicks,
                     "hide",
                     "join:Turret/Positions"
                 );
-                BadLog.createTopic(
+                mTurret.CreateBadLogTopic(
                     "Turret/TargetPos",
                     "NativeUnits",
-                    turret::getTargetPosition,
+                    mTurret::getTargetPosition,
                     "hide",
                     "join:Turret/Positions"
                 );
-                BadLog.createTopic(
+                mTurret.CreateBadLogTopic(
                     "Turret/ErrorPos",
                     "NativeUnits",
-                    turret::getPositionError
+                    mTurret::getPositionError
+                );
+                mTurret.CreateBadLogTopic(
+                    "Turret/FieldToTurret",
+                    "Degrees",
+                    mRobotState::getLatestFieldToTurret,
+                    "hide",
+                    "join:Tracking/Angles"
+                );
+                mTurret.CreateBadLogTopic(
+                    "Drive/HeadingRelativeToInitial",
+                    "Degrees",
+                    () -> mDrive.getHeadingRelativeToInitial().getDegrees(),
+                    "hide",
+                    "join:Tracking/Angles"
+                );
+                mTurret.CreateBadLogTopic(
+                    "Turret/TurretAngle",
+                    "Degrees",
+                    mTurret::getActualTurretPositionDegrees,
+                    "hide",
+                    "join:Tracking/Angles"
                 );
             }
 
@@ -235,18 +270,19 @@ public class Robot extends TimedRobot {
                 // spinner,
                 collector,
                 hopper,
-                turret,
+                mTurret,
                 climber
             );
 
             mDrive.zeroSensors();
-            turret.zeroSensors();
+            mTurret.zeroSensors();
 
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
             mSubsystemManager.registerDisabledLoops(mDisabledLooper);
 
             ledManager.registerEnabledLoops(mEnabledLooper);
             ledManager.registerEnabledLoops(mDisabledLooper);
+
 
             // Robot starts forwards.
             mRobotState.reset(
@@ -255,8 +291,6 @@ public class Robot extends TimedRobot {
                 Rotation2d.identity()
             );
             mDrive.setHeading(Rotation2d.identity());
-
-            TrajectorySet.getInstance();
 
             mAutoModeSelector.updateModeCreator();
 
@@ -267,7 +301,7 @@ public class Robot extends TimedRobot {
                         mControlBoard::getCollectorToggle,
                         collecting -> {
                             System.out.println("Collector toggled!");
-                            collector.setDeployed(collecting);
+                            collector.setDeployed(collecting, false);
                             hopper.setSpindexer(collecting ? -1 : 0);
                         }
                     ),
@@ -275,14 +309,14 @@ public class Robot extends TimedRobot {
                         mControlBoard::getDriverClimber,
                         climber::setClimberPower
                     ),
-                    createHoldAction(
+                    createAction(
                         mControlBoard::getClimberDeploy,
-                        pressed -> {
+                        () -> {
                             if (
                                 (DriverStation.getInstance().getMatchTime() <= 30) ||
                                 (DriverStation.getInstance().getMatchTime() == -1)
                             ) {
-                                climber.setDeployed(pressed);
+                                climber.setDeployed(!climber.getDeployed());
                             }
                         }
                     ),
@@ -292,7 +326,7 @@ public class Robot extends TimedRobot {
                             System.out.println("STARTING TRENCH TO FEEDER");
                             SmartDashboard.putString("Teleop Spline", "TRENCH TO FEEDER");
                             var trajectory = new DriveTrajectory(
-                                TrajectorySet.getInstance().TRENCH_TO_FEEDER,
+                                trajectorySet.TRENCH_TO_FEEDER,
                                 true
                             );
                             trajectory.start();
@@ -303,9 +337,9 @@ public class Robot extends TimedRobot {
                         () -> {
                             System.out.println("STARTING FEEDER TO TRENCH");
                             SmartDashboard.putString("Teleop Spline", "FEEDER TO TRENCH");
-                            turret.setTurretAngle(Turret.CARDINAL_SOUTH);
+                            mTurret.setTurretAngle(Turret.CARDINAL_SOUTH);
                             var trajectory = new DriveTrajectory(
-                                TrajectorySet.getInstance().FEEDER_TO_TRENCH,
+                                trajectorySet.FEEDER_TO_TRENCH,
                                 true
                             );
                             trajectory.start();
@@ -321,14 +355,14 @@ public class Robot extends TimedRobot {
                     // ),
                     createAction(
                         mControlBoard::getFieldFollowing,
-                        () -> turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING)
+                        () -> mTurret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING)
                     ),
                     createHoldAction(
                         mControlBoard::getFeederFlapOut,
                         feeding -> {
-                            if (mDrive.hasPigeonResetOccurred() && !feeding) {
-                                mDrive.zeroSensors();
-                            }
+//                            if (mDrive.hasPigeonResetOccurred() && !feeding) {
+//                                mDrive.zeroSensors();
+//                            }
                             hopper.setFeederFlap(feeding);
                         }
                     ),
@@ -339,7 +373,7 @@ public class Robot extends TimedRobot {
                                 (DriverStation.getInstance().getMatchTime() <= 30) ||
                                 (DriverStation.getInstance().getMatchTime() == -1)
                             ) {
-                                climber.setClimberPower(pressed ? -0.7 : 0);
+                                climber.setDeployed(true);
                             }
                         }
                     ),
@@ -357,39 +391,38 @@ public class Robot extends TimedRobot {
                     createHoldAction(
                         mControlBoard::getTurretJogLeft,
                         moving ->
-                            turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)
+                            mTurret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)
                     ),
                     createHoldAction(
                         mControlBoard::getTurretJogRight,
                         moving ->
-                            turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)
+                            mTurret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)
                     ),
                     createHoldAction(
                         mControlBoard::getAutoAim,
                         pressed -> {
                             if (pressed) {
-                                prevTurretControlMode = turret.getControlMode();
-                                turret.setControlMode(
+                                prevTurretControlMode = mTurret.getControlMode();
+                                mTurret.setControlMode(
                                     Turret.ControlMode.CAMERA_FOLLOWING
                                 );
-                                shooter.autoHood();
                                 shooter.startShooter();
                             } else {
-                                turret.setControlMode(prevTurretControlMode);
+                                mTurret.setControlMode(prevTurretControlMode);
                             }
                         }
                     ),
                     createHoldAction(
                         mControlBoard::getShoot,
                         shooting -> {
-                            // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                             if (shooting) {
-                                shooter.autoHood();
                                 mDrive.setOpenLoop(SwerveDriveSignal.BRAKE);
-                                shooter.setVelocity(Shooter.MID_VELOCITY); // Uses ZED distance
-                                turret.lockTurret();
+                                shooter.startShooter(); // Uses ZED distance
+                                mTurret.lockTurret();
                             } else {
-                                //turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+                                mTurret.setControlMode(
+                                    Turret.ControlMode.FIELD_FOLLOWING
+                                );
                                 shooter.stopShooter();
                                 shooter.setHood(false);
                             }
@@ -399,14 +432,20 @@ public class Robot extends TimedRobot {
                         }
                     ),
                     createHoldAction(
-                        mControlBoard::getCollectorBackSpin,
-                        pressed -> collector.setIntakePow(pressed ? 0.2 : 0)
+                        mControlBoard::getCollectorBackspin,
+                        pressed -> {
+                            collector.setDeployed(pressed, true);
+                            hopper.setSpindexer(pressed ? -1 : 0);
+                        }
                     ),
                     createAction(
-                        mControlBoard::getFeederFlapOut,
+                        mControlBoard::getFeederFlapIn,
                         () -> shooter.setHood(!shooter.isHoodOut())
                     )
                 );
+
+
+            climber.setDeployed(false);
 
             blinkTimer =
                 new AsyncTimer(
@@ -428,6 +467,8 @@ public class Robot extends TimedRobot {
 
             // shooter
             shooter.setVelocity(0);
+
+            climber.setDeployed(false);
 
             // Reset all auto mode state.
             if (mAutoModeExecutor != null) {
@@ -468,7 +509,10 @@ public class Robot extends TimedRobot {
             mDrive.setOpenLoop(SwerveDriveSignal.NEUTRAL);
 
             mDrive.zeroSensors();
-            turret.zeroSensors();
+            mTurret.zeroSensors();
+
+            mTurret.setTurretAngle(Turret.CARDINAL_SOUTH);
+            mTurret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
 
             System.out.println("Auto init - " + mDriveByCameraInAuto);
             if (!mDriveByCameraInAuto) {
@@ -487,11 +531,7 @@ public class Robot extends TimedRobot {
             mDisabledLooper.stop();
             ledManager.setDefaultStatus(LedManager.RobotStatus.ENABLED);
 
-            turret.zeroSensors();
-
-            if (DistanceManager.USE_ZONES) {
-                DistanceManager.getInstance().setZone(4);
-            }
+            mTurret.zeroSensors();
 
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
@@ -500,9 +540,9 @@ public class Robot extends TimedRobot {
             mHasBeenEnabled = true;
 
             mEnabledLooper.start();
-
-            turret.setTurretAngle(Turret.CARDINAL_SOUTH);
-            turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+            mTurret.setTurretAngle(Turret.CARDINAL_SOUTH);
+            mTurret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
+            System.out.println(mTurret.getActualTurretPositionTicks() + "+++++++"); // for debugging whether or not getActTicks works. doesn't seem to - ginget
 
             mDrive.setOpenLoop(SwerveDriveSignal.NEUTRAL);
 
@@ -562,7 +602,7 @@ public class Robot extends TimedRobot {
             if (RobotController.getUserButton() && !mHasBeenEnabled) {
                 System.out.println("Zeroing Robot!");
                 mDrive.zeroSensors();
-                turret.zeroSensors();
+                mTurret.zeroSensors();
                 mRobotState.reset(
                     Timer.getFPGATimestamp(),
                     Pose2d.identity(),

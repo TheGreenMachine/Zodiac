@@ -1,5 +1,6 @@
 package com.team1816.frc2020.auto.modes.modes2020;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.auto.actions.actions2020.CollectAction;
 import com.team1816.frc2020.auto.actions.actions2020.PrepareToShootAction;
 import com.team1816.frc2020.auto.actions.actions2020.ShootAction;
@@ -14,10 +15,12 @@ public class SixBallAllianceStraightMode extends AutoModeBase {
 
     public DriveTrajectory driveTrajectoryA;
     public DriveTrajectory driveTrajectoryB;
+    @Inject
+    private static TrajectorySet trajectorySet;
 
     public SixBallAllianceStraightMode() {
-        var trajectoryA = TrajectorySet.getInstance().DRIVE_STRAIGHT_TRENCH;
-        var trajectoryB = TrajectorySet.getInstance().DRIVE_STRAIGHT_TRENCH_REVERSE;
+        var trajectoryA = trajectorySet.DRIVE_STRAIGHT_TRENCH;
+        var trajectoryB = trajectorySet.DRIVE_STRAIGHT_TRENCH_REVERSE;
         this.driveTrajectoryA = new DriveTrajectory(trajectoryA, true);
         this.driveTrajectoryB = new DriveTrajectory(trajectoryB, true);
     }

@@ -4,32 +4,29 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
+import com.team1816.lib.hardware.PIDSlotConfiguration;
 import com.team1816.lib.hardware.components.pcm.ISolenoid;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+@Singleton
 public class Shooter extends Subsystem implements PidProvider {
 
     private static final String NAME = "shooter";
     private static Shooter INSTANCE;
 
-    public static Shooter getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Shooter();
-        }
-
-        return INSTANCE;
-    }
-
     // Components
     private final IMotorControllerEnhanced shooterMain;
     private final IMotorControllerEnhanced shooterFollower;
-    private final LedManager ledManager = LedManager.getInstance();
+    @Inject
+    private static LedManager ledManager;
     private final ISolenoid hood;
     // State
     private boolean outputsChanged;
@@ -38,6 +35,7 @@ public class Shooter extends Subsystem implements PidProvider {
     private PeriodicIO mPeriodicIO = new PeriodicIO();
 
     // Constants
+    private final String pidSlot = "slot0";
     private final double kP;
     private final double kI;
     private final double kD;
@@ -53,9 +51,10 @@ public class Shooter extends Subsystem implements PidProvider {
     );
 
     private SendableChooser<Integer> velocityChooser = new SendableChooser<>();
-    private DistanceManager distanceManager = DistanceManager.getInstance();
+    @Inject
+    private static DistanceManager distanceManager;
 
-    private Shooter() {
+    public Shooter() {
         super(NAME);
         this.shooterMain = factory.getMotor(NAME, "shooterMain");
         this.shooterFollower =
@@ -68,10 +67,12 @@ public class Shooter extends Subsystem implements PidProvider {
         this.shooterFollower.setInverted(false);
         this.hood = factory.getSolenoid(NAME, "hood");
 
-        this.kP = factory.getConstant(NAME, "kP");
-        this.kI = factory.getConstant(NAME, "kI");
-        this.kD = factory.getConstant(NAME, "kD");
-        this.kF = factory.getConstant(NAME, "kF");
+        PIDSlotConfiguration pidConfig = factory.getPidSlotConfig(NAME, pidSlot);
+
+        this.kP = pidConfig.kP;
+        this.kI = pidConfig.kI;
+        this.kD = pidConfig.kD;
+        this.kF = pidConfig.kF;
 
         shooterMain.setNeutralMode(NeutralMode.Coast);
         shooterFollower.setNeutralMode(NeutralMode.Coast);

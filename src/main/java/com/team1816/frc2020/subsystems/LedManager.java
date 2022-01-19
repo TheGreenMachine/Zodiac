@@ -6,10 +6,16 @@ import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.awt.*;
 
+@Singleton
 public class LedManager extends Subsystem {
 
     public static final String NAME = "ledmanager";
@@ -25,6 +31,7 @@ public class LedManager extends Subsystem {
     // Components
     private final ICanifier canifier;
     private final ICanifier cameraCanifier;
+    private final DigitalOutput cameraLed;
 
     // State
     private LedControlState controlState = LedControlState.STANDARD;
@@ -48,10 +55,11 @@ public class LedManager extends Subsystem {
     private static final double RAVE_SPEED = factory.getConstant(NAME, "raveSpeed", 0.01);
     private static final int MAX = (int) factory.getConstant(NAME, "maxLevel", 255);
 
-    private LedManager() {
+    public LedManager() {
         super(NAME);
         this.canifier = factory.getCanifier(NAME);
         this.cameraCanifier = factory.getCanifier("camera");
+        this.cameraLed = new DigitalOutput((int) factory.getConstant(NAME, "cameraLed", 1));
 
         configureCanifier(canifier);
         configureCanifier(cameraCanifier);
@@ -61,13 +69,6 @@ public class LedManager extends Subsystem {
         this.ledB = 0;
 
         this.cameraLedOn = false;
-    }
-
-    public static LedManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new LedManager();
-        }
-        return INSTANCE;
     }
 
     private void configureCanifier(ICanifier canifier) {
@@ -163,12 +164,13 @@ public class LedManager extends Subsystem {
 
     @Override
     public void writePeriodicOutputs() {
-        if (cameraCanifier != null) {
+        if (cameraLed != null) {
             if (outputsChanged) {
-                cameraCanifier.setLEDOutput(
-                    cameraLedOn ? 1 : 0,
-                    CANifier.LEDChannel.LEDChannelB
-                );
+                cameraLed.set(cameraLedOn);
+//                cameraCanifier.setLEDOutput(
+//                    cameraLedOn ? 1 : 0,
+//                    CANifier.LEDChannel.LEDChannelB
+//                );
             }
         }
         if (canifier != null) {

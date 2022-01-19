@@ -9,21 +9,17 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class TankDemoModeControlBoard implements IControlBoard {
 
     private static TankDemoModeControlBoard INSTANCE = null;
 
-    public static TankDemoModeControlBoard getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TankDemoModeControlBoard();
-        }
-        return INSTANCE;
-    }
-
     private final Controller mController;
     private double drivetrainMultiplier = 0.25;
 
-    private TankDemoModeControlBoard() {
+    public TankDemoModeControlBoard() {
         mController = new LogitechController(Constants.kDriveGamepadPort);
         SendableChooser<Double> speedChooser = new SendableChooser<>();
         speedChooser.setDefaultOption("Comfort", 0.25);
@@ -121,7 +117,7 @@ public class TankDemoModeControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getCollectorBackSpin() {
+    public boolean getUnusedButton() {
         return false;
     }
 
@@ -171,7 +167,7 @@ public class TankDemoModeControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getCollectorUp() {
+    public boolean getCollectorBackspin() {
         return false;
     }
 

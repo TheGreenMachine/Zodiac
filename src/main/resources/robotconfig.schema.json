@@ -1,155 +1,24 @@
 {
-    "definitions": {
-        "hardwareMap": {
-            "type": "object",
-            "propertyNames": {
-                "pattern": "^[a-z]+([A-Z][a-z]*)*$"
-            },
-            "additionalProperties": {
-                "type": "integer"
-            }
-        },
-        "constants": {
-            "type": "object",
-            "title": "The Constants Schema",
-            "additionalProperties": {
-                "type": "number"
-            }
-        },
-        "pid": {
-            "type": "object",
-            "title": "PID Configuration",
-            "required": ["kP", "kI", "kD", "kF"],
-            "properties": {
-                "kP": { "type": "number" },
-                "kI": { "type": "number" },
-                "kD": { "type": "number" },
-                "kF": { "type": "number" }
-            }
-        }
-    },
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "http://edinarobotics.com/robotconfig.json",
     "type": "object",
-    "title": "The Robot Configuration Schema",
+    "title": "Robot Configuration",
+    "additionalProperties": true,
     "properties": {
-        "$abstract": {
-            "type": "boolean"
-        },
-        "$extends": {
-            "type": "string",
-            "$id": "#/properties/extends",
-            "pattern": "\\w.+"
-        },
         "subsystems": {
-            "$id": "#/properties/subsystems",
             "type": "object",
-            "title": "The Subsystems Schema",
-            "additionalProperties": {
-                "$id": "#/properties/subsystems/subsystem",
-                "type": "object",
-                "title": "The Subsystem Schema",
-                "properties": {
-                    "implemented": { "type": "boolean" },
-                    "talons": { "$ref": "#/definitions/hardwareMap" },
-                    "victors": { "$ref": "#/definitions/hardwareMap" },
-                    "falcons": { "$ref": "#/definitions/hardwareMap" },
-                    "invertMotor": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "invertSensorPhase": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "drivePid": {
-                        "$ref": "#/definitions/pid"
-                    },
-                    "azimuthPid": {
-                        "$ref": "#/definitions/pid"
-                    },
-                    "pid": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/definitions/pid"
-                        }
-                    },
-                    "swerveModules": {
-                        "type": "object",
-                        "title": "Swerve Module Map",
-                        "propertyNames": {
-                            "pattern": "^[a-z]+([A-Z][a-z]*)*$"
-                        },
-                        "additionalProperties": {
-                            "type": "object",
-                            "title": "Swerve Module",
-                            "required": ["drive", "azimuth", "encoderOffset"],
-                            "properties": {
-                                "drive": {
-                                    "type": "integer"
-                                },
-                                "azimuth": {
-                                    "type": "integer"
-                                },
-                                "encoderOffset": {
-                                    "type": "number"
-                                },
-                                "invertSensorPhase": {
-                                    "type": "boolean",
-                                    "default": false
-                                }
-                            }
-                        }
-                    },
-                    "solenoids": { "$ref": "#/definitions/hardwareMap" },
-                    "doubleSolenoids": {
-                        "type": "object",
-                        "propertyNames": {
-                            "pattern": "^[a-z]+([A-Z][a-z]*)*$"
-                        },
-                        "additionalProperties": {
-                            "type": "object",
-                            "required": ["forward", "reverse"],
-                            "properties": {
-                                "forward": {
-                                    "type": "integer"
-                                },
-                                "reverse": {
-                                    "type": "integer"
-                                }
-                            }
-                        }
-                    },
-                    "canifier": { "type": "integer" },
-                    "constants": { "$ref": "#/definitions/constants" }
-                },
-                "additionalProperties": false
-            }
+            "existingJavaType": "java.util.Map<String,SubsystemConfig>"
         },
         "pcm": {
-            "$id": "#/properties/pcm",
             "type": "integer"
         },
         "constants": {
-            "$ref": "#/definitions/constants"
+            "$ref": "double.map.schema.json"
         }
     },
+    "additionalProperties": false,
     "anyOf": [
         {
-            "required": ["$extends"]
-        },
-        {
-            "properties": {
-                "subsystems": {
-                    "additionalProperties": {
-                        "required": ["implemented"]
-                    }
-                }
-            },
             "required": ["subsystems", "pcm", "constants"]
         }
     ]

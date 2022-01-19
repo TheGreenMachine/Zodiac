@@ -7,7 +7,7 @@ public class Constants {
 
     private static final RobotFactory factory = Robot.getFactory();
 
-    public static final double kLooperDt = factory.getConstant("kLooperDt");
+    public static final double kLooperDt = factory.getConstant("kLooperDt",.020);
 
     // Drivetrain characterization
     public static final double kDriveWheelTrackWidthInches = factory.getConstant(

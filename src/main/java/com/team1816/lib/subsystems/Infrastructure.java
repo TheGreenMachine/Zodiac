@@ -1,10 +1,14 @@
 package com.team1816.lib.subsystems;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.subsystems.Superstructure;
+import com.team1816.frc2020.Constants;
 import com.team1816.lib.hardware.components.pcm.ICompressor;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 /**
  * Subsystem to ensure the compressor never runs while the superstructure moves
@@ -13,7 +17,9 @@ public class Infrastructure extends Subsystem {
 
     private static Infrastructure mInstance;
 
-    private Superstructure mSuperstructure = Superstructure.getInstance();
+    @Inject
+    private Superstructure mSuperstructure;
+
     private ICompressor mCompressor;
 
     private boolean mIsManualControl = false;
@@ -21,22 +27,17 @@ public class Infrastructure extends Subsystem {
         factory.getConstant("compressorEnabled") > 0;
     private boolean lastCompressorOn = true;
 
-    private Infrastructure() {
+    public Infrastructure() {
         super("Infrastructure");
         mCompressor = factory.getCompressor();
+        if( factory.getConstant("compressorEnabled")>0) {
+            mCompressor.stop();
+        }
     }
 
     @Override
     public boolean isImplemented() {
         return true;
-    }
-
-    public static Infrastructure getInstance() {
-        if (mInstance == null) {
-            mInstance = new Infrastructure();
-        }
-
-        return mInstance;
     }
 
     @Override
@@ -50,17 +51,22 @@ public class Infrastructure extends Subsystem {
                 public void onLoop(double timestamp) {
                     synchronized (Infrastructure.this) {
                         boolean superstructureMoving = !mSuperstructure.isAtDesiredState();
+                        if (!(factory.getConstant("compressorEnabled") > 0)) {
+                            if (superstructureMoving || !mIsManualControl) {
+                                if (lastCompressorOn) {
+                                    stopCompressor();
+                                    lastCompressorOn = false;
+                                }
+                            } else {
+                                if (!lastCompressorOn) {
+                                    startCompressor();
+                                    lastCompressorOn = true;
+                                }
+                            }
+                        }
+                        else{
+                            stopCompressor();
 
-                        if (superstructureMoving || !mIsManualControl) {
-                            if (lastCompressorOn) {
-                                stopCompressor();
-                                lastCompressorOn = false;
-                            }
-                        } else {
-                            if (!lastCompressorOn) {
-                                startCompressor();
-                                lastCompressorOn = true;
-                            }
                         }
                     }
                 }

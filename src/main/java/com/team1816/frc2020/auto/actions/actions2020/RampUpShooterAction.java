@@ -1,14 +1,18 @@
 package com.team1816.frc2020.auto.actions.actions2020;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.subsystems.Shooter;
 import com.team1816.lib.auto.actions.Action;
 
 public class RampUpShooterAction implements Action {
 
+    @Inject
+    private static Shooter shooter;
+
     @Override
     public void start() {
-        Shooter.getInstance().startShooter();
-        Shooter.getInstance().autoHood();
+        shooter.startShooter();
+        shooter.autoHood();
     }
 
     @Override

@@ -1,17 +1,18 @@
 package com.team1816.frc2020.auto.actions.actions2020;
 
+import com.google.inject.Inject;
 import com.team1816.frc2020.subsystems.Collector;
 import com.team1816.frc2020.subsystems.Hopper;
 import com.team1816.lib.auto.actions.Action;
 
 public class LoadBallsAction implements Action {
 
-    private final Collector collector;
-    private final Hopper hopper;
+    @Inject
+    private static Collector collector;
+    @Inject
+    private static Hopper hopper;
 
     public LoadBallsAction() {
-        this.collector = Collector.getInstance();
-        this.hopper = Hopper.getInstance();
     }
 
     @Override
