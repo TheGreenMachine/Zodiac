@@ -10,6 +10,9 @@ import com.team1816.frc2020.RobotState;
 import com.team1816.lib.hardware.PIDSlotConfiguration;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import com.team254.lib.util.Units;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -227,6 +230,24 @@ public class Turret extends Subsystem implements PidProvider {
     public void readPeriodicInputs() {
         turretAngleRelativeToField =
             robotState.getHeadingRelativeToInitial().getDegrees();
+        if (RobotBase.isSimulation()) {
+            double xPos = Units.inches_to_meters(robotState.getEstimatedX());
+            double yPos = Units.inches_to_meters(robotState.getEstimatedY()) + 3.5;
+            // show turret
+            var turret = robotState.field.getObject("turret");
+            //TODO get turret to work in simulator and double check if math/whatever variable it's using is correct
+            double currentTurretPos = 0; //<-- THIS IS WHAT NEEDS TO BE CHANGED TO TURRET POSITION RELATIVE TO THE FIELD
+            currentTurretPos = getActualTurretPositionDegrees() - robotState.getHeadingRelativeToInitial().getDegrees();
+            turret.setPose(
+                xPos,
+                yPos,
+                Rotation2d.fromDegrees(currentTurretPos) //I'm not sure if this is right
+            );
+            System.out.println("@#*@)$*E)(@ " + getControlMode());
+            System.out.println("+++++++++++ " + getActualTurretPositionDegrees());
+            System.out.println("/////////// " + robotState.getHeadingRelativeToInitial().getDegrees());
+            System.out.println("########### " + currentTurretPos);
+        }
     }
 
     @Override
@@ -281,7 +302,6 @@ public class Turret extends Subsystem implements PidProvider {
             turret.set(com.ctre.phoenix.motorcontrol.ControlMode.Position, rawPos);
             double result = turret.getClosedLoopTarget(0);
             outputsChanged = false;
-
         }
     }
 

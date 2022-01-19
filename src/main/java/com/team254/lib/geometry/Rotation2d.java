@@ -1,7 +1,6 @@
 package com.team254.lib.geometry;
 
 import com.team254.lib.util.Util;
-import edu.wpi.first.wpilibj.DriverStation;
 
 import java.text.DecimalFormat;
 

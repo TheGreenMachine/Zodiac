@@ -19,7 +19,6 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.*;
 import edu.wpi.first.networktables.EntryListenerFlags;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -67,7 +66,6 @@ public abstract class Drive
     protected SendableChooser<DriveHelper> driveHelperChooser;
 
     // Simulator
-    protected final Field2d fieldSim = new Field2d();
     protected double gyroDrift;
     protected final double robotWidthTicks =
         inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
@@ -176,6 +174,11 @@ public abstract class Drive
             Pose2dWithCurvature.identity()
         );
         public Translation2d drive_vector = Translation2d.identity();
+    }
+
+    @Override
+    public void writePeriodicOutputs() {
+        super.writePeriodicOutputs();
     }
 
     @Override
@@ -374,7 +377,6 @@ public abstract class Drive
         driveHelperChooser.addOption("Cheesy Drive", new CheesyDriveHelper());
         driveHelperChooser.setDefaultOption("Swerve Classic", new SwerveDriveHelper());
         SmartDashboard.putData("Drive Algorithm", driveHelperChooser);
-        SmartDashboard.putData("Field", fieldSim);
 
         SmartDashboard.putNumber("Drive/Vector Direction", 0);
         SmartDashboard.putNumber("Drive/Robot Velocity", 0);

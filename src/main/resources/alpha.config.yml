@@ -36,11 +36,38 @@ subsystems:
             encPPR: 999
             azimuthEncPPR: 4096
             azimuthAllowableErrorTicks: 10
+    turret:
+        implemented: true
+        talons:
+            turret: 3
+        pidConfig:
+            slot0:
+                kP: 2
+                kI: 0
+                kD: 10
+                kF: 0 # Should be 0 for position control
+                iZone: 200
+            slot1:
+                kP: 1
+                kI: 0
+                kD: 20
+                kF: 0 # Should be 0 for position control
+                iZone: 200
+        constants:
+            encPPR: 4096
+            revLimit: 960
+            fwdLimit: 2990
+            currentFloorCheck: 0
+            currentEpsilonCheck: .2
+            rpmFloorCheck: 0
+            absPosTicksSouth: 4035
+            invert_sensor_phase: 0
+            rpmEpsilonCheck: 60
 pcm: 8
 constants:
     maxTicks: 14000 # ticks per 100ms TODO test actual maxTicks value
     sensorPhase: 0
-    kLooperDt: .010
+    kLooperDt: .020
     kTrackScrubFactor: 1.0
     pathKs: 2
     isSwerve: 0

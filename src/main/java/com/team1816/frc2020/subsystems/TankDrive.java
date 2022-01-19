@@ -131,7 +131,6 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
         mMotionPlanner = new TankMotionPlanner();
 
-        SmartDashboard.putData("Field", fieldSim);
     }
 
     @Override
@@ -177,11 +176,9 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
             var rot2d = new edu.wpi.first.math.geometry.Rotation2d(
                 mPeriodicIO.gyro_heading_no_offset.getRadians()
             );
-            fieldSim.setRobotPose(
-                Units.inches_to_meters(mRobotState.getEstimatedX()),
-                Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5,
-                rot2d
-            );
+            var xPos = Units.inches_to_meters(mRobotState.getEstimatedX());
+            var yPos = Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5;
+            mRobotState.field.setRobotPose(xPos, yPos, rot2d);
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);

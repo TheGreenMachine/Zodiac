@@ -215,17 +215,25 @@ public class CtreMotorFactory {
         talonConfiguration.reverseSoftLimitThreshold = config.REVERSE_SOFT_LIMIT;
         talonConfiguration.reverseSoftLimitEnable = config.ENABLE_SOFT_LIMIT;
 
-        if (pidConfigList.size() > 0) {
-            talonConfiguration.slot0 = toSlotConfiguration(pidConfigList.get("slot0"));
-            if (pidConfigList.size() > 1) {
-                talonConfiguration.slot1 = toSlotConfiguration(pidConfigList.get("slot1"));
-                if (pidConfigList.size() > 2) {
-                    talonConfiguration.slot2 = toSlotConfiguration(pidConfigList.get("slot2"));
-                    if (pidConfigList.size() > 3) {
-                        talonConfiguration.slot3 = toSlotConfiguration(pidConfigList.get("slot3"));
+        if (pidConfigList != null) {
+            pidConfigList.forEach(
+                (slot, slotConfig) -> {
+                    switch (slot.toLowerCase()) {
+                        case "slot0":
+                            talonConfiguration.slot0 = toSlotConfiguration(slotConfig);
+                            break;
+                        case "slot1":
+                            talonConfiguration.slot1 = toSlotConfiguration(slotConfig);
+                            break;
+                        case "slot2":
+                            talonConfiguration.slot2 = toSlotConfiguration(slotConfig);
+                            break;
+                        case "slot3":
+                            talonConfiguration.slot3 = toSlotConfiguration(slotConfig);
+                            break;
                     }
                 }
-            }
+            );
         }
 
         talonConfiguration.nominalOutputForward = 0;

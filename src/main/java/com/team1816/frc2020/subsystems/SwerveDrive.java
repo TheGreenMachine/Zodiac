@@ -99,7 +99,6 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         setBrakeMode(mIsBrakeMode);
 
         motionPlanner = new SwerveMotionPlanner();
-        SmartDashboard.putData("Field", fieldSim);
     }
 
     @Override
@@ -162,11 +161,9 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
             var rot2d = new edu.wpi.first.math.geometry.Rotation2d(
                 mPeriodicIO.gyro_heading_no_offset.getRadians()
             );
-            fieldSim.setRobotPose(
-                Units.inches_to_meters(mRobotState.getEstimatedX()),
-                Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5,
-                rot2d
-            );
+            var xPos = Units.inches_to_meters(mRobotState.getEstimatedX());
+            var yPos = Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5;
+            mRobotState.field.setRobotPose(xPos, yPos, rot2d);
         } else {
             mPeriodicIO.gyro_heading_no_offset =
                 Rotation2d.fromDegrees(mPigeon.getFusedHeading());
