@@ -157,6 +157,11 @@ public class QuinticHermiteSpline extends Spline {
         return new Rotation2d(dx(t), dy(t), true);
     }
 
+    @Override
+    public Rotation2d getChassisHeading(double t) {
+        return null;
+    }
+
     /**
      * @return integral of dCurvature^2 over the length of the spline
      */

@@ -18,30 +18,54 @@ public class Pose2d implements IPose2d<Pose2d> {
 
     protected final Translation2d translation_;
     protected final Rotation2d rotation_;
+    protected final Rotation2d chassisHeading_;
 
     public Pose2d() {
         translation_ = new Translation2d();
         rotation_ = new Rotation2d();
+        chassisHeading_ = new Rotation2d();
     }
 
     public Pose2d(double x, double y, final Rotation2d rotation) {
         translation_ = new Translation2d(x, y);
         rotation_ = rotation;
+        chassisHeading_ = Rotation2d.identity();
+    }
+
+    public Pose2d(double x, double y, final Rotation2d rotation, Rotation2d chassisHeading) {
+        translation_ = new Translation2d(x, y);
+        rotation_ = rotation;
+        chassisHeading_ = chassisHeading;
     }
 
     public Pose2d(double x, double y, double rotation) {
         translation_ = new Translation2d(x, y);
         rotation_ = Rotation2d.fromDegrees(rotation);
+        chassisHeading_ = Rotation2d.identity();
+    }
+
+    public Pose2d(double x, double y, double rotation, double chassisHeading) {
+        translation_ = new Translation2d(x, y);
+        rotation_ = Rotation2d.fromDegrees(rotation);
+        chassisHeading_ = Rotation2d.fromDegrees(chassisHeading);
     }
 
     public Pose2d(final Translation2d translation, final Rotation2d rotation) {
         translation_ = translation;
         rotation_ = rotation;
+        chassisHeading_ = Rotation2d.identity();
+    }
+
+    public Pose2d(final Translation2d translation, final Rotation2d rotation, final Rotation2d chassisHeading) {
+        translation_ = translation;
+        rotation_ = rotation;
+        chassisHeading_ = chassisHeading;
     }
 
     public Pose2d(final Pose2d other) {
         translation_ = new Translation2d(other.translation_);
         rotation_ = new Rotation2d(other.rotation_);
+        chassisHeading_ = new Rotation2d(other.chassisHeading_);
     }
 
     public static Pose2d fromTranslation(final Translation2d translation) {
@@ -59,6 +83,8 @@ public class Pose2d implements IPose2d<Pose2d> {
     public static Pose2d exp(final Twist2d delta) {
         double sin_theta = Math.sin(delta.dtheta);
         double cos_theta = Math.cos(delta.dtheta);
+        double sin_heading = Math.sin(delta.dheading);
+        double cos_heading = Math.cos(delta.dheading);
         double s, c;
         if (Math.abs(delta.dtheta) < kEps) {
             s = 1.0 - 1.0 / 6.0 * delta.dtheta * delta.dtheta;
@@ -68,7 +94,9 @@ public class Pose2d implements IPose2d<Pose2d> {
             c = (1.0 - cos_theta) / delta.dtheta;
         }
         return new Pose2d(new Translation2d(delta.dx * s - delta.dy * c, delta.dx * c + delta.dy * s),
-                new Rotation2d(cos_theta, sin_theta, false));
+                new Rotation2d(cos_theta, sin_theta, false),
+                new Rotation2d(cos_heading, sin_heading, false)
+        );
     }
 
     /**
@@ -76,6 +104,7 @@ public class Pose2d implements IPose2d<Pose2d> {
      */
     public static Twist2d log(final Pose2d transform) {
         final double dtheta = transform.getRotation().getRadians();
+        final double dheading = transform.getChassisHeading().getRadians();
         final double half_dtheta = 0.5 * dtheta;
         final double cos_minus_one = transform.getRotation().cos() - 1.0;
         double halftheta_by_tan_of_halfdtheta;
@@ -86,7 +115,7 @@ public class Pose2d implements IPose2d<Pose2d> {
         }
         final Translation2d translation_part = transform.getTranslation()
                 .rotateBy(new Rotation2d(halftheta_by_tan_of_halfdtheta, -half_dtheta, false));
-        return new Twist2d(translation_part.x(), translation_part.y(), dtheta);
+        return new Twist2d(translation_part.x(), translation_part.y(), dtheta, dheading);
     }
 
     @Override
@@ -99,6 +128,10 @@ public class Pose2d implements IPose2d<Pose2d> {
         return rotation_;
     }
 
+    public Rotation2d getChassisHeading(){
+        return chassisHeading_;
+    }
+
     /**
      * Transforming this RigidTransform2d means first translating by other.translation and then rotating by
      * other.rotation
@@ -109,7 +142,8 @@ public class Pose2d implements IPose2d<Pose2d> {
     @Override
     public Pose2d transformBy(final Pose2d other) {
         return new Pose2d(translation_.translateBy(other.translation_.rotateBy(rotation_)),
-                rotation_.rotateBy(other.rotation_));
+                rotation_.rotateBy(other.rotation_),
+                chassisHeading_.rotateBy(other.chassisHeading_));
     }
 
     /**
@@ -119,7 +153,8 @@ public class Pose2d implements IPose2d<Pose2d> {
      */
     public Pose2d inverse() {
         Rotation2d rotation_inverted = rotation_.inverse();
-        return new Pose2d(translation_.inverse().rotateBy(rotation_inverted), rotation_inverted);
+        Rotation2d chassisHeading_inverted = chassisHeading_.inverse();
+        return new Pose2d(translation_.inverse().rotateBy(rotation_inverted), rotation_inverted, chassisHeading_inverted);
     }
 
     public Pose2d normal() {
@@ -155,7 +190,8 @@ public class Pose2d implements IPose2d<Pose2d> {
 
     public boolean epsilonEquals(final Pose2d other, double epsilon) {
         return getTranslation().epsilonEquals(other.getTranslation(), epsilon)
-                && getRotation().isParallel(other.getRotation());
+                && getRotation().isParallel(other.getRotation())
+                && getChassisHeading().isParallel(other.getChassisHeading());
     }
 
     private static Translation2d intersectionInternal(final Pose2d a, final Pose2d b) {
@@ -189,12 +225,12 @@ public class Pose2d implements IPose2d<Pose2d> {
 
     @Override
     public String toString() {
-        return "T:" + translation_.toString() + ", R:" + rotation_.toString();
+        return "T:" + translation_.toString() + ", R:" + rotation_.toString() + ", C:" + chassisHeading_.toString();
     }
 
     @Override
     public String toCSV() {
-        return translation_.toCSV() + "," + rotation_.toCSV();
+        return translation_.toCSV() + "," + rotation_.toCSV() + "," + chassisHeading_.toCSV();
     }
 
     @Override
@@ -218,6 +254,6 @@ public class Pose2d implements IPose2d<Pose2d> {
 
     @Override
     public Pose2d mirror() {
-        return new Pose2d(new Translation2d(getTranslation().x(), -getTranslation().y()), getRotation().inverse());
+        return new Pose2d(new Translation2d(getTranslation().x(), -getTranslation().y()), getRotation().inverse(), getChassisHeading().inverse());
     }
 }

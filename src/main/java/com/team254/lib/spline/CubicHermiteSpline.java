@@ -46,6 +46,11 @@ public class CubicHermiteSpline extends Spline {
     }
 
     @Override
+    public Rotation2d getChassisHeading(double t) {
+        return Rotation2d.identity();
+    }
+
+    @Override
     public double getVelocity(double t) {
         // TODO implement this
         return 1.0;

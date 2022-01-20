@@ -20,15 +20,21 @@ public class Twist2d {
     public final double dx;
     public final double dy;
     public final double dtheta; // Radians!
+    public final double dheading;
 
-    public Twist2d(double dx, double dy, double dtheta) {
+    public Twist2d(double dx, double dy, double dtheta, double dheading) {
         this.dx = dx;
         this.dy = dy;
         this.dtheta = dtheta;
+        this.dheading = dheading;
+    }
+
+    public Twist2d(double dx, double dy, double dtheta) {
+        this(dx, dy, dtheta, 0);
     }
 
     public Twist2d scaled(double scale) {
-        return new Twist2d(dx * scale, dy * scale, dtheta * scale);
+        return new Twist2d(dx * scale, dy * scale, dtheta * scale, dheading * scale);
     }
 
     public double norm() {
@@ -47,6 +53,6 @@ public class Twist2d {
     @Override
     public String toString() {
         final DecimalFormat fmt = new DecimalFormat("#0.000");
-        return "(" + fmt.format(dx) + "," + fmt.format(dy) + "," + fmt.format(Math.toDegrees(dtheta)) + " deg)";
+        return "(" + fmt.format(dx) + "," + fmt.format(dy) + "," + fmt.format(Math.toDegrees(dtheta)) + " deg)," + fmt.format(Math.toDegrees(dheading)) + " deg)";
     }
 }

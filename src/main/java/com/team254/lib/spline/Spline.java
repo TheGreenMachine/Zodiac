@@ -10,6 +10,8 @@ public abstract class Spline {
 
     public abstract Rotation2d getHeading(double t);
 
+    public abstract Rotation2d getChassisHeading(double t);
+
     public abstract double getCurvature(double t);
 
     // dk/ds
