@@ -166,7 +166,7 @@ public class RobotFactory {
         Translation2d startPos
     ) {
         var subsystem = getSubsystem(subsystemName);
-        SwerveModuleConfiguration module = subsystem.swerveModules.get(name);
+        ModuleConfiguration module = subsystem.swerveModules.modules.get(name);
         if (module == null) {
             DriverStation.reportError(
                 "No swerve module with name " + name + " subsystem " + subsystemName,
@@ -177,12 +177,12 @@ public class RobotFactory {
 
         var swerveConstants = new SwerveModule.SwerveModuleConstants();
         swerveConstants.kName = name;
-        swerveConstants.kAzimuthMotorName = module.modules.get(name).azimuth; //getAzimuth and drive give ID i think - not the module name (ex: leftRear)
-        swerveConstants.kAzimuthPid = subsystem.swerveModules.get(name).azimuthPID.get(0);
-        swerveConstants.kDriveMotorName = module.modules.get(name).drive;
-        swerveConstants.kDrivePid = subsystem.swerveModules.get(name).drivePID.get(0);
-        swerveConstants.kAzimuthEncoderHomeOffset = module.modules.get(name).constants.get("encoderOffset");
-        swerveConstants.kInvertAzimuthSensorPhase = module.constants.get("invertedSensorPhase") == 1; //boolean
+        swerveConstants.kAzimuthMotorName = module.azimuth; //getAzimuth and drive give ID i think - not the module name (ex: leftRear)
+        swerveConstants.kAzimuthPid = subsystem.swerveModules.azimuthPID.get("slot0");
+        swerveConstants.kDriveMotorName = module.drive;
+        swerveConstants.kDrivePid = subsystem.swerveModules.drivePID.get("slot0");
+        swerveConstants.kAzimuthEncoderHomeOffset = module.constants.get("encoderOffset");
+        swerveConstants.kInvertAzimuthSensorPhase = module.constants.get("invertSensorPhase") == 1; //boolean
 
         return new SwerveModule(subsystemName, swerveConstants, startPos);
     }

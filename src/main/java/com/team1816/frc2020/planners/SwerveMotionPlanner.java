@@ -22,6 +22,7 @@ public class SwerveMotionPlanner implements CSVWritable {
     private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
     private static final double kMaxDTheta = Math.toRadians(5.0);
+    private static final double kMaxDHeading = Math.toRadians(5.0);
 
     private double defaultCook = 0.5;
     private boolean useDefaultCook = true;
@@ -190,7 +191,8 @@ public class SwerveMotionPlanner implements CSVWritable {
             waypoints_maybe_flipped,
             kMaxDx,
             kMaxDy,
-            kMaxDTheta
+            kMaxDTheta,
+            kMaxDHeading
         );
 
         if (reversed) {
@@ -208,7 +210,7 @@ public class SwerveMotionPlanner implements CSVWritable {
         }
         // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
         // than the specified voltage.
-        //final CurvatureVelocityConstraint velocity_constraints = new CurvatureVelocityConstraint();
+        // final CurvatureVelocityConstraint velocity_constraints = new CurvatureVelocityConstraint();
         List<TimingConstraint<Pose2dWithCurvature>> all_constraints = new ArrayList<>();
         //all_constraints.add(velocity_constraints);
         if (constraints != null) {
@@ -371,6 +373,7 @@ public class SwerveMotionPlanner implements CSVWritable {
             previewQuantity
         );
         mSetpoint = sample_point.state();
+        System.out.println(mSetpoint);
         /*SmartDashboard.putNumber("Path X", mSetpoint.state().getTranslation().x());
         SmartDashboard.putNumber("Path Y", mSetpoint.state().getTranslation().y());
         SmartDashboard.putNumber("Path Velocity", mSetpoint.velocity() / Constants.kSwerveMaxSpeedFeetPerSecond);*/

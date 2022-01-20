@@ -18,36 +18,43 @@ subsystems:
             - frDrive
             - brDrive
         swerveModules:
-            frontLeft:
-                drive: flDrive
-                azimuth: flAzimuth
-                encoderOffset: 1443
-                invertSensorPhase: false
-            frontRight:
-                drive: frDrive
-                azimuth: frAzimuth
-                encoderOffset: 3356
-                invertSensorPhase: true
-            backLeft:
-                drive: blDrive
-                azimuth: blAzimuth
-                encoderOffset: 3450
-                invertSensorPhase: true
-            backRight:
-                drive: brDrive
-                azimuth: brAzimuth
-                encoderOffset: 2551
-                invertSensorPhase: true
-        drivePid:
-            kP: 0.1
-            kI: 0.0001
-            kD: 4.0
-            kF: 0.0499
-        azimuthPid:
-            kP: 9.0 # 6.0
-            kI: 0.0005
-            kD: 30
-            kF: 0
+            modules:
+                frontLeft:
+                    drive: flDrive
+                    azimuth: flAzimuth
+                    constants:
+                        encoderOffset: 1443
+                        invertSensorPhase: 0
+                frontRight:
+                    drive: frDrive
+                    azimuth: frAzimuth
+                    constants:
+                        encoderOffset: 3356
+                        invertSensorPhase: 1
+                backLeft:
+                    drive: blDrive
+                    azimuth: blAzimuth
+                    constants:
+                        encoderOffset: 3450
+                        invertSensorPhase: 1
+                backRight:
+                    drive: brDrive
+                    azimuth: brAzimuth
+                    constants:
+                        encoderOffset: 2551
+                        invertSensorPhase: 1
+            drivePID:
+                slot0:
+                    kP: 0.1
+                    kI: 0.0001
+                    kD: 4.0
+                    kF: 0.0499
+            azimuthPID:
+                slot0:
+                    kP: 9.0 # 6.0
+                    kI: 0.0005
+                    kD: 30
+                    kF: 0
         constants:
             pigeonId: 32
             pigeonOnTalon: -1

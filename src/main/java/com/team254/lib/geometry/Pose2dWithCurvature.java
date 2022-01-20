@@ -51,6 +51,11 @@ public class Pose2dWithCurvature implements IPose2d<Pose2dWithCurvature>, ICurva
     }
 
     @Override
+    public Rotation2d getChassisHeading() {
+        return pose_.getChassisHeading();
+    }
+
+    @Override
     public Pose2dWithCurvature transformBy(Pose2d transform) {
         return new Pose2dWithCurvature(getPose().transformBy(transform), getCurvature(), getDCurvatureDs());
     }

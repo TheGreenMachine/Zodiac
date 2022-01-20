@@ -13,8 +13,9 @@ public class QuinticHermiteSpline extends Spline {
     private static final int kSamples = 100;
     private static final int kMaxIterations = 100;
 
-    private double x0, x1, dx0, dx1, ddx0, ddx1, y0, y1, dy0, dy1, ddy0, ddy1;
-    private double ax, bx, cx, dx, ex, fx, ay, by, cy, dy, ey, fy;
+    // note that z is in radians
+    private double x0, x1, dx0, dx1, ddx0, ddx1, y0, y1, dy0, dy1, ddy0, ddy1, z0, z1;
+    private double ax, bx, cx, dx, ex, fx, ay, by, cy, dy, ey, fy, az, bz;
 
     /**
      * @param p0 The starting pose of the spline
@@ -34,6 +35,8 @@ public class QuinticHermiteSpline extends Spline {
         dy1 = p1.getRotation().sin() * scale;
         ddy0 = 0;
         ddy1 = 0;
+        z0 = p0.getChassisHeading().getRadians();
+        z1 = p1.getChassisHeading().getRadians();
 
         computeCoefficients();
     }
@@ -42,7 +45,8 @@ public class QuinticHermiteSpline extends Spline {
      * Used by the curvature optimization function
      */
     private QuinticHermiteSpline(double x0, double x1, double dx0, double dx1, double ddx0, double ddx1,
-                                 double y0, double y1, double dy0, double dy1, double ddy0, double ddy1) {
+                                 double y0, double y1, double dy0, double dy1, double ddy0, double ddy1,
+                                 double z0, double z1) {
         this.x0 = x0;
         this.x1 = x1;
         this.dx0 = dx0;
@@ -56,6 +60,9 @@ public class QuinticHermiteSpline extends Spline {
         this.dy1 = dy1;
         this.ddy0 = ddy0;
         this.ddy1 = ddy1;
+
+        this.z0 = z0;
+        this.z1 = z1;
 
         computeCoefficients();
     }
@@ -77,6 +84,10 @@ public class QuinticHermiteSpline extends Spline {
         dy = 0.5 * ddy0;
         ey = dy0;
         fy = y0;
+
+        // model z as a linear function with respect to t (which is 0 to 1 in this case)
+        az = z1 - z0;
+        bz = z0;
     }
 
     public Pose2d getStartPose() {
@@ -159,7 +170,7 @@ public class QuinticHermiteSpline extends Spline {
 
     @Override
     public Rotation2d getChassisHeading(double t) {
-        return null;
+        return Rotation2d.fromRadians(az * t + bz);
     }
 
     /**
@@ -240,14 +251,14 @@ public class QuinticHermiteSpline extends Spline {
 
             //calculate partial derivatives of sumDCurvature2
             splines.set(i, new QuinticHermiteSpline(temp.x0, temp.x1, temp.dx0, temp.dx1, temp.ddx0, temp.ddx1 +
-                    kEpsilon, temp.y0, temp.y1, temp.dy0, temp.dy1, temp.ddy0, temp.ddy1));
+                    kEpsilon, temp.y0, temp.y1, temp.dy0, temp.dy1, temp.ddy0, temp.ddy1, temp.z0, temp.z1));
             splines.set(i + 1, new QuinticHermiteSpline(temp1.x0, temp1.x1, temp1.dx0, temp1.dx1, temp1.ddx0 +
-                    kEpsilon, temp1.ddx1, temp1.y0, temp1.y1, temp1.dy0, temp1.dy1, temp1.ddy0, temp1.ddy1));
+                    kEpsilon, temp1.ddx1, temp1.y0, temp1.y1, temp1.dy0, temp1.dy1, temp1.ddy0, temp1.ddy1, temp1.z0, temp1.z1));
             controlPoints[i].ddx = (sumDCurvature2(splines) - original) / kEpsilon;
             splines.set(i, new QuinticHermiteSpline(temp.x0, temp.x1, temp.dx0, temp.dx1, temp.ddx0, temp.ddx1, temp
-                    .y0, temp.y1, temp.dy0, temp.dy1, temp.ddy0, temp.ddy1 + kEpsilon));
+                    .y0, temp.y1, temp.dy0, temp.dy1, temp.ddy0, temp.ddy1 + kEpsilon, temp.z0, temp.z1));
             splines.set(i + 1, new QuinticHermiteSpline(temp1.x0, temp1.x1, temp1.dx0, temp1.dx1, temp1.ddx0,
-                    temp1.ddx1, temp1.y0, temp1.y1, temp1.dy0, temp1.dy1, temp1.ddy0 + kEpsilon, temp1.ddy1));
+                    temp1.ddx1, temp1.y0, temp1.y1, temp1.dy0, temp1.dy1, temp1.ddy0 + kEpsilon, temp1.ddy1, temp1.z0, temp1.z1));
             controlPoints[i].ddy = (sumDCurvature2(splines) - original) / kEpsilon;
 
             splines.set(i, temp);

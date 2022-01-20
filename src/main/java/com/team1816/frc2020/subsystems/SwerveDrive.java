@@ -504,7 +504,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
             System.out.println("Now setting trajectory");
             setBrakeMode(true);
             mOverrideTrajectory = false;
-            headingController.setSnapTarget(targetHeading.getDegrees());
+//            headingController.setSnapTarget(targetHeading.getDegrees());
             motionPlanner.reset();
             mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
             motionPlanner.setTrajectory(trajectory);

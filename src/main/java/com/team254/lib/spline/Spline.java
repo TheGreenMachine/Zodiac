@@ -21,7 +21,7 @@ public abstract class Spline {
     public abstract double getVelocity(double t);
 
     public Pose2d getPose2d(double t) {
-        return new Pose2d(getPoint(t), getHeading(t));
+        return new Pose2d(getPoint(t), getHeading(t), getChassisHeading(t));
     }
 
     public Pose2dWithCurvature getPose2dWithCurvature(double t) {
