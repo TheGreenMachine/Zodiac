@@ -421,9 +421,9 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
             mDriveControlState = DriveControlState.OPEN_LOOP;
         }
 
-        mPeriodicIO.forward = forward;
-        mPeriodicIO.strafe = strafe;
-        mPeriodicIO.rotation = rotation;
+        mPeriodicIO.forward = Math.pow(forward, throttleExponent);
+        mPeriodicIO.strafe = Math.pow(forward, strafeExponent);
+        mPeriodicIO.rotation = Math.pow(rotation, turnExponent) * turnScalar;
         mPeriodicIO.low_power = low_power;
         mPeriodicIO.use_heading_controller = use_heading_controller;
     }
@@ -531,6 +531,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             if (!motionPlanner.isDone()) {
                 Translation2d driveVector = motionPlanner.update(timestamp, pose);
+//                double rotationVector = motionPlanner.getAngularVelocity(timestamp, pose)
 
                 if (!hasStartedFollowing && wantReset) {
                     zeroSensors(startingPosition);

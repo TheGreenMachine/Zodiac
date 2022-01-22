@@ -65,6 +65,12 @@ public abstract class Drive
     protected boolean robotCentric = false;
     protected SendableChooser<DriveHelper> driveHelperChooser;
 
+    //teleop drive scalars
+    protected double turnScalar = 1;
+    protected double turnExponent = 1;
+    protected double throttleExponent = 1;
+    protected double strafeExponent = 1;
+
     // Simulator
     protected double gyroDrift;
     protected final double robotWidthTicks =
@@ -254,6 +260,22 @@ public abstract class Drive
      */
     public abstract void setOpenLoop(DriveSignal signal);
 
+    public void setTurnScalar(double turnScalar) {
+        this.turnScalar = turnScalar;
+    }
+
+    public void setTurnExponent(int turnExponent) {
+        this.turnExponent = turnExponent;
+    }
+
+    public void setThrottleExponent(int throttleExponent) {
+        this.throttleExponent = throttleExponent;
+    }
+
+    public void setStrafeExponent(int strafeExponent) {
+        this.strafeExponent = strafeExponent;
+    }
+
     public void setOpenLoopRampRate(double openLoopRampRate) {
         this.openLoopRampRate = openLoopRampRate;
     }
@@ -385,6 +407,34 @@ public abstract class Drive
             .getEntry("Drive/OpenLoopRampRate")
             .addListener(
                 notification -> setOpenLoopRampRate(notification.value.getDouble()),
+                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+            );
+        SmartDashboard.putNumber("Turn Scalar", turnScalar);
+        SmartDashboard
+            .getEntry("Turn Scalar")
+            .addListener(
+                notification -> setTurnScalar(notification.value.getDouble()),
+                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+            );
+        SmartDashboard.putNumber("Turn Exponent", turnExponent);
+        SmartDashboard
+            .getEntry("Turn Exponent")
+            .addListener(
+                notification -> setTurnExponent((int)notification.value.getDouble()),
+                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+            );
+        SmartDashboard.putNumber("Throttle Exponent", throttleExponent);
+        SmartDashboard
+            .getEntry("Throttle Exponent")
+            .addListener(
+                notification -> setThrottleExponent((int)notification.value.getDouble()),
+                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+            );
+        SmartDashboard.putNumber("Strafe Exponent", strafeExponent);
+        SmartDashboard
+            .getEntry("Strafe Exponent")
+            .addListener(
+                notification -> setStrafeExponent((int)notification.value.getDouble()),
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
 

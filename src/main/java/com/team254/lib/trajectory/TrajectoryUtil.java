@@ -120,7 +120,7 @@ public class TrajectoryUtil {
             splines.add(new QuinticHermiteSpline(waypoints.get(i - 1), waypoints.get(i)));
         }
         QuinticHermiteSpline.optimizeSpline(splines);
-        return trajectoryFromSplines(splines, maxDx, maxDy, maxDTheta, maxDHeading);
+        Trajectory<Pose2dWithCurvature> trajectory = trajectoryFromSplines(splines, maxDx, maxDy, maxDTheta, maxDHeading);
     }
 
 

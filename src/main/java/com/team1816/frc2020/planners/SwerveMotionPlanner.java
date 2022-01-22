@@ -195,19 +195,20 @@ public class SwerveMotionPlanner implements CSVWritable {
             kMaxDHeading
         );
 
-        if (reversed) {
-            List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
-            for (int i = 0; i < trajectory.length(); ++i) {
-                flipped.add(
-                    new Pose2dWithCurvature(
-                        trajectory.getState(i).getPose().transformBy(flip),
-                        -trajectory.getState(i).getCurvature(),
-                        trajectory.getState(i).getDCurvatureDs()
-                    )
-                );
-            }
-            trajectory = new Trajectory<>(flipped);
-        }
+//      NEVER REVERSED?
+//        if (reversed) {
+//            List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
+//            for (int i = 0; i < trajectory.length(); ++i) {
+//                flipped.add(
+//                    new Pose2dWithCurvature(
+//                        trajectory.getState(i).getPose().transformBy(flip),
+//                        -trajectory.getState(i).getCurvature(),
+//                        trajectory.getState(i).getDCurvatureDs()
+//                    )
+//                );
+//            }
+//            trajectory = new Trajectory<>(flipped);
+//        }
         // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
         // than the specified voltage.
         // final CurvatureVelocityConstraint velocity_constraints = new CurvatureVelocityConstraint();
@@ -322,6 +323,13 @@ public class SwerveMotionPlanner implements CSVWritable {
 
         //System.out.println("Pure pursuit updated, vector is: " + steeringVector.toString());
         return Translation2d.fromPolar(steeringDirection, normalizedSpeed);
+    }
+
+    public double updateChassisHeading(double timestamp){
+        if(mLastTime > (currentTrajectoryLength/2.0)){
+            return mCurrentTrajectory
+        }
+
     }
 
     public Translation2d update(double timestamp, Pose2d current_state) {
