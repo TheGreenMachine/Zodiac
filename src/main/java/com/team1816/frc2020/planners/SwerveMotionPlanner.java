@@ -195,6 +195,8 @@ public class SwerveMotionPlanner implements CSVWritable {
             kMaxDHeading
         );
 
+        List<>
+
 //      NEVER REVERSED?
 //        if (reversed) {
 //            List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());

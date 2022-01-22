@@ -120,10 +120,15 @@ public class TrajectoryUtil {
             splines.add(new QuinticHermiteSpline(waypoints.get(i - 1), waypoints.get(i)));
         }
         QuinticHermiteSpline.optimizeSpline(splines);
-        Trajectory<Pose2dWithCurvature> trajectory = trajectoryFromSplines(splines, maxDx, maxDy, maxDTheta, maxDHeading);
+        return trajectoryFromSplines(splines, maxDx, maxDy, maxDTheta, maxDHeading);
     }
 
-
+    public static List<Integer> getWaypointIndexes(final List<Pose2d> waypoints, Trajectory<Pose2dWithCurvature> trajectory){
+        List<Integer> waypointIntegers = new ArrayList<Integer>();
+        for(TrajectoryPoint p : trajectory.points_){
+`
+        }
+    }
 
     public static Trajectory<Pose2dWithCurvature> trajectoryFromSplines(final List<? extends Spline> splines, double
             maxDx, double maxDy, double maxDTheta, double maxDHeading) {

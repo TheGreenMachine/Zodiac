@@ -409,28 +409,28 @@ public abstract class Drive
                 notification -> setOpenLoopRampRate(notification.value.getDouble()),
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
-        SmartDashboard.putNumber("Turn Scalar", turnScalar);
+        SmartDashboard.putNumber("Turn Scalar", this.turnScalar);
         SmartDashboard
             .getEntry("Turn Scalar")
             .addListener(
                 notification -> setTurnScalar(notification.value.getDouble()),
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
-        SmartDashboard.putNumber("Turn Exponent", turnExponent);
+        SmartDashboard.putNumber("Turn Exponent", this.turnExponent);
         SmartDashboard
             .getEntry("Turn Exponent")
             .addListener(
                 notification -> setTurnExponent((int)notification.value.getDouble()),
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
-        SmartDashboard.putNumber("Throttle Exponent", throttleExponent);
+        SmartDashboard.putNumber("Throttle Exponent", this.throttleExponent);
         SmartDashboard
             .getEntry("Throttle Exponent")
             .addListener(
                 notification -> setThrottleExponent((int)notification.value.getDouble()),
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
-        SmartDashboard.putNumber("Strafe Exponent", strafeExponent);
+        SmartDashboard.putNumber("Strafe Exponent", this.strafeExponent);
         SmartDashboard
             .getEntry("Strafe Exponent")
             .addListener(
