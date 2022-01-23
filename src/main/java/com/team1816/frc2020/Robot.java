@@ -345,7 +345,7 @@ public class Robot extends TimedRobot {
                             trajectory.start();
                         }
                     ),
-                    createHoldAction(mControlBoard::getSlowMode, mDrive::setSlowMode),
+                    createAction(mControlBoard::getSlowMode, mDrive::zeroSensors),
                     // Operator Gamepad
                     // createAction(mControlBoard::getSpinnerReset, spinner::initialize),
                     // createHoldAction(mControlBoard::getSpinnerColor, spinner::goToColor),
