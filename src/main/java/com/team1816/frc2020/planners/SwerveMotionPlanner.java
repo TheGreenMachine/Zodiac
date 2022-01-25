@@ -58,7 +58,7 @@ public class SwerveMotionPlanner implements CSVWritable {
         Pose2dWithCurvature.identity()
     );
     Pose2d mError = Pose2d.identity();
-    Translation2d mOutput = Translation2d.identity();
+    Pose2d mOutput = Pose2d.identity();
     static double currentTrajectoryLength = 0.0;
 
     double mDt = 0.0;
@@ -109,7 +109,7 @@ public class SwerveMotionPlanner implements CSVWritable {
 
     public void reset() {
         mError = Pose2d.identity();
-        mOutput = Translation2d.identity();
+        mOutput = Pose2d.identity();
         mLastTime = Double.POSITIVE_INFINITY;
         useDefaultCook = true;
     }
@@ -195,8 +195,6 @@ public class SwerveMotionPlanner implements CSVWritable {
             kMaxDHeading
         );
 
-        List<>
-
 //      NEVER REVERSED?
 //        if (reversed) {
 //            List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
@@ -248,7 +246,7 @@ public class SwerveMotionPlanner implements CSVWritable {
         return mOutput.toCSV();
     }
 
-    protected Translation2d updatePurePursuit(Pose2d current_state) {
+    protected Pose2d updatePurePursuit(Pose2d current_state) {
         double lookahead_time = Constants.kPathLookaheadTime;
         final double kLookaheadSearchDt = 0.01;
         TimedState<Pose2dWithCurvature> lookahead_state = mCurrentTrajectory
@@ -257,6 +255,8 @@ public class SwerveMotionPlanner implements CSVWritable {
         double actual_lookahead_distance = mSetpoint
             .state()
             .distance(lookahead_state.state());
+        // RICHIK -- below are a while and if statement - are they always used or are they only there to deal with outliers?
+        // the while loop seems to bump up actual_lookahead_distance until its more than kPathMinLookaheadDistance and change the lookahead state somehow?
         while (
             actual_lookahead_distance < Constants.kPathMinLookaheadDistance &&
             mCurrentTrajectory.getRemainingProgress() > lookahead_time
@@ -284,6 +284,7 @@ public class SwerveMotionPlanner implements CSVWritable {
                                         0.0
                                     )
                                 )
+
                             ),
                         0.0
                     ),
@@ -324,20 +325,20 @@ public class SwerveMotionPlanner implements CSVWritable {
         //System.out.println("Steering direction " + steeringDirection.getDegrees() + " Speed: " + normalizedSpeed);
 
         //System.out.println("Pure pursuit updated, vector is: " + steeringVector.toString());
-        return Translation2d.fromPolar(steeringDirection, normalizedSpeed);
+        return new Pose2d(Translation2d.fromPolar(steeringDirection, normalizedSpeed), new Rotation2d(), mSetpoint.state().getChassisHeading());
     }
 
-    public double updateChassisHeading(double timestamp){
-        if(mLastTime > (currentTrajectoryLength/2.0)){
-            return mCurrentTrajectory
-        }
+//    public double updateChassisHeading(double timestamp){
+//        if(mLastTime > (currentTrajectoryLength/2.0)){
+//            return mCurrentTrajectory
+//        }
+//
+//    } IGNORE FOR NOW
 
-    }
-
-    public Translation2d update(double timestamp, Pose2d current_state) {
+    public Pose2d update(double timestamp, Pose2d current_state) {
         if (mCurrentTrajectory == null) {
             //System.out.println("Trajectory is null, returning zero trajectory");
-            return Translation2d.identity();
+            return Pose2d.identity();
         }
         if (mCurrentTrajectory.getProgress() == 0.0 && !Double.isFinite(mLastTime)) {
             mLastTime = timestamp;
@@ -366,11 +367,9 @@ public class SwerveMotionPlanner implements CSVWritable {
                 Util.epsilonEquals(distance(current_state, previewQuantity), 0.0, 0.001)
             ) break;
             while (
-                /* next point is closer than current point */distance(
-                    current_state,
-                    previewQuantity + searchStepSize * searchDirection
-                ) <
-                distance(current_state, previewQuantity)
+                /* next point is closer than current point */
+                distance(current_state, previewQuantity + searchStepSize * searchDirection)
+                < distance(current_state, previewQuantity)
             ) {
                 /* move to next point */
                 previewQuantity += searchStepSize * searchDirection;
@@ -396,7 +395,7 @@ public class SwerveMotionPlanner implements CSVWritable {
             }
         } else {
             // TODO Possibly switch to a pose stabilizing controller?
-            mOutput = Translation2d.identity();
+            mOutput = Pose2d.identity();
             // System.out.println("Motion planner done, returning zero trajectory");
         }
         return mOutput;

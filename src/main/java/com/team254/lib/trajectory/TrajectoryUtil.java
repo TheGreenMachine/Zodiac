@@ -105,7 +105,7 @@ public class TrajectoryUtil {
             }
         }
 
-        return new Trajectory<Pose2dWithCurvature>(samples);
+        return new Trajectory<>(samples);
     }
 
     public static Trajectory<Pose2dWithCurvature> trajectoryFromSplineWaypoints(final List<Pose2d> waypoints, double
@@ -123,11 +123,47 @@ public class TrajectoryUtil {
         return trajectoryFromSplines(splines, maxDx, maxDy, maxDTheta, maxDHeading);
     }
 
-    public static List<Integer> getWaypointIndexes(final List<Pose2d> waypoints, Trajectory<Pose2dWithCurvature> trajectory){
-        List<Integer> waypointIntegers = new ArrayList<Integer>();
-        for(TrajectoryPoint p : trajectory.points_){
-`
+    // Generates time values for each waypoint in the trajectory then passes into angularVelocitiesFromWaypoints
+    public static List<Double> angularVelocitiesFromTrajectory(
+        final List<Pose2d> waypoints,
+        Trajectory<TimedState<Pose2dWithCurvature>> trajectory
+    ){
+        List<Double> waypointTimes = new ArrayList<Double>();
+        for(Pose2d pose2d : waypoints){
+            for(int i = 0; i < trajectory.points_.size(); ++i){
+                if(trajectory.getState(i).state().getPose().equals(pose2d)){
+                    waypointTimes.add(trajectory.getState(i).t());
+                }
+            }
         }
+        return angularVelocitiesFromWaypoints(waypoints, waypointTimes, trajectory);
+    }
+
+    // Generates a list of angular velocities corresponding to the amount of points in trajectory
+    // by splitting trajectory into sections between waypoints
+    public static List<Double> angularVelocitiesFromWaypoints(
+        final List<Pose2d> waypoints,
+        List<Double> waypointTimes,
+        Trajectory<TimedState<Pose2dWithCurvature>> trajectory
+    ){
+        List<Double> accelerationsBetweenWayPoints = new ArrayList<>();
+        for(int i = 1; i < waypoints.size(); i++){
+            double acceleration = 2 * (waypoints.get(i).getChassisHeading().getRadians() - waypoints.get(i - 1).getChassisHeading().getRadians())
+                / (waypointTimes.get(i) - waypointTimes.get(i - 1));
+            accelerationsBetweenWayPoints.add(acceleration);
+        }
+
+        List<Double> allAngularVelocities = new ArrayList<>();
+        for(int checkpoint = 1; checkpoint < waypoints.size(); checkpoint++){
+            for(int i = 1; i < trajectory.length(); i++){
+                if(trajectory.getState(i).t() > waypointTimes.get(checkpoint) || trajectory.getState(i).t() < waypointTimes.get(checkpoint - 1)){
+                    continue;
+                }
+                allAngularVelocities.add(trajectory.getState(i).t() * accelerationsBetweenWayPoints.get(checkpoint));
+            }
+        }
+
+        return allAngularVelocities;
     }
 
     public static Trajectory<Pose2dWithCurvature> trajectoryFromSplines(final List<? extends Spline> splines, double

@@ -422,7 +422,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
         }
 
         mPeriodicIO.forward = Math.pow(forward, throttleExponent);
-        mPeriodicIO.strafe = Math.pow(forward, strafeExponent);
+        mPeriodicIO.strafe = Math.pow(strafe, strafeExponent);
         mPeriodicIO.rotation = Math.pow(rotation, turnExponent) * turnScalar;
         mPeriodicIO.low_power = low_power;
         mPeriodicIO.use_heading_controller = use_heading_controller;
@@ -530,7 +530,8 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             if (!motionPlanner.isDone()) {
-                Translation2d driveVector = motionPlanner.update(timestamp, pose);
+                Pose2d drivePose = motionPlanner.update(timestamp, pose);
+                Translation2d driveVector = drivePose.getTranslation();
 //                double rotationVector = motionPlanner.getAngularVelocity(timestamp, pose)
 
                 if (!hasStartedFollowing && wantReset) {
@@ -544,7 +545,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
                 mPeriodicIO.forward = driveVector.x();
                 mPeriodicIO.strafe = driveVector.y();
-                mPeriodicIO.rotation = 0;
+                mPeriodicIO.rotation = drivePose.getRotation().distance();
 
                 double rotationInput = Util.deadBand(
                     Util.limit(
