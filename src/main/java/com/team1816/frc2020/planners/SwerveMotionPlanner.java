@@ -306,6 +306,13 @@ public class SwerveMotionPlanner implements CSVWritable {
             lookahead_state.state().getTranslation()
         );
         Rotation2d steeringDirection = lookaheadTranslation.direction();
+
+        Rotation2d lookaheadChassisChange = Rotation2d.identity();
+//        if(Math.abs(lookahead_state.state().getChassisHeading().getDegrees() - current_state.getChassisHeading().getDegrees()) < 180){
+            lookaheadChassisChange = Rotation2d.fromDegrees(
+                lookahead_state.state().getChassisHeading().getDegrees() - current_state.getChassisHeading().getDegrees()
+            );
+//        }
         double normalizedSpeed =
             Math.abs(mSetpoint.velocity()) / Constants.kPathFollowingMaxVel;
 
@@ -325,7 +332,7 @@ public class SwerveMotionPlanner implements CSVWritable {
         //System.out.println("Steering direction " + steeringDirection.getDegrees() + " Speed: " + normalizedSpeed);
 
         //System.out.println("Pure pursuit updated, vector is: " + steeringVector.toString());
-        return new Pose2d(Translation2d.fromPolar(steeringDirection, normalizedSpeed), new Rotation2d(), mSetpoint.state().getChassisHeading());
+        return new Pose2d(Translation2d.fromPolar(steeringDirection, normalizedSpeed), new Rotation2d(), lookaheadChassisChange);
     }
 
 //    public double updateChassisHeading(double timestamp){

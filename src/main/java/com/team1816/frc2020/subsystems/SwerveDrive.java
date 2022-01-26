@@ -521,10 +521,10 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
     @Override
     public void updatePathFollower(double timestamp) {
-        double rotationCorrection = headingController.updateRotationCorrection(
-            getHeadingDegrees(),
-            timestamp
-        );
+//        double rotationCorrection = headingController.updateRotationCorrection(
+//            getHeadingDegrees(),
+//            timestamp
+//        );
         updatePose(timestamp);
         // alternatePoseUpdate(timestamp);
 
@@ -532,6 +532,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
             if (!motionPlanner.isDone()) {
                 Pose2d drivePose = motionPlanner.update(timestamp, pose);
                 Translation2d driveVector = drivePose.getTranslation();
+                double rotationCorrection = drivePose.getRotation().getDegrees() / 180;
 //                double rotationVector = motionPlanner.getAngularVelocity(timestamp, pose)
 
                 if (!hasStartedFollowing && wantReset) {
@@ -545,7 +546,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
                 mPeriodicIO.forward = driveVector.x();
                 mPeriodicIO.strafe = driveVector.y();
-                mPeriodicIO.rotation = drivePose.getRotation().distance();
+                mPeriodicIO.rotation = rotationCorrection;
 
                 double rotationInput = Util.deadBand(
                     Util.limit(
