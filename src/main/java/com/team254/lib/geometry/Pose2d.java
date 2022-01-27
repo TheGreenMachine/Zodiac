@@ -128,6 +128,7 @@ public class Pose2d implements IPose2d<Pose2d> {
         return rotation_;
     }
 
+    @Override
     public Rotation2d getChassisHeading(){
         return chassisHeading_;
     }
