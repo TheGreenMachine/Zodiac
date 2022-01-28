@@ -191,6 +191,11 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
         }
     }
 
+    public boolean isParallel(final Rotation2d other, double epsilon) {
+        return Util.epsilonEquals(getRadians(), other.getRadians(), epsilon)
+            || Util.epsilonEquals(radians_, WrapRadians(other.radians_ + Math.PI), epsilon);
+    }
+
     public Translation2d toTranslation() {
         ensureTrigComputed();
         return new Translation2d(cos_angle_, sin_angle_);

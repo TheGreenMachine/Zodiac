@@ -10,6 +10,7 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
     protected double t_; // Time we achieve this state.
     protected double velocity_; // ds/dt
     protected double acceleration_; // d^2s/dt^2
+    protected double angularVelocity_; // radians/sec
 
     public TimedState(final S state) {
         state_ = state;
@@ -20,6 +21,15 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
         t_ = t;
         velocity_ = velocity;
         acceleration_ = acceleration;
+        angularVelocity_ = 0;
+    }
+
+    public TimedState(final S state, double t, double velocity, double acceleration, double angularVelocity) {
+        state_ = state;
+        t_ = t;
+        velocity_ = velocity;
+        acceleration_ = acceleration;
+        angularVelocity_ = angularVelocity;
     }
 
     public S state() {
@@ -50,23 +60,34 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
         return acceleration_;
     }
 
+    public double angularVelocity(){
+        return angularVelocity_;
+    }
+
+    public void set_angular_velocity(double angularVelocity){
+        angularVelocity_ = angularVelocity;
+    }
+
     @Override
     public String toString() {
         final DecimalFormat fmt = new DecimalFormat("#0.000");
         return state().toString() + ", t: " + fmt.format(t()) + ", v: " + fmt.format(velocity()) + ", a: "
-                + fmt.format(acceleration());
+                + fmt.format(acceleration()
+//                + ", ω: " + fmt.format(angularVelocity())
+        );
     }
 
     @Override
     public String toCSV() {
         final DecimalFormat fmt = new DecimalFormat("#0.000");
         return state().toCSV() + "," + fmt.format(t()) + "," + fmt.format(velocity()) + ","
-                + fmt.format(acceleration());
+                + fmt.format(acceleration()) + "," + fmt.format(angularVelocity());
     }
 
     @Override
     public TimedState<S> interpolate(TimedState<S> other, double x) {
         final double new_t = Util.interpolate(t(), other.t(), x);
+        final double new_av = Util.interpolate(angularVelocity(), other.angularVelocity(), x);
         final double delta_t = new_t - t();
         if (delta_t < 0.0) {
             return other.interpolate(this, 1.0 - x);
@@ -79,7 +100,9 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
         return new TimedState<S>(state().interpolate(other.state(), new_s / state().distance(other.state())),
                 new_t,
                 new_v,
-                acceleration());
+                acceleration(),
+                new_av
+        );
     }
 
     @Override

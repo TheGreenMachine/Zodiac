@@ -42,6 +42,7 @@ subsystems:
             encPPR: 4096
 pcm: -1
 constants:
+    isSwerve: 1
     maxVel: 40 #inch/s
     maxTicks: 14000 # ticks per 100ms TODO test actual maxTicks value
     maxAccel: 20 #inch/s^2

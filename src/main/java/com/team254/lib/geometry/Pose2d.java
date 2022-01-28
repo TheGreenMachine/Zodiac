@@ -191,8 +191,8 @@ public class Pose2d implements IPose2d<Pose2d> {
 
     public boolean epsilonEquals(final Pose2d other, double epsilon) {
         return getTranslation().epsilonEquals(other.getTranslation(), epsilon)
-                && getRotation().isParallel(other.getRotation())
-                && getChassisHeading().isParallel(other.getChassisHeading());
+                && getRotation().isParallel(other.getRotation(), epsilon * 2)
+                && getChassisHeading().isParallel(other.getChassisHeading(), epsilon * 2);
     }
 
     private static Translation2d intersectionInternal(final Pose2d a, final Pose2d b) {
@@ -246,6 +246,14 @@ public class Pose2d implements IPose2d<Pose2d> {
         }
 
         return epsilonEquals((Pose2d) other, Util.kEpsilon);
+    }
+
+    public boolean equals(final Object other, double epsilon) {
+        if (!(other instanceof Pose2d)) {
+            return false;
+        }
+
+        return epsilonEquals((Pose2d) other, epsilon);
     }
 
     @Override

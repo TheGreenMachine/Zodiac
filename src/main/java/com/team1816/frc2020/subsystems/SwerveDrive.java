@@ -441,6 +441,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
      */
     @Override
     public synchronized void setVelocity(List<Translation2d> driveVectors) {
+//        System.out.println("DRIVE VECTORS = " + driveVectors.toString());
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
             System.out.println("Switching to Velocity");
@@ -453,6 +454,11 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                 inchesPerSecondToTicksPer100ms(
                     driveVectors.get(i).norm() * Constants.kPathFollowingMaxVel
                 );
+//            System.out.println("Wheel azimuth " + i + ": " + mPeriodicIO.wheel_azimuths[i].toString());
+//            System.out.println("Wheel speeds " + i + ": " + mPeriodicIO.wheel_speeds[i]);
+//            System.out.println("speeds norm " + i + ": " + speedsNorm[i]);
+
+
         }
         if (RobotBase.isSimulation()) {
             mPeriodicIO.gyro_heading_no_offset.rotateBy(
@@ -538,9 +544,9 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             if (!motionPlanner.isDone()) {
-                Pose2d drivePose = motionPlanner.update(timestamp, pose);
-                Translation2d driveVector = drivePose.getTranslation();
-                double rotationCorrection = drivePose.getRotation().getDegrees() / 180;
+                SwerveMotionPlanner.Output output = motionPlanner.update(timestamp, pose);
+                Translation2d driveVector = output.driveVector;
+                double rotationVelocity = output.angularVelocity;
 //                double rotationVector = motionPlanner.getAngularVelocity(timestamp, pose)
 
                 if (!hasStartedFollowing && wantReset) {
@@ -554,15 +560,8 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
 
                 mPeriodicIO.forward = driveVector.x();
                 mPeriodicIO.strafe = driveVector.y();
-                mPeriodicIO.rotation = rotationCorrection;
-
-                double rotationInput = Util.deadBand(
-                    Util.limit(
-                        rotationCorrection * rotationScalar * driveVector.norm(),
-                        motionPlanner.getMaxRotationSpeed()
-                    ),
-                    0.01
-                );
+                mPeriodicIO.rotation = rotationVelocity;
+                System.out.println(rotationVelocity + "+++++++++++++++++++++++++++++");
 
                 mPeriodicIO.error = motionPlanner.error();
                 mPeriodicIO.path_setpoint = motionPlanner.setpoint();
@@ -572,7 +571,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                     setVelocity(
                         SwerveKinematics.updateDriveVectors(
                             driveVector,
-                            rotationInput,
+                            rotationVelocity * rotationScalar,
                             pose,
                             robotCentric
                         )

@@ -42,6 +42,10 @@ public class Trajectory<S extends State<S>> implements CSVWritable {
         }
     }
 
+    public Trajectory(final Trajectory trajectory) {
+        points_ = new ArrayList<>(trajectory.points_);
+    }
+
     public boolean isEmpty() {
         return points_.isEmpty();
     }
