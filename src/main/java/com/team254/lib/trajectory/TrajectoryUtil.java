@@ -159,20 +159,33 @@ public class TrajectoryUtil {
         Double[] accelerationsBetweenWayPoints = new Double[waypoints.size() - 1];
 //        System.out.println(waypoints.size() + ", " + waypointTimes.size() + ", " + waypointIndexes.size());
         for(int i = 1; i < waypoints.size(); i++){
-            double acceleration = 2 * (waypoints.get(i).getChassisHeading().getRadians() - waypoints.get(i - 1).getChassisHeading().getRadians())
-                / (waypointTimes.get(i) - waypointTimes.get(i - 1));
+            double dHeading = (waypoints.get(i).getChassisHeading().getRadians() - waypoints.get(i - 1).getChassisHeading().getRadians());
+            double timeBetweenWaypoints = waypointTimes.get(i) - waypointTimes.get(i - 1);
+            double acceleration = 4 * dHeading / (timeBetweenWaypoints * timeBetweenWaypoints);
             accelerationsBetweenWayPoints[i - 1] = acceleration;
         }
 
         for(int checkpoint = 1; checkpoint < waypoints.size(); checkpoint++){
             int iStart = waypointIndexes.get(checkpoint - 1);
             int iEnd = waypointIndexes.get(checkpoint);
+            double dHeading = (
+                waypoints.get(checkpoint).getChassisHeading().getRadians() - waypoints.get(checkpoint - 1).getChassisHeading().getRadians()
+            );
+            double timeBetweenWaypoints = waypointTimes.get(checkpoint) - waypointTimes.get(checkpoint - 1);
             int multiplier = 1;
             for(int i = iStart; i < iEnd; i++){
-                if(i > iEnd - iStart){
-                    multiplier = -1;
+                //up slope in the triangle (area = dHeading, slope = accel, width = time between waypoints, height = max angular vel
+                if(i - iStart < (iEnd - iStart) / 2){
+                    trajectoryWithAngularVelocity.getState(i).set_angular_velocity(
+                        (trajectoryWithAngularVelocity.getState(i).t() - waypointTimes.get(checkpoint - 1)) * accelerationsBetweenWayPoints[checkpoint - 1]
+                    );
+                } else {
+                    // down slope in triangle
+                    trajectoryWithAngularVelocity.getState(i).set_angular_velocity(
+                        2 * dHeading / timeBetweenWaypoints
+                        - ((trajectoryWithAngularVelocity.getState(i).t() - waypointTimes.get(checkpoint - 1) - (timeBetweenWaypoints / 2)) * accelerationsBetweenWayPoints[checkpoint - 1])
+                    );
                 }
-                trajectoryWithAngularVelocity.getState(i).set_angular_velocity(multiplier * trajectoryWithAngularVelocity.getState(i).t() * accelerationsBetweenWayPoints[checkpoint - 1]);
                 System.out.println(trajectoryWithAngularVelocity.getState(i).angularVelocity());
             }
         }

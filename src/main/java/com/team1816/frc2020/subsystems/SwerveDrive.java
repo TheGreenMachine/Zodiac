@@ -165,7 +165,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
                     mPeriodicIO.right_velocity_ticks_per_100ms
                 ) /
                 robotWidthTicks;
-            mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
+//            mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
             var rot2d = new edu.wpi.first.math.geometry.Rotation2d(
                 mPeriodicIO.gyro_heading_no_offset.getRadians()
             );
@@ -546,6 +546,7 @@ public class SwerveDrive extends Drive implements SwerveDrivetrain, PidProvider 
             if (!motionPlanner.isDone()) {
                 SwerveMotionPlanner.Output output = motionPlanner.update(timestamp, pose);
                 Translation2d driveVector = output.driveVector;
+//                double rotationVelocity = Util.limit(output.angularVelocity, 1);
                 double rotationVelocity = output.angularVelocity;
 //                double rotationVector = motionPlanner.getAngularVelocity(timestamp, pose)
 
