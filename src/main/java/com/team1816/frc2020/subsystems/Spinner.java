@@ -2,7 +2,6 @@ package com.team1816.frc2020.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
-import com.revrobotics.ColorSensorV3;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
@@ -18,7 +17,6 @@ public class Spinner extends Subsystem {
     // Components
     private final IMotorControllerEnhanced spinnerMotor;
     private final I2C.Port i2cPort = I2C.Port.kOnboard;
-    private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
 
     // State
     private double spinnerPow;
@@ -55,7 +53,6 @@ public class Spinner extends Subsystem {
     }
 
     public void initialize() {
-        currentColor = determineColor();
         colorsPassed = 0;
     }
 
@@ -114,7 +111,6 @@ public class Spinner extends Subsystem {
 
     @Override
     public void readPeriodicInputs() {
-        SpinnerColor detectedColor = determineColor();
         //System.out.println("detected color index"detectedColor.index);
         //System.out.println("current color index"currentColor.index);
 
@@ -147,30 +143,6 @@ public class Spinner extends Subsystem {
             outputsChanged = false;
         }
         //System.out.println("D: "+IR);
-    }
-
-    private SpinnerColor determineColor() {
-        // TODO: Evaluate using built-in REV ColorMatch class?
-        Color sensorColor = colorSensor.getColor();
-        double redOut = sensorColor.red * 1247;
-        double greenOut = sensorColor.green * 685;
-        double blueOut = sensorColor.blue * 1354;
-
-        SpinnerColor colorDetected = SpinnerColor.BLUE;
-        double minError = Integer.MAX_VALUE;
-        for (SpinnerColor color : SpinnerColor.values()) {
-            double error =
-                (Math.abs(redOut - color.red) / color.red) +
-                (Math.abs(greenOut - color.green) / color.green) +
-                (Math.abs(blueOut - color.blue) / color.blue);
-            if (error < minError) {
-                minError = error;
-                colorDetected = color;
-            }
-        }
-
-        //    System.out.println(colorDetected);
-        return colorDetected;
     }
 
     public boolean atColor(SpinnerColor color) {
