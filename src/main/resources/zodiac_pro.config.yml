@@ -2,12 +2,12 @@ $extends: base
 subsystems:
     drivetrain:
         implemented: true
-        falcons:
+        talons:
             leftMain: 17
-            leftFollower: 1
+            leftFollower: -1
             leftFollowerTwo: -1
             rightMain: 14
-            rightFollower: 15
+            rightFollower: -1
             rightFollowerTwo: -1
         invertMotor:
             - leftMain
@@ -27,7 +27,7 @@ subsystems:
         invertMotor:
             - elevator
     hopper:
-        implemented: false
+        implemented: true
         talons:
             spindexer: 4
             elevator: 5
@@ -37,12 +37,12 @@ subsystems:
             - elevator
             - spindexer
     shooter:
-        implemented: false
+        implemented: true
         falcons:
             shooterMain: 3
-            shooterFollower: 2
+            shooterFollower: -1
     turret:
-        implemented: true
+        implemented: false
         pid:
             -   kP: 6 # 1.981 # 1.645
                 kI: 0.0001
@@ -64,7 +64,7 @@ subsystems:
             raveSpeed: 0.05
             cameraLed: 1
     camera:
-        implemented: true
+        implemented: false
         canifier: 19
 pcm: 8
 constants:
